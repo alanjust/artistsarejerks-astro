@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Artists Are Jerks - Studio Entrance" bodyClass="homepage">
+  <div class="home-stage">
+    <div class="home-viewport">
+      <img 
+        src="/images/studio-home.svg" 
+        alt="Artists Are Jerks Studio Entrance Wall"
+        class="studio-illustration"
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Home stage fills the main content area */
+  .home-stage {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    background: #F5A623;
+    
+    /* Smooth momentum scrolling on touch devices */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Viewport container for the SVG */
+  .home-viewport {
+    height: 100%;
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Studio illustration styling */
+  .studio-illustration {
+    height: 100%;
+    width: auto;
+    max-width: none;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  /* Ensure smooth horizontal panning */
+  .home-stage::-webkit-scrollbar {
+    height: 0;
+    display: none;
+  }
+
+  .home-stage {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Desktop: constrain max width but allow panning */
+  @media (min-width: 1440px) {
+    .home-viewport {
+      width: 1440px;
+      margin: 0 auto;
+    }
+  }
+
+  /* Tablet and mobile adjustments */
+  @media (max-width: 1024px) {
+    .studio-illustration {
+      width: 100%;
+      height: auto;
+      min-height: 100%;
+      object-fit: cover;
+    }
+  }
+</style>
+
+<script>
+  // Center the image on load and on window resize
+  function centerImage() {
+    const stage = document.querySelector('.home-stage');
+    const viewport = document.querySelector('.home-viewport');
+    
+    if (stage && viewport) {
+      // Calculate center position
+      const scrollWidth = viewport.scrollWidth;
+      const clientWidth = stage.clientWidth;
+      const centerPosition = (scrollWidth - clientWidth) / 2;
+      
+      // Scroll to center
+      stage.scrollLeft = centerPosition;
+    }
+  }
+
+  // Center on load
+  window.addEventListener('load', centerImage);
+  
+  // Recenter on resize
+  window.addEventListener('resize', centerImage);
+  
+  // Also try to center immediately
+  centerImage();
+</script>

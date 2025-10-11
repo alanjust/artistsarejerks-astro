@@ -1,0 +1,432 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const thinkers = [
+  {
+    thinker: "Walter Benjamin",
+    label: "The Slow Look",
+    thinking_move: "Linger; meaning appears through time and presence.",
+    good_jerk: "Creates conditions for slowness—quiet installs, long works—so aura can emerge.",
+    bad_jerk: "Manufactures fake scarcity/VIP mystique to inflate value.",
+    normie: "Keeps aura alive in daily life via familiar images revisited over time.",
+    practice: "Spend three minutes with one artwork. What appears only after minute two?"
+  },
+  {
+    thinker: "Susan Sontag",
+    label: "The Embodied Encounter",
+    thinking_move: "Trust your body before your intellect.",
+    good_jerk: "Strips away explanation and invites visceral response.",
+    bad_jerk: "Uses jargon to dismiss emotion as naïve.",
+    normie: "Sustains everyday aesthetic pleasure—liking beauty without overthinking.",
+    practice: "Before reading wall text, note three physical sensations the work gives you."
+  },
+  {
+    thinker: "Roland Barthes",
+    label: "The Co-Author",
+    thinking_move: "Meaning is co-created; no single owner.",
+    good_jerk: "Opens art to multiple readings, handing meaning back to viewers.",
+    bad_jerk: "Demands a single correct interpretation.",
+    normie: "Accepts received interpretations, keeping shared culture steady.",
+    practice: "Write a one-sentence reading of a piece that's yours alone—no quotes, no labels."
+  },
+  {
+    thinker: "Arthur Danto",
+    label: "The Framer",
+    thinking_move: "Context defines what counts as art.",
+    good_jerk: "Reframes the ordinary to expose how context shifts meaning.",
+    bad_jerk: "Leans on gallery context to prop up thin work.",
+    normie: "Accepts institutional frames, stabilizing art's public role.",
+    practice: "Choose a mundane object. Imagine it in a gallery. What new meanings appear?"
+  },
+  {
+    thinker: "bell hooks",
+    label: "Visibility & Justice",
+    thinking_move: "Look for presence, absence, and power.",
+    good_jerk: "Reveals erased voices and broadens visibility.",
+    bad_jerk: "Exploits identity or pain for clout.",
+    normie: "Engages art without interrogating justice, helping stories circulate widely.",
+    practice: "Ask: who is visible here, who is missing, and why might it matter?"
+  },
+  {
+    thinker: "Barry Schwartz",
+    label: "The Constraint-Lover",
+    thinking_move: "Less is more; constraint deepens focus.",
+    good_jerk: "Uses tight limits to heighten attention (small works, sparse shows).",
+    bad_jerk: "Overloads with spectacle/info to mask emptiness.",
+    normie: "Prefers balance and moderation, keeping art approachable.",
+    practice: "In a crowded show, adopt one piece and ignore the rest."
+  },
+  {
+    thinker: "Gilles Deleuze",
+    label: "The Rhizomatic Wanderer",
+    thinking_move: "Follow connections sideways; let meaning proliferate.",
+    good_jerk: "Invites remix and surprising linkages across media and ideas.",
+    bad_jerk: "Builds labyrinthine theory as a barrier to exclude.",
+    normie: "Connects art to everyday life in simple, steady ways.",
+    practice: "Link an artwork to a song, a memory, and a headline. What sprouts?"
+  },
+  {
+    thinker: "Clement Greenberg",
+    label: "The Useful Foil",
+    thinking_move: "Break purity rules; embrace fruitful impurity.",
+    good_jerk: "Crosses mediums and references to expand experience.",
+    bad_jerk: "Polices purity and declares whole practices invalid.",
+    normie: "Values traditional categories, keeping art legible for most.",
+    practice: "List the 'impurities' in a work (materials, sources, genres). How do they enrich it?"
+  }
+];
+---
+
+<BaseLayout title="About - Artists Are Jerks" bodyClass="about-page">
+  <div class="about-container">
+    <header class="about-header">
+      <h1>About Alan Just — Thinking Like an Artist</h1>
+      <p class="intro">
+        I built <em>Artists Are Jerks</em> through improvisation: asking Socratic questions, trying things, breaking them, following curiosity. Only later did I notice my method echoed the moves of major philosophers and theorists. This is my self-portrait — but more importantly, it's a training ground for you.
+      </p>
+      <p class="ecology">
+        Click each thinker below to see the ecology of art:
+      </p>
+      <ul class="ecology-list">
+        <li><strong>Good Jerks</strong> expand perception.</li>
+        <li><strong>Bad Jerks</strong> distort or gatekeep.</li>
+        <li><strong>Normies</strong> stabilize and normalize art in daily life.</li>
+      </ul>
+      <p class="practice-note">
+        Try the prompts and you'll practice how to think like an artist yourself.
+      </p>
+    </header>
+
+    <div class="thinkers-grid">
+      {thinkers.map((t, index) => (
+        <div class="thinker-card">
+          <div class="thinker-header">
+            <span class="thinker-number">{index + 1}</span>
+            <h2 class="thinker-name">{t.thinker}</h2>
+            <h3 class="thinker-label">{t.label}</h3>
+          </div>
+
+          <div class="thinking-move">
+            <strong>Thinking Move:</strong> {t.thinking_move}
+          </div>
+
+          <div class="roles">
+            <div class="role good-jerk">
+              <span class="badge">Good Jerk</span>
+              <p>{t.good_jerk}</p>
+            </div>
+            <div class="role bad-jerk">
+              <span class="badge">Bad Jerk</span>
+              <p>{t.bad_jerk}</p>
+            </div>
+            <div class="role normie">
+              <span class="badge">Normie</span>
+              <p>{t.normie}</p>
+            </div>
+          </div>
+
+          <div class="practice">
+            <strong>Visitor Practice:</strong> {t.practice}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <footer class="about-footer">
+      <h2>Why This Matters</h2>
+      <p>
+        I didn't set out to map myself onto philosophers. I built tools — <em>Slow Look</em>, <em>Make-It-Strange</em>, <em>Art Wheels</em> — by trial, error, and curiosity. Only later did I see the scaffolding: Benjamin's aura, Sontag's body, Barthes' co-authorship, Danto's frame, hooks' justice, Schwartz's constraint, Deleuze's rhizome, Greenberg's foil.
+      </p>
+      <p>
+        This isn't autobiography. It's an <strong>invitation to practice the same moves</strong>: to think critically about art, spot Good Jerks, avoid Bad Jerks, and appreciate Normies as part of the ecology. That's how you start thinking like an artist.
+      </p>
+
+      <div class="related-links">
+        <h3>Related Pages</h3>
+        <ul>
+          <li><a href="/benjamin-wheel">Benjamin Learning Wheel</a> - Deep dive into Walter Benjamin's concepts</li>
+          <li><a href="/thinking-like-an-artist">Thinking Like an Artist</a> - Psychological tools for creative practice</li>
+          <li><a href="/attention-lab">Attention Lab</a> - Practical tool for evaluating art</li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    /* Page background */
+    :global(body.about-page) {
+      background: var(--color-bkg-golden-yellow);
+    }
+
+    .about-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .about-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .about-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: #000;
+      line-height: 1.2;
+    }
+
+    .intro {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #222;
+    }
+
+    .ecology {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      color: #000;
+    }
+
+    .ecology-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .ecology-list li {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .practice-note {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: #333;
+    }
+
+    .thinkers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .thinker-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .thinker-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .thinker-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 3px solid var(--color-purple);
+      padding-bottom: 1rem;
+    }
+
+    .thinker-number {
+      display: inline-block;
+      background: var(--color-purple);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .thinker-name {
+      font-size: 1.5rem;
+      margin: 0.5rem 0 0.25rem 0;
+      color: var(--color-purple);
+      font-weight: bold;
+    }
+
+    .thinker-label {
+      font-size: 1.1rem;
+      margin: 0;
+      color: var(--color-orange);
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    .thinking-move {
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      background: rgba(114, 5, 170, 0.05);
+      border-left: 4px solid var(--color-purple);
+      border-radius: 4px;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .roles {
+      margin-bottom: 1.25rem;
+    }
+
+    .role {
+      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 2px solid;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .role p {
+      margin: 0;
+    }
+
+    .role.good-jerk {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .role.bad-jerk {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .role.normie {
+      background: rgba(14, 165, 233, 0.05);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .good-jerk .badge {
+      background: rgba(16, 185, 129, 0.2);
+      color: rgb(5, 150, 105);
+    }
+
+    .bad-jerk .badge {
+      background: rgba(239, 68, 68, 0.2);
+      color: rgb(185, 28, 28);
+    }
+
+    .normie .badge {
+      background: rgba(14, 165, 233, 0.2);
+      color: rgb(7, 89, 133);
+    }
+
+    .practice {
+      padding: 1rem;
+      background: rgba(245, 166, 35, 0.1);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .about-footer {
+      max-width: 900px;
+      margin: 4rem auto 0;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-footer h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--color-purple);
+    }
+
+    .about-footer p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+
+    .about-footer p:last-child {
+      margin-bottom: 0;
+    }
+
+    .related-links {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(245, 166, 35, 0.1);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-orange);
+    }
+
+    .related-links h3 {
+      font-size: 1.3rem;
+      margin: 0 0 1rem 0;
+      color: var(--color-orange);
+    }
+
+    .related-links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .related-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .related-links a {
+      color: var(--color-purple);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: color 0.2s;
+    }
+
+    .related-links a:hover {
+      color: var(--color-orange);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .about-header h1 {
+        font-size: 2rem;
+      }
+
+      .thinkers-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-container {
+        padding: 1rem;
+      }
+
+      .ecology-list {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</BaseLayout>

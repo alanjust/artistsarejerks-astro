@@ -1,0 +1,411 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const artTypes = [
+  {
+    title: "Gallery Art",
+    tagline: "Art for the Few",
+    description: "Gallery art is made for the art world: critics, curators, collectors, and other artists. It values originality, conceptual depth, and insider knowledge. This is the art that gets written about in art magazines, shown in white-cube galleries, and discussed in graduate seminars.",
+    serves_artist: "Recognition within the art world; critical legitimacy; career advancement through gallery representation and institutional validation.",
+    serves_viewer: "Intellectual challenge; status signaling; investment potential; access to cultural capital and exclusive communities.",
+    characteristics: [
+      "Requires art-historical context to fully understand",
+      "Often conceptual or theory-driven",
+      "Limited edition or unique works",
+      "High price points",
+      "Shown in galleries, museums, biennials",
+      "Reviewed by critics and scholars"
+    ],
+    examples: "Damien Hirst's formaldehyde shark, Marina Abramović's performance art, Jeff Koons' balloon dogs, Ai Weiwei's political installations"
+  },
+  {
+    title: "Spectacle Art",
+    tagline: "Art for the Masses",
+    description: "Spectacle art is designed to grab attention and create memorable experiences. It's Instagram-worthy, crowd-pleasing, and often immersive. This is art that goes viral, gets massive attendance, and prioritizes immediate impact over subtle depth.",
+    serves_artist: "Visibility; broad audience reach; financial success through ticket sales, merchandise, and licensing; social media following.",
+    serves_viewer: "Entertainment; social experience; photo opportunities; emotional uplift; accessible entry point to contemporary art without requiring specialized knowledge.",
+    characteristics: [
+      "Immediate visual or emotional impact",
+      "Immersive or interactive experiences",
+      "Instagram-friendly / shareable",
+      "Large-scale and attention-grabbing",
+      "Often ticketed experiences or public installations",
+      "Marketed to general public, not art insiders"
+    ],
+    examples: "teamLab digital art installations, Yayoi Kusama's Infinity Rooms, Meow Wolf immersive experiences, large-scale light festivals, interactive projection mapping"
+  },
+  {
+    title: "General Purpose Art",
+    tagline: "Art for Everyday Life",
+    description: "General purpose art lives in homes, offices, hotels, and public spaces. It's functional: it decorates, it soothes, it fits the color scheme. This isn't 'lesser' art — it's art serving a different need. It makes spaces more pleasant without demanding intense attention or specialized knowledge.",
+    serves_artist: "Steady income through commercial sales; wide distribution; the satisfaction of making people's everyday environments more beautiful or meaningful.",
+    serves_viewer: "Aesthetic pleasure in daily life; decoration that matches personal taste or interior design; ambient beauty without intellectual demands; accessibility and affordability.",
+    characteristics: [
+      "Decorative and pleasing to look at",
+      "Works in various interior design contexts",
+      "Doesn't require specialized knowledge",
+      "Affordable or mass-produced options available",
+      "Sold in home goods stores, online marketplaces, hotel art suppliers",
+      "Designed to be lived with, not intensely studied"
+    ],
+    examples: "Prints sold at West Elm or CB2, hotel lobby paintings, botanical illustrations, landscape photography, abstract color-field paintings for offices, Etsy art prints"
+  }
+];
+---
+
+<BaseLayout title="How Art Works - Artists Are Jerks" bodyClass="how-art-works-page">
+  <div class="works-container">
+    <header class="works-header">
+      <h1>How Art Works</h1>
+      <p class="subtitle">Understanding Three Ways Art Operates in the World</p>
+      <p class="intro">
+        For art to have purpose and be valued, it must serve a need. But different art serves different needs — and that's where confusion and conflict arise. The art world often pretends there's only one "legitimate" kind of art (Gallery Art), while dismissing or looking down on the others. This creates unnecessary hierarchies and misunderstanding.
+      </p>
+      <p class="intro">
+        The truth is simpler: <strong>all three types of art are valid</strong>. They just answer different questions:
+      </p>
+      <ul class="intro-questions">
+        <li><strong>What need does it serve the artist making the art?</strong></li>
+        <li><strong>What need does it serve the viewer?</strong></li>
+      </ul>
+      <p class="intro">
+        Art is not required to serve anyone other than the art maker. But when art does serve a viewer — whether that's an art critic or someone picking out a print for their living room — it's doing valuable work in the world.
+      </p>
+    </header>
+
+    <div class="art-types">
+      {artTypes.map((type, index) => (
+        <section class="art-type-section" style={`--accent-color: ${index === 0 ? 'var(--color-purple)' : index === 1 ? 'var(--color-crimson)' : 'var(--color-teal-blue)'}`}>
+          <div class="type-header">
+            <h2 class="type-title">{type.title}</h2>
+            <p class="type-tagline">{type.tagline}</p>
+          </div>
+
+          <p class="type-description">{type.description}</p>
+
+          <div class="serves-grid">
+            <div class="serves-box artist-box">
+              <h3>What It Serves: The Artist</h3>
+              <p>{type.serves_artist}</p>
+            </div>
+            <div class="serves-box viewer-box">
+              <h3>What It Serves: The Viewer</h3>
+              <p>{type.serves_viewer}</p>
+            </div>
+          </div>
+
+          <div class="characteristics">
+            <h3>Characteristics</h3>
+            <ul class="characteristics-list">
+              {type.characteristics.map((char) => (
+                <li>{char}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="examples">
+            <h3>Examples</h3>
+            <p>{type.examples}</p>
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <footer class="works-footer">
+      <h2>Why This Framework Matters</h2>
+      <p>
+        Understanding these three categories helps you navigate the art world without getting lost in hierarchies or gatekeeping. Here's what this framework reveals:
+      </p>
+
+      <div class="insight-boxes">
+        <div class="insight-box">
+          <h3>No "Better" or "Worse"</h3>
+          <p>Gallery Art isn't inherently superior to General Purpose Art — they're just serving different needs. A Jeff Koons sculpture and a West Elm print can both be excellent at what they do.</p>
+        </div>
+
+        <div class="insight-box">
+          <h3>Artists Can Work Across Categories</h3>
+          <p>Many artists make gallery work AND commercial work. Some start with spectacle and move to galleries. Others do all three simultaneously. There's no single "right" path.</p>
+        </div>
+
+        <div class="insight-box">
+          <h3>Viewer Needs Are Valid</h3>
+          <p>If you want art that makes your home feel cozy (General Purpose), that's just as legitimate as wanting art that challenges your assumptions about sculpture (Gallery Art). The art world's job is to serve all these needs, not gatekeep them.</p>
+        </div>
+
+        <div class="insight-box">
+          <h3>Conflict Comes from Category Confusion</h3>
+          <p>Most art world "jerk behavior" comes from applying the wrong category's values. Critiquing hotel art for not being conceptually rigorous is missing the point — it's not trying to be gallery art. Dismissing gallery art as "not pretty enough" misses its actual purpose.</p>
+        </div>
+      </div>
+
+      <p class="final-thought">
+        When you understand how art works — what needs it's designed to meet — you can appreciate it on its own terms. You can also spot when artists or institutions are pretending one category is the only "real" art. That's when the jerks reveal themselves.
+      </p>
+    </footer>
+  </div>
+
+  <style>
+    /* Page background */
+    :global(body.how-art-works-page) {
+      background: var(--color-bkg-golden-yellow);
+    }
+
+    .works-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .works-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .works-header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .intro {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #222;
+      text-align: left;
+    }
+
+    .intro-questions {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin: 1.5rem 0;
+      padding-left: 2rem;
+      color: #222;
+      text-align: left;
+    }
+
+    .intro-questions li {
+      margin-bottom: 0.5rem;
+    }
+
+    .art-types {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      margin-bottom: 4rem;
+    }
+
+    .art-type-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 6px solid var(--accent-color);
+    }
+
+    .type-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--accent-color);
+    }
+
+    .type-title {
+      font-size: 2.5rem;
+      margin: 0 0 0.5rem 0;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .type-tagline {
+      font-size: 1.3rem;
+      margin: 0;
+      color: var(--accent-color);
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    .type-description {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: #222;
+    }
+
+    .serves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .serves-box {
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid;
+    }
+
+    .serves-box.artist-box {
+      background: rgba(245, 166, 35, 0.1);
+      border-color: var(--color-orange);
+    }
+
+    .serves-box.viewer-box {
+      background: rgba(117, 200, 60, 0.1);
+      border-color: var(--color-green);
+    }
+
+    .serves-box h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem 0;
+      color: #000;
+    }
+
+    .serves-box p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      color: #222;
+    }
+
+    .characteristics,
+    .examples {
+      margin-bottom: 1.5rem;
+    }
+
+    .characteristics h3,
+    .examples h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--accent-color);
+    }
+
+    .characteristics-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .characteristics-list li {
+      font-size: 1rem;
+      line-height: 1.5;
+      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-color);
+    }
+
+    .characteristics-list li::before {
+      content: "✓";
+      color: var(--accent-color);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    .examples p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 6px;
+      font-style: italic;
+      color: #222;
+    }
+
+    .works-footer {
+      max-width: 1100px;
+      margin: 4rem auto 0;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .works-footer h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .works-footer > p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: #222;
+    }
+
+    .insight-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .insight-box {
+      padding: 1.5rem;
+      background: rgba(114, 5, 170, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-purple);
+    }
+
+    .insight-box h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem 0;
+      color: var(--color-purple);
+    }
+
+    .insight-box p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      color: #222;
+    }
+
+    .final-thought {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      padding: 1.5rem;
+      background: rgba(245, 166, 35, 0.15);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-orange);
+      color: #000;
+      font-weight: 500;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .works-header h1 {
+        font-size: 2rem;
+      }
+
+      .type-title {
+        font-size: 2rem;
+      }
+
+      .works-container {
+        padding: 1rem;
+      }
+
+      .characteristics-list {
+        grid-template-columns: 1fr;
+      }
+
+      .insight-boxes {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

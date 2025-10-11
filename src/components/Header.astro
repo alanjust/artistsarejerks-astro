@@ -1,0 +1,424 @@
+---
+// Menu structure with dropdowns for all items
+const menuItems = [
+    {
+        identifier: "whats-a-jerk",
+        name: "What's a Jerk?",
+        url: "/whats-a-jerk/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
+        identifier: "how-art-works",
+        name: "How Art Works",
+        url: "/how-art-works/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
+        identifier: "art-wheel",
+        name: "Art History Wheel",
+        url: "/art-wheel/",
+        hasDropdown: true,
+        dropdownItems: [
+            { name: "Movements", url: "/movements/" },
+            { name: "Artists", url: "/artists/" },
+            { name: "Benjamin Wheel", url: "/benjamin-wheel/" }
+        ]
+    },
+    {
+        identifier: "attention-lab",
+        name: "Attention Lab",
+        url: "/attention-lab/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
+        identifier: "thinking",
+        name: "Thinking Like an Artist",
+        url: "/thinking-like-an-artist/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
+        identifier: "gatekeepers",
+        name: "Gatekeepers",
+        url: "/gatekeepers/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
+        identifier: "about",
+        name: "About",
+        url: "/about/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+];
+---
+
+<header class="site-header">
+    <div class="header-content">
+        <div class="site-title">
+            <a href="/">Artists Are Jerks</a>
+        </div>
+        
+        <!-- Mobile hamburger button -->
+        <button class="hamburger-menu" aria-label="Toggle menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        
+        <!-- Desktop navigation -->
+        <nav class="main-navigation">
+            <ul class="nav-menu">
+                {menuItems.map((item) => (
+                    <li class="nav-item">
+                        <a href={item.url} class="nav-link">
+                            {item.name}
+                        </a>
+                        {item.hasDropdown && (
+                            <ul class="dropdown-menu">
+                                {item.dropdownItems.map((dropdownItem) => (
+                                    <li class="dropdown-item">
+                                        <a href={dropdownItem.url} class="dropdown-link">
+                                            {dropdownItem.name}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    </div>
+    
+    <!-- Mobile menu overlay -->
+    <div class="mobile-menu">
+        <ul class="mobile-nav-list">
+            {menuItems.map((item) => (
+                <li class="mobile-nav-item">
+                    <a href={item.url} class="mobile-nav-link">
+                        {item.name}
+                    </a>
+                    {item.hasDropdown && (
+                        <ul class="mobile-dropdown-menu">
+                            {item.dropdownItems.map((dropdownItem) => (
+                                <li class="mobile-dropdown-item">
+                                    <a href={dropdownItem.url} class="mobile-dropdown-link">
+                                        {dropdownItem.name}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </li>
+            ))}
+        </ul>
+    </div>
+</header>
+
+<style>
+.site-header {
+    width: 100%;
+    background: #7205aa;
+    border-bottom: 18px solid #000;
+    position: relative;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    padding: 0 clamp(1rem, 4vw, 2rem);
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.site-title a {
+    font-family: 'Spicy Rice', serif;
+    font-size: clamp(18px, 3vw, 24px);
+    color: #f9b749;
+    text-decoration: none;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.site-title a:hover {
+    opacity: 0.9;
+}
+
+/* Hamburger menu - hidden on desktop */
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    width: 28px;
+    height: 3px;
+    background: #f9b749;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(7px, 7px);
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Desktop navigation */
+.main-navigation {
+    display: flex;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    align-items: center;
+}
+
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item:not(:last-child)::after {
+    content: '';
+    width: 1px;
+    height: 20px;
+    background: #fff;
+    margin: 0 clamp(0.5rem, 1vw, 1rem);
+}
+
+.nav-link {
+    font-family: 'Averia Sans Libre', serif;
+    font-weight: 700;
+    font-size: clamp(14px, 1.5vw, 18px);
+    color: #75c83c;
+    text-decoration: none;
+    padding: 4px 0;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 18px);
+    left: 0;
+    background: #000;
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    margin: 0;
+}
+
+.dropdown-link {
+    display: block;
+    padding: 8px 16px;
+    font-family: 'Averia Sans Libre', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #75c83c;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-link:hover {
+    background-color: rgba(117, 200, 60, 0.1);
+}
+
+/* Mobile menu - hidden by default */
+.mobile-menu {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 2rem 1.5rem;
+}
+
+.mobile-nav-item {
+    margin-bottom: 1rem;
+}
+
+.mobile-nav-link {
+    font-family: 'Averia Sans Libre', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #75c83c;
+    text-decoration: none;
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(117, 200, 60, 0.2);
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+    color: #f9b749;
+    padding-left: 8px;
+}
+
+/* Mobile dropdown styling */
+.mobile-dropdown-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 8px;
+    margin-left: 16px;
+}
+
+.mobile-dropdown-item {
+    margin-bottom: 0.5rem;
+}
+
+.mobile-dropdown-link {
+    font-family: 'Averia Sans Libre', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #75c83c;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(117, 200, 60, 0.2);
+    transition: all 0.2s ease;
+}
+
+.mobile-dropdown-link:hover {
+    color: #f9b749;
+    padding-left: 8px;
+}
+
+/* Mobile/Tablet breakpoint */
+@media (max-width: 1200px) {
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .main-navigation {
+        display: none;
+    }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 480px) {
+    .header-content {
+        padding: 0 1rem;
+        height: 46px;
+    }
+    
+    .mobile-menu {
+        top: 46px;
+    }
+}
+</style>
+
+<script>
+// Hamburger menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.querySelector('.hamburger-menu');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+    
+    if (hamburger && mobileMenu) {
+        // Toggle menu on hamburger click
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close menu when clicking a link
+        const allMobileLinks = document.querySelectorAll('.mobile-nav-link, .mobile-dropdown-link');
+        allMobileLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        // Close menu when clicking outside
+        mobileMenu.addEventListener('click', function(e) {
+            if (e.target === mobileMenu) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+});
+</script>

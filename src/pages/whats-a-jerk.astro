@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jerkBehaviors = [
+  {
+    id: 1,
+    behavior: '"You just don\'t get it" dismissals',
+    underneath: "Fear of being misunderstood; insecurity about clarity or exposing weakness.",
+    response: '"I\'m genuinely curious — what would make this clearer for me? What part feels most central to you?"'
+  },
+  {
+    id: 2,
+    behavior: "Over-explaining with jargon or using theory when someone says \"I don't get it\"",
+    underneath: "Need for credibility; fear being judged superficial; discomfort with emotional aspects.",
+    response: '"I see there\'s theory behind this; could you share how you intended people to feel with this work — even a touch?"'
+  },
+  {
+    id: 3,
+    behavior: "Cold / aloof stance in critique or avoiding questions",
+    underneath: "Past critique-wounds; protective armor; fear of exposure.",
+    response: '"I appreciate you sharing this work. I want to understand what part meant the most to you — what stakes are at work here?"'
+  },
+  {
+    id: 4,
+    behavior: "Bragging or posturing confidence",
+    underneath: "Masking self-doubt; trying to repel criticism before it lands.",
+    response: '"It\'s obvious you\'ve put a lot into this. What worries you most when people critique it?"'
+  },
+  {
+    id: 5,
+    behavior: "Overreacting defensively to even mild critique",
+    underneath: "Identity fused with work; critique feels like personal attack.",
+    response: '"I\'m trying to understand — when you hear that feedback, what feels threatening to you?"'
+  },
+  {
+    id: 6,
+    behavior: "Mocking or belittling people who don't understand the work",
+    underneath: "Distancing/self-protection; avoiding shame by making others wrong.",
+    response: '"I might see something different; maybe you can help me see what you meant. What parts do you feel people usually miss?"'
+  },
+  {
+    id: 7,
+    behavior: "Withdrawing or avoiding sharing / vulnerability",
+    underneath: "Exposure feels too risky; fear that visibility = more hurt.",
+    response: '"Even if it\'s rough, I value seeing what you\'re exploring. Would you share something small just to feel out how it lands?"'
+  },
+  {
+    id: 8,
+    behavior: 'Claiming "true art must be difficult / conceptual / obscure"; saying emotional engagement is not required for value',
+    underneath: "Fear that emotion = being seen as unserious or sentimental; wanting legitimacy via concept/form; insecurity about emotional impact.",
+    response: '"I respect the conceptual depth here. Also, I\'m curious what feeling or mood you hoped someone might take away (if any) — what\'s emotional in this piece for you?"'
+  },
+  {
+    id: 9,
+    behavior: "Dismissing spectacle / decorative / general-purpose art (bank/hotel art etc.) as \"lesser work\"",
+    underneath: "Taste/class anxiety; fear of being judged commercial; conflict between visibility & critical legitimacy.",
+    response: '"I like spectacle / decorative art; what do you see in those works that you think others overlook? What do you value most in art?"'
+  },
+  {
+    id: 10,
+    behavior: "Always serious; no humor or humility",
+    underneath: "Belief that humor or misstep will be used against them; fear of vulnerability via play.",
+    response: '"I love when artists joke/let looseness in their work — does this piece have parts you found playful or experiment-y?"'
+  },
+  {
+    id: 11,
+    behavior: 'Preemptively devaluing their own work ("this is just a sketch," etc.)',
+    underneath: "Trying to control criticism; avoid disappointment; protect ego.",
+    response: '"What part of this work are you most proud of, even if imperfect? I see something strong here."'
+  },
+  {
+    id: 12,
+    behavior: "Constant comparing to peers; resenting others' praise/success",
+    underneath: "Imposter syndrome; feeling overlooked; belief that success was never possible for them.",
+    response: '"I see you doing important work. Can we talk about what milestone matters to you, not someone else\'s yardstick?"'
+  }
+];
+---
+
+<BaseLayout title="What's a Jerk? - Artists Are Jerks" bodyClass="whats-a-jerk-page">
+  <div class="jerk-container">
+    <header class="jerk-header">
+      <h1>What's a Jerk?</h1>
+      <p class="subtitle">Understanding Artist Behavior: What's Really Going On</p>
+      <p class="description">
+        "Artists are jerks" sounds harsh — but it's not the whole story. When artists act dismissive, defensive, or difficult, there's usually something deeper going on. This page unpacks 12 common "jerk behaviors" to reveal the vulnerabilities underneath — and offers compassionate ways to respond.
+      </p>
+      <p class="description">
+        The goal isn't to excuse bad behavior. It's to understand <strong>why</strong> it happens so we can all engage more thoughtfully with art and artists.
+      </p>
+    </header>
+
+    <div class="behaviors-grid">
+      {jerkBehaviors.map((item) => (
+        <div class="behavior-card">
+          <div class="behavior-header">
+            <span class="behavior-number">{item.id}</span>
+            <h2 class="behavior-title">What They Do</h2>
+          </div>
+
+          <p class="behavior-text">{item.behavior}</p>
+
+          <div class="underneath-section">
+            <h3 class="section-label">What's Underneath</h3>
+            <p class="underneath-text">{item.underneath}</p>
+          </div>
+
+          <div class="response-section">
+            <h3 class="section-label">What You Might Say</h3>
+            <p class="response-text">{item.response}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <footer class="jerk-footer">
+      <h2>The Bigger Picture</h2>
+      <p>
+        These behaviors aren't just individual quirks — they're symptoms of how the art world works. The pressure to be "original," the gatekeeping of galleries and institutions, the anxiety about class and taste, the constant comparison and competition — all of this creates impossible psychological positions for many artists.
+      </p>
+      <p>
+        When you understand what's driving "jerk behavior," you can respond with curiosity instead of judgment. You can ask better questions. You can create safer spaces for vulnerability. And you can start to see the whole ecology of art: the <strong>Good Jerks</strong> who challenge us to see differently, the <strong>Bad Jerks</strong> who gatekeep and exclude, and the <strong>Normies</strong> who keep art accessible and alive in everyday life.
+      </p>
+      <p class="final-note">
+        We need all three to keep the art world functioning — but we need to recognize which is which.
+      </p>
+    </footer>
+  </div>
+
+  <style>
+    /* Page background */
+    :global(body.whats-a-jerk-page) {
+      background: var(--color-bkg-golden-yellow);
+    }
+
+    .jerk-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .jerk-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .jerk-header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+
+    .behaviors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .behavior-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .behavior-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .behavior-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .behavior-number {
+      display: inline-block;
+      background: var(--color-purple);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .behavior-title {
+      font-size: 1.3rem;
+      margin: 0;
+      color: var(--color-purple);
+      font-weight: bold;
+    }
+
+    .behavior-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: #000;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    .underneath-section,
+    .response-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+      color: var(--color-orange);
+    }
+
+    .underneath-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      padding: 1rem;
+      background: rgba(239, 68, 68, 0.05);
+      border-left: 4px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      color: #222;
+    }
+
+    .response-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      padding: 1rem;
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 4px solid rgba(16, 185, 129, 0.3);
+      border-radius: 4px;
+      color: #222;
+      font-style: italic;
+    }
+
+    .jerk-footer {
+      max-width: 900px;
+      margin: 4rem auto 0;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .jerk-footer h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+    }
+
+    .jerk-footer p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      color: #222;
+    }
+
+    .final-note {
+      font-weight: 600;
+      font-style: italic;
+      color: var(--color-orange);
+    }
+
+    @media (max-width: 768px) {
+      .jerk-header h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+      }
+
+      .behaviors-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .jerk-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</BaseLayout>

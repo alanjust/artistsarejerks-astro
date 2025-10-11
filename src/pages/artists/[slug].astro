@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import artists from '../../data/artists.json';
+
+export async function getStaticPaths() {
+  return artists.map(artist => ({
+    params: { slug: artist.Slug },
+    props: { artist }
+  }));
+}
+
+const { artist } = Astro.props;
+
+// Helper function to strip HTML tags
+function stripHtml(html: string): string {
+  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
+}
+
+// Helper function to parse artist information
+function parseArtistInfo(infoHtml: string) {
+  const info: any = {};
+  const cleanInfo = stripHtml(infoHtml);
+  
+  // Split by line breaks and parse each field
+  const lines = cleanInfo.split('Br').map((line: string) => line.trim()).filter((line: string) => line);
+  
+  lines.forEach((line: string) => {
+    if (line.startsWith('Born:')) info.born = line.replace('Born:', '').trim();
+    else if (line.startsWith('Died:')) info.died = line.replace('Died:', '').trim();
+    else if (line.startsWith('Nationality:')) info.nationality = line.replace('Nationality:', '').trim();
+    else if (line.startsWith('Style:')) info.style = line.replace('Style:', '').trim();
+    else if (line.startsWith('Influences:')) info.influences = line.replace('Influences:', '').trim();
+    else if (line.startsWith('Major Exhibitions:')) info.exhibitions = line.replace('Major Exhibitions:', '').trim();
+    else if (line.startsWith('Quote:')) info.quote = line.replace('Quote:', '').trim().replace(/^[""]/, '').replace(/[""]$/, '');
+  });
+  
+  return info;
+}
+
+const artistInfo = parseArtistInfo(artist['Artist Information'] || '');
+const bgColor = artist['Bkgd Color'] || '#ffa042';
+---
+
+<BaseLayout title={`${artist['Artist Name']} - Artists Are Jerks`} bodyClass="artist-detail-page">
+  <div class="artist-page" style={`background-color: ${bgColor};`}>
+    <div class="artist-container">
+      <h1 class="artist-name">{artist['Artist Name']}</h1>
+      
+      {artist['Artist Info Link'] && (
+        <a href={artist['Artist Info Link']} target="_blank" rel="noopener noreferrer" class="wiki-link">
+          {artist['Artist Info Link']}
+        </a>
+      )}
+      
+      {artist['Related Art Movement'] ? (
+        <p class="art-movement">
+          <a href={`/movements/${artist['Related Art Movement']}`} class="movement-link">
+            {artist['Art Movement']}
+          </a>
+        </p>
+      ) : (
+        <p class="art-movement">{artist['Art Movement']}</p>
+      )}
+      
+      <div class="artist-details">
+        {artistInfo.born && <p><strong>Born:</strong> {artistInfo.born}</p>}
+        {artistInfo.died && <p><strong>Died:</strong> {artistInfo.died}</p>}
+        {artistInfo.nationality && <p><strong>Nationality:</strong> {artistInfo.nationality}</p>}
+        {artistInfo.style && <p><strong>Style:</strong> {artistInfo.style}</p>}
+        {artistInfo.influences && <p><strong>Influences:</strong> {artistInfo.influences}</p>}
+      </div>
+      
+      {artistInfo.quote && (
+        <blockquote class="artist-quote">
+          "{artistInfo.quote}"
+        </blockquote>
+      )}
+      
+      <h2>Notable Artwork</h2>
+      
+      <div class="artwork-section">
+        <h3 class="artwork-title">{artist['Artwork Title']}</h3>
+        
+        {artist['Notable Artwork'] && (
+          <div class="artwork-image">
+            <img src={artist['Notable Artwork']} alt={artist['Artwork Title']} />
+          </div>
+        )}
+        
+        <div class="artwork-info">
+          <h4>About {artist['Artist Name']}</h4>
+          <div set:html={artist['Artist Information']} />
+          
+          <h4>Notable Artwork: {artist['Artwork Title']}</h4>
+          <div set:html={artist['Artwork Description']} />
+          
+          <h4>Significance</h4>
+          <div set:html={artist.Significance} />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .artist-page {
+      min-height: 100vh;
+      padding: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    
+    .artist-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .artist-name {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+    
+    .wiki-link {
+      color: #0066cc;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .wiki-link:hover {
+      text-decoration: underline;
+    }
+    
+    .art-movement {
+      font-size: 1.5rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    
+    .movement-link {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .movement-link:hover {
+      color: #0066cc;
+      text-decoration: underline;
+    }
+    
+    .artist-details {
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+    
+    .artist-details p {
+      margin: 0.5rem 0;
+    }
+    
+    .artist-quote {
+      font-style: italic;
+      color: #0066cc;
+      font-size: 1.1rem;
+      margin: 2rem 0;
+      padding-left: 2rem;
+      border-left: 4px solid #0066cc;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin: 2rem 0 1rem;
+      color: #000;
+    }
+    
+    .artwork-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .artwork-title {
+      grid-column: 1 / -1;
+      font-size: 1.5rem;
+      color: #000;
+    }
+    
+    .artwork-image {
+      grid-row: 2 / 3;
+    }
+    
+    .artwork-image img {
+      width: 100%;
+      height: auto;
+      border: 2px solid #000;
+    }
+    
+    .artwork-info {
+      grid-row: 2 / 3;
+      line-height: 1.6;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+    
+    .artwork-info h4 {
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+    
+    .artwork-info h4:first-child {
+      margin-top: 0;
+    }
+    
+    @media (max-width: 1024px) {
+      .artist-page {
+        padding: 1.5rem;
+      }
+
+      .artwork-section {
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .artist-page {
+        padding: 1rem;
+      }
+
+      .artwork-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .artwork-image,
+      .artwork-info {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      
+      .artist-name {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</BaseLayout>

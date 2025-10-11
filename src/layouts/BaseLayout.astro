@@ -1,0 +1,94 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  bodyClass?: string;
+}
+
+const { title, bodyClass = '' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class={bodyClass}>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:wght@400;700&family=Spicy+Rice&display=swap"
+        rel="stylesheet">
+
+    <!-- Global Styles: Load in order - tokens first, then base, then utilities -->
+    <link rel="stylesheet" href="/src/styles/tokens.css">
+    <link rel="stylesheet" href="/src/styles/base.css">
+    <link rel="stylesheet" href="/src/styles/utilities.css">
+
+    <style is:global>
+        /* ============================================
+           GLOBAL LAYOUT
+           Default: All pages scroll normally (mobile-first)
+           ============================================ */
+
+        html,
+        body {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            background: var(--color-stage);
+        }
+
+        .main-content {
+            position: relative;
+            overflow: visible;
+            height: auto;
+        }
+
+        /* ============================================
+           HOMEPAGE EXCEPTION
+           Only the homepage gets fixed height, no scroll
+           ============================================ */
+
+        html.homepage,
+        body.homepage {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body.homepage {
+            height: 100vh;
+        }
+
+        .homepage .main-content {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* Header and footer styling */
+        .site-header {
+            width: 100%;
+        }
+
+        .site-footer {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class={bodyClass}>
+    <Header />
+
+    <main class="main-content">
+        <slot />
+    </main>
+
+    <Footer />
+</body>
+</html>

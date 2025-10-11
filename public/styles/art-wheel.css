@@ -1,0 +1,688 @@
+/* ========================================
+   ART WHEEL - CLEAN VERSION
+   ======================================== */
+
+/* ========================================
+   LAYOUT & CONTAINER STYLES
+   ======================================== */
+
+.art-wheel-container {
+  min-height: calc(100vh - var(--header-height, 80px) - var(--footer-height, 60px));
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.art-wheel-main-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: transparent;
+  width: 100%;
+  min-height: 650px;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.art-wheel-container * {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.art-wheel-main {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: nowrap;
+  position: relative;
+}
+
+.art-wheel-section {
+  position: relative;
+  flex-shrink: 0;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+/* ========================================
+   HEADER STYLES
+   ======================================== */
+
+.art-wheel-header {
+  text-align: center;
+  margin-bottom: 20px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.art-wheel-header h1 {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+  color: #111;
+}
+
+.art-wheel-subtitle {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-size: 1.5rem;
+  color: #d35400;
+  margin: 0;
+  font-weight: 600;
+}
+
+.art-wheel-subtitle-secondary {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-size: 1.25rem;
+  color: #111;
+  margin: 5px 0 20px 0;
+  font-weight: 500;
+}
+
+.art-wheel-description {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #111;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ========================================
+   WHEEL STYLES
+   ======================================== */
+
+.art-wheel-wrapper {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  margin: 0 auto;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.art-wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-image: url('/images/art-wheel.svg');
+  background-size: cover;
+  background-position: center;
+  cursor: grab;
+  transition: transform .3s ease-out;
+  user-select: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.art-wheel:active {
+  cursor: grabbing;
+}
+
+.art-wheel-pointer {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 30px solid #e74c3c;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* ========================================
+   CONTENT PANEL STYLES
+   ======================================== */
+
+.art-wheel-content {
+  flex: 1;
+  min-width: 450px;
+  max-width: 550px;
+  background: transparent;
+  border-radius: 12px;
+  padding: 0 25px 25px 25px;
+  min-height: 400px;
+  height: auto !important;
+  overflow: visible !important;
+  scroll-behavior: smooth;
+  position: relative;
+  border: none;
+}
+
+.scroll-prompt {
+  font-size: 0.85rem;
+  color: #575757;
+  font-weight: 500;
+  text-align: right;
+  margin-right: 10px;
+  margin-bottom: 15px;
+  opacity: 0.7;
+}
+
+/* ========================================
+   BUTTON STYLES
+   ======================================== */
+
+.art-wheel-btn {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 500;
+  width: 150px;
+  background: transparent;
+  color: #d35400;
+  border: 2px solid #d35400;
+  padding: 10px 24px;
+  margin: 0 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.art-wheel-btn:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+}
+
+.art-wheel-controls {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-small {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 500;
+  width: auto;
+  background: transparent;
+  color: #d35400;
+  border: 2px solid #d35400;
+  padding: 10px 24px;
+  margin: 0 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-small:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* ========================================
+   MOVEMENT STYLES
+   ======================================== */
+
+.art-wheel-current {
+  font-size: 1rem;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: 500;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.art-wheel-movement-title {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  border-left: 4px solid #e74c3c;
+  padding-left: 15px;
+  line-height: 1.2;
+}
+
+.art-wheel-movement-description {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+/* ========================================
+   ARTISTS SECTION
+   ======================================== */
+
+.art-wheel-artists {
+  margin-bottom: 25px;
+}
+
+.art-wheel-artists h3,
+.art-wheel-artists h4 {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.art-wheel-artist-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.art-wheel-artist-item {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 400;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  color: #d35400;
+  border: 2px solid #d35400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.art-wheel-artist-item:hover {
+  background: #d35400;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+  border-color: #d35400;
+}
+
+.art-wheel-artist-item.active {
+  background: #d35400;
+  color: white;
+  border-color: #d35400;
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.4);
+}
+
+/* ========================================
+   ARTWORK SECTION
+   ======================================== */
+
+.art-wheel-artwork {
+  padding: 20px 0;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.art-wheel-artwork:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.art-wheel-artwork:hover .art-wheel-artwork-image {
+  transform: scale(1.02);
+}
+
+.art-wheel-artwork::after {
+  content: "Click to learn more";
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.75rem;
+  color: #4a4a4a;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-weight: 500;
+}
+
+.art-wheel-artwork:hover::after {
+  opacity: 1;
+}
+
+.artwork-image-container {
+  margin-bottom: 20px;
+}
+
+.art-wheel-artwork-image {
+  max-width: 95%;
+  max-height: 350px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.artwork-details {
+  text-align: center;
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 95%;
+}
+
+.art-wheel-artwork-title {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #d35400;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.art-wheel-artist {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #111;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.art-wheel-artwork-description {
+  font-family: "Averia Sans Libre", sans-serif;
+  font-weight: 400;
+  color: #111;
+  line-height: 1.6;
+  text-align: left;
+  font-size: 0.95rem;
+  margin-top: 15px;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .art-wheel-container {
+    padding: 15px;
+  }
+
+  .art-wheel-main-wrapper {
+    min-height: auto;
+    padding: 15px;
+  }
+
+  .art-wheel-main {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 30px !important;
+    width: 95%;
+    height: 100%;
+  }
+
+  .art-wheel-section {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+  }
+
+  .art-wheel-content {
+    min-width: auto;
+    max-width: 600px;
+    width: 95%;
+    position: static;
+    margin: 0 auto;
+  }
+
+  .art-wheel-header h1 {
+    font-size: 2rem;
+  }
+
+  .art-wheel-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .art-wheel-subtitle-secondary {
+    font-size: 1rem;
+    color: #111;
+  }
+}
+
+@media (max-width: 768px) {
+  .art-wheel-container {
+    padding: 10px;
+    width: 100%;
+  }
+
+  .art-wheel-main-wrapper {
+    min-height: auto;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .art-wheel-main {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 30px !important;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .art-wheel-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .art-wheel-wrapper {
+    width: min(400px, 85vw);
+    height: min(400px, 85vw);
+    max-width: 400px;
+    max-height: 400px;
+    margin: 0 auto;
+  }
+
+  .art-wheel-content {
+    max-width: 95%;
+    padding: 20px;
+  }
+
+  .art-wheel-movement-title {
+    font-size: 1.5rem;
+  }
+
+  .art-wheel-artwork-image {
+    max-height: 250px;
+  }
+
+  .scroll-prompt {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .art-wheel-artwork::after {
+    display: none;
+  }
+
+  .art-wheel-controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .art-wheel-btn {
+    width: 120px;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    margin: 0;
+  }
+
+  .movements-grid-footer {
+    margin-top: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .art-wheel-container {
+    padding: 5px;
+    width: 100%;
+  }
+
+  .art-wheel-main-wrapper {
+    min-height: auto;
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .art-wheel-main {
+    max-width: 400px;
+  }
+
+  .art-wheel-wrapper {
+    width: min(320px, 80vw);
+    height: min(320px, 80vw);
+    max-width: 320px;
+    max-height: 320px;
+    margin: 0 auto;
+  }
+
+  .art-wheel-content {
+    padding: 1px;
+  }
+
+  .art-wheel-controls {
+    gap: 10px;
+  }
+
+  .art-wheel-btn {
+    width: 120px !important;
+    font-size: 0.9rem !important;
+    padding: 8px 16px !important;
+    margin: 0 !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .art-wheel-wrapper {
+    width: 600px;
+    height: 600px;
+    max-width: 600px;
+    max-height: 600px;
+  }
+}
+
+@media (max-width: 422px) {
+  .art-wheel-section {
+    text-align: center;
+  }
+
+  .art-wheel-wrapper {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+  }
+
+  .art-wheel-controls {
+    gap: 8px;
+  }
+
+  .art-wheel-btn {
+    width: 100px !important;
+    font-size: 0.8rem !important;
+    padding: 6px 12px !important;
+  }
+}
+
+@media (max-width: 300px) {
+  .art-wheel-container {
+    padding: 0;
+  }
+
+  .art-wheel-main-wrapper {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .art-wheel-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .art-wheel-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .art-wheel-wrapper {
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+  }
+
+  .art-wheel-controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .art-wheel-btn {
+    width: 90px !important;
+    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+  }
+
+  .movements-grid-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.content-panel {
+  min-height: auto;
+}
+
+.panel-title {
+  display: none;
+}
+
+.movements-grid-footer {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Hide scrollbars */
+.art-wheel-content::-webkit-scrollbar {
+  display: none;
+}

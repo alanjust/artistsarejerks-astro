@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import artHistoryMovements from '../data/art_history_movements.json';
+import artists from '../data/artists.json';
+
+// Custom order for movements
+const movementOrder = [
+  "pop-art",
+  "minimalism",
+  "conceptual-art",
+  "performance-art",
+  "land-art-earthworks",
+  "photorealism",
+  "postminimalism",
+  "neo-expressionism",
+  "appropriation-art",
+  "street-art-graffiti-art",
+  "installation-art",
+  "digital-art-new-media-art",
+  "young-british-artists-ybas",
+  "relational-aesthetics",
+  "bio-art",
+  "post-internet-art",
+  "contemporary-indigenous-art",
+  "social-practice-art",
+  "ai-and-algorithmic-art"
+];
+
+// Sort movements according to custom order
+const sortedMovements = [...artHistoryMovements].sort((a, b) => {
+  const indexA = movementOrder.indexOf(a.Slug);
+  const indexB = movementOrder.indexOf(b.Slug);
+  return indexA - indexB;
+});
+
+// Get top 5 artists for each movement
+function getMovementArtists(movementName: string, movementSlug: string) {
+  return artists
+    .filter(artist => 
+      artist['Art Movement'] === movementName ||
+      artist['Related Art Movement'] === movementSlug
+    )
+    .slice(0, 5);
+}
+
+// Helper function to strip HTML tags
+function stripHtml(html: string): string {
+  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
+}
+---
+
+<BaseLayout title="Art Movements - Artists Are Jerks" bodyClass="movements-page">
+  <div class="movements-container">
+    <header class="movements-header">
+      <h1>Art Movements</h1>
+      <p class="subtitle">1960s to NOW</p>
+      <p class="description">
+        Explore 19 major art movements that shaped contemporary culture. From Pop Art's rebellion against Abstract Expressionism to today's digital innovations.
+      </p>
+    </header>
+
+    <div class="movements-grid">
+      {sortedMovements.map((movement) => {
+        const movementArtists = getMovementArtists(movement['Movement Name'], movement.Slug);
+        return (
+          <a 
+            href={`/movements/${movement.Slug}`}
+            class="movement-card" 
+            style={`background-color: ${movement['Bkgd Color'] || '#ffa042'};`}
+          >
+            <h2 class="movement-name">{movement['Movement Name']}</h2>
+            <p class="movement-description">{movement.Description}</p>
+            
+            {movementArtists.length > 0 && (
+              <ul class="artist-list">
+                {movementArtists.map(artist => (
+                  <li>{artist['Artist Name']}</li>
+                ))}
+              </ul>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  <style>
+    /* Page background override */
+    :global(body.movements-page) {
+      background: var(--color-bkg-golden-yellow); /* Golden yellow background */
+    }
+
+    .movements-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .movements-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .movements-header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .movements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .movement-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .movement-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .movement-name {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .movement-description {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      color: #222;
+      font-weight: 500;
+    }
+
+    .artist-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #000;
+    }
+
+    .artist-list li {
+      margin-bottom: 0.25rem;
+    }
+
+    .movement-details {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .movement-details p {
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .movements-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .movements-header h1 {
+        font-size: 2rem;
+      }
+
+      .movement-name {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</BaseLayout>

@@ -1,0 +1,242 @@
+/**
+ * Design Tokens - Artists Are Jerks
+ * Your brand colors, spacing, typography scales all in one place
+ * Change these values to update the entire site
+ */
+
+:root {
+  /* ============================================
+     BRAND COLORS (Your Core Identity)
+     ============================================ */
+
+  /* Primary Brand Colors */
+  --color-purple: #7205aa;           /* Header background (same as violet below) */
+  --color-gold: #f9b749;             /* Title text, accents (same as bkg-golden-yellow) */
+  --color-green: #75c83c;            /* Navigation links (same as art wheel green) */
+  --color-orange: #F5A623;           /* Stage/background */
+  --color-black: #000000;            /* Footer, borders */
+
+  /* Semantic Color Names (for easier vibe coding) */
+  --color-header: var(--color-purple);
+  --color-title: var(--color-gold);
+  --color-nav: var(--color-green);
+  --color-stage: var(--color-orange);
+  --color-footer: var(--color-black);
+
+  /* ============================================
+     ART HISTORY WHEEL COLORS
+     Bright, vibrant colors for the art wheel feature
+     ============================================ */
+
+  --art-wheel-blue: #38a7f7;
+  --art-wheel-pink: #ff7be9;
+  --art-wheel-red: #ff2130;
+  --art-wheel-orange: #ffa23d;
+  --art-wheel-green: #75c83c;        /* Same as your nav green! */
+  --art-wheel-pale-grey-blue: #bdccd4;
+
+  /* ============================================
+     GLOBAL COLOR PALETTE
+     Extended color system for variety and richness
+     ============================================ */
+
+  /* Purple Family */
+  --color-violet: #7205aa;           /* Same as your brand purple */
+  --color-eggplant: #b152f2;
+  --color-plum-red: #af0048;
+  --color-crimson: #ff0073;
+
+  /* Orange/Yellow Family */
+  --color-red-orange: #ff4800;
+  --color-burnt-orange: #e05f01;
+  --color-bkg-golden-yellow: #f9b749; /* Same as your brand gold */
+  --color-mustard: #ddb649;
+  --color-peach: #ffca9c;
+  --color-brown-ochre: #b15902;
+
+  /* Green/Blue Family */
+  --color-olive-green: #65a111;
+  --color-forest: #318e16;
+  --color-dark-leaf: #02723a;
+  --color-sage: #85c5a5;
+  --color-aqua-green: #0ba59b;
+  --color-sea-green: #008b79;
+  --color-deep-teal: #006382;
+  --color-teal-blue: #008eb6;
+  --color-navy: #004999;
+  --color-black-green: #104100;
+
+  /* ============================================
+     NEUTRAL COLORS
+     ============================================ */
+
+  --color-white: #ffffff;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+
+  /* Text Colors */
+  --color-text-primary: #111111;
+  --color-text-secondary: #333333;
+  --color-text-muted: #555555;
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+
+  /* Font Families */
+  --font-display: 'Spicy Rice', serif;          /* For big, fun headings */
+  --font-heading: 'Averia Sans Libre', serif;   /* For body headings */
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font Sizes - Designer Scale */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+  --font-size-6xl: 3.75rem;     /* 60px */
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* ============================================
+     SPACING
+     Custom scale for your design needs
+     ============================================ */
+
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* Semantic Spacing (for common patterns) */
+  --space-section: var(--space-16);
+  --space-component: var(--space-8);
+  --space-element: var(--space-4);
+
+  /* ============================================
+     LAYOUT
+     ============================================ */
+
+  /* Max Widths */
+  --max-width-content: 1440px;
+  --max-width-text: 800px;
+  --max-width-reading: 65ch;
+
+  /* Header & Footer Dimensions */
+  --header-height: 50px;
+  --header-border: 18px;
+  --footer-height: auto;
+
+  /* ============================================
+     BORDERS & RADIUS
+     ============================================ */
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Border Widths */
+  --border-thin: 1px;
+  --border-base: 2px;
+  --border-thick: 4px;
+  --border-heavy: var(--header-border);
+
+  /* ============================================
+     SHADOWS
+     ============================================ */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.25);
+
+  /* ============================================
+     TRANSITIONS & ANIMATIONS
+     ============================================ */
+
+  /* Timing Functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Duration */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-medium: 300ms;
+  --duration-slow: 500ms;
+
+  /* Common Transitions */
+  --transition-base: all var(--duration-base) var(--ease-out);
+  --transition-colors: color var(--duration-base) var(--ease-out),
+                       background-color var(--duration-base) var(--ease-out),
+                       border-color var(--duration-base) var(--ease-out);
+  --transition-transform: transform var(--duration-base) var(--ease-out);
+  --transition-opacity: opacity var(--duration-base) var(--ease-out);
+
+  /* ============================================
+     Z-INDEX SCALE
+     Keep your layers organized
+     ============================================ */
+
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-header: 1000;
+  --z-mobile-menu: 999;
+
+  /* ============================================
+     BREAKPOINTS (for reference in media queries)
+     Use these values in your component styles
+     ============================================ */
+
+  /*
+   * Mobile: 0-480px
+   * Tablet: 481-1024px
+   * Desktop: 1025-1440px
+   * Wide: 1441px+
+   */
+}

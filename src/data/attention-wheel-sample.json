@@ -1,0 +1,155 @@
+{
+  "title": "Attention Value – Sample Artwork",
+  "work": {
+    "id": "work-sample-001",
+    "label": "How to Use This Tool",
+    "date": "2025"
+  },
+  "scale_max": 5,
+  "metrics": [
+    {
+      "id": "hook",
+      "name": "Hook (Entry Pull)",
+      "description": "Initial attraction without gimmick; the first 15 seconds of looking.",
+      "score": 3,
+      "weight": 1,
+      "prompts": [
+        "Where did your eye land first and why?",
+        "Name the specific device (edge, value jump, scale shock)."
+      ],
+      "evidence": "Try scoring an artwork you're looking at right now. What grabbed your attention first?",
+      "notes": "Use this tool to evaluate any artwork—your own or others'.",
+      "scale": {
+        "0": "No pull; stalls immediately.",
+        "3": "Clear pull without gimmick.",
+        "5": "Magnetic and specific; device is nameable."
+      }
+    },
+    {
+      "id": "stickiness",
+      "name": "Stickiness (Time-on-Look)",
+      "description": "How long attention sustains without boredom.",
+      "score": 4,
+      "weight": 1,
+      "prompts": ["How long before you want to step away?"],
+      "evidence": "Does the work hold your attention for minutes, not seconds?",
+      "scale": {
+        "0": "<30s fatigue",
+        "3": "~3 minutes",
+        "5": "7–10+ minutes without boredom"
+      }
+    },
+    {
+      "id": "deepening",
+      "name": "Deepening (New Finds/min)",
+      "description": "Discovery rate over minutes 1–7; compounding relations.",
+      "score": 4,
+      "weight": 1,
+      "prompts": ["List three new relations you noticed between minutes 3–6."],
+      "evidence": "Do you keep finding new things the longer you look?",
+      "scale": {
+        "0": "Stalls after first sweep",
+        "3": "Steady trickle",
+        "5": "Compounding relations"
+      }
+    },
+    {
+      "id": "guidance",
+      "name": "Guidance (Compositional Intent)",
+      "description": "Steering of the eye via edges/intervals/repeats; diagrammable paths.",
+      "score": 3,
+      "weight": 1,
+      "prompts": ["Sketch the route your eye takes (focal → counterform → rest)."],
+      "evidence": "Does the composition guide your eye deliberately?",
+      "scale": {
+        "0": "Drift; no path",
+        "3": "Guided loops",
+        "5": "Deliberate circuits; route is diagrammable"
+      }
+    },
+    {
+      "id": "coherence",
+      "name": "Coherence (Edge-to-Edge Integrity)",
+      "description": "Every inch earns its keep; no dead paint holes.",
+      "score": 4,
+      "weight": 1,
+      "prompts": ["Point to the laziest square inch; why?"],
+      "evidence": "Is every part of the work alive and intentional?",
+      "scale": {
+        "0": "Dead areas",
+        "3": "Mostly live with a soft quadrant",
+        "5": "No passengers end-to-end"
+      }
+    },
+    {
+      "id": "material",
+      "name": "Material Necessity",
+      "description": "Do ground/scale/reflectance feel required for the effect?",
+      "score": 5,
+      "weight": 1,
+      "prompts": ["Name the parameter that would break the effect if changed."],
+      "evidence": "Would changing the material fundamentally change the work?",
+      "scale": {
+        "0": "Style pasted on",
+        "3": "Plausible fit",
+        "5": "Means feel indispensable"
+      }
+    },
+    {
+      "id": "embodiment",
+      "name": "Embodiment (Viewer Movement)",
+      "description": "Does the work train your body—close/far, left/right—because readings unlock?",
+      "score": 4,
+      "weight": 1,
+      "prompts": ["What did moving your body change in the reading?"],
+      "evidence": "Do you need to move around to fully experience it?",
+      "scale": {
+        "0": "Static stare only",
+        "3": "One distance shift",
+        "5": "Multiple embodied unlocks"
+      }
+    },
+    {
+      "id": "afterimage",
+      "name": "Afterimage / Afterthought",
+      "description": "Persistence of optical/tactile memory after looking away.",
+      "score": 5,
+      "weight": 1,
+      "prompts": ["Describe what returns unbidden an hour later."],
+      "evidence": "Does the work stick with you after you leave?",
+      "scale": {
+        "0": "Gone in minutes",
+        "3": "Mental snapshot",
+        "5": "Tactile/optical memory returns"
+      }
+    },
+    {
+      "id": "return",
+      "name": "Return Impulse (Next-Day)",
+      "description": "Desire to revisit; curiosity pressure.",
+      "score": 4,
+      "weight": 1,
+      "prompts": ["What unresolved question pulls you back?"],
+      "evidence": "Do you want to see it again tomorrow?",
+      "scale": {
+        "0": "No urge",
+        "3": "Mild curiosity",
+        "5": "Reroute your path to see it again"
+      }
+    },
+    {
+      "id": "intersubjective",
+      "name": "Intersubjective Traction",
+      "description": "Independent viewers converge on seen features.",
+      "score": 3,
+      "weight": 1,
+      "prompts": ["Overlap between three viewers' seen facts (A∩B)/ (A∪B)."],
+      "evidence": "Do different people notice the same things?",
+      "scale": {
+        "0": "No overlap",
+        "3": "Partial overlap",
+        "5": "Multiple shared specifics"
+      }
+    }
+  ]
+}

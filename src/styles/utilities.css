@@ -1,0 +1,338 @@
+/**
+ * Custom Utility Classes - Artists Are Jerks
+ * These are YOUR patterns - not generic utility classes
+ * Add classes here when you find yourself repeating the same styles
+ */
+
+/* ============================================
+   LAYOUT UTILITIES
+   Your common layout patterns
+   ============================================ */
+
+/* Container with max-width (for content pages) */
+.container {
+  max-width: var(--max-width-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.container-narrow {
+  max-width: var(--max-width-text);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Full bleed (breaks out of container) */
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Stack layout (vertical spacing) */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.stack > * + * {
+  margin-top: var(--space-4);
+}
+
+.stack-tight > * + * {
+  margin-top: var(--space-2);
+}
+
+.stack-loose > * + * {
+  margin-top: var(--space-8);
+}
+
+/* Cluster layout (horizontal spacing) */
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+/* Center content */
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-vertical {
+  display: flex;
+  align-items: center;
+}
+
+.center-horizontal {
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================
+   CARD PATTERNS
+   Common card styles you can extend
+   ============================================ */
+
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-base);
+  overflow: hidden;
+}
+
+.card-hover {
+  transition: var(--transition-transform), box-shadow var(--duration-base) var(--ease-out);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   TEXT UTILITIES
+   When you need specific text treatments
+   ============================================ */
+
+.text-display {
+  font-family: var(--font-display);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-heading {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-body {
+  font-family: var(--font-body);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Subtitle styling - consistent across all pages */
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--color-purple);
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   INTERACTION STATES
+   Hover, focus, active states
+   ============================================ */
+
+.hoverable {
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.hoverable:hover {
+  opacity: 0.8;
+}
+
+.clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-transform);
+}
+
+.clickable:active {
+  transform: scale(0.98);
+}
+
+/* Smooth opacity change */
+.fade-hover {
+  transition: var(--transition-opacity);
+}
+
+.fade-hover:hover {
+  opacity: 0.7;
+}
+
+/* ============================================
+   VISIBILITY & DISPLAY
+   ============================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+/* Responsive visibility */
+.hide-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+  .hide-desktop {
+    display: none;
+  }
+}
+
+/* ============================================
+   SPACING SHORTCUTS
+   For quick adjustments
+   ============================================ */
+
+.mt-auto { margin-top: auto; }
+.mb-auto { margin-bottom: auto; }
+.ml-auto { margin-left: auto; }
+.mr-auto { margin-right: auto; }
+
+.pt-section { padding-top: var(--space-section); }
+.pb-section { padding-bottom: var(--space-section); }
+.py-section {
+  padding-top: var(--space-section);
+  padding-bottom: var(--space-section);
+}
+
+/* ============================================
+   IMAGE & MEDIA UTILITIES
+   ============================================ */
+
+/* Image cover (fills container, may crop) */
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Image contain (shows whole image, may have space) */
+.img-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Aspect ratios */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+/* ============================================
+   GRID LAYOUTS
+   Common grid patterns
+   ============================================ */
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.grid-auto-sm {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.grid-auto-lg {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-8);
+}
+
+/* ============================================
+   SCROLL UTILITIES
+   ============================================ */
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scroll-y {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ============================================
+   POSITION UTILITIES
+   ============================================ */
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+}
+
+/* ============================================
+   CUSTOM UTILITIES FOR YOUR PROJECT
+   Add your own as you find patterns!
+   ============================================ */
+
+/* Example: If you often need purple backgrounds with gold text */
+.brand-accent {
+  background: var(--color-purple);
+  color: var(--color-gold);
+}
+
+/* Example: Your header border style */
+.brand-border {
+  border-bottom: var(--border-heavy) solid var(--color-black);
+}
+
+/* Example: Horizontal scroll container (like your home page) */
+.horizontal-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

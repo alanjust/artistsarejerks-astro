@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import artHistoryMovements from '../../data/art_history_movements.json';
+import artists from '../../data/artists.json';
+
+export async function getStaticPaths() {
+  return artHistoryMovements.map(movement => ({
+    params: { slug: movement.Slug },
+    props: { movement }
+  }));
+}
+
+const { movement } = Astro.props;
+
+// Get artists associated with this movement
+const movementArtists = artists.filter(artist => 
+  artist['Art Movement'] === movement['Movement Name'] ||
+  artist['Related Art Movement'] === movement.Slug
+);
+
+// Helper function to strip HTML tags
+function stripHtml(html: string): string {
+  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
+}
+
+const bgColor = movement['Bkgd Color'] || '#ffa042';
+---
+
+<BaseLayout title={`${movement['Movement Name']} - Artists Are Jerks`} bodyClass="movement-detail-page">
+  <div class="movement-page" style={`background-color: ${bgColor};`}>
+    <div class="movement-container">
+      <header class="movement-header">
+        <h1 class="movement-name">{movement['Movement Name']}</h1>
+        <p class="movement-tagline">{movement.Description}</p>
+      </header>
+
+      <section class="movement-content">
+        <h2>About the Movement</h2>
+        <div class="movement-description" set:html={movement['Art Movement Description']} />
+      </section>
+
+      {movementArtists.length > 0 && (
+        <section class="movement-artists">
+          <h2>Key Artists in {movement['Movement Name']}</h2>
+          <div class="artists-grid">
+            {movementArtists.map(artist => (
+              <a href={`/artists/${artist.Slug}`} class="artist-card">
+                {artist['Notable Artwork'] && (
+                  <div class="artist-image">
+                    <img src={artist['Notable Artwork']} alt={artist['Artist Name']} />
+                  </div>
+                )}
+                <div class="artist-info">
+                  <h3>{artist['Artist Name']}</h3>
+                  <p class="artwork-title">{artist['Artwork Title']}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div class="back-link">
+        <a href="/movements">← Back to All Movements</a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .movement-page {
+      min-height: calc(100vh - var(--header-height, 80px) - var(--footer-height, 60px));
+      padding: 2rem;
+    }
+
+    .movement-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .movement-header {
+      margin-bottom: 3rem;
+    }
+
+    .movement-name {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .movement-tagline {
+      font-size: 1.5rem;
+      color: #222;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .movement-content {
+      margin-bottom: 3rem;
+    }
+
+    .movement-content h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #000;
+    }
+
+    .movement-description {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .movement-description p {
+      margin-bottom: 1rem;
+    }
+
+    .movement-artists {
+      margin-bottom: 3rem;
+    }
+
+    .movement-artists h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #000;
+    }
+
+    .artists-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .artist-card {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .artist-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .artist-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+
+    .artist-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .artist-info {
+      padding: 1.5rem;
+    }
+
+    .artist-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .artwork-title {
+      font-size: 0.95rem;
+      color: #555;
+      font-style: italic;
+    }
+
+    .back-link {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .back-link a {
+      font-size: 1.1rem;
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .movement-name {
+        font-size: 2.5rem;
+      }
+
+      .artists-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

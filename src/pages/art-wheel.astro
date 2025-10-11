@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import artHistoryMovements from '../data/art_history_movements.json';
+import artists from '../data/artists.json';
+---
+
+<BaseLayout title="Art History Wheel - Artists Are Jerks" bodyClass="art-wheel-page">
+    <div class="art-wheel-container">
+        <div class="art-wheel-header">
+            <h1>Art History Wheel</h1>
+            <p class="art-wheel-subtitle">1960s to NOW</p>
+            <p class="art-wheel-subtitle-secondary">Eras / Styles</p>
+            <p class="art-wheel-description">Explore the art that broke free from Abstract Expressionism with our Art
+                History Wheel. Journey from the Pop Art reaction of the 1960s to today's diverse styles. Discover 19 key
+                movements and 95 influential artists, each with a notable artwork example, tracing this exciting evolution.
+            </p>
+        </div>
+
+        <div class="art-wheel-main-wrapper">
+            <div class="art-wheel-main">
+                <!-- Left side: Interactive Wheel -->
+                <div class="art-wheel-section">
+                    <div class="art-wheel-wrapper">
+                        <div class="art-wheel-pointer"></div>
+                        <div class="art-wheel" id="artWheel"></div>
+                    </div>
+                    <div class="art-wheel-controls">
+                        <button class="art-wheel-btn" onclick="rotateWheel(18)">← Previous</button>
+                        <button class="art-wheel-btn" onclick="rotateWheel(-18)">Next →</button>
+                    </div>
+                    <!-- View All Movements Button -->
+                    <div class="movements-grid-footer" style="text-align: center; margin-top: 20px;">
+                        <a href="/movements" class="btn-small">View All Movements</a>
+                    </div>
+                </div>
+
+                <!-- Right side: Content Panel -->
+                <div class="art-wheel-content">
+                    <div class="scroll-prompt">⬇ Scroll to see more</div>
+                    <div class="content-panel">
+                        <div class="art-wheel-movement-title" id="movementTitle">Art History Wheel</div>
+                        <div class="art-wheel-movement-description" id="movementDescription">This interactive wheel explores
+                            19 major art movements that shaped contemporary culture. From Pop Art's rebellion against
+                            Abstract Expressionism to today's digital innovations, discover the artists, artworks, and ideas
+                            that transformed how we see the world. Click through each movement to explore key artists and
+                            their most significant works.</div>
+
+                        <div class="art-wheel-artists" id="artistsSection" style="display:none;">
+                            <h4>Key Artists:</h4>
+                            <ul class="art-wheel-artist-list" id="artistList"></ul>
+                        </div>
+
+                        <div class="art-wheel-artwork" id="artworkSection" style="display:none;">
+                            <div class="artwork-image-container">
+                                <img class="art-wheel-artwork-image" id="artworkImage" src="" alt="Featured Artwork">
+                            </div>
+                            <div class="artwork-details">
+                                <div class="art-wheel-artwork-title" id="artworkTitle"></div>
+                                <div class="art-wheel-artist" id="artworkArtist"></div>
+                                <div class="art-wheel-artwork-description" id="artworkDescription"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script id="art-data" type="application/json" is:inline set:html={JSON.stringify({ movements: artHistoryMovements, artists })} />
+    </div>
+
+    <style>
+  /* Page-specific override for art wheel */
+  :global(body.art-wheel-page) {
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh;
+    background: var(--color-bkg-golden-yellow); /* Golden yellow background */
+  }
+
+  :global(html.art-wheel-page) {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+</style>
+
+    <link rel="stylesheet" href="/styles/art-wheel.css">
+    <script is:inline src="/scripts/art-wheel.js">
+</BaseLayout>

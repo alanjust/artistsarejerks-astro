@@ -1,0 +1,125 @@
+{
+  "id": "benjamin-learning-wheel",
+  "title": "Benjamin Learning Wheel",
+  "version": "1.0.0",
+  "description": "An interactive wheel exploring Walter Benjamin's key concepts, artist types, examples, and reflection prompts.",
+  "segments": [
+    {
+      "slug": "aura",
+      "concept": "Aura",
+      "concept_blurb": "Unique presence tied to time/place; challenged and reimagined in the age of copies.",
+      "slices": [
+        {
+          "type": "Aura Builder",
+          "label": "Sacred Originals — \"Art as relic, glowing with presence.\"",
+          "examples": ["Mark Rothko"],
+          "prompt": "When does a work feel sacred to you—and why?"
+        },
+        {
+          "type": "Aura Breaker",
+          "label": "Mass Multiples — \"Copy it, sell it, flood the world.\"",
+          "examples": ["Andy Warhol", "Barbara Kruger"],
+          "prompt": "What happens to value when images are endlessly repeatable?"
+        },
+        {
+          "type": "Aura Shifter",
+          "label": "New Auras — \"Performance, pixels, and screens reinvent presence.\"",
+          "examples": ["Marina Abramović", "Hito Steyerl"],
+          "prompt": "Can a livestream or performance create its own kind of aura?"
+        }
+      ]
+    },
+    {
+      "slug": "mechanical-reproduction",
+      "concept": "Mechanical Reproduction",
+      "concept_blurb": "Printing, photography, film, and digital spread multiply images and change reception.",
+      "slices": [
+        {
+          "type": "Democratizer",
+          "label": "Access for All — \"Everyone gets a copy, no gatekeepers.\"",
+          "examples": ["Barbara Kruger", "Meme artists"],
+          "prompt": "Does easier access deepen understanding—or just make images cheaper?"
+        },
+        {
+          "type": "Commodifier",
+          "label": "Market Spectacle — \"Repetition as brand, spectacle as sales pitch.\"",
+          "examples": ["Jeff Koons", "Takashi Murakami"],
+          "prompt": "When does multiplication become pure marketing?"
+        }
+      ]
+    },
+    {
+      "slug": "optical-unconscious",
+      "concept": "Optical Unconscious",
+      "concept_blurb": "Cameras reveal patterns and details the unaided eye misses.",
+      "slices": [
+        {
+          "type": "Revealer",
+          "label": "Machine Vision — \"The lens reveals what eyes can't.\"",
+          "examples": ["Eadweard Muybridge", "Rineke Dijkstra"],
+          "prompt": "What realities appear only through slow motion, zoom, or high resolution?"
+        },
+        {
+          "type": "Denier",
+          "label": "Painter's Eye — \"Only the trained gaze claims authority.\"",
+          "examples": ["Lucian Freud"],
+          "prompt": "What can embodied looking do that machines can't?"
+        }
+      ]
+    },
+    {
+      "slug": "angel-of-history",
+      "concept": "Angel of History",
+      "concept_blurb": "Progress looks like a storm blowing us into a pile of ruins; art can witness both loss and drive.",
+      "slices": [
+        {
+          "type": "Angel",
+          "label": "Ruins and Wreckage — \"The past piles up in shards.\"",
+          "examples": ["Anselm Kiefer"],
+          "prompt": "Where do you see cultural ruins in everyday life?"
+        },
+        {
+          "type": "Progressive",
+          "label": "Forward Storm — \"Progress is a hurricane blowing us onward.\"",
+          "examples": ["Italian Futurists"],
+          "prompt": "What gets sacrificed when we chase the new?"
+        },
+        {
+          "type": "Witness",
+          "label": "Witnessing Both — \"Between loss and hope, the artist stands.\"",
+          "examples": ["Kara Walker", "Olafur Eliasson"],
+          "prompt": "How can art hold grief and possibility at once?"
+        }
+      ]
+    },
+    {
+      "slug": "art-as-politics",
+      "concept": "Art as Politics",
+      "concept_blurb": "Art is never neutral; it can resist, retreat, or turn politics into product.",
+      "slices": [
+        {
+          "type": "Revolutionary",
+          "label": "Revolutionary — \"Art as weapon, banner, uprising.\"",
+          "examples": ["Diego Rivera", "Ai Weiwei"],
+          "prompt": "When does art function like a rally cry rather than a picture?"
+        },
+        {
+          "type": "Escapist",
+          "label": "Escapist — \"Beauty as refuge, art as retreat.\"",
+          "examples": ["James McNeill Whistler (Nocturnes)"],
+          "prompt": "Is withdrawal from politics its own political stance?"
+        },
+        {
+          "type": "Commodifier",
+          "label": "Commodifier — \"Politics as product, controversy as currency.\"",
+          "examples": ["Damien Hirst"],
+          "prompt": "When does provocation feel engineered for sales rather than thought?"
+        }
+      ]
+    }
+  ],
+  "credits": {
+    "framework": "Inspired by Walter Benjamin's concepts: aura, mechanical reproduction, optical unconscious, angel of history, and art's political stakes.",
+    "compiledBy": "Artists Are Jerks"
+  }
+}

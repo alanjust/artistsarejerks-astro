@@ -1,0 +1,592 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const gatekeepers = [
+  {
+    title: "Gallery Owners & Dealers",
+    role: "Control visibility and sales",
+    reality: "Top galleries accept only 1-2 new artists annually despite millions graduating from art schools worldwide.",
+    classFilter: "Success requires early integration into elite networks concentrated in expensive cities (NYC handles 90% of US art sales by value).",
+    whatTheyWant: "Artists with existing cultural capital, institutional connections, and the ability to maintain presence in high-cost art centers."
+  },
+  {
+    title: "Museum Curators & Directors",
+    role: "Decide what enters art history",
+    reality: "Super-curators like Hans Ulrich Obrist provide career-changing validation while maintaining systems that prioritize certain aesthetic approaches.",
+    classFilter: "Museum boards are dominated by collectors who simultaneously serve on gallery boards—an interconnected power structure.",
+    whatTheyWant: "Artists who can articulate complex theoretical positions and reference canonical art history."
+  },
+  {
+    title: "Art Critics & Journalists",
+    role: "Shape discourse and legitimacy",
+    reality: "Art criticism uses language that deliberately excludes—'art speak' creates hierarchies where knowledge of artist's background matters more than the work.",
+    classFilter: "Critical vocabulary functions as a literacy test requiring mastery of academic language that working-class artists often lack.",
+    whatTheyWant: "Artists who can navigate theoretical frameworks and institutional expectations."
+  },
+  {
+    title: "Collectors",
+    role: "Determine market value",
+    reality: "Collectors function as tastemakers whose preferences shape market demand. Ultra-wealthy individuals drive aesthetic trends that trickle down.",
+    classFilter: "Urban collectors prefer abstract work; rural collectors favor representational subjects—market segmentation reinforces class hierarchies.",
+    whatTheyWant: "Art as status display and investment vehicle, not necessarily as aesthetic experience."
+  },
+  {
+    title: "MFA Programs",
+    role: "Credential and socialize artists",
+    reality: "Elite institutions charge $50,000+ annually while expecting unpaid internships—accessible only to those with family wealth.",
+    classFilter: "Critique culture assumes familiarity with elite cultural codes. Working-class students report feeling excluded from conversations requiring knowledge they were never expected to acquire.",
+    whatTheyWant: "Students who demonstrate 'cultural sophistication' through theoretical fluency and canonical references."
+  }
+];
+
+const classFilters = [
+  {
+    stage: "Early Access",
+    filter: "Family wealth, exposure to art, pre-college training",
+    reality: "Privileged artists' personal income averages only 70.5% of household income—family wealth cushions financial reality and enables risk-taking."
+  },
+  {
+    stage: "Art School",
+    filter: "Tuition, debt burden, unpaid internships, critique culture",
+    reality: "Over $55 million in collective student debt among 500 surveyed artists. Individuals carry $100,000+ loans that constrain artistic practice."
+  },
+  {
+    stage: "Early Career",
+    filter: "Ability to work for free, live in expensive cities, network access",
+    reality: "Yale research shows artists must integrate into elite networks within first 5-10 exhibitions or face permanent exclusion from financial success."
+  },
+  {
+    stage: "Gallery Representation",
+    filter: "Geographic proximity, social connections, cultural capital",
+    reality: "Gallery dinners function as 'charade' where working-class artists juggle multiple jobs while salaried curators perform egalitarian values."
+  },
+  {
+    stage: "Critical Recognition",
+    filter: "Ability to articulate in academic language, institutional connections",
+    reality: "Artist statements serve as literacy tests. Science fiction influences deemed 'less worthy' than references to classical art history."
+  }
+];
+---
+
+<BaseLayout title="Gatekeepers - Artists Are Jerks" bodyClass="gatekeepers-page">
+  <div class="gatekeepers-container">
+    <header class="gatekeepers-header">
+      <h1>Gatekeepers</h1>
+      <p class="subtitle">Who Controls Access to the Art World?</p>
+      <p class="intro">
+        "Gatekeepers" isn't an insult—it's a job description. These people literally determine what art gets seen, sold, and celebrated. Understanding who they are and what they want helps you navigate (or at least comprehend) the contemporary art landscape.
+      </p>
+      <p class="intro">
+        This page pulls back the curtain on how the art world actually works, without being cynical about it. Where "How Art Works" explains the mechanics of art itself, this explains the mechanics of the art world infrastructure.
+      </p>
+    </header>
+
+    <div class="key-insight">
+      <h2>The Core Insight</h2>
+      <p>
+        <strong>Class is the art world's invisible organizing force.</strong> It systematically excludes working-class artists while generating toxic behaviors among those who remain. The "jerk" behaviors we explore elsewhere on this site aren't just personal flaws—they're structural symptoms of systems that demand cultural sophistication while providing unequal access to the cultural capital required for success.
+      </p>
+    </div>
+
+    <section class="gatekeepers-section">
+      <h2>Who Are the Gatekeepers?</h2>
+      <p class="section-intro">
+        These roles control different aspects of the art world ecosystem. Each has different criteria, different incentives, and different blind spots.
+      </p>
+
+      <div class="gatekeepers-grid">
+        {gatekeepers.map((gatekeeper) => (
+          <div class="gatekeeper-card">
+            <h3 class="gatekeeper-title">{gatekeeper.title}</h3>
+            <div class="gatekeeper-role">
+              <strong>Role:</strong> {gatekeeper.role}
+            </div>
+
+            <div class="gatekeeper-section reality">
+              <h4>The Reality</h4>
+              <p>{gatekeeper.reality}</p>
+            </div>
+
+            <div class="gatekeeper-section filter">
+              <h4>The Class Filter</h4>
+              <p>{gatekeeper.classFilter}</p>
+            </div>
+
+            <div class="gatekeeper-section wants">
+              <h4>What They Want</h4>
+              <p>{gatekeeper.whatTheyWant}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="filters-section">
+      <h2>Where Class Acts as a Filter</h2>
+      <p class="section-intro">
+        Class doesn't just determine who succeeds—it filters at every stage of an artist's path. Here's the brutal honesty about each stage:
+      </p>
+
+      <div class="filters-timeline">
+        {classFilters.map((filter, index) => (
+          <div class="filter-card">
+            <div class="filter-number">{index + 1}</div>
+            <h3 class="filter-stage">{filter.stage}</h3>
+            <div class="filter-mechanism">
+              <strong>The Filter:</strong> {filter.filter}
+            </div>
+            <div class="filter-reality">
+              <strong>Reality Check:</strong> {filter.reality}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="statistics-section">
+      <h2>The Numbers Don't Lie</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">70%</div>
+          <div class="stat-label">Of artists experience imposter syndrome (higher for those from non-dominant backgrounds)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">84%</div>
+          <div class="stat-label">Of arts alumni are White Non-Hispanic—systematic filtering eliminates others</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">90%</div>
+          <div class="stat-label">Of US art sales by value happen in NYC—geographic privilege is real</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">1-2</div>
+          <div class="stat-label">New artists accepted annually at top galleries (millions graduate each year)</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="gatekeepers-footer">
+      <h2>Why This Matters</h2>
+      <p>
+        Understanding gatekeepers isn't about becoming bitter or cynical. It's about seeing the invisible architecture that shapes artistic careers. Once you see how class acts as a filter at every stage, you can make informed decisions about how to navigate (or resist) these systems.
+      </p>
+
+      <div class="behavioral-connection">
+        <h3>The Connection to "Jerk" Behavior</h3>
+        <p>
+          The scarcity model creates zero-sum thinking where other artists' success threatens your own. The debt burden creates stress that affects relationships. The need to perform "cultural sophistication" creates inauthentic interactions. The imposter syndrome creates defensive intellectualism.
+        </p>
+        <p>
+          <strong>Artists aren't jerks by nature.</strong> They're responding to impossible psychological positions created by these systems. Recognition of these invisible forces is the first step toward creating more equitable and psychologically sustainable artistic communities.
+        </p>
+      </div>
+
+      <div class="resistance-section">
+        <h3>Resistance & Alternatives</h3>
+        <p>
+          DIY spaces, punk aesthetics, zine culture, and alternative platforms create parallel networks outside traditional gatekeeping. Berlin's squatting culture demonstrates how different economic structures enable different artistic possibilities. These alternatives face sustainability challenges but represent organized resistance to elite structures.
+        </p>
+        <p>
+          Successful navigation strategies include: developing authentic voice that doesn't mimic academic language, building support networks with other artists, maintaining personal integrity while engaging institutions, and developing "cultural bilingualism"—the ability to communicate effectively in multiple contexts without losing yourself.
+        </p>
+      </div>
+
+      <div class="related-links">
+        <h3>Related Pages</h3>
+        <ul>
+          <li><a href="/whats-a-jerk">What's a Jerk?</a> - See how these systemic pressures show up as "jerk" behavior</li>
+          <li><a href="/thinking-like-an-artist">Thinking Like an Artist</a> - Navigate the psychological impacts of these systems</li>
+          <li><a href="/how-art-works">How Art Works</a> - Understand the three types of art and who they serve</li>
+        </ul>
+      </div>
+
+      <div class="final-note">
+        <p>
+          This analysis doesn't excuse toxic behaviors—but it reveals their structural origins. The art world creates conditions that incentivize anxiety, insecurity, and competitive performance while mystifying the class advantages that determine success.
+        </p>
+        <p>
+          <strong>Naming the invisible architecture is the first step.</strong> What you do with that knowledge is up to you.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    /* Page background */
+    :global(body.gatekeepers-page) {
+      background: var(--color-bkg-golden-yellow);
+    }
+
+    .gatekeepers-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .gatekeepers-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .gatekeepers-header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .intro {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #222;
+      text-align: left;
+    }
+
+    .key-insight {
+      background: rgba(255, 0, 115, 0.1);
+      border-left: 6px solid var(--color-crimson);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .key-insight h2 {
+      font-size: 1.8rem;
+      margin: 0 0 1rem 0;
+      color: var(--color-crimson);
+    }
+
+    .key-insight p {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      margin: 0;
+      color: #222;
+    }
+
+    .gatekeepers-section,
+    .filters-section,
+    .statistics-section {
+      margin-bottom: 4rem;
+    }
+
+    .gatekeepers-section h2,
+    .filters-section h2,
+    .statistics-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .section-intro {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: #222;
+      text-align: center;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .gatekeepers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 2rem;
+    }
+
+    .gatekeeper-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .gatekeeper-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .gatekeeper-title {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--color-purple);
+      font-weight: bold;
+    }
+
+    .gatekeeper-role {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      background: rgba(114, 5, 170, 0.1);
+      border-radius: 6px;
+      color: #222;
+    }
+
+    .gatekeeper-section {
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+
+    .gatekeeper-section.reality {
+      background: rgba(245, 166, 35, 0.1);
+      border-color: var(--color-orange);
+    }
+
+    .gatekeeper-section.filter {
+      background: rgba(255, 0, 115, 0.05);
+      border-color: var(--color-crimson);
+    }
+
+    .gatekeeper-section.wants {
+      background: rgba(0, 139, 182, 0.05);
+      border-color: var(--color-teal-blue);
+    }
+
+    .gatekeeper-section h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 0.5rem 0;
+      color: #666;
+    }
+
+    .gatekeeper-section p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    .filters-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .filter-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 1.5rem 1.5rem 1.5rem 5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .filter-number {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      background: var(--color-crimson);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .filter-stage {
+      font-size: 1.4rem;
+      margin: 0 0 0.75rem 0;
+      color: var(--color-purple);
+      font-weight: bold;
+    }
+
+    .filter-mechanism,
+    .filter-reality {
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    .filter-reality {
+      padding: 0.75rem;
+      background: rgba(255, 0, 115, 0.05);
+      border-left: 3px solid var(--color-crimson);
+      border-radius: 4px;
+      margin-bottom: 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-teal-blue);
+    }
+
+    .stat-number {
+      font-size: 4rem;
+      font-weight: bold;
+      color: var(--color-teal-blue);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #222;
+    }
+
+    .gatekeepers-footer {
+      max-width: 1100px;
+      margin: 4rem auto 0;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .gatekeepers-footer h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .gatekeepers-footer > p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: #222;
+    }
+
+    .behavioral-connection,
+    .resistance-section {
+      padding: 2rem;
+      background: rgba(114, 5, 170, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-purple);
+      margin-bottom: 2rem;
+    }
+
+    .behavioral-connection h3,
+    .resistance-section h3 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--color-purple);
+    }
+
+    .behavioral-connection p,
+    .resistance-section p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+
+    .behavioral-connection p:last-child,
+    .resistance-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .related-links {
+      padding: 1.5rem;
+      background: rgba(245, 166, 35, 0.1);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-orange);
+      margin-bottom: 2rem;
+    }
+
+    .related-links h3 {
+      font-size: 1.3rem;
+      margin: 0 0 1rem 0;
+      color: var(--color-orange);
+    }
+
+    .related-links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .related-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .related-links a {
+      color: var(--color-purple);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: color 0.2s;
+    }
+
+    .related-links a:hover {
+      color: var(--color-orange);
+      text-decoration: underline;
+    }
+
+    .final-note {
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 8px;
+    }
+
+    .final-note p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+
+    .final-note p:last-child {
+      margin-bottom: 0;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .gatekeepers-header h1 {
+        font-size: 2rem;
+      }
+
+      .gatekeepers-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gatekeepers-container {
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-card {
+        padding-left: 1.5rem;
+      }
+
+      .filter-number {
+        position: static;
+        transform: none;
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+</BaseLayout>

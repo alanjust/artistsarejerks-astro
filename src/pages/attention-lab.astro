@@ -1,0 +1,607 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import attentionData from '../data/attention-wheel-sample.json';
+
+const total = attentionData.metrics.reduce((acc, m) => acc + (m.score * m.weight), 0);
+const maxPossible = attentionData.scale_max * attentionData.metrics.reduce((a, m) => a + m.weight, 0);
+const percentage = Math.round((total / maxPossible) * 100);
+---
+
+<BaseLayout title="Attention Lab - Artists Are Jerks" bodyClass="attention-lab-page">
+  <div class="attention-container">
+    <header class="attention-header">
+      <h1>The Attention Lab</h1>
+      <p class="subtitle">A Field Tool for Evaluating Art's Attention Value</p>
+      <p class="intro">
+        Think of an artwork's "attention value" as how well it <strong>attracts, holds, deepens, guides, and lingers</strong> in a viewer's mind. You can score that without mysticism or clairvoyance — just eyes, time, and honest observation.
+      </p>
+      <p class="intro">
+        This tool gives you 10 metrics to evaluate any artwork. Whether you're an artist critiquing your own work, a viewer trying to understand why something captivates you, or an educator teaching visual literacy — this rubric makes attention <strong>measurable and shareable</strong>.
+      </p>
+    </header>
+
+    <div class="how-to-use">
+      <h2>How to Use This Tool</h2>
+      <div class="steps-grid">
+        <div class="step">
+          <span class="step-number">1</span>
+          <h3>Three Timed Passes</h3>
+          <ul>
+            <li><strong>T0 (0–15s):</strong> Entry. What does your eye do first?</li>
+            <li><strong>T1 (1–3 min):</strong> Grip & Guidance. Does it steer you or do you meander?</li>
+            <li><strong>T2 (3–7 min):</strong> Deepening. Does discovery hold or increase?</li>
+          </ul>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <h3>Score Each Metric</h3>
+          <p>Use a 0–5 scale for each of the 10 metrics below. Be specific and write down evidence for each score.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <h3>Calculate Total</h3>
+          <p>Add up your scores (max 50). Then convert to a 0–100 index. <strong>35–40+ = strong attention engine</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-overview">
+      <h2>Sample Scoring</h2>
+      <div class="score-card">
+        <div class="score-label">Total Score</div>
+        <div class="score-value">{total} / {maxPossible}</div>
+        <div class="score-bar">
+          <div class="score-fill" style={`width: ${percentage}%`}></div>
+        </div>
+        <div class="score-percentage">Attention Index: {percentage}/100</div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      {attentionData.metrics.map((metric, index) => (
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-number">{index + 1}</span>
+            <h3 class="metric-name">{metric.name}</h3>
+          </div>
+
+          <p class="metric-description">{metric.description}</p>
+
+          <div class="score-section">
+            <div class="score-display">
+              <span class="score-label-small">Score</span>
+              <span class="score-value-large">{metric.score}</span>
+              <span class="score-max">/ {attentionData.scale_max}</span>
+            </div>
+            <div class="score-dots">
+              {[0, 1, 2, 3, 4, 5].map(i => (
+                <span class={`dot ${i <= metric.score ? 'filled' : ''}`}></span>
+              ))}
+            </div>
+          </div>
+
+          <div class="scale-section">
+            <h4>Scale</h4>
+            <div class="scale-items">
+              <div class="scale-item">
+                <span class="scale-value">0</span>
+                <span class="scale-text">{metric.scale["0"]}</span>
+              </div>
+              <div class="scale-item">
+                <span class="scale-value">3</span>
+                <span class="scale-text">{metric.scale["3"]}</span>
+              </div>
+              <div class="scale-item">
+                <span class="scale-value">5</span>
+                <span class="scale-text">{metric.scale["5"]}</span>
+              </div>
+            </div>
+          </div>
+
+          {metric.prompts && metric.prompts.length > 0 && (
+            <div class="prompts-section">
+              <h4>Prompts</h4>
+              <ul class="prompts-list">
+                {metric.prompts.map(prompt => (
+                  <li>{prompt}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {metric.evidence && (
+            <div class="evidence-section">
+              <h4>Example Evidence</h4>
+              <p>{metric.evidence}</p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <footer class="attention-footer">
+      <h2>Why This Matters</h2>
+      <p>
+        You don't need "clairvoyant perception" or secret access to evaluate art. You need <strong>publicly checkable attention effects</strong>. If a work claims depth but can't hold time, can't guide the eye, and can't produce convergent reports from multiple viewers — the claim outruns the surface.
+      </p>
+      <p>
+        This isn't "you don't get it." This is the piece failing <strong>attention economics</strong>.
+      </p>
+
+      <div class="use-cases">
+        <div class="use-case">
+          <h3>For Artists</h3>
+          <p>Use this to critique your own work honestly. Which metrics are strong? Which need development? What specific changes would increase stickiness or deepening?</p>
+        </div>
+        <div class="use-case">
+          <h3>For Viewers</h3>
+          <p>Use this to understand why some art captivates you and other art leaves you cold. It's not about "good taste" — it's about attention mechanics.</p>
+        </div>
+        <div class="use-case">
+          <h3>For Educators</h3>
+          <p>Use this as a critique rubric. Instead of vague feedback ("make it more interesting"), point to specific metrics: "The hook is strong (4/5) but deepening drops after minute 2 (1/5). What could sustain discovery?"</p>
+        </div>
+      </div>
+
+      <div class="final-note">
+        <p>
+          <strong>Three "shareability" tests:</strong>
+        </p>
+        <ul>
+          <li><strong>Convergence:</strong> Do multiple viewers notice the same features?</li>
+          <li><strong>Repeatability:</strong> Does the effect persist or grow when you return next day?</li>
+          <li><strong>Counterfactual:</strong> What parameter would break the effect if changed?</li>
+        </ul>
+        <p>
+          If a work passes all three, its attention value is real — not mystified.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    /* Page background */
+    :global(body.attention-lab-page) {
+      background: var(--color-bkg-golden-yellow);
+    }
+
+    .attention-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .attention-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .attention-header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+
+    .intro {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      color: #222;
+      text-align: left;
+    }
+
+    .how-to-use {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .how-to-use h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .step {
+      padding: 1.5rem;
+      background: rgba(114, 5, 170, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-purple);
+    }
+
+    .step-number {
+      display: inline-block;
+      background: var(--color-purple);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 36px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .step h3 {
+      font-size: 1.3rem;
+      margin: 0 0 0.75rem 0;
+      color: var(--color-purple);
+    }
+
+    .step ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .step li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .step p {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .score-overview {
+      margin-bottom: 3rem;
+    }
+
+    .score-overview h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .score-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-value {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--color-purple);
+      margin-bottom: 1rem;
+    }
+
+    .score-bar {
+      width: 100%;
+      height: 24px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--color-purple), var(--color-crimson));
+      transition: width 0.3s ease;
+    }
+
+    .score-percentage {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--color-purple);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-top: 4px solid var(--color-teal-blue);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .metric-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .metric-number {
+      display: inline-block;
+      background: var(--color-teal-blue);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 36px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .metric-name {
+      font-size: 1.3rem;
+      margin: 0;
+      color: var(--color-teal-blue);
+      font-weight: bold;
+    }
+
+    .metric-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: #222;
+    }
+
+    .score-section {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 139, 182, 0.05);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .score-label-small {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .score-value-large {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--color-teal-blue);
+    }
+
+    .score-max {
+      font-size: 1.2rem;
+      color: #999;
+    }
+
+    .score-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.1);
+      border: 2px solid rgba(0, 139, 182, 0.3);
+    }
+
+    .dot.filled {
+      background: var(--color-teal-blue);
+      border-color: var(--color-teal-blue);
+    }
+
+    .scale-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .scale-section h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--color-orange);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .scale-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .scale-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .scale-value {
+      display: inline-block;
+      background: var(--color-orange);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .scale-text {
+      color: #444;
+    }
+
+    .prompts-section,
+    .evidence-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .prompts-section h4,
+    .evidence-section h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--color-green);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .prompts-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .prompts-list li {
+      padding: 0.5rem 0.75rem;
+      background: rgba(117, 200, 60, 0.05);
+      border-left: 3px solid var(--color-green);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .evidence-section p {
+      margin: 0;
+      padding: 0.75rem;
+      background: rgba(245, 166, 35, 0.05);
+      border-left: 3px solid var(--color-orange);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #222;
+    }
+
+    .attention-footer {
+      max-width: 1100px;
+      margin: 4rem auto 0;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 4px solid var(--color-purple);
+    }
+
+    .attention-footer h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-purple);
+      text-align: center;
+    }
+
+    .attention-footer > p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      color: #222;
+    }
+
+    .use-cases {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .use-case {
+      padding: 1.5rem;
+      background: rgba(114, 5, 170, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-purple);
+    }
+
+    .use-case h3 {
+      font-size: 1.2rem;
+      margin: 0 0 0.75rem 0;
+      color: var(--color-purple);
+    }
+
+    .use-case p {
+      margin: 0;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    .final-note {
+      padding: 1.5rem;
+      background: rgba(245, 166, 35, 0.1);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-orange);
+    }
+
+    .final-note p {
+      margin: 0 0 1rem 0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    .final-note ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .final-note li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .attention-header h1 {
+        font-size: 2rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .attention-container {
+        padding: 1rem;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .use-cases {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>
