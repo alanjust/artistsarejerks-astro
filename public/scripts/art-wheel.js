@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Add click handler for artwork section to navigate to artist page
   const artworkSection = document.getElementById("artworkSection");
   if (artworkSection) {
-    artworkSection.addEventListener("click", function (e) {
+    artworkSection.addEventListener("click", function (_e) {
       const slug = this.getAttribute('data-artist-slug');
       if (slug) {
         // Navigate to the artist page

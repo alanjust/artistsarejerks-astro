@@ -36,16 +36,11 @@ const sortedMovements = [...artHistoryMovements].sort((a, b) => {
 // Get top 5 artists for each movement
 function getMovementArtists(movementName: string, movementSlug: string) {
   return artists
-    .filter(artist => 
+    .filter(artist =>
       artist['Art Movement'] === movementName ||
       artist['Related Art Movement'] === movementSlug
     )
     .slice(0, 5);
-}
-
-// Helper function to strip HTML tags
-function stripHtml(html: string): string {
-  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
 }
 ---
 
