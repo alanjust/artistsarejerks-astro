@@ -13,15 +13,10 @@ export async function getStaticPaths() {
 const { movement } = Astro.props;
 
 // Get artists associated with this movement
-const movementArtists = artists.filter(artist => 
+const movementArtists = artists.filter(artist =>
   artist['Art Movement'] === movement['Movement Name'] ||
   artist['Related Art Movement'] === movement.Slug
 );
-
-// Helper function to strip HTML tags
-function stripHtml(html: string): string {
-  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
-}
 
 const bgColor = movement['Bkgd Color'] || '#ffa042';
 ---

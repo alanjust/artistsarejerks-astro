@@ -174,7 +174,7 @@ const colorMap = {
           </div>
 
           <div class="sections-grid">
-            {wheel.sections.map((section, sectionIndex) => (
+            {wheel.sections.map((section) => (
               <div class="section-card" style={`--section-color: ${colorMap[section.color]}`}>
                 <h3 class="section-label">{section.label}</h3>
                 <ul class="section-items">
