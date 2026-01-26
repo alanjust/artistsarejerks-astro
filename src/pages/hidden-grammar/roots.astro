@@ -1,0 +1,499 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import roots from '../../data/hg-roots.json';
+---
+
+<BaseLayout title="The 11 Roots - Hidden Grammar" description="Explore the 11 Drivers that describe how art functions">
+  <div class="roots-page">
+    <header class="page-header">
+      <h1>The 11 Roots</h1>
+      <p class="tagline">The Drivers: Analytical Categories for How Art Functions</p>
+    </header>
+
+    <div class="intro-section">
+      <p>
+        The 11 Roots (also called Drivers) are analytical categories derived from Hebrew grammatical concepts.
+        They describe <strong>what a work is doing</strong> at a functional level—how it constructs meaning,
+        guides attention, or creates presence—without jumping to interpretation.
+      </p>
+      <p class="important">
+        <strong>Important:</strong> Roots are accessed only after the Evidence Gate is passed (RAP protocol).
+        They are hypotheses based on observable mechanisms, not facts about artist intent.
+      </p>
+    </div>
+
+    <div class="roots-grid">
+      {roots.roots.map((root) => (
+        <article class="root-card" id={root.id}>
+          <div class="root-header">
+            <div class="root-title-group">
+              <h2>{root.name}</h2>
+              <span class="root-hebrew">{root.hebrew}</span>
+            </div>
+            <span class="root-subtitle">{root.subtitle}</span>
+          </div>
+
+          <div class="root-content">
+            <section class="root-section">
+              <h3>Governs</h3>
+              <p>{root.governs}</p>
+            </section>
+
+            <section class="root-section">
+              <h3>Function</h3>
+              <p>{root.function}</p>
+            </section>
+
+            <section class="root-section">
+              <h3>Anchor Cues</h3>
+              <p class="section-intro">Observable characteristics that suggest this Root is active:</p>
+              <ul class="anchor-cues-list">
+                {root.anchorCues.map((cue) => (
+                  <li>{cue}</li>
+                ))}
+              </ul>
+            </section>
+
+            <section class="root-section warning-section">
+              <h3>What This Root is NOT</h3>
+              <ul class="not-list">
+                {root.notThis.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <section class="root-section">
+              <h3>Overreach Risk</h3>
+              <p class="warning-text">{root.overreachRisk}</p>
+            </section>
+
+            <section class="root-section">
+              <h3>Disproof Test</h3>
+              <p class="test-text">{root.disproofTest}</p>
+            </section>
+
+            {root.adjacentRoots && root.adjacentRoots.length > 0 && (
+              <section class="root-section">
+                <h3>Adjacent Roots</h3>
+                <div class="adjacent-roots">
+                  {root.adjacentRoots.map((adj) => (
+                    <div class="adjacent-root">
+                      <h4>
+                        <a href={`#${adj.id}`}>{adj.name}</a>
+                      </h4>
+                      <p><strong>Overlap:</strong> {adj.overlap}</p>
+                      <p><strong>Difference:</strong> {adj.difference}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {root.globalEcho && (
+              <section class="root-section global-section">
+                <h3>Global Echo</h3>
+                <p class="global-text">{root.globalEcho}</p>
+              </section>
+            )}
+
+            <section class="root-section">
+              <h3>Activators</h3>
+              <p class="section-intro">Art Principles that commonly activate this Root:</p>
+              <ul class="activators-list">
+                {root.activators.map((activator) => (
+                  <li>{activator}</li>
+                ))}
+              </ul>
+            </section>
+
+            <section class="root-section interpretation-section">
+              <h3>Role in Interpretation</h3>
+              <div class="interpretation-grid">
+                <div class="allowed">
+                  <h4>✓ Allowed</h4>
+                  <ul>
+                    {root.roleInInterpretation.allowed.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="not-allowed">
+                  <h4>✗ Not Allowed</h4>
+                  <ul>
+                    {root.roleInInterpretation.notAllowed.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="quick-reference">
+      <h2>Quick Reference</h2>
+      <div class="reference-grid">
+        {roots.roots.map((root) => (
+          <a href={`#${root.id}`} class="reference-card">
+            <strong>{root.name}</strong>
+            <span class="ref-subtitle">{root.subtitle}</span>
+            <span class="ref-hebrew">{root.hebrew}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .roots-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-m);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 3px solid var(--color-orange);
+  }
+
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-5xl);
+    color: var(--color-orange);
+    margin-bottom: var(--space-s);
+  }
+
+  .tagline {
+    font-size: var(--text-xl);
+    color: var(--color-gray-6);
+  }
+
+  .intro-section {
+    background: var(--color-cream);
+    padding: var(--space-xl);
+    border-radius: 12px;
+    margin-bottom: var(--space-3xl);
+    line-height: 1.7;
+  }
+
+  .intro-section p {
+    margin-bottom: var(--space-m);
+  }
+
+  .intro-section p:last-child {
+    margin-bottom: 0;
+  }
+
+  .important {
+    background: var(--color-white);
+    padding: var(--space-m);
+    border-left: 4px solid var(--color-orange);
+    border-radius: 6px;
+  }
+
+  .roots-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xl);
+    margin-bottom: var(--space-3xl);
+  }
+
+  .root-card {
+    background: var(--color-white);
+    border: 3px solid var(--color-purple);
+    border-radius: 12px;
+    padding: var(--space-2xl);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .root-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-l);
+    border-bottom: 2px solid var(--color-gray-2);
+  }
+
+  .root-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-m);
+    margin-bottom: var(--space-s);
+  }
+
+  .root-card h2 {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    color: var(--color-purple);
+    margin: 0;
+  }
+
+  .root-hebrew {
+    font-family: monospace;
+    font-size: var(--text-lg);
+    color: var(--color-orange);
+    font-weight: 600;
+  }
+
+  .root-subtitle {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--color-gray-6);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .root-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .root-section h3 {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    color: var(--color-gray-8);
+    margin-bottom: var(--space-m);
+  }
+
+  .root-section p {
+    line-height: 1.7;
+    color: var(--color-gray-7);
+  }
+
+  .section-intro {
+    font-weight: 600;
+    margin-bottom: var(--space-s);
+  }
+
+  .anchor-cues-list,
+  .activators-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .anchor-cues-list li,
+  .activators-list li {
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-xs);
+    background: var(--color-cream);
+    border-left: 3px solid var(--color-purple);
+    border-radius: 4px;
+  }
+
+  .not-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+  }
+
+  .not-list li {
+    padding: var(--space-xs) var(--space-m);
+    background: var(--color-red);
+    color: var(--color-white);
+    border-radius: 20px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .warning-section {
+    background: #fff5f5;
+    padding: var(--space-l);
+    border-radius: 8px;
+    border: 2px solid var(--color-red);
+  }
+
+  .warning-text {
+    color: var(--color-gray-8);
+    font-style: italic;
+  }
+
+  .test-text {
+    background: var(--color-cream);
+    padding: var(--space-m);
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--color-purple);
+  }
+
+  .adjacent-roots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-m);
+  }
+
+  .adjacent-root {
+    background: var(--color-cream);
+    padding: var(--space-m);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-orange);
+  }
+
+  .adjacent-root h4 {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .adjacent-root h4 a {
+    color: var(--color-purple);
+    text-decoration: none;
+  }
+
+  .adjacent-root h4 a:hover {
+    color: var(--color-orange);
+  }
+
+  .adjacent-root p {
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  .adjacent-root p:last-child {
+    margin-bottom: 0;
+  }
+
+  .global-section {
+    background: linear-gradient(135deg, #e6f3ff 0%, #f0e6ff 100%);
+    padding: var(--space-l);
+    border-radius: 8px;
+  }
+
+  .global-text {
+    font-style: italic;
+    color: var(--color-gray-8);
+    font-weight: 500;
+  }
+
+  .interpretation-section {
+    background: var(--color-cream);
+    padding: var(--space-l);
+    border-radius: 8px;
+  }
+
+  .interpretation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-l);
+  }
+
+  .interpretation-grid h4 {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-s);
+  }
+
+  .allowed h4 {
+    color: var(--color-green);
+  }
+
+  .not-allowed h4 {
+    color: var(--color-red);
+  }
+
+  .interpretation-grid ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .interpretation-grid li {
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid var(--color-gray-3);
+    font-size: var(--text-sm);
+  }
+
+  .interpretation-grid li:last-child {
+    border-bottom: none;
+  }
+
+  /* Quick Reference Section */
+  .quick-reference {
+    background: var(--color-purple);
+    color: var(--color-white);
+    padding: var(--space-2xl);
+    border-radius: 12px;
+    margin-top: var(--space-3xl);
+  }
+
+  .quick-reference h2 {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--color-white);
+  }
+
+  .reference-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-m);
+  }
+
+  .reference-card {
+    background: var(--color-white);
+    padding: var(--space-m);
+    border-radius: 8px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .reference-card:hover {
+    border-color: var(--color-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .reference-card strong {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-purple);
+  }
+
+  .ref-subtitle {
+    font-size: var(--text-xs);
+    color: var(--color-gray-6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .ref-hebrew {
+    font-family: monospace;
+    font-size: var(--text-sm);
+    color: var(--color-orange);
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: var(--text-4xl);
+    }
+
+    .root-card h2 {
+      font-size: var(--text-2xl);
+    }
+
+    .root-title-group {
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .interpretation-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .reference-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

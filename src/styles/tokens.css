@@ -11,6 +11,8 @@
 
   /* Primary Brand Colors */
   --color-purple: #7205aa;           /* Header background (same as violet below) */
+  --color-purple-light: #e9d5f5;     /* Light purple for backgrounds */
+  --color-purple-dark: #5a0488;      /* Darker purple for hover states */
   --color-gold: #f9b749;             /* Title text, accents (same as bkg-golden-yellow) */
   --color-green: #75c83c;            /* Navigation links (same as art wheel green) */
   --color-orange: #F5A623;           /* Stage/background */

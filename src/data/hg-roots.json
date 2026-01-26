@@ -1,0 +1,532 @@
+{
+  "roots": [
+    {
+      "id": "ch-sh-v",
+      "name": "Design Logic",
+      "hebrew": "Ch-Sh-V",
+      "subtitle": "THE MIND",
+      "governs": "How a work constructs, organizes, and assigns value through visible structure rather than content or narrative.",
+      "function": "Design Logic accounts for the way visual elements are calculated, arranged, and prioritized so that some things matter more than others. It describes how meaning is built, not what that meaning is. This root operates through selection, ordering, and emphasis.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., R-A-H or K-S-F) explicitly considered"
+      ],
+      "anchorCues": [
+        "Clear hierarchy of forms or zones",
+        "Repetition with variation (patterning)",
+        "Grouping or segmentation of elements",
+        "Consistent internal logic across the surface",
+        "Visual prioritization (some elements dominate, others recede)"
+      ],
+      "notThis": [
+        "Not intelligence",
+        "Not depth",
+        "Not symbolism",
+        "Not conceptual cleverness"
+      ],
+      "overreachRisk": "This Root is often invoked whenever a work feels coherent, even when no visible organizing logic is present. It is commonly used to legitimize interpretation after the fact.",
+      "disproofTest": "Is there visible structural logic organizing the work, or am I inferring coherence because I want it to be there?",
+      "adjacentRoots": [
+        {
+          "id": "r-a-h",
+          "name": "The Eye",
+          "overlap": "Both deal with perception",
+          "difference": "The Eye governs where attention goes. Design Logic governs how elements are organized once seen."
+        },
+        {
+          "id": "k-s-f",
+          "name": "Signal Strength",
+          "overlap": "Both involve prioritization",
+          "difference": "Signal concerns attention capture. Design Logic concerns internal organization."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about constructed meaning, internal logic, valuation systems"],
+        "notAllowed": ["Claims about intelligence, intent, symbolism, or message"]
+      },
+      "globalEcho": "In Ixtli In Yollotl (Face & Heart). Intelligence cannot exist without Vitality.",
+      "activators": ["Principle #5 (Grouping)", "Principle #3 (Pattern Completion)"]
+    },
+    {
+      "id": "y-tz-r",
+      "name": "Tactile Execution",
+      "hebrew": "Y-Tz-R",
+      "subtitle": "THE HAND",
+      "governs": "How a work is physically formed through contact, pressure, and resistance between tool, hand, and material.",
+      "function": "Tactile Execution accounts for visible acts of making. It describes how form emerges through friction, constraint, and physical manipulation rather than planning or concept. This root operates at the level of touch made visible.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Ch-M-R or A-M-N) explicitly considered"
+      ],
+      "anchorCues": [
+        "Tool marks or stroke directionality",
+        "Evidence of pressure, drag, or resistance",
+        "Edge articulation shaped by contact",
+        "Irregularities caused by hand movement",
+        "Construction traces (joins, seams, buildup)"
+      ],
+      "notThis": [
+        "Not effort",
+        "Not authenticity",
+        "Not sincerity",
+        "Not 'handmade' as virtue"
+      ],
+      "overreachRisk": "This Root is often invoked whenever manual labor is visible, even when the marks do not meaningfully shape form or structure. It is commonly mistaken for proof of honesty or expressive truth.",
+      "disproofTest": "Do the visible marks actually shape form or structure, or are they merely decorative surface effects?",
+      "adjacentRoots": [
+        {
+          "id": "ch-m-r",
+          "name": "Hardware / Materiality",
+          "overlap": "Both deal with physical substance",
+          "difference": "Hardware concerns what the material is. The Hand concerns what is done to it."
+        },
+        {
+          "id": "a-m-n",
+          "name": "Discipline",
+          "overlap": "Both involve control over making",
+          "difference": "Discipline reflects reliability over time. The Hand reflects immediate physical action."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about formation, resistance, and physical decision-making"],
+        "notAllowed": ["Claims about authenticity, emotional honesty, or moral virtue"]
+      },
+      "globalEcho": "Rasquachismo (Making do with broken materials) / Wabi-Sabi (The honest flaw).",
+      "activators": ["Principle #1 (Edge Detection)", "Principle #11 (Texture)"]
+    },
+    {
+      "id": "a-m-n",
+      "name": "Structural Integrity",
+      "hebrew": "A-M-N",
+      "subtitle": "THE DISCIPLINE",
+      "governs": "How a work maintains reliability, consistency, and stability across its parts and over time.",
+      "function": "Structural Integrity accounts for trained control and repeatable decision-making. It describes whether choices hold together coherently rather than fluctuating or collapsing. This root operates through steadiness, not expressiveness.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Y-Tz-R or K-B-D) explicitly considered"
+      ],
+      "anchorCues": [
+        "Consistent handling of form or technique",
+        "Stable proportional relationships",
+        "Repeated decisions applied evenly",
+        "Predictable structural logic",
+        "Absence of arbitrary variation"
+      ],
+      "notThis": [
+        "Not moral virtue",
+        "Not seriousness",
+        "Not professionalism",
+        "Not effort"
+      ],
+      "overreachRisk": "This Root is often invoked as praise when a work merely avoids failure. Stability alone is mistaken for strength, even when the structure contributes little to perception.",
+      "disproofTest": "Are the decisions consistently applied, or do they break down under close inspection?",
+      "adjacentRoots": [
+        {
+          "id": "y-tz-r",
+          "name": "The Hand",
+          "overlap": "Both involve control",
+          "difference": "The Hand concerns physical action. Discipline concerns reliability across the whole."
+        },
+        {
+          "id": "k-b-d",
+          "name": "The Anchor",
+          "overlap": "Both create stability",
+          "difference": "Discipline stabilizes internally. Anchor stabilizes visually or culturally."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about reliability, coherence, and trained control"],
+        "notAllowed": ["Claims about seriousness, worth, or ethical superiority"]
+      },
+      "globalEcho": "Itutu (Mystic Coolness). Maintaining grace under pressure; the discipline is hidden.",
+      "activators": ["Principle #24 (Value Structure)", "Principle #23 (Linear Perspective)"]
+    },
+    {
+      "id": "r-w-ch",
+      "name": "Atmosphere",
+      "hebrew": "R-W-Ch",
+      "subtitle": "THE SPIRIT",
+      "governs": "How a work generates directional flow, motion, or connective energy that moves attention through space.",
+      "function": "Atmosphere accounts for invisible forces made perceptible through rhythm, circulation, and directional cues. It describes how elements activate space rather than sit statically. This root operates through movement without narrative.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., R-A-H or K-S-F) explicitly considered"
+      ],
+      "anchorCues": [
+        "Directional flow across the surface",
+        "Rhythmic repetition or circulation",
+        "Breath-like spacing or pulsing intervals",
+        "Brush energy or gestural momentum",
+        "Implied movement without depicted action"
+      ],
+      "notThis": [
+        "Not religion",
+        "Not soul",
+        "Not inspiration",
+        "Not artist sincerity"
+      ],
+      "overreachRisk": "This Root is frequently inflated into metaphysical claims when movement or rhythm is merely suggested. Flow is assumed rather than demonstrated.",
+      "disproofTest": "Is there actual directional or rhythmic movement, or am I projecting vitality onto static elements?",
+      "adjacentRoots": [
+        {
+          "id": "r-a-h",
+          "name": "The Eye",
+          "overlap": "Both guide attention",
+          "difference": "The Eye directs focus. Atmosphere moves focus."
+        },
+        {
+          "id": "k-s-f",
+          "name": "Signal Strength",
+          "overlap": "Both affect attention",
+          "difference": "Signal grabs attention. Atmosphere sustains motion within it."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about movement, circulation, and spatial activation"],
+        "notAllowed": ["Claims about spirit, emotion, transcendence, or intent"]
+      },
+      "globalEcho": "Qi (Circulatory Flow) / Mana (Accumulated Authority/Battery).",
+      "activators": ["Principle #14 (Directional Force)", "Principle #7 (Atmospheric Perspective)"]
+    },
+    {
+      "id": "r-a-h",
+      "name": "Visual Hierarchy",
+      "hebrew": "R-A-H",
+      "subtitle": "THE EYE",
+      "governs": "How a work directs, orders, and sequences seeing through visible control of attention.",
+      "function": "Visual Hierarchy accounts for the movement from initial noticing to focused inspection. It describes how the eye is guided through the work via emphasis, contrast, and spatial ordering. This root operates before interpretation, at the level of seeing.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Ch-Sh-V or K-B-D) explicitly considered"
+      ],
+      "anchorCues": [
+        "Clear focal points",
+        "Controlled viewing path or scan pattern",
+        "Depth cues that prioritize certain areas",
+        "Contrast steering (value, color, edge)",
+        "Framing or cropping that directs attention"
+      ],
+      "notThis": [
+        "Not insight",
+        "Not understanding",
+        "Not symbolism by default",
+        "Not revelation"
+      ],
+      "overreachRisk": "This Root is often invoked whenever a viewer notices something salient, even when the work provides no structured guidance for attention beyond novelty or habit.",
+      "disproofTest": "Is the eye actively guided by the work, or am I supplying my own viewing order?",
+      "adjacentRoots": [
+        {
+          "id": "ch-sh-v",
+          "name": "Design Logic",
+          "overlap": "Both organize perception",
+          "difference": "The Eye governs attention flow. Design Logic governs structural arrangement."
+        },
+        {
+          "id": "k-b-d",
+          "name": "The Anchor",
+          "overlap": "Both stabilize attention",
+          "difference": "Anchor creates weight. The Eye creates direction."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about attention control, sequencing, and emphasis"],
+        "notAllowed": ["Claims about meaning, symbolism, or insight"]
+      },
+      "globalEcho": "Ma (The Active Void). Seeing the space between objects as a solid thing.",
+      "activators": ["Principle #17 (Focal Blur)", "Principle #4 (Figure-Ground)"]
+    },
+    {
+      "id": "s-p-r",
+      "name": "Narrative Sequence",
+      "hebrew": "S-P-R",
+      "subtitle": "THE NARRATIVE",
+      "governs": "How a work establishes temporal or causal order, implying progression, development, or outcome.",
+      "function": "Narrative Sequence accounts for sequencing across time. It describes how elements suggest a before, during, and after, or a problem moving toward resolution. This root operates through ordering, not depiction.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., R-A-H or Ch-Sh-V) explicitly considered"
+      ],
+      "anchorCues": [
+        "Implied before/after relationships",
+        "Causal cues linking elements",
+        "Directional reading order",
+        "Progressive change across space",
+        "Visual setup followed by consequence"
+      ],
+      "notThis": [
+        "Not story content",
+        "Not symbolism",
+        "Not subject matter",
+        "Not biography"
+      ],
+      "overreachRisk": "This Root is often assumed whenever a recognizable subject appears. Narrative is projected even when no sequencing or causality is visually established.",
+      "disproofTest": "Is there clear visual sequencing or causality, or am I supplying the story myself?",
+      "adjacentRoots": [
+        {
+          "id": "ch-sh-v",
+          "name": "Design Logic",
+          "overlap": "Both organize elements",
+          "difference": "Design Logic structures relationships. Narrative structures time."
+        },
+        {
+          "id": "r-a-h",
+          "name": "The Eye",
+          "overlap": "Both guide viewing order",
+          "difference": "The Eye guides attention. Narrative implies progression."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about temporal order, progression, or causality"],
+        "notAllowed": ["Claims about meaning, message, or artist intent"]
+      },
+      "globalEcho": "Ayni (Sacred Reciprocity). The story isn't about 'winning' (resolution) but 'exchange' (balance).",
+      "activators": ["Principle #35 (Implied Time)", "Principle #42 (Visual Tension)"]
+    },
+    {
+      "id": "k-s-f",
+      "name": "Signal Strength",
+      "hebrew": "K-S-F",
+      "subtitle": "THE ATTENTION ECONOMY",
+      "governs": "How a work captures and sustains attention through salience, contrast, and perceptual bidding.",
+      "function": "Signal Strength accounts for attention competition under scarcity. It describes how certain elements outcompete others for notice and retention. This root operates through prominence, not value.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., K-B-D or R-W-Ch) explicitly considered"
+      ],
+      "anchorCues": [
+        "High-contrast visual bids",
+        "Novelty spikes or interruptions",
+        "Hook zones that arrest attention",
+        "Retention mechanics that delay disengagement",
+        "Salient features that dominate perception"
+      ],
+      "notThis": [
+        "Not quality",
+        "Not importance",
+        "Not goodness",
+        "Not 'viral = valuable'"
+      ],
+      "overreachRisk": "This Root is frequently mistaken for merit. High salience is treated as evidence of significance even when the attention captured leads nowhere.",
+      "disproofTest": "Does the work actively compete for attention, or does attention persist for other reasons?",
+      "adjacentRoots": [
+        {
+          "id": "k-b-d",
+          "name": "The Anchor",
+          "overlap": "Both stabilize attention",
+          "difference": "Signal captures attention. Anchor holds weight."
+        },
+        {
+          "id": "r-w-ch",
+          "name": "Atmosphere",
+          "overlap": "Both affect engagement",
+          "difference": "Signal arrests attention. Atmosphere circulates it."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about attention capture, retention, and salience"],
+        "notAllowed": ["Claims about meaning, value, or importance"]
+      },
+      "globalEcho": "Hózhó (Beauty/Harmony). The goal is not to 'grab' the eye (anxiety) but to 'restore' the eye (peace).",
+      "activators": ["Principle #12 (Saturation)", "Principle #41 (Emergence)"]
+    },
+    {
+      "id": "k-b-d",
+      "name": "Gravitas",
+      "hebrew": "K-B-D",
+      "subtitle": "THE ANCHOR",
+      "governs": "How a work establishes visual and contextual weight, creating stability, grounding, or perceived importance.",
+      "function": "Gravitas accounts for where weight settles in a composition or object. It describes how mass, density, or contextual signals cause elements to feel fixed, grounded, or consequential. This root operates through holding power, not attention capture.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., K-S-F or T-H-W) explicitly considered"
+      ],
+      "anchorCues": [
+        "Bottom-weighting or low center of gravity",
+        "Dense or compact forms acting as weight wells",
+        "Stabilizing masses that resist movement",
+        "Repetition of heavy forms",
+        "Contextual markers only when visually present (pedestal logic, framing weight, scale dominance)"
+      ],
+      "notThis": [
+        "Not fame",
+        "Not seriousness",
+        "Not importance by declaration",
+        "Not appeal to authority"
+      ],
+      "overreachRisk": "This Root is often invoked through reputation or context rather than visible weight. Institutional status is mistaken for perceptual gravity even when the work itself carries little mass or stability.",
+      "disproofTest": "Is there visible weight or grounding, or am I borrowing gravity from context alone?",
+      "adjacentRoots": [
+        {
+          "id": "k-s-f",
+          "name": "Signal Strength",
+          "overlap": "Both affect attention",
+          "difference": "Signal captures attention. Gravitas holds it in place."
+        },
+        {
+          "id": "t-h-w",
+          "name": "Noise",
+          "overlap": "Both relate to perceptual stability",
+          "difference": "Gravitas stabilizes perception. Noise destabilizes it."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about grounding, stability, and perceived weight"],
+        "notAllowed": ["Claims about importance, value, or authority"]
+      },
+      "globalEcho": "Ubuntu (Collective Lineage). The weight comes from the community connection, not the hierarchy.",
+      "activators": ["Principle #19 (Visual Weight)", "Principle #8 (Symmetry)"]
+    },
+    {
+      "id": "t-h-w",
+      "name": "Entropy",
+      "hebrew": "T-H-W",
+      "subtitle": "THE NOISE",
+      "governs": "How a work loses clarity through interference, breakdown, or unintentional confusion.",
+      "function": "Entropy accounts for signal degradation. It describes how marks, forms, or structures interfere with one another so that perception stalls or collapses. This root operates through loss, not complexity.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Ch-Sh-V or K-S-F) explicitly considered"
+      ],
+      "anchorCues": [
+        "Visual mud or unresolved mixtures",
+        "Signals that cancel or obscure one another",
+        "Overworked surfaces with no footholds",
+        "Competing cues without hierarchy",
+        "Ambiguity that repels attention rather than sustains it"
+      ],
+      "notThis": [
+        "Not complexity",
+        "Not richness",
+        "Not deliberate ambiguity",
+        "Not mystery"
+      ],
+      "overreachRisk": "This Root is often invoked as a critical dismissal when the viewer fails to engage. Difficulty is confused with breakdown even when structure or intention is present.",
+      "disproofTest": "Is perception actually obstructed, or am I mistaking challenge for failure?",
+      "adjacentRoots": [
+        {
+          "id": "ch-sh-v",
+          "name": "Design Logic",
+          "overlap": "Both concern organization",
+          "difference": "Design Logic structures coherence. Entropy erodes it."
+        },
+        {
+          "id": "k-s-f",
+          "name": "Signal Strength",
+          "overlap": "Both affect attention",
+          "difference": "Signal competes for attention. Entropy prevents it from stabilizing."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about interference, breakdown, or loss of clarity"],
+        "notAllowed": ["Claims about intent, incompetence, or value"]
+      },
+      "globalEcho": null,
+      "activators": ["Negative Activator (Violation of Principle #24 Value Structure)", "Principle #20 (Simultaneous Contrast - muddy mixing)"]
+    },
+    {
+      "id": "ch-m-r",
+      "name": "Materiality",
+      "hebrew": "Ch-M-R",
+      "subtitle": "THE HARDWARE",
+      "governs": "How a work exists as a physical object, defined by the properties and limits of its material.",
+      "function": "Materiality accounts for medium truth and object behavior. It describes how substance, viscosity, density, and resistance shape what can and cannot occur. This root operates through material constraint, not technique.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Y-Tz-R or K-L-Y) explicitly considered"
+      ],
+      "anchorCues": [
+        "Viscosity or fluid behavior of the medium",
+        "Surface truth (absorption, sheen, texture)",
+        "Tool–medium interaction limits",
+        "Evidence of material resistance or compliance",
+        "Object cues (thickness, edge profile, weight suggestion)"
+      ],
+      "notThis": [
+        "Not craft",
+        "Not skill",
+        "Not authenticity",
+        "Not virtue"
+      ],
+      "overreachRisk": "This Root is often romanticized as honesty or purity. Material presence is mistaken for ethical value even when the material contributes little to perception.",
+      "disproofTest": "Is the material actively shaping perception, or is it merely present?",
+      "adjacentRoots": [
+        {
+          "id": "y-tz-r",
+          "name": "The Hand",
+          "overlap": "Both involve physical making",
+          "difference": "The Hand concerns action. Materiality concerns substance."
+        },
+        {
+          "id": "k-l-y",
+          "name": "The Vessel",
+          "overlap": "Both involve containment",
+          "difference": "Materiality defines substance. The Vessel defines format."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about substance, constraint, and object behavior"],
+        "notAllowed": ["Claims about authenticity, honesty, or value"]
+      },
+      "globalEcho": null,
+      "activators": ["Principle #28 (Specularity)", "Principle #11 (Texture - Impasto)"]
+    },
+    {
+      "id": "k-l-y",
+      "name": "Format",
+      "hebrew": "K-L-Y",
+      "subtitle": "THE VESSEL",
+      "governs": "How a work's container, scale, and format constrain and shape what can occur within it.",
+      "function": "Format accounts for capacity and fit. It describes how size, proportions, and structural boundaries enable or restrict action, perception, and meaning. This root operates through containment, not surface appearance.",
+      "accessConditions": [
+        "RAP Evidence Gate passed",
+        "At least 2 distinct mechanisms support it",
+        "At least 1 alternative Root (e.g., Ch-M-R or K-B-D) explicitly considered"
+      ],
+      "anchorCues": [
+        "Scale mismatches between content and container",
+        "Format used as an active tool",
+        "Panel, page, or object logic shaping decisions",
+        "Framing or boundary constraints",
+        "Genre or platform constraints when structurally visible"
+      ],
+      "notThis": [
+        "Not style",
+        "Not presentation",
+        "Not decoration",
+        "Not taste"
+      ],
+      "overreachRisk": "This Root is often flattened into surface description. Format is treated as neutral even when it actively limits or distorts what the work can support.",
+      "disproofTest": "Is the format actively shaping outcomes, or is it merely housing the work?",
+      "adjacentRoots": [
+        {
+          "id": "ch-m-r",
+          "name": "Materiality",
+          "overlap": "Both involve physical conditions",
+          "difference": "Materiality concerns substance. Format concerns containment."
+        },
+        {
+          "id": "k-b-d",
+          "name": "Gravitas",
+          "overlap": "Both affect stability",
+          "difference": "Format constrains space. Gravitas weights it."
+        }
+      ],
+      "roleInInterpretation": {
+        "allowed": ["Hypotheses about constraint, capacity, and fit"],
+        "notAllowed": ["Claims about style, taste, or value"]
+      },
+      "globalEcho": null,
+      "activators": ["Principle #27 (Cropping/Framing)", "Principle #9 (Scale Relationships)"]
+    }
+  ]
+}
