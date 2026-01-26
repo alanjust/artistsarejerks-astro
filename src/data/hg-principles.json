@@ -1,0 +1,376 @@
+{
+  "meta": {
+    "epistemicNotice": "These 46 principles are perceptual mechanisms that influence what gets noticed, how forms organize, and how space is inferred - all before conscious interpretation. They do not determine meaning.",
+    "influences": [
+      "what gets noticed first",
+      "how forms group, separate, and stabilize",
+      "how depth, surface, and motion cues cohere",
+      "how visual tension and resolution can be felt"
+    ],
+    "tiers": {
+      "A": "strong perceptual / early-vision biases (robust across viewers and contexts)",
+      "B": "mid-level organization and attention (generally reliable, but more style- and context-sensitive)",
+      "C": "mixed evidence or higher-level associations (emotion, narrative, symbolism, conventions)",
+      "D": "historically influential compositional systems with contested empirical support"
+    }
+  },
+  "principles": [
+    {
+      "id": 1,
+      "name": "Edge Detection",
+      "subtitle": "attention control",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your V1 visual cortex fires hardest at high-contrast edges. Sharp value shifts = neural activation spike. Soft gradients = less activation.",
+      "studioTool": "Edge quality controls where attention lands.",
+      "edgeTypes": [
+        {"type": "Hard edges", "effect": "Maximum neural activation, demand attention, create tension"},
+        {"type": "Firm edges", "effect": "Clear but slightly blended"},
+        {"type": "Soft edges", "effect": "Gradual transition, atmospheric, calm"},
+        {"type": "Lost edges", "effect": "Boundary dissolves, brain completes the form"}
+      ],
+      "studioUse": "Where do you want tension? Put a hard edge. Want calm? Soften or lose it."
+    },
+    {
+      "id": 2,
+      "name": "Color Opponent Channels",
+      "subtitle": "built-in tension/resolution",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your retina has three opponent pairs: red/green, blue/yellow, black/white. These are wired as opposites—when one fires, the other rests.",
+      "studioTool": "Complementary colors create neural balance (consonance). Analogous colors share channels with minimal conflict (consonance). Non-complementary high-saturation combinations create dissonance.",
+      "studioUse": "Complements = resolved tension; Analogous = harmony; Clashing (red/blue-green) = unresolved dissonance"
+    },
+    {
+      "id": 3,
+      "name": "Pattern Completion/Closure",
+      "subtitle": "the brain's cadence",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 4,
+      "name": "Figure-Ground Relationships",
+      "subtitle": "visual hierarchy",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your brain can't process everything simultaneously—it separates figure (foreground, object) from ground (background, space). This is often pre-conscious.",
+      "studioTool": "Control whether hierarchy is clear or ambiguous.",
+      "options": [
+        "Stable figure-ground = consonance (easy to parse, clear hierarchy)",
+        "Ambiguous figure-ground = dissonance (Rubin's vase, Escher—brain toggles between readings)"
+      ],
+      "studioUse": "Clear hierarchy = rest. Ambiguity = tension."
+    },
+    {
+      "id": 5,
+      "name": "Grouping",
+      "subtitle": "Gestalt as neural efficiency",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your brain groups things to reduce processing load. It WANTS to see patterns, not chaos.",
+      "gestaltPrinciples": [
+        "Proximity: Things close together = perceived as related",
+        "Similarity: Same color/shape/size = perceived as a group",
+        "Continuity: Your eye follows implied lines",
+        "Closure: You complete incomplete shapes",
+        "Figure/ground: You separate object from background"
+      ],
+      "studioTool": "Use grouping to create visual units that the brain processes as single chunks.",
+      "studioUse": "Visual consonance = brain predicted pattern, found it, relaxed. Visual dissonance = violate grouping expectations."
+    },
+    {
+      "id": 6,
+      "name": "Color Temperature",
+      "subtitle": "warm/cool as spatial + emotional cue",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 7,
+      "name": "Atmospheric Perspective",
+      "subtitle": "contrast reduction = distance",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your visual system uses degradation of information as a distance cue. Things far away have: lower contrast, cooler temperature, softer edges, less detail.",
+      "studioTool": "To create depth, reduce information systematically as forms recede: 1) Contrast reduction 2) Temperature shift 3) Edge softening 4) Detail elimination",
+      "studioUse": "Works even in abstraction. Violating atmospheric perspective = violating spatial logic."
+    },
+    {
+      "id": 8,
+      "name": "Symmetry/Asymmetry",
+      "subtitle": "predictability vs. surprise",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 9,
+      "name": "Scale Relationships",
+      "subtitle": "proportion as expectation-setting",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 10,
+      "name": "Rhythm and Repetition",
+      "subtitle": "pattern prediction and variation",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 11,
+      "name": "Texture",
+      "subtitle": "tactile simulation + surface interest",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 12,
+      "name": "Saturation",
+      "subtitle": "color intensity as attention + emotion",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 13,
+      "name": "Overlap/Occlusion",
+      "subtitle": "depth through layering",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "When one form blocks another, your brain reads spatial ordering. Form A overlaps Form B = A is in front. Processed pre-consciously in V2/V3.",
+      "studioTool": "Overlap = instant depth cue, cheaper than perspective.",
+      "studioUse": "Clear overlap = unambiguous depth. Ambiguous overlap = visual tension. Transparent overlap = depth + material property."
+    },
+    {
+      "id": 14,
+      "name": "Directional Force/Implied Movement",
+      "subtitle": "eye path + visual weight",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 15,
+      "name": "Closure/Negative Space",
+      "subtitle": "brain completes incomplete forms",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 16,
+      "name": "Light Source Logic",
+      "subtitle": "cast shadow + spatial consistency",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 17,
+      "name": "Focal Blur/Depth of Field",
+      "subtitle": "selective focus",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 18,
+      "name": "Pattern vs. Figure",
+      "subtitle": "ornament vs. structure",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 19,
+      "name": "Visual Weight/Balance",
+      "subtitle": "compositional gravity",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 20,
+      "name": "Simultaneous Contrast",
+      "subtitle": "colors/values change based on context",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 21,
+      "name": "Transparency/Opacity",
+      "subtitle": "spatial + material qualities",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 22,
+      "name": "Local vs. Atmospheric Color",
+      "subtitle": "object color vs. light effect",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 23,
+      "name": "Linear Perspective",
+      "subtitle": "convergence = depth",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 24,
+      "name": "Value Structure/Massing",
+      "subtitle": "abstract pattern before detail",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 25,
+      "name": "Color Harmony Systems",
+      "subtitle": "relational color logic",
+      "tier": "C",
+      "claimType": "Cognitive/affective or cultural association"
+    },
+    {
+      "id": 26,
+      "name": "Binocular vs. Monocular Depth Cues",
+      "subtitle": "how you know distance",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 27,
+      "name": "Cropping/Framing",
+      "subtitle": "picture edges define composition",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 28,
+      "name": "Specularity/Surface Reflection",
+      "subtitle": "material property",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 29,
+      "name": "Contour Quality",
+      "subtitle": "line as carrier of information",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 30,
+      "name": "Optical vs. Physical Color Mixing",
+      "subtitle": "visual blending techniques",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 31,
+      "name": "Color Weight and Advancement",
+      "subtitle": "spatial perception through color",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 32,
+      "name": "Chromatic Aberration",
+      "subtitle": "as deliberate tool",
+      "tier": "C",
+      "claimType": "Cognitive/affective or cultural association"
+    },
+    {
+      "id": 33,
+      "name": "Elevation in Picture Plane",
+      "subtitle": "vertical position = depth",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism"
+    },
+    {
+      "id": 34,
+      "name": "Detail Density Gradient",
+      "subtitle": "sharpness of information",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 35,
+      "name": "Implied Time/Narrative Sequence",
+      "subtitle": "temporal progression",
+      "tier": "C",
+      "claimType": "Cognitive/affective or cultural association"
+    },
+    {
+      "id": 36,
+      "name": "Simultaneity vs. Sequence",
+      "subtitle": "Cubist time",
+      "tier": "C",
+      "claimType": "Cognitive/affective or cultural association"
+    },
+    {
+      "id": 37,
+      "name": "Progressive Rhythm",
+      "subtitle": "gradual change",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 38,
+      "name": "Unity vs. Variety Tension",
+      "subtitle": "balance and interest",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 39,
+      "name": "Dynamic Symmetry and Proportional Systems",
+      "subtitle": "geometric frameworks",
+      "tier": "D",
+      "claimType": "Design system / heuristic"
+    },
+    {
+      "id": 40,
+      "name": "Figure-Ground Reversal",
+      "subtitle": "perceptual switching",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 41,
+      "name": "Emergence",
+      "subtitle": "forms appear from chaos",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 42,
+      "name": "Visual Tension",
+      "subtitle": "forces in opposition",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 43,
+      "name": "Anchoring and Reference Points",
+      "subtitle": "perceptual stability",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 44,
+      "name": "Interval Relationships",
+      "subtitle": "space between elements",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 45,
+      "name": "Economy of Means",
+      "subtitle": "minimum for maximum effect",
+      "tier": "C",
+      "claimType": "Cognitive/affective or cultural association"
+    },
+    {
+      "id": 46,
+      "name": "Complexity and Visual Density",
+      "subtitle": "information richness",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic"
+    }
+  ]
+}

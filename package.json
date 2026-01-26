@@ -10,7 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.14.1"
+    "@anthropic-ai/sdk": "^0.71.2",
+    "astro": "^5.14.1",
+    "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

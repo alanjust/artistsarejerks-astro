@@ -1,0 +1,221 @@
+{
+  "phases": {
+    "0": "Discovery & Priming",
+    "1": "Core Analysis",
+    "2": "Studio Tools",
+    "3": "Simulation & Context",
+    "4": "External Lenses",
+    "5": "System Debug"
+  },
+  "modes": [
+    {
+      "id": "strategic",
+      "name": "Strategic Mode",
+      "phase": 1,
+      "phaseName": "Core Analysis",
+      "description": "The Standard Critique. Connects the image to the Master Project Bible.",
+      "useCases": ["Finished work", "Master studies", "General comprehensive analysis"],
+      "steps": [
+        "Identify the primary action: Stripping, Building, Holding, or Integrating",
+        "Run stress tests: Transmission and Hook analysis",
+        "Map mechanics: Principles → Drivers",
+        "Deliver verdict: Honest (high friction) vs Dishonest (zero friction)",
+        "Recommend the ONE clarifying move"
+      ],
+      "outputVoice": "Adam Moss / Editor Voice",
+      "requiresRAP": true
+    },
+    {
+      "id": "physics",
+      "name": "Physics Mode",
+      "phase": 1,
+      "phaseName": "Core Analysis",
+      "description": "DeepSeek Logic. Tests structural integrity, ignoring 'meaning.'",
+      "useCases": ["Structural diagnosis", "Technical validation", "Entropy detection"],
+      "steps": [
+        "Gravity Check (K-B-D): Visual weight distribution",
+        "Entropy Check (T-H-W): Scan for signal cancellation",
+        "Material Check (Ch-M-R): Paint viscosity and substance truth",
+        "Capacity Check (K-L-Y): Idea vs. format fit",
+        "Verdict: Structural pass/fail"
+      ],
+      "requiresRAP": false,
+      "note": "Focuses on physical/perceptual structure, not interpretation"
+    },
+    {
+      "id": "historian",
+      "name": "Historian Mode",
+      "phase": 1,
+      "phaseName": "Core Analysis",
+      "description": "Academic breakdown for finished works.",
+      "useCases": ["Master studies", "Art history analysis", "Canon positioning"],
+      "steps": [
+        "Identify primary action",
+        "Map mechanics (Principles → Roots)",
+        "Identify absences (negative space)",
+        "Synthesize tensions",
+        "Determine canon fit and lineage"
+      ],
+      "requiresRAP": true
+    },
+    {
+      "id": "friction",
+      "name": "Friction Audit",
+      "phase": 1,
+      "phaseName": "Core Analysis",
+      "description": "The Twombly vs. Kinkade Test.",
+      "useCases": ["Transmission risk assessment", "Perceptual fluency check"],
+      "steps": [
+        "Slide Test: Check for perceptual fluency (Kinkade risk)",
+        "Snag Test: Find cognitive dissonance points (Twombly factor)",
+        "Canon Proxy: Compare to honest vs dishonest practitioners",
+        "Score friction density 0-10"
+      ],
+      "requiresRAP": false
+    },
+    {
+      "id": "wip",
+      "name": "WIP Mode",
+      "phase": 2,
+      "phaseName": "Studio Tools",
+      "description": "Work In Progress critique - mid-stream check.",
+      "useCases": ["Active studio work", "In-progress refinement", "Alignment check"],
+      "steps": [
+        "Check alignment: Intent (Roots) vs. Execution (Principles)",
+        "Identify conflicting signals",
+        "Generate 3 refinement questions",
+        "Optional: Perform internet search for comparison/insight"
+      ],
+      "requiresRAP": true
+    },
+    {
+      "id": "technician",
+      "name": "Technician Mode",
+      "phase": 2,
+      "phaseName": "Studio Tools",
+      "description": "Finds the specific neural trick.",
+      "useCases": ["Specific technical problem-solving", "Targeted adjustments"],
+      "steps": [
+        "User states goal (Root/concept to strengthen)",
+        "Suggest 2 specific Art Principles to apply",
+        "Explain neural mechanism for each"
+      ],
+      "requiresRAP": false,
+      "note": "Only mode where Root → Principle mapping is allowed without RAP"
+    },
+    {
+      "id": "novelty",
+      "name": "Novelty Check",
+      "phase": 2,
+      "phaseName": "Studio Tools",
+      "description": "The Cliché Shield.",
+      "useCases": ["Derivative detection", "Originality assessment"],
+      "steps": [
+        "Master Tier: Check similarity to famous artists",
+        "Cliché Tier: Check for stock art / common tropes",
+        "Score novelty 1-10",
+        "Suggest one move to break similarity"
+      ],
+      "requiresRAP": false
+    },
+    {
+      "id": "intuition",
+      "name": "Intuition Primer",
+      "phase": 0,
+      "phaseName": "Discovery & Priming",
+      "description": "For early stage 'chasing a feeling' without harsh logic.",
+      "useCases": ["Exploratory work", "Fragile ideas", "Pre-refinement stage"],
+      "steps": [
+        "Scan: What is it actually optimizing for?",
+        "Next Moves: 3 experiments that push further without polishing",
+        "The Risk: Identify and protect the 'awkwardness'"
+      ],
+      "requiresRAP": false,
+      "note": "Protects raw signal, avoids premature polish"
+    },
+    {
+      "id": "blueprint",
+      "name": "Blueprint Mode",
+      "phase": 2,
+      "phaseName": "Studio Tools",
+      "description": "The Aphantasia Planning Tool. Converts 'Image' into 'Code.'",
+      "useCases": ["Planning without visualization", "Aphantasia workflow", "Systematic construction"],
+      "steps": [
+        "Problem Statement (S-P-R): Define eye path sequence",
+        "Material Logic (Ch-M-R + Y-Tz-R): Define friction and tactility",
+        "Structural Constraints: Provide 3 hard rules to follow during execution"
+      ],
+      "requiresRAP": false,
+      "note": "Uses physics metaphors, not visual metaphors"
+    },
+    {
+      "id": "tour-guide",
+      "name": "Tour Guide Mode",
+      "phase": 3,
+      "phaseName": "Simulation & Context",
+      "description": "The Schneider Docent. Bridges high theory to general public.",
+      "useCases": ["Museum interpretation", "Public engagement", "Educational contexts"],
+      "steps": [
+        "The Doorway: Find visual hook (one-sentence script)",
+        "Painter's Insight: Identify technical decision non-painters would miss",
+        "Human Connection: Translate root to universal experience",
+        "Open Question: Ask question with no wrong answer that forces observation"
+      ],
+      "requiresRAP": true
+    },
+    {
+      "id": "global",
+      "name": "Global Mode",
+      "phase": 3,
+      "phaseName": "Simulation & Context",
+      "description": "Breaking Western Bias using Global Echoes database.",
+      "useCases": ["Cross-cultural analysis", "Non-Western frameworks", "Decolonial interpretation"],
+      "steps": [
+        "Energy: Ruach (directional wind) vs. Qi (circulatory flow)?",
+        "Texture: Perfection (Yotzer) vs. Broken beauty (Rasquachismo/Wabi-Sabi)?",
+        "Space: Linear perspective (Western) vs. Ma (Active Void)?",
+        "Goal: Grab attention (Signal) vs. Restore balance (Hózhó/Itutu)?",
+        "Authority: Institution vs. Ancestral lineage?",
+        "Synthesis: How does changing the lens change meaning?"
+      ],
+      "requiresRAP": true
+    },
+    {
+      "id": "full-audit",
+      "name": "Full Hidden Grammar Audit",
+      "phase": 5,
+      "phaseName": "System Debug",
+      "description": "Complete HG Audit using the full 6-section template.",
+      "useCases": ["Comprehensive analysis", "Formal documentation", "Maximum rigor"],
+      "template": "tpl_hg_audit_packet_art_v1",
+      "sections": [
+        "Section 0: Case Metadata",
+        "Section 1: Raw Observations",
+        "Section 2: Principle Mapping",
+        "Section 3: Driver Analysis",
+        "Section 3.5: Root Claims (RAP-gated)",
+        "Section 4: Critical Tensions & Absences",
+        "Section 5: Friction Audit / Entropy Check",
+        "Section 6: Synthesis & Verdict"
+      ],
+      "requiresRAP": true,
+      "strictGates": true,
+      "note": "Entropy gate and RAP gates strictly enforced. No numbered lists allowed."
+    },
+    {
+      "id": "chain-of-thought",
+      "name": "Chain of Thought",
+      "phase": 5,
+      "phaseName": "System Debug",
+      "description": "Show the reasoning trace without full stack.",
+      "useCases": ["Understanding AI logic", "Debugging analysis", "Learning the system"],
+      "steps": [
+        "Search phase: Show which Principles noticed first",
+        "Calculation phase: Show how Principles linked to Roots",
+        "Verdict phase: Final critique after reasoning complete"
+      ],
+      "requiresRAP": true,
+      "outputFormat": "Exposed internal monologue"
+    }
+  ]
+}

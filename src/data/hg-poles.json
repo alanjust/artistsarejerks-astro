@@ -1,0 +1,111 @@
+{
+  "poles": [
+    {
+      "id": "p-sh-t",
+      "name": "Abstraction",
+      "hebrew": "P-Sh-T",
+      "axis": {
+        "opposite": "l-b-sh",
+        "oppositeName": "Realism"
+      },
+      "governs": "The degree to which a work reduces specificity in favor of generalization or conceptual distance.",
+      "function": "Abstraction modulates how directly a work refers to the visible world. It describes distance from depiction, not meaning or depth.",
+      "activationConditions": [
+        "At least 2 Roots confirmed",
+        "No unresolved Entropy dominance",
+        "Explicit reason stated for invoking this Pole"
+      ],
+      "notThis": [
+        "Not intelligence",
+        "Not sophistication"
+      ],
+      "failureMode": "Abstraction is often treated as inherent value rather than a descriptive condition. Distance is mistaken for depth.",
+      "overrideLimits": {
+        "may": ["Qualify how Roots manifest perceptually"],
+        "mayNot": ["Replace Root-based evidence", "Justify interpretation by itself"]
+      }
+    },
+    {
+      "id": "l-b-sh",
+      "name": "Realism",
+      "hebrew": "L-B-Sh",
+      "axis": {
+        "opposite": "p-sh-t",
+        "oppositeName": "Abstraction"
+      },
+      "governs": "The degree to which a work maintains specificity, depiction, or surface fidelity.",
+      "function": "Realism modulates how directly a work presents observable features. It describes closeness to depiction, not truth or sincerity.",
+      "activationConditions": [
+        "At least 2 Roots confirmed",
+        "No unresolved Entropy dominance",
+        "Explicit reason stated for invoking this Pole"
+      ],
+      "notThis": [
+        "Not honesty",
+        "Not skill"
+      ],
+      "failureMode": "Realism is often treated as evidence of effort or truth, even when perception is not meaningfully guided.",
+      "overrideLimits": {
+        "may": ["Constrain claims about abstraction"],
+        "mayNot": ["Function as proof of value or meaning"]
+      }
+    },
+    {
+      "id": "z-k-r",
+      "name": "Witness",
+      "hebrew": "Z-K-R",
+      "axis": {
+        "opposite": "t-k-n",
+        "oppositeName": "Repair"
+      },
+      "governs": "The degree to which a work holds attention in unresolved presence rather than resolution.",
+      "function": "Witness modulates whether tension is sustained without correction. It describes refusal to resolve, not ethical stance.",
+      "activationConditions": [
+        "At least 2 Roots confirmed",
+        "No unresolved Entropy dominance",
+        "Explicit reason stated for invoking this Pole"
+      ],
+      "notThis": [
+        "Not morality",
+        "Not conscience"
+      ],
+      "failureMode": "Witness is frequently inflated into ethical authority. Non-resolution is mistaken for depth or seriousness.",
+      "overrideLimits": {
+        "may": ["Prevent premature narrative closure"],
+        "mayNot": ["Assert moral superiority", "Stand in for visual evidence"]
+      }
+    },
+    {
+      "id": "t-k-n",
+      "name": "Repair",
+      "hebrew": "T-K-N",
+      "axis": {
+        "opposite": "z-k-r",
+        "oppositeName": "Witness"
+      },
+      "governs": "The degree to which a work attempts restoration, correction, or resolution.",
+      "function": "Repair modulates whether a work moves toward closure or stabilization. It describes intent toward fixing, not success.",
+      "activationConditions": [
+        "At least 2 Roots confirmed",
+        "No unresolved Entropy dominance",
+        "Explicit reason stated for invoking this Pole"
+      ],
+      "notThis": [
+        "Not goodness",
+        "Not optimism"
+      ],
+      "failureMode": "Repair is often treated as virtue. Attempts at resolution are mistaken for ethical progress.",
+      "overrideLimits": {
+        "may": ["Qualify narrative or structural closure"],
+        "mayNot": ["Justify meaning", "Override perceptual failure"]
+      }
+    }
+  ],
+  "systemRules": [
+    "Poles are NOT Drivers",
+    "Poles do NOT generate interpretation",
+    "Poles only modulate or constrain conclusions produced by Roots",
+    "Poles are accessed ONLY after at least 2 Roots have passed RAP",
+    "Poles can never be the first or primary explanation"
+  ]
+}
