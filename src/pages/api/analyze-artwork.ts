@@ -12,12 +12,12 @@ import modesData from '../../data/hg-modes.json';
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Access environment variables from Cloudflare runtime
-    // @ts-ignore - Cloudflare runtime.env
-    const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const runtime = locals as any;
+    const apiKey = runtime.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
 
     console.log('API Key present:', !!apiKey);
     console.log('API Key length:', apiKey?.length);
-    console.log('Runtime env available:', !!locals.runtime?.env);
+    console.log('Runtime env available:', !!runtime.runtime?.env);
 
     if (!apiKey) {
       throw new Error('ANTHROPIC_API_KEY environment variable is not set');
