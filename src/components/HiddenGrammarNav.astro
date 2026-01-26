@@ -3,11 +3,14 @@ const currentPath = Astro.url.pathname;
 
 const navItems = [
   { label: 'Overview', href: '/hidden-grammar' },
+  { label: 'AI Analysis', href: '/hidden-grammar/ai-analyze' },
+  // { label: 'Manual Analysis', href: '/hidden-grammar/analyze' },
+];
+
+const moreItems = [
   { label: 'The Framework', href: '/hidden-grammar/framework' },
   { label: 'The 11 Roots', href: '/hidden-grammar/roots' },
   { label: 'The 46 Principles', href: '/hidden-grammar/principles' },
-  { label: 'AI Analysis', href: '/hidden-grammar/ai-analyze' },
-  // { label: 'Manual Analysis', href: '/hidden-grammar/analyze' },
 ];
 ---
 
@@ -26,6 +29,22 @@ const navItems = [
         </a>
       </li>
     ))}
+
+    <li class="hg-nav-item hg-nav-submenu">
+      <div class="hg-nav-label">More</div>
+      <ul class="hg-nav-sublist">
+        {moreItems.map(item => (
+          <li class="hg-nav-subitem">
+            <a
+              href={item.href}
+              class:list={['hg-nav-link hg-nav-sublink', { active: currentPath === item.href || currentPath === item.href + '/' }]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </li>
   </ul>
 </nav>
 
@@ -83,6 +102,36 @@ const navItems = [
     background: var(--color-purple);
     color: var(--color-white);
     font-weight: 600;
+  }
+
+  /* Submenu styles */
+  .hg-nav-submenu {
+    margin-top: var(--space-m);
+  }
+
+  .hg-nav-label {
+    padding: var(--space-s) var(--space-m);
+    color: var(--color-gray-6);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hg-nav-sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .hg-nav-subitem {
+    margin-bottom: var(--space-xs);
+  }
+
+  .hg-nav-sublink {
+    padding-left: var(--space-xl);
+    font-size: var(--text-sm);
   }
 
   /* Mobile responsive */
