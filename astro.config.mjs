@@ -4,7 +4,7 @@ import cloudflare from '@astrojs/cloudflare';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://artistsarejerks-astro.pages.dev',
-  output: 'hybrid', // Hybrid mode: static by default, opt-in to SSR for API routes
+  output: 'static', // Static mode with server endpoints support
   adapter: cloudflare({
     imageService: 'passthrough'
   }),
