@@ -528,7 +528,7 @@ const modes = await import('../../data/hg-modes.json');
 
   .mode-content {
     padding: clamp(1rem, 3vw, 1.5rem);
-    border: 2px solid var(--color-gray-3);
+    border: 0.5px solid var(--color-purple);
     border-radius: 8px;
     transition: all 0.2s ease;
     background: var(--color-white);
@@ -537,6 +537,7 @@ const modes = await import('../../data/hg-modes.json');
   }
 
   .mode-card input:checked + .mode-content {
+    border-width: 2px;
     border-color: var(--color-purple);
     background: var(--color-purple-light);
   }
