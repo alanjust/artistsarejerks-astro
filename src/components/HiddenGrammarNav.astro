@@ -54,10 +54,17 @@ const moreItems = [
 </nav>
 
 <style>
+  /* Box-sizing for navigation */
+  .hg-nav *,
+  .hg-nav *::before,
+  .hg-nav *::after {
+    box-sizing: border-box;
+  }
+
   .hg-nav {
     background: var(--color-white);
     border-right: 2px solid var(--color-gray-2);
-    padding: var(--space-xl);
+    padding: clamp(1.5rem, 4vw, 3rem);
     height: 100%;
     min-width: 240px;
     position: sticky;
@@ -65,14 +72,14 @@ const moreItems = [
   }
 
   .hg-nav-header {
-    margin-bottom: var(--space-l);
-    padding-bottom: var(--space-m);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    padding-bottom: clamp(0.75rem, 2vw, 1rem);
     border-bottom: 2px solid var(--color-purple);
   }
 
   .hg-nav-header h3 {
     font-family: var(--font-display);
-    font-size: var(--text-xl);
+    font-size: clamp(1.125rem, 2.5vw, 1.25rem);
     color: var(--color-purple);
     margin: 0;
   }
@@ -84,18 +91,21 @@ const moreItems = [
   }
 
   .hg-nav-item {
-    margin-bottom: var(--space-xs);
+    margin-bottom: clamp(0.375rem, 1vw, 0.5rem);
   }
 
   .hg-nav-link {
     display: block;
-    padding: var(--space-s) var(--space-m);
+    padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
     color: var(--color-gray-8);
     text-decoration: none;
     border-radius: 6px;
     transition: all 0.2s ease;
     font-family: var(--font-body);
-    font-size: var(--text-base);
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .hg-nav-link:hover {
@@ -111,7 +121,7 @@ const moreItems = [
 
   /* Submenu styles */
   .hg-nav-submenu {
-    margin-top: var(--space-m);
+    margin-top: clamp(0.75rem, 2vw, 1rem);
   }
 
   .hg-nav-toggle {
@@ -119,10 +129,10 @@ const moreItems = [
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: var(--space-s) var(--space-m);
+    padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
     color: var(--color-gray-6);
     font-family: var(--font-body);
-    font-size: var(--text-sm);
+    font-size: clamp(0.75rem, 1.75vw, 0.875rem);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -131,6 +141,7 @@ const moreItems = [
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: 44px;
   }
 
   .hg-nav-toggle:hover {
@@ -160,12 +171,12 @@ const moreItems = [
   }
 
   .hg-nav-subitem {
-    margin-bottom: var(--space-xs);
+    margin-bottom: clamp(0.375rem, 1vw, 0.5rem);
   }
 
   .hg-nav-sublink {
-    padding-left: var(--space-xl);
-    font-size: var(--text-sm);
+    padding-left: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(0.8125rem, 1.75vw, 0.875rem);
   }
 
   /* Mobile responsive */
@@ -176,22 +187,48 @@ const moreItems = [
       width: 100%;
       border-right: none;
       border-bottom: 2px solid var(--color-gray-2);
-      padding: var(--space-m);
+      padding: clamp(0.75rem, 3vw, 1rem);
     }
 
     .hg-nav-list {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--space-xs);
+      gap: clamp(0.5rem, 1.5vw, 0.75rem);
     }
 
     .hg-nav-item {
       margin-bottom: 0;
+      flex: 1 1 auto;
     }
 
     .hg-nav-link {
-      padding: var(--space-xs) var(--space-s);
-      font-size: var(--text-sm);
+      padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(0.625rem, 2vw, 0.75rem);
+      font-size: clamp(0.8125rem, 2vw, 0.875rem);
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hg-nav-submenu {
+      flex-basis: 100%;
+      margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
+    }
+
+    .hg-nav-sublist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(0.5rem, 1.5vw, 0.75rem);
+      padding-top: clamp(0.5rem, 1.5vw, 0.75rem);
+    }
+
+    .hg-nav-subitem {
+      margin-bottom: 0;
+      flex: 1 1 auto;
+    }
+
+    .hg-nav-sublink {
+      padding-left: clamp(0.625rem, 2vw, 0.75rem);
+      justify-content: center;
+      text-align: center;
     }
   }
 </style>
