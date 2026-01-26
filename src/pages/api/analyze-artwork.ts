@@ -1,32 +1,5 @@
 import type { APIRoute} from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
-import { readFileSync } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Get the directory name in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Manually load .env file and parse it
-try {
-  const envPath = path.resolve(__dirname, '../../../.env');
-  const envContent = readFileSync(envPath, 'utf-8');
-  const lines = envContent.split('\n');
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#')) {
-      const [key, ...valueParts] = trimmed.split('=');
-      const value = valueParts.join('=');
-      if (key && value) {
-        process.env[key.trim()] = value.trim();
-      }
-    }
-  }
-} catch (error) {
-  console.error('Failed to load .env file:', error);
-}
 
 // Enable server-side rendering for this endpoint
 export const prerender = false;
