@@ -229,11 +229,15 @@ const modes = await import('../../data/hg-modes.json');
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Analysis failed');
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        console.error('API Error:', result);
+        alert(`Analysis failed: ${result.details || result.error}\n\nAPI Key Present: ${result.apiKeyPresent}\n\nCheck console for more details.`);
+        if (loadingState) loadingState.style.display = 'none';
+        if (analysisForm) analysisForm.style.display = 'block';
+        return;
+      }
 
       // Display results
       if (resultsContent) {
@@ -245,7 +249,7 @@ const modes = await import('../../data/hg-modes.json');
 
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('Failed to analyze artwork. Please try again.');
+      alert('Failed to analyze artwork. Please try again.\n\nCheck console for more details.');
       if (loadingState) loadingState.style.display = 'none';
       if (analysisForm) analysisForm.style.display = 'block';
     }
