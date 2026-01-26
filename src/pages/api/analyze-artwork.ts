@@ -29,7 +29,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     const body = await request.json();
-    const { image, title, artist, year, medium, mode} = body;
+    const { image, title, artist, year, medium, dimensions, mode} = body;
 
     if (!image) {
       return new Response(JSON.stringify({ error: 'No image provided' }), {
@@ -96,6 +96,7 @@ Output in **Section Format** as specified below.
 - **Artist:** ${artist || 'Unknown Artist'}
 - **Year:** ${year || 'Not specified'}
 - **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
 - **Input Type:** photo/reproduction
 - **Image Quality Flags:** (note any glare, crop, low-res, color shift, or none)
 - **Context Notes:** (note any exhibition context, constraints, or familiarity issues)

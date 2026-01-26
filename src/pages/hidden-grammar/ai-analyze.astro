@@ -71,6 +71,11 @@ const modes = await import('../../data/hg-modes.json');
                 <label for="medium">Medium <span class="optional">(optional)</span></label>
                 <input type="text" id="medium" placeholder="e.g., Oil on canvas">
               </div>
+
+              <div class="form-group">
+                <label for="dimensions">Dimensions <span class="optional">(optional, in inches)</span></label>
+                <input type="text" id="dimensions" placeholder="e.g., 24 x 36 or 18 x 24 x 2">
+              </div>
             </div>
           </section>
 
@@ -212,6 +217,7 @@ const modes = await import('../../data/hg-modes.json');
     const artist = (document.getElementById('artistName') as HTMLInputElement)?.value || 'Unknown Artist';
     const year = (document.getElementById('yearCreated') as HTMLInputElement)?.value;
     const medium = (document.getElementById('medium') as HTMLInputElement)?.value;
+    const dimensions = (document.getElementById('dimensions') as HTMLInputElement)?.value;
     const mode = (document.querySelector('input[name="analysisMode"]:checked') as HTMLInputElement)?.value || 'strategic';
 
     // Show loading state
@@ -231,6 +237,7 @@ const modes = await import('../../data/hg-modes.json');
           artist,
           year,
           medium,
+          dimensions,
           mode,
         }),
       });
