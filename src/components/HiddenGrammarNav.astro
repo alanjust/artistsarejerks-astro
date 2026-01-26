@@ -31,7 +31,12 @@ const moreItems = [
     ))}
 
     <li class="hg-nav-item hg-nav-submenu">
-      <div class="hg-nav-label">More</div>
+      <button class="hg-nav-label hg-nav-toggle" type="button">
+        More
+        <svg class="hg-nav-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
       <ul class="hg-nav-sublist">
         {moreItems.map(item => (
           <li class="hg-nav-subitem">
@@ -109,7 +114,11 @@ const moreItems = [
     margin-top: var(--space-m);
   }
 
-  .hg-nav-label {
+  .hg-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
     padding: var(--space-s) var(--space-m);
     color: var(--color-gray-6);
     font-family: var(--font-body);
@@ -117,12 +126,37 @@ const moreItems = [
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .hg-nav-toggle:hover {
+    background: var(--color-cream);
+    color: var(--color-purple);
+  }
+
+  .hg-nav-chevron {
+    transition: transform 0.2s ease;
+  }
+
+  .hg-nav-submenu.open .hg-nav-chevron {
+    transform: rotate(180deg);
   }
 
   .hg-nav-sublist {
     list-style: none;
     padding: 0;
     margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .hg-nav-submenu.open .hg-nav-sublist {
+    max-height: 500px;
   }
 
   .hg-nav-subitem {
@@ -161,3 +195,13 @@ const moreItems = [
     }
   }
 </style>
+
+<script>
+  // Handle dropdown toggle
+  const toggleBtn = document.querySelector('.hg-nav-toggle');
+  const submenu = document.querySelector('.hg-nav-submenu');
+
+  toggleBtn?.addEventListener('click', () => {
+    submenu?.classList.toggle('open');
+  });
+</script>
