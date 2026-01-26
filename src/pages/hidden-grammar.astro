@@ -1,9 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HiddenGrammarNav from '../components/HiddenGrammarNav.astro';
 ---
 
 <BaseLayout title="Hidden Grammar Art Analysis">
-  <div class="hidden-grammar-landing">
+  <div class="hg-layout">
+    <HiddenGrammarNav />
+    <div class="hg-content">
+      <div class="hidden-grammar-landing">
     <header class="hg-hero">
       <h1>Hidden Grammar</h1>
       <p class="tagline">Art Analysis Through Observable Evidence</p>
@@ -183,14 +187,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <a href="/hidden-grammar/ai-analyze" class="cta-button large">Analyze Artwork</a>
       <a href="/hidden-grammar/framework" class="cta-button secondary">Explore the Framework</a>
     </section>
+      </div>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  .hg-layout {
+    display: flex;
+    min-height: calc(100vh - 200px);
+  }
+
+  .hg-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
   .hidden-grammar-landing {
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--space-xl) var(--space-m);
+  }
+
+  @media (max-width: 1023px) {
+    .hg-layout {
+      flex-direction: column;
+    }
   }
 
   .hg-hero {

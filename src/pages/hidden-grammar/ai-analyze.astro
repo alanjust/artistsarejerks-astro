@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import HiddenGrammarNav from '../../components/HiddenGrammarNav.astro';
 
 const principles = await import('../../data/hg-principles.json');
 const roots = await import('../../data/hg-roots.json');
@@ -9,8 +10,11 @@ const modes = await import('../../data/hg-modes.json');
 <BaseLayout
   title="AI Art Analysis - Hidden Grammar"
 >
-  <div class="page-container">
-    <div class="content-wrapper">
+  <div class="hg-layout">
+    <HiddenGrammarNav />
+    <div class="hg-content">
+      <div class="page-container">
+        <div class="content-wrapper">
       <header class="page-header">
         <h1>Hidden Grammar AI Analysis</h1>
         <p class="subtitle">Upload artwork and receive instant AI-powered analysis using the Hidden Grammar framework</p>
@@ -123,6 +127,8 @@ const modes = await import('../../data/hg-modes.json');
           <div id="resultsContent" class="results-content"></div>
         </div>
       </main>
+        </div>
+      </div>
     </div>
   </div>
 </BaseLayout>
@@ -285,6 +291,22 @@ const modes = await import('../../data/hg-modes.json');
 </script>
 
 <style>
+  .hg-layout {
+    display: flex;
+    min-height: calc(100vh - 200px);
+  }
+
+  .hg-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 1023px) {
+    .hg-layout {
+      flex-direction: column;
+    }
+  }
+
   .page-container {
     min-height: 100vh;
     background: var(--color-gray-1);

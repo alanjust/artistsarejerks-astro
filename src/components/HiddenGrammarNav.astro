@@ -1,0 +1,114 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { label: 'Overview', href: '/hidden-grammar' },
+  { label: 'The Framework', href: '/hidden-grammar/framework' },
+  { label: 'The 11 Roots', href: '/hidden-grammar/roots' },
+  { label: 'The 46 Principles', href: '/hidden-grammar/principles' },
+  { label: 'AI Analysis', href: '/hidden-grammar/ai-analyze' },
+  { label: 'Manual Analysis', href: '/hidden-grammar/analyze' },
+];
+---
+
+<nav class="hg-nav">
+  <div class="hg-nav-header">
+    <h3>Hidden Grammar</h3>
+  </div>
+  <ul class="hg-nav-list">
+    {navItems.map(item => (
+      <li class="hg-nav-item">
+        <a
+          href={item.href}
+          class:list={['hg-nav-link', { active: currentPath === item.href || currentPath === item.href + '/' }]}
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .hg-nav {
+    background: var(--color-white);
+    border-right: 2px solid var(--color-gray-2);
+    padding: var(--space-xl);
+    height: 100%;
+    min-width: 240px;
+    position: sticky;
+    top: 0;
+  }
+
+  .hg-nav-header {
+    margin-bottom: var(--space-l);
+    padding-bottom: var(--space-m);
+    border-bottom: 2px solid var(--color-purple);
+  }
+
+  .hg-nav-header h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    color: var(--color-purple);
+    margin: 0;
+  }
+
+  .hg-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .hg-nav-item {
+    margin-bottom: var(--space-xs);
+  }
+
+  .hg-nav-link {
+    display: block;
+    padding: var(--space-s) var(--space-m);
+    color: var(--color-gray-8);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+  }
+
+  .hg-nav-link:hover {
+    background: var(--color-cream);
+    color: var(--color-purple);
+  }
+
+  .hg-nav-link.active {
+    background: var(--color-purple);
+    color: var(--color-white);
+    font-weight: 600;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 1023px) {
+    .hg-nav {
+      position: static;
+      min-width: auto;
+      width: 100%;
+      border-right: none;
+      border-bottom: 2px solid var(--color-gray-2);
+      padding: var(--space-m);
+    }
+
+    .hg-nav-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .hg-nav-item {
+      margin-bottom: 0;
+    }
+
+    .hg-nav-link {
+      padding: var(--space-xs) var(--space-s);
+      font-size: var(--text-sm);
+    }
+  }
+</style>
