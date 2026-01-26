@@ -9,13 +9,19 @@ import principlesData from '../../data/hg-principles.json';
 import rootsData from '../../data/hg-roots.json';
 import modesData from '../../data/hg-modes.json';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Debug: Log what API key we're getting
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    // Access environment variables from Cloudflare runtime
+    // @ts-ignore - Cloudflare runtime.env
+    const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+
     console.log('API Key present:', !!apiKey);
     console.log('API Key length:', apiKey?.length);
-    console.log('API Key starts with:', apiKey?.substring(0, 15));
+    console.log('Runtime env available:', !!locals.runtime?.env);
+
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+    }
 
     // Initialize Anthropic client inside the request handler
     const anthropic = new Anthropic({
