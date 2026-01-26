@@ -8,7 +8,6 @@ const modes = await import('../../data/hg-modes.json');
 
 <BaseLayout
   title="AI Art Analysis - Hidden Grammar"
-  description="Upload artwork and get AI-powered Hidden Grammar analysis"
 >
   <div class="page-container">
     <div class="content-wrapper">
@@ -137,7 +136,7 @@ const modes = await import('../../data/hg-modes.json');
   const removeImage = document.getElementById('removeImage');
   const analyzeBtn = document.getElementById('analyzeBtn');
 
-  let uploadedImageData = null;
+  let uploadedImageData: string | null = null;
 
   uploadArea?.addEventListener('click', () => imageInput?.click());
 
@@ -172,7 +171,7 @@ const modes = await import('../../data/hg-modes.json');
     if (uploadArea) uploadArea.style.display = 'flex';
     if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
     uploadedImageData = null;
-    if (analyzeBtn) analyzeBtn.disabled = true;
+    if (analyzeBtn) (analyzeBtn as HTMLButtonElement).disabled = true;
   });
 
   function handleImageUpload(file: File) {
@@ -183,7 +182,7 @@ const modes = await import('../../data/hg-modes.json');
         uploadedImageData = e.target.result as string;
         if (uploadArea) uploadArea.style.display = 'none';
         if (imagePreviewContainer) imagePreviewContainer.style.display = 'block';
-        if (analyzeBtn) analyzeBtn.disabled = false;
+        if (analyzeBtn) (analyzeBtn as HTMLButtonElement).disabled = false;
       }
     };
     reader.readAsDataURL(file);

@@ -7,7 +7,7 @@ import principles from '../../data/hg-principles.json';
 const strategicMode = modes.modes.find(m => m.id === 'strategic');
 ---
 
-<BaseLayout title="Hidden Grammar Analysis" description="Analyze artwork using the Hidden Grammar framework">
+<BaseLayout title="Hidden Grammar Analysis">
   <div class="analyze-page">
     <header class="analyze-header">
       <h1>Art Analysis Tool</h1>
@@ -60,7 +60,7 @@ const strategicMode = modes.modes.find(m => m.id === 'strategic');
           <div class="mode-steps">
             <h4>Analysis Steps:</h4>
             <ol>
-              {strategicMode?.steps.map(step => (
+              {strategicMode?.steps?.map(step => (
                 <li>{step}</li>
               ))}
             </ol>
