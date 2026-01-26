@@ -376,10 +376,15 @@ Begin your analysis now.`;
     );
   } catch (error) {
     console.error('Analysis error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+
     return new Response(
       JSON.stringify({
         error: 'Failed to analyze artwork',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: errorMessage,
+        stack: errorStack,
+        apiKeyPresent: !!process.env.ANTHROPIC_API_KEY,
       }),
       {
         status: 500,
