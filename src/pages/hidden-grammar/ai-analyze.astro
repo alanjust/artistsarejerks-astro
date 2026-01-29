@@ -79,25 +79,55 @@ const modes = await import('../../data/hg-modes.json');
             </div>
           </section>
 
-          <!-- Section 1: Analysis Mode Selection -->
+          <!-- Section 2: Analysis Configuration -->
           <section class="form-section">
             <div class="section-header">
               <span class="section-number">2</span>
-              <h2>Select Analysis Mode</h2>
+              <h2>Configure Analysis</h2>
             </div>
-            <p class="section-description">Choose the type of analysis you want</p>
 
-            <div class="mode-selector">
-              {modes.modes.map((mode) => (
-                <label class="mode-card">
-                  <input type="radio" name="analysisMode" value={mode.id} checked={mode.id === 'strategic'}>
-                  <div class="mode-content">
-                    <h3>{mode.name}</h3>
-                    <p class="mode-phase">{mode.phase}</p>
-                    <p class="mode-description">{mode.description}</p>
-                  </div>
+            <!-- Custom Prompt Input -->
+            <div class="custom-prompt-section">
+              <div class="subsection-header">
+                <h3>Custom Analysis Prompt</h3>
+                <p class="subsection-description">Write your own analysis instructions or questions for the AI</p>
+              </div>
+              
+              <div class="form-group">
+                <label for="customPrompt">
+                  Custom Prompt <span class="optional">(optional - leave blank to use a pre-formatted mode below)</span>
                 </label>
-              ))}
+                <textarea 
+                  id="customPrompt" 
+                  rows="6"
+                  placeholder="Example: Focus on the color palette and how it creates mood. Explain the composition choices and their effect on the viewer's attention. Compare this work to Impressionist techniques..."
+                ></textarea>
+                <p class="field-hint">
+                  When you provide a custom prompt, the AI will use your instructions instead of the pre-formatted modes below.
+                  The Hidden Grammar framework data (11 Roots, 46 Principles) will still be available to the AI.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pre-formatted Analysis Modes -->
+            <div class="preformatted-modes-section">
+              <div class="subsection-header">
+                <h3>Pre-formatted Analysis Modes</h3>
+                <p class="subsection-description">Or choose a structured analysis template</p>
+              </div>
+
+              <div class="mode-selector">
+                {modes.modes.map((mode) => (
+                  <label class="mode-card">
+                    <input type="radio" name="analysisMode" value={mode.id}>
+                    <div class="mode-content">
+                      <h3>{mode.name}</h3>
+                      <p class="mode-phase">{mode.phase}</p>
+                      <p class="mode-description">{mode.description}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
           </section>
 
@@ -199,6 +229,40 @@ const modes = await import('../../data/hg-modes.json');
     reader.readAsDataURL(file);
   }
 
+  // Custom Prompt & Mode Selection Interaction
+  const customPromptTextarea = document.getElementById('customPrompt') as HTMLTextAreaElement;
+  const modeRadios = document.querySelectorAll('input[name="analysisMode"]') as NodeListOf<HTMLInputElement>;
+  const customPromptSection = document.querySelector('.custom-prompt-section') as HTMLElement;
+  const modesSection = document.querySelector('.preformatted-modes-section') as HTMLElement;
+
+  // When user types in custom prompt, deselect all mode radios and dim modes section
+  customPromptTextarea?.addEventListener('input', () => {
+    const hasCustomPrompt = customPromptTextarea.value.trim().length > 0;
+    if (hasCustomPrompt) {
+      modeRadios.forEach(radio => {
+        radio.checked = false;
+      });
+      modesSection?.classList.add('inactive');
+      customPromptSection?.classList.remove('inactive');
+    } else {
+      // If custom prompt is cleared, re-enable modes section
+      modesSection?.classList.remove('inactive');
+    }
+  });
+
+  // When user selects a mode, clear the custom prompt and dim custom prompt section
+  modeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) {
+        if (customPromptTextarea) {
+          customPromptTextarea.value = '';
+        }
+        customPromptSection?.classList.add('inactive');
+        modesSection?.classList.remove('inactive');
+      }
+    });
+  });
+
   // Analyze Button Handler
   const loadingState = document.getElementById('loadingState');
   const resultsPanel = document.getElementById('resultsPanel');
@@ -218,7 +282,17 @@ const modes = await import('../../data/hg-modes.json');
     const year = (document.getElementById('yearCreated') as HTMLInputElement)?.value;
     const medium = (document.getElementById('medium') as HTMLInputElement)?.value;
     const dimensions = (document.getElementById('dimensions') as HTMLInputElement)?.value;
-    const mode = (document.querySelector('input[name="analysisMode"]:checked') as HTMLInputElement)?.value || 'strategic';
+    const customPrompt = (document.getElementById('customPrompt') as HTMLTextAreaElement)?.value || '';
+    const selectedModeRadio = document.querySelector('input[name="analysisMode"]:checked') as HTMLInputElement;
+    const mode = selectedModeRadio?.value || 'strategic';
+    
+    // Validate that either custom prompt or mode is selected
+    if (!customPrompt.trim() && !selectedModeRadio) {
+      alert('Please either enter a custom prompt or select a pre-formatted analysis mode');
+      if (loadingState) loadingState.style.display = 'none';
+      if (analysisForm) analysisForm.style.display = 'block';
+      return;
+    }
 
     // Show loading state
     if (analysisForm) analysisForm.style.display = 'none';
@@ -239,6 +313,7 @@ const modes = await import('../../data/hg-modes.json');
           medium,
           dimensions,
           mode,
+          customPrompt,
         }),
       });
 
@@ -269,8 +344,24 @@ const modes = await import('../../data/hg-modes.json');
   });
 
   backToForm?.addEventListener('click', () => {
+    // Reset form state for new analysis
     if (analysisForm) analysisForm.style.display = 'block';
     if (resultsPanel) resultsPanel.style.display = 'none';
+    
+    // Clear custom prompt
+    if (customPromptTextarea) {
+      customPromptTextarea.value = '';
+    }
+    
+    // Deselect all mode radios
+    modeRadios.forEach(radio => {
+      radio.checked = false;
+    });
+    
+    // Remove inactive classes from both sections so they're both accessible
+    customPromptSection?.classList.remove('inactive');
+    modesSection?.classList.remove('inactive');
+    
     window.scrollTo(0, 0);
   });
 
@@ -405,6 +496,45 @@ const modes = await import('../../data/hg-modes.json');
     margin-bottom: clamp(1rem, 3vw, 1.5rem);
   }
 
+  /* Subsections */
+  .custom-prompt-section,
+  .preformatted-modes-section {
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+    transition: opacity 0.2s ease;
+  }
+
+  .custom-prompt-section.inactive,
+  .preformatted-modes-section.inactive {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .subsection-header {
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .subsection-header h3 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    color: var(--color-purple);
+    margin: 0 0 clamp(0.375rem, 1vw, 0.5rem) 0;
+  }
+
+  .subsection-description {
+    color: var(--color-gray-6);
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .field-hint {
+    font-size: clamp(0.8125rem, 1.8vw, 0.875rem);
+    color: var(--color-gray-5);
+    line-height: 1.5;
+    margin-top: clamp(0.375rem, 1vw, 0.5rem);
+    font-style: italic;
+  }
+
   /* Upload Area */
   .upload-area {
     display: flex;
@@ -494,7 +624,8 @@ const modes = await import('../../data/hg-modes.json');
     font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   }
 
-  .form-group input {
+  .form-group input,
+  .form-group textarea {
     width: 100%;
     padding: clamp(0.5rem, 2vw, 0.75rem);
     border: 2px solid var(--color-gray-3);
@@ -503,7 +634,14 @@ const modes = await import('../../data/hg-modes.json');
     font-size: clamp(0.875rem, 2vw, 1rem);
   }
 
-  .form-group input:focus {
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
     outline: none;
     border-color: var(--color-purple);
   }
