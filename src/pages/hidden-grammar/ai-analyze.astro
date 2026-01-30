@@ -170,6 +170,7 @@ const modes = await import('../../data/hg-modes.json');
   </div>
 </BaseLayout>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
   // Image Upload Handling
   const uploadArea = document.getElementById('uploadArea');
@@ -543,138 +544,67 @@ const modes = await import('../../data/hg-modes.json');
     URL.revokeObjectURL(url);
   });
 
-  // Export to PDF (using browser print)
+  // Export to PDF (downloadable using html2pdf)
   const exportPDFBtn = document.getElementById('exportPDF');
-  exportPDFBtn?.addEventListener('click', () => {
+  exportPDFBtn?.addEventListener('click', async () => {
     if (!rawMarkdownContent) {
       alert('No analysis to export. Please run an analysis first.');
       return;
     }
     
-    // Create a print-friendly version
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Please allow pop-ups to export PDF');
-      return;
-    }
+    // Show loading state
+    const originalText = exportPDFBtn?.textContent;
+    if (exportPDFBtn) exportPDFBtn.textContent = 'Generating PDF...';
+    if (exportPDFBtn) (exportPDFBtn as HTMLButtonElement).disabled = true;
     
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Hidden Grammar Analysis - ${analysisMetadata.title}</title>
-        <style>
-          @page {
-            margin: 1in;
-          }
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          h1, h2, h3, h4 {
-            color: #7c3aed;
-            page-break-after: avoid;
-          }
-          h1 {
-            border-bottom: 3px solid #7c3aed;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          h2 {
-            margin-top: 30px;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 8px;
-          }
-          h3 {
-            margin-top: 20px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            page-break-inside: avoid;
-          }
-          th, td {
-            border: 1px solid #d1d5db;
-            padding: 8px 12px;
-            text-align: left;
-          }
-          th {
-            background-color: #f3f4f6;
-            font-weight: 600;
-          }
-          .metadata {
-            background: #f9fafb;
-            padding: 15px;
-            border-left: 4px solid #7c3aed;
-            margin-bottom: 30px;
-            page-break-inside: avoid;
-          }
-          .metadata p {
-            margin: 5px 0;
-          }
-          .artwork-image {
-            width: 2in;
-            height: 2in;
-            object-fit: contain;
-            display: block;
-            margin: 15px 0 20px 0;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-          }
-          ul, ol {
-            margin: 10px 0;
-          }
-          li {
-            margin: 5px 0;
-          }
-          strong {
-            color: #374151;
-          }
-          @media print {
-            body {
-              padding: 0;
-            }
-            .no-print {
-              display: none;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="metadata">
-          <h1>Hidden Grammar Analysis</h1>
-          ${uploadedImageData ? `<img src="${uploadedImageData}" alt="Artwork" class="artwork-image">` : ''}
-          <p><strong>Artwork:</strong> ${analysisMetadata.title}</p>
-          <p><strong>Artist:</strong> ${analysisMetadata.artist}</p>
-          ${analysisMetadata.year ? `<p><strong>Year:</strong> ${analysisMetadata.year}</p>` : ''}
-          ${analysisMetadata.medium ? `<p><strong>Medium:</strong> ${analysisMetadata.medium}</p>` : ''}
-          ${analysisMetadata.dimensions ? `<p><strong>Dimensions:</strong> ${analysisMetadata.dimensions}</p>` : ''}
-          <p><strong>Analysis Mode:</strong> ${analysisMetadata.mode}</p>
-          <p><strong>Analysis Date:</strong> ${new Date(analysisMetadata.timestamp).toLocaleString()}</p>
+    try {
+      // Create a temporary container for PDF content
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.innerHTML = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; padding: 20px;">
+          <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #7c3aed; margin-bottom: 30px;">
+            <h1 style="color: #7c3aed; border-bottom: 3px solid #7c3aed; padding-bottom: 10px; margin: 0 0 20px 0;">Hidden Grammar Analysis</h1>
+            ${uploadedImageData ? `<img src="${uploadedImageData}" alt="Artwork" style="width: 144px; height: 144px; object-fit: contain; display: block; margin: 15px 0 20px 0; border: 1px solid #d1d5db; border-radius: 4px;">` : ''}
+            <p style="margin: 5px 0;"><strong>Artwork:</strong> ${analysisMetadata.title}</p>
+            <p style="margin: 5px 0;"><strong>Artist:</strong> ${analysisMetadata.artist}</p>
+            ${analysisMetadata.year ? `<p style="margin: 5px 0;"><strong>Year:</strong> ${analysisMetadata.year}</p>` : ''}
+            ${analysisMetadata.medium ? `<p style="margin: 5px 0;"><strong>Medium:</strong> ${analysisMetadata.medium}</p>` : ''}
+            ${analysisMetadata.dimensions ? `<p style="margin: 5px 0;"><strong>Dimensions:</strong> ${analysisMetadata.dimensions}</p>` : ''}
+            <p style="margin: 5px 0;"><strong>Analysis Mode:</strong> ${analysisMetadata.mode}</p>
+            <p style="margin: 5px 0;"><strong>Analysis Date:</strong> ${new Date(analysisMetadata.timestamp).toLocaleString()}</p>
+          </div>
+          ${resultsContent?.innerHTML || ''}
         </div>
-        ${resultsContent?.innerHTML || ''}
-        <p class="no-print" style="margin-top: 40px; text-align: center; color: #6b7280;">
-          <small>You can now print this page or save as PDF using your browser's print dialog (⌘P or Ctrl+P)</small>
-        </p>
-      </body>
-      </html>
-    `;
-    
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    
-    // Trigger print dialog after content loads
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.print();
-      }, 250);
-    };
+      `;
+      
+      document.body.appendChild(tempContainer);
+      
+      // Configure PDF options
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5], // inches
+        filename: `hidden-grammar-analysis-${analysisMetadata.title.replace(/\s+/g, '-').toLowerCase() || 'artwork'}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      
+      // Generate and download PDF
+      await (window as any).html2pdf().set(opt).from(tempContainer).save();
+      
+      // Clean up
+      document.body.removeChild(tempContainer);
+      
+      if (exportPDFBtn) exportPDFBtn.textContent = originalText || 'Export PDF';
+      if (exportPDFBtn) (exportPDFBtn as HTMLButtonElement).disabled = false;
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Failed to generate PDF. Please try again.');
+      if (exportPDFBtn) exportPDFBtn.textContent = originalText || 'Export PDF';
+      if (exportPDFBtn) (exportPDFBtn as HTMLButtonElement).disabled = false;
+    }
   });
 </script>
 
