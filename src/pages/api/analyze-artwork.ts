@@ -177,7 +177,334 @@ Even with custom instructions, maintain evidence-based reasoning:
 Begin your analysis, responding thoughtfully to the user's custom request while maintaining mechanism-based reasoning and the distinctive Hidden Grammar voice.`;
     } else {
       // Mode-specific instructions
-      if (mode === 'wip') {
+      if (mode === 'full-audit') {
+        analysisInstructions = `
+# YOUR TASK: FULL HIDDEN GRAMMAR AUDIT
+
+Run a FULL HIDDEN GRAMMAR AUDIT using the canonical template structure.
+
+**Context:**
+- **Artwork Title:** ${title || 'Untitled'}
+- **Artist:** ${artist || 'Unknown Artist'}
+- **Year:** ${year || 'Not specified'}
+- **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
+
+# CRITICAL INSTRUCTIONS
+
+**STRICT RULES:**
+- You MUST keep the exact SECTION titles and SECTION order specified below
+- **Do not use ordered (numbered) lists anywhere in the output**
+- **Use headings, bold labels, bullets, and tables only**
+- Separate observations from interpretation
+- List raw observations first. No meaning.
+- Map observations to Art Principles with evidence
+- Infer Drivers only after mechanisms are stated
+- Do not collapse meaning early
+- Label meaning as hypothesis, not fact
+- If evidence is insufficient, say so
+
+**GATE ENFORCEMENT (DO NOT FREEHAND):**
+- **Entropy Gate:** You MUST complete SECTION 5.0. If **Entropy Dominant = YES**, STOP. No Roots. No Poles. End the audit.
+- **Roots Fence:** Roots may ONLY be stated in **SECTION 3.5 (ROOT CLAIMS - RAP-GATED)**. Do not mention Roots outside SECTION 3.5 or inside SECTION 6 unless SECTION 3.5 explicitly unlocked them.
+- **Poles Fence:** Poles may ONLY be stated in **SECTION 6.0 (Pole Stance - LOCKED)** and ONLY if the lock conditions are satisfied there.
+
+# MANDATORY OUTPUT STRUCTURE
+
+You must populate ALL sections below in this exact order:
+
+---
+
+## SECTION 0: CASE METADATA
+
+- **Audit ID:** HG-${new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 15)}
+- **Date of Audit:** ${new Date().toISOString().split('T')[0]}
+- **Time:** ${new Date().toTimeString().split(' ')[0]}
+- **Analyst:** Claude (AI)
+- **Artwork Title:** ${title || 'Untitled'}
+- **Artist:** ${artist || 'Unknown Artist'}
+- **Year:** ${year || 'Not specified'}
+- **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
+- **Input Type:** photo/reproduction
+- **Image Quality Flags:** (note any glare, crop, low-res, color shift, or none)
+- **Context Notes:** (note any exhibition context, constraints, or familiarity issues)
+
+---
+
+## SECTION 1: RAW OBSERVATIONS
+**Zero Interpretation Allowed**
+
+> Record only what is directly visible.
+> No metaphor, no meaning, no intent, no judgment.
+
+### 1.1 Material Facts
+- **Support type:**
+- **Surface characteristics:**
+- **Evidence of process (layering, revision, scraping, wiping):**
+- **Signature / markings:**
+
+### 1.2 Color Inventory
+- **Dominant hues:**
+- **Secondary hues:**
+- **Accent hues:**
+- **Observed value range (compressed / moderate / wide):**
+
+### 1.3 Mark-Making
+- **Stroke types (dabs, scrubs, lines, washes, blocks):**
+- **Directional bias (vertical, diagonal, circular, mixed):**
+- **Density variation (where it's busy vs quiet):**
+- **Layering visible (transparent/opaque shifts, revisions):**
+
+### 1.4 Edge Behavior
+- **Hard edges (where):**
+- **Soft/lost edges (where):**
+- **Variable/broken edges (where):**
+
+### 1.5 Spatial Cues
+- **Overlap/occlusion (what overlaps what):**
+- **Value distribution (where darks/lights cluster):**
+- **Temperature shifts (warm/cool movement):**
+- **Depth indicators present (detail gradient, contrast falloff, scale cues):**
+
+### 1.6 Observation Log (Atomic)
+Add as many rows as needed. Keep these statements skeptic-safe.
+
+| Obs ID | What I see (literal) | Where | Strength (Low/Med/High) | Why I'm confident |
+|--------|---------------------|-------|------------------------|-------------------|
+| O1 |  |  |  |  |
+| O2 |  |  |  |  |
+| O3 |  |  |  |  |
+| O4 |  |  |  |  |
+| O5 |  |  |  |  |
+| O6 |  |  |  |  |
+| O7 |  |  |  |  |
+| O8 |  |  |  |  |
+
+---
+
+## SECTION 2: PRINCIPLE MAPPING
+**Mechanism Before Meaning**
+
+> Map observations to principles.
+> No interpretation yet. No "what it means," only "what it does."
+
+### 2.1 Tier A – Strong Perceptual Bias
+Examples: Edge Detection, Figure/Ground, Occlusion, Contrast, Motion cues, Depth cues.
+
+| Principle (Tier A) | Supporting Obs IDs | Claim Type (Perceptual/Attentional) | Confidence (Low/Med/High) |
+|--------------------|-------------------|-------------------------------------|---------------------------|
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+
+### 2.2 Tier B – Organizational / Studio Heuristics
+Examples: Value structure, Color temperature, Saturation, Texture/facture, Rhythm, Balance/weight.
+
+| Principle (Tier B) | Supporting Obs IDs | Claim Type (Organizational/Studio) | Confidence (Low/Med/High) |
+|--------------------|-------------------|-----------------------------------|---------------------------|
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+
+### 2.3 Notes (Optional, still non-interpretive)
+- **Clarifying mechanism notes:**
+- **Ambiguities in mapping:**
+
+---
+
+## SECTION 3: DRIVER ANALYSIS
+**Hypotheses, Not Facts**
+
+> Drivers are inferred operating goals based on redundant mechanisms.
+> Each driver must cite supporting obs/principles.
+
+### 3.1 Primary Action Hypothesis
+Examples: BUILDING, REDUCING, INTEGRATING, DISRUPTING.
+
+- **Primary action hypothesis:**
+- **Support (Principles + Obs IDs):**
+- **Confidence (Low/Med/High):**
+
+### 3.2 Active Drivers (High relevance)
+For each driver:
+
+- **Driver name:**
+- **Mechanism path (Principles → perceptual effect):**
+- **Support (Obs IDs):**
+- **Evidence strength (Low/Med/High):**
+- **Notes (keep factual/structural):**
+
+[Repeat for each active driver - typically 2-3]
+
+### 3.3 Secondary / Supporting Drivers (Moderate relevance)
+Same fields as above.
+
+[Include if applicable]
+
+### 3.4 Inactive or Weak Drivers (Explicitly rejected)
+- **Driver name:**
+- **Why weak (what's missing):**
+- **What would strengthen it (needed evidence):**
+
+[List rejected drivers to show what was considered]
+
+---
+
+## SECTION 3.5: ROOT CLAIMS (RAP-GATED)
+**Roots are locked until Evidence Gate is satisfied.**
+
+> Unlock requirements (all must be true):
+> - At least 2 mechanisms have redundant support (multiple Obs IDs + Principles)
+> - At least 2 Roots can be supported by RAP-level evidence
+> - Entropy is NOT dominant (see SECTION 5.0)
+
+**Gate Status**
+- **Roots Unlocked:** PASS / FAIL
+- **Why (Obs IDs + Principles):**
+- **Provisional until SECTION 5.0 is completed.**
+
+**If FAIL**
+- Write: **"Roots remain locked. Evidence is insufficient."**
+- Do not name Roots anywhere else in the packet.
+
+**If PASS, populate table:**
+
+| Root | Support (Obs IDs + Principles) | RAP Gate (Pass/Fail) | Confidence (Low/Med/High) | Notes (non-interpretive) |
+|------|-------------------------------|---------------------|---------------------------|--------------------------|
+|  |  |  |  |  |
+|  |  |  |  |  |
+
+---
+
+## SECTION 4: CRITICAL TENSIONS & ABSENCES
+
+### 4.1 Conspicuous Absences
+Structurally expected elements not present (given genre/context).
+
+| Expected Element | Evidence of Absence (Obs IDs) | Resulting Effect (described plainly) |
+|-----------------|-------------------------------|-------------------------------------|
+|  |  |  |
+|  |  |  |
+
+### 4.2 Productive Internal Tensions
+Opposing forces that generate energy.
+
+| Tension Pair (e.g., Sharp vs Dissolved) | Where observed (Obs IDs) | Why it matters (plain, non-mystical) |
+|----------------------------------------|-------------------------|-------------------------------------|
+|  |  |  |
+|  |  |  |
+
+---
+
+## SECTION 5: FRICTION AUDIT
+**Transmission Risk Assessment**
+
+### 5.0 Entropy Dominance Check (GATE)
+**If Entropy dominates, stop the audit.**
+
+> Entropy dominance = the surface has no stable structure to grab.
+> Symptoms: everything is equally salient, no hierarchy, no sustained constraint, no repeatable mechanism chain.
+
+- **Entropy Dominant:** YES / NO
+- **Evidence (Obs IDs + Principles):**
+- **If YES, stop here and write:**
+  - **"STOP. Entropy dominates. No stable Root/Pole claims allowed."**
+
+### 5.1 Slide Test (Perceptual Fluency)
+- **Ease of scanning (what slides):**
+- **Snags or resistance (what stops the eye):**
+- **Friction level (Low/Med/High):**
+- **Why (Obs IDs + Principles):**
+
+### 5.2 Transmission Risks
+Likely misreadings by non-expert viewers.
+
+| Risk (what they might think) | Why that happens (Obs IDs/Principles) | Mitigation (what the work needs or what docent can say) |
+|------------------------------|---------------------------------------|--------------------------------------------------------|
+|  |  |  |
+|  |  |  |
+
+### 5.3 Engagement Hooks
+Elements that reliably capture attention.
+
+| Hook | Why it works (Obs IDs/Principles) | Confidence (Low/Med/High) |
+|------|----------------------------------|---------------------------|
+|  |  |  |
+|  |  |  |
+
+---
+
+## SECTION 6: SYNTHESIS & VERDICT
+
+### 6.0 Pole Stance (LOCKED)
+**Poles may only be used here.**
+
+> Access lock (all must be true):
+> - Roots are unlocked in SECTION 3.5 (PASS)
+> - At least 2 Roots have RAP Pass
+> - Entropy is NOT dominant (SECTION 5.0 = NO)
+> - At least 1 alternative Pole was considered and rejected (briefly)
+
+- **Pole Access:** PASS / FAIL
+- **Primary Pole (if PASS):**
+- **Secondary Pole (optional):**
+- **Rejected Pole (at least 1):**
+- **Evidence (Obs IDs + Principles + Root links):**
+
+**If FAIL**
+- Write: **"Poles remain locked."**
+- Proceed with SECTION 6 without Pole framing.
+
+**Interpretation Allowed**
+
+> All claims must remain consistent with Sections 1–5.
+> If something can't be supported, downgrade it or put it in Limitations.
+
+### 6.1 What the Work Is Doing
+Write one clear paragraph.
+
+### 6.2 Primary Achievement
+- **Achievement:**
+- **Why (Obs IDs/Principles/Drivers):**
+
+### 6.3 Secondary Achievements
+- **Achievement:**
+- **Why (Obs IDs/Principles/Drivers):**
+
+### 6.4 Limitations
+- **Limitation:**
+- **Evidence (Obs IDs) or missing evidence:**
+- **Risk if unchanged:**
+
+### 6.5 Honest or Dishonest?
+- **Verdict (Honest/Dishonest/Unclear):**
+- **Justification (Obs IDs/Principles):**
+
+### 6.6 One Clarifying Move
+Single actionable recommendation.
+
+- **Move:**
+- **Expected impact (what changes in perception):**
+- **Why this move (Obs IDs/Principles/Drivers):**
+
+---
+
+**END AUDIT**
+
+_All claims above are interpretive hypotheses based on observable visual evidence, not definitive statements of artist intent._
+
+# VOICE & STYLE FOR AUDIT
+
+- Analytical, evidence-first
+- "Mechanism over magic" - explain the discoverable code
+- Avoid aesthetic vitalism ("this is beautiful because...")
+- Make claims as falsifiable hypotheses, not verdicts
+- Use tables where specified (markdown table format)
+- **No ordered/numbered lists** - use headings and bold labels only
+
+Begin your analysis now.`;
+      } else if (mode === 'wip') {
         analysisInstructions = `
 # YOUR TASK: WIP Mode (Studio Critique)
 
