@@ -675,9 +675,17 @@ const modes = await import('../../data/hg-modes.json');
           <p><strong>Analysis Date:</strong> ${new Date(analysisMetadata.timestamp).toLocaleString()}</p>
         </div>
         ${resultsContent?.innerHTML || ''}
-        <p class="no-print" style="margin-top: 40px; text-align: center; color: #6b7280; font-size: 12px;">
-          <strong>To save as PDF:</strong> Use File → Print or ⌘P (Mac) / Ctrl+P (Windows), then select "Save as PDF" as the destination
-        </p>
+        <div class="no-print" style="margin-top: 40px; text-align: center; color: #6b7280;">
+          <p style="font-size: 14px; margin-bottom: 15px;">
+            <strong>Ready to save as PDF?</strong>
+          </p>
+          <button onclick="window.print()" style="background: #7c3aed; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px;">
+            Click Here to Print/Save as PDF
+          </button>
+          <p style="font-size: 12px; margin-top: 10px;">
+            Or use: File → Print (⌘P) → Save as PDF
+          </p>
+        </div>
       </body>
       </html>
     `;
@@ -685,12 +693,28 @@ const modes = await import('../../data/hg-modes.json');
     printWindow.document.write(printContent);
     printWindow.document.close();
     
-    // Auto-trigger print dialog after a short delay to ensure content is loaded
+    // Try to auto-trigger print dialog after content is loaded
+    // Note: May be blocked by browser - users can click button in window if needed
     printWindow.onload = () => {
       setTimeout(() => {
-        printWindow.print();
-      }, 500);
+        try {
+          printWindow.print();
+        } catch (e) {
+          console.log('Auto-print blocked - user can click button in window');
+        }
+      }, 750);
     };
+    
+    // Fallback: try again after a longer delay
+    setTimeout(() => {
+      if (printWindow && !printWindow.closed) {
+        try {
+          printWindow.print();
+        } catch (e) {
+          // Silent fail - button is available in window
+        }
+      }
+    }, 1500);
   });
 </script>
 
