@@ -567,14 +567,21 @@ const modes = await import('../../data/hg-modes.json');
     console.log('Starting PDF generation...');
     
     try {
-      // Create a temporary container for PDF content
+      // Create a temporary container for PDF content (isolated from Astro dev toolbar)
       const tempContainer = document.createElement('div');
       tempContainer.style.position = 'absolute';
       tempContainer.style.left = '-9999px';
       tempContainer.style.width = '8.5in'; // Letter width
+      tempContainer.style.isolation = 'isolate'; // Isolate from other elements
+      tempContainer.className = 'pdf-export-temp'; // Mark for exclusion
       
       // Get the results content and apply inline styles
       const resultsClone = resultsContent?.cloneNode(true) as HTMLElement;
+      
+      // Remove any Astro dev toolbar elements from the clone
+      if (resultsClone) {
+        resultsClone.querySelectorAll('astro-dev-toolbar, astro-island, [data-astro-dev-toolbar]').forEach(el => el.remove());
+      }
       
       // Apply styles to all elements in the cloned content
       if (resultsClone) {
@@ -652,7 +659,18 @@ const modes = await import('../../data/hg-modes.json');
         margin: [0.5, 0.5, 0.5, 0.5], // inches
         filename: `hidden-grammar-analysis-${analysisMetadata.title.replace(/\s+/g, '-').toLowerCase() || 'artwork'}.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: true },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: true,
+          ignoreElements: (element: HTMLElement) => {
+            // Ignore Astro dev toolbar and other non-content elements
+            return element.tagName === 'ASTRO-DEV-TOOLBAR' || 
+                   element.tagName === 'ASTRO-ISLAND' ||
+                   element.hasAttribute('data-astro-dev-toolbar') ||
+                   element.classList.contains('astro-dev-toolbar');
+          }
+        },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
       
