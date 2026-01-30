@@ -618,6 +618,15 @@ const modes = await import('../../data/hg-modes.json');
           .metadata p {
             margin: 5px 0;
           }
+          .artwork-image {
+            width: 2in;
+            height: 2in;
+            object-fit: contain;
+            display: block;
+            margin: 15px 0 20px 0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+          }
           ul, ol {
             margin: 10px 0;
           }
@@ -640,6 +649,7 @@ const modes = await import('../../data/hg-modes.json');
       <body>
         <div class="metadata">
           <h1>Hidden Grammar Analysis</h1>
+          ${uploadedImageData ? `<img src="${uploadedImageData}" alt="Artwork" class="artwork-image">` : ''}
           <p><strong>Artwork:</strong> ${analysisMetadata.title}</p>
           <p><strong>Artist:</strong> ${analysisMetadata.artist}</p>
           ${analysisMetadata.year ? `<p><strong>Year:</strong> ${analysisMetadata.year}</p>` : ''}
