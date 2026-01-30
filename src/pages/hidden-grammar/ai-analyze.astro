@@ -156,6 +156,8 @@ const modes = await import('../../data/hg-modes.json');
             <div class="results-actions">
               <button class="btn-secondary" id="backToForm">← New Analysis</button>
               <button class="btn-secondary" id="exportMarkdown">Export Markdown</button>
+              <button class="btn-secondary" id="exportJSON">Export JSON</button>
+              <button class="btn-secondary" id="exportPDF">Export PDF</button>
               <button class="btn-secondary" id="copyToClipboard">Copy to Clipboard</button>
             </div>
           </div>
@@ -270,8 +272,18 @@ const modes = await import('../../data/hg-modes.json');
   const resultsContent = document.getElementById('resultsContent');
   const backToForm = document.getElementById('backToForm');
   
-  // Store raw markdown for export/copy
+  // Store analysis data for export/copy
   let rawMarkdownContent = '';
+  let analysisMetadata = {
+    title: '',
+    artist: '',
+    year: '',
+    medium: '',
+    dimensions: '',
+    mode: '',
+    customPrompt: '',
+    timestamp: ''
+  };
 
   analyzeBtn?.addEventListener('click', async () => {
     if (!uploadedImageData) {
@@ -334,8 +346,19 @@ const modes = await import('../../data/hg-modes.json');
       if (resultsContent) {
         resultsContent.innerHTML = result.analysis;
       }
-      // Store raw markdown for export/copy
+      
+      // Store raw markdown and metadata for export/copy
       rawMarkdownContent = result.raw || '';
+      analysisMetadata = {
+        title,
+        artist,
+        year,
+        medium,
+        dimensions,
+        mode: selectedModeRadio?.selectedOptions[0]?.textContent || mode,
+        customPrompt,
+        timestamp: new Date().toISOString()
+      };
       
       if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
@@ -400,6 +423,157 @@ const modes = await import('../../data/hg-modes.json');
       console.error('Failed to copy:', err);
       alert('Failed to copy to clipboard. Please try again.');
     });
+  });
+
+  // Export to JSON
+  const exportJSONBtn = document.getElementById('exportJSON');
+  exportJSONBtn?.addEventListener('click', () => {
+    if (!rawMarkdownContent) {
+      alert('No analysis to export. Please run an analysis first.');
+      return;
+    }
+    
+    const jsonData = {
+      metadata: analysisMetadata,
+      analysis: {
+        markdown: rawMarkdownContent,
+        html: resultsContent?.innerHTML || ''
+      },
+      exportedAt: new Date().toISOString()
+    };
+    
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hidden-grammar-analysis-${analysisMetadata.title.replace(/\s+/g, '-').toLowerCase() || 'artwork'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Export to PDF (using browser print)
+  const exportPDFBtn = document.getElementById('exportPDF');
+  exportPDFBtn?.addEventListener('click', () => {
+    if (!rawMarkdownContent) {
+      alert('No analysis to export. Please run an analysis first.');
+      return;
+    }
+    
+    // Create a print-friendly version
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow pop-ups to export PDF');
+      return;
+    }
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Hidden Grammar Analysis - ${analysisMetadata.title}</title>
+        <style>
+          @page {
+            margin: 1in;
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          h1, h2, h3, h4 {
+            color: #7c3aed;
+            page-break-after: avoid;
+          }
+          h1 {
+            border-bottom: 3px solid #7c3aed;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+          }
+          h2 {
+            margin-top: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+          }
+          h3 {
+            margin-top: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            page-break-inside: avoid;
+          }
+          th, td {
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
+            text-align: left;
+          }
+          th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+          }
+          .metadata {
+            background: #f9fafb;
+            padding: 15px;
+            border-left: 4px solid #7c3aed;
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+          }
+          .metadata p {
+            margin: 5px 0;
+          }
+          ul, ol {
+            margin: 10px 0;
+          }
+          li {
+            margin: 5px 0;
+          }
+          strong {
+            color: #374151;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .no-print {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="metadata">
+          <h1>Hidden Grammar Analysis</h1>
+          <p><strong>Artwork:</strong> ${analysisMetadata.title}</p>
+          <p><strong>Artist:</strong> ${analysisMetadata.artist}</p>
+          ${analysisMetadata.year ? `<p><strong>Year:</strong> ${analysisMetadata.year}</p>` : ''}
+          ${analysisMetadata.medium ? `<p><strong>Medium:</strong> ${analysisMetadata.medium}</p>` : ''}
+          ${analysisMetadata.dimensions ? `<p><strong>Dimensions:</strong> ${analysisMetadata.dimensions}</p>` : ''}
+          <p><strong>Analysis Mode:</strong> ${analysisMetadata.mode}</p>
+          <p><strong>Analysis Date:</strong> ${new Date(analysisMetadata.timestamp).toLocaleString()}</p>
+        </div>
+        ${resultsContent?.innerHTML || ''}
+        <p class="no-print" style="margin-top: 40px; text-align: center; color: #6b7280;">
+          <small>You can now print this page or save as PDF using your browser's print dialog (⌘P or Ctrl+P)</small>
+        </p>
+      </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Trigger print dialog after content loads
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    };
   });
 </script>
 
@@ -831,6 +1005,7 @@ const modes = await import('../../data/hg-modes.json');
   .results-actions {
     display: flex;
     gap: var(--space-m);
+    flex-wrap: wrap;
   }
 
   .results-content {
