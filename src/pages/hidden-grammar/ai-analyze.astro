@@ -430,13 +430,23 @@ const modes = await import('../../data/hg-modes.json');
       
       // Store raw markdown and metadata for export/copy
       rawMarkdownContent = result.raw || '';
+      
+      // Get mode name from the label associated with selected radio
+      let modeName = mode;
+      if (selectedModeRadio) {
+        const modeLabel = selectedModeRadio.closest('.mode-card')?.querySelector('h3');
+        if (modeLabel) {
+          modeName = modeLabel.textContent || mode;
+        }
+      }
+      
       analysisMetadata = {
         title,
         artist,
         year,
         medium,
         dimensions,
-        mode: selectedModeRadio?.selectedOptions[0]?.textContent || mode,
+        mode: modeName,
         customPrompt,
         timestamp: new Date().toISOString()
       };
