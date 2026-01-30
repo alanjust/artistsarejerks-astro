@@ -552,10 +552,19 @@ const modes = await import('../../data/hg-modes.json');
       return;
     }
     
+    // Check if html2pdf is available
+    if (typeof (window as any).html2pdf === 'undefined') {
+      console.error('html2pdf library not loaded');
+      alert('PDF library not loaded. Please refresh the page and try again.');
+      return;
+    }
+    
     // Show loading state
     const originalText = exportPDFBtn?.textContent;
     if (exportPDFBtn) exportPDFBtn.textContent = 'Generating PDF...';
     if (exportPDFBtn) (exportPDFBtn as HTMLButtonElement).disabled = true;
+    
+    console.log('Starting PDF generation...');
     
     try {
       // Create a temporary container for PDF content
@@ -635,18 +644,24 @@ const modes = await import('../../data/hg-modes.json');
       }
       
       document.body.appendChild(tempContainer);
+      console.log('Container added to body');
+      console.log('Container HTML length:', tempContainer.innerHTML.length);
       
       // Configure PDF options
       const opt = {
         margin: [0.5, 0.5, 0.5, 0.5], // inches
         filename: `hidden-grammar-analysis-${analysisMetadata.title.replace(/\s+/g, '-').toLowerCase() || 'artwork'}.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { scale: 2, useCORS: true, logging: true },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
       
+      console.log('PDF options:', opt);
+      
       // Generate and download PDF
+      console.log('Calling html2pdf...');
       await (window as any).html2pdf().set(opt).from(tempContainer).save();
+      console.log('PDF generated successfully');
       
       // Clean up
       document.body.removeChild(tempContainer);
