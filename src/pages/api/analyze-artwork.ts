@@ -12,15 +12,34 @@ import modesData from '../../data/hg-modes.json';
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Access environment variables from Cloudflare runtime
-    const runtime = locals as any;
-    const apiKey = runtime.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const runtime = locals.runtime;
 
-    console.log('API Key present:', !!apiKey);
-    console.log('API Key length:', apiKey?.length);
-    console.log('Runtime env available:', !!runtime.runtime?.env);
+    console.log('Debug - Runtime available:', !!runtime);
+    console.log('Debug - Runtime env available:', !!runtime?.env);
+    
+    let apiKey = runtime?.env?.ANTHROPIC_API_KEY;
+    
+    if (apiKey) {
+        console.log('Debug - Found API Key in runtime.env');
+    } else {
+        console.log('Debug - Not found in runtime.env, checking fallbacks...');
+        
+        // Fallback checks
+        if (typeof process !== 'undefined' && process.env?.ANTHROPIC_API_KEY) {
+            apiKey = process.env.ANTHROPIC_API_KEY;
+            console.log('Debug - Found API Key in process.env');
+        } else if (import.meta.env.ANTHROPIC_API_KEY) {
+            apiKey = import.meta.env.ANTHROPIC_API_KEY;
+            console.log('Debug - Found API Key in import.meta.env');
+        }
+    }
 
     if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+        // Log available keys in env (sanitized) to help debugging
+        if (runtime?.env) {
+            console.log('Debug - Available env keys:', Object.keys(runtime.env));
+        }
+        throw new Error('ANTHROPIC_API_KEY environment variable is not set in runtime.env, process.env, or import.meta.env');
     }
 
     // Initialize Anthropic client inside the request handler
