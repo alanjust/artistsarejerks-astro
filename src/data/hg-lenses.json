@@ -1,0 +1,187 @@
+{
+  "categories": [
+    {
+      "id": "ontological",
+      "name": "Ontological & Philosophical",
+      "description": "Deep theory lenses that test the 'Being' of the artwork."
+    },
+    {
+      "id": "critics",
+      "name": "Specific Critics",
+      "description": "Voice emulation of famous critics with specific biases."
+    },
+    {
+      "id": "cultural",
+      "name": "Cultural & Social",
+      "description": "Lenses that test the work's function in society."
+    },
+    {
+      "id": "outliers",
+      "name": "Outliers (Stress Tests)",
+      "description": "Extreme stress tests for specific qualities."
+    },
+    {
+      "id": "hidden-grammar",
+      "name": "Hidden Grammar Expansions",
+      "description": "Custom system expansions."
+    }
+  ],
+  "lenses": [
+    {
+      "id": "ooo",
+      "name": "Object-Oriented Ontology",
+      "category": "ontological",
+      "prompt": "Analyze this based on Object-Oriented Ontology (Graham Harman/Timothy Morton).\n\n- The Withdrawal: Treat the artwork as an autonomous object that exists apart from my perception. What part of it 'withdraws' or refuses to be understood?\n- The Flat Ontology: Do not prioritize the human figure over the background or the canvas weave. Treat all elements as having equal 'objecthood.'\n- Verdict: Does this work have a secret life, or does it only exist for the viewer?"
+    },
+    {
+      "id": "phenomenology",
+      "name": "Phenomenological Lens",
+      "category": "ontological",
+      "prompt": "Analyze this based on Phenomenology of Perception (Merleau-Ponty).\n\n- The Flesh: Ignore the 'image' and focus on the embodied encounter. How does the work act on my nervous system before I cognitively label it?\n- Pre-Objective: Describe the sensation of the work before it becomes a 'painting of a thing.'\n- Verdict: Is this an intellectual puzzle or a physical event?"
+    },
+    {
+      "id": "deconstruction",
+      "name": "Deconstructionist Lens",
+      "category": "ontological",
+      "prompt": "Analyze this based on Deconstruction (Derrida).\n\n- The Aporia: Find the internal contradiction where the painting’s logic falls apart.\n- The Trace: What is present only by its absence? (What did the artist erase or avoid?)\n- Verdict: Does the work hold together, or does it unravel its own authority?"
+    },
+    {
+      "id": "new-materialism",
+      "name": "New Materialist Lens",
+      "category": "ontological",
+      "prompt": "Analyze this based on Vibrant Matter (Jane Bennett).\n\n- The Agency of Stuff: Look at the paint, the medium, and the substrate not as 'tools' but as active participants. Where did the material make a decision the artist didn't control?\n- Verdict: Is the artist a dictator of form, or a collaborator with the material?"
+    },
+    {
+      "id": "semiotics",
+      "name": "Semiotic Lens",
+      "category": "ontological",
+      "prompt": "Analyze this based on Semiotics (Roland Barthes).\n\n- The Signifier vs. Signified: Separate the marks (Signifiers) from their meaning (Signified). Where do they detach?\n- The Death of the Author: Ignore what the artist meant. What does the cultural code of the image say on its own?\n- Verdict: Is this a 'Readerly' text (easy/passive) or a 'Writerly' text (requires me to build the meaning)?"
+    },
+    {
+      "id": "john-yau",
+      "name": "John Yau (The Outsider)",
+      "category": "critics",
+      "prompt": "Analyze this in the voice of John Yau.\n\n- The Bias: Rejection of 'Canonical' or 'Formalist' readings. Search for the weird, the hybrid, and the distinct material sensitivity.\n- The Question: How does this work resist the standard art-historical narrative? Look for the 'slur' or the 'glitch' in the paint.\n- Verdict: Is this work brave enough to be awkward?"
+    },
+    {
+      "id": "jerry-saltz",
+      "name": "Jerry Saltz (The Visceral)",
+      "category": "critics",
+      "prompt": "Analyze this in the voice of Jerry Saltz.\n\n- The Bias: Radical subjectivity, vulnerability, and 'energy.' Use non-academic, high-energy language.\n- The Question: Does this work have 'heat'? Does it make you want to steal it or unfriend the artist? Be messy and honest.\n- Verdict: Is this painting alive or dead?"
+    },
+    {
+      "id": "roberta-smith",
+      "name": "Roberta Smith (The Historian)",
+      "category": "critics",
+      "prompt": "Analyze this in the voice of Roberta Smith.\n\n- The Bias: Generous but rigorous looking. Connect it to the 'long view' of art history (from textiles to ceramics to painting).\n- The Question: How does this object sit in the physical world? Describe its surface and 'object quality' with extreme precision.\n- Verdict: Does it earn its space on the wall through sheer formal intelligence?"
+    },
+    {
+      "id": "dave-hickey",
+      "name": "Dave Hickey (The Beauty/Market)",
+      "category": "critics",
+      "prompt": "Analyze this in the voice of Dave Hickey.\n\n- The Bias: A defense of 'Beauty' and democratic appeal. Anti-academic, pro-pleasure.\n- The Question: Does this work give the viewer pleasure? If it's ugly, is it 'interesting ugly' or just 'academic ugly'?\n- Verdict: Would a non-art person stop to look at this in a Vegas casino?"
+    },
+    {
+      "id": "clement-greenberg",
+      "name": "Clement Greenberg (The Formalist)",
+      "category": "critics",
+      "prompt": "Analyze this based on High Modernist Formalism.\n\n- The Bias: Flatness and medium specificity.\n- The Attack: Criticize any attempt at 'illusion,' 'narrative,' or 'theatricality.'\n- Verdict: Is the painting honest about being a flat surface covered in pigment, or is it lying?"
+    },
+    {
+      "id": "rosalind-krauss",
+      "name": "Rosalind Krauss (The Structuralist)",
+      "category": "critics",
+      "prompt": "Analyze this based on The Expanded Field.\n\n- The Grid: Look for the underlying structural logic. Is it indexical (a trace of reality) or symbolic?\n- Verdict: Where does this sit on the graph of 'Not-Landscape' and 'Not-Architecture'?"
+    },
+    {
+      "id": "institutional-critique",
+      "name": "Institutional Critique",
+      "category": "cultural",
+      "prompt": "Analyze this based on Institutional Critique.\n\n- The Context: How does this work rely on the 'White Cube' gallery to function? If you put it in a garage, does it collapse?\n- The Power: Who is this painting for? Who is excluded by its visual language?\n- Verdict: Is it disrupting the institution or decorating it?"
+    },
+    {
+      "id": "postmodern",
+      "name": "Postmodern Lens",
+      "category": "cultural",
+      "prompt": "Analyze this based on Postmodern Principles.\n\n- The Pastiche: Identify the historical styles being sampled or remixed. Is it ironic or sincere?\n- The Surface: Look for the collapse of 'High' and 'Low' culture.\n- Verdict: Is this work acknowledging that 'everything has already been painted'?"
+    },
+    {
+      "id": "minor-emotions",
+      "name": "Minor Emotions (Sianne Ngai)",
+      "category": "cultural",
+      "prompt": "Analyze this based on Sianne Ngai’s Aesthetic Categories.\n\n- The Categories: Instead of 'Beautiful' or 'Sublime,' is this work 'Cute' (invites domination), 'Zany' (performance anxiety/labor), or 'Interesting' (just distinct enough to circulate)?\n- Verdict: How does it function in the attention economy of late capitalism?"
+    },
+    {
+      "id": "relational-aesthetics",
+      "name": "Relational Aesthetics",
+      "category": "cultural",
+      "prompt": "Analyze this based on Relational Aesthetics (Nicolas Bourriaud).\n\n- The Encounter: Ignore the object. Focus on the social interstice it creates. Does it bring people together?\n- Verdict: Is this a 'micro-utopia' or just a barrier between people?"
+    },
+    {
+      "id": "metamodern",
+      "name": "Metamodern Lens",
+      "category": "cultural",
+      "prompt": "Analyze this based on Metamodernism (Luke Turner/Oscillation).\n\n- The Swing: Does the work oscillate between Irony (Postmodernism) and Sincerity (Modernism)?\n- The Feeling: Look for 'informed naivety'—knowing it's hopeless but doing it anyway.\n- Verdict: Is it hopeful despite the data?"
+    },
+    {
+      "id": "dark-ecology",
+      "name": "Dark Ecology (Timothy Morton)",
+      "category": "outliers",
+      "prompt": "Analyze this based on Dark Ecology.\n\n- The Loop: Is the work 'nice' (Nature as background) or 'dark' (Nature as a weird, intrusive mesh)?\n- The Scale: Does it hint at time scales beyond the human lifespan?\n- Verdict: Is this 'Nature Porn' or a true encounter with the non-human?"
+    },
+    {
+      "id": "glitch-feminism",
+      "name": "Glitch Feminism",
+      "category": "outliers",
+      "prompt": "Analyze this based on Glitch Feminism (Legacy Russell).\n\n- The Error: Where does the body/form refuse to perform correctly?\n- The Refusal: How does the work use 'failure' as a form of resistance?\n- Verdict: Is the glitch a mistake or a weapon?"
+    },
+    {
+      "id": "uncanny-valley",
+      "name": "The Uncanny Valley",
+      "category": "outliers",
+      "prompt": "Analyze this based on The Uncanny (Freud/Mori).\n\n- The Familiar/Strange: Identify what is Heimlich (familiar) and how it has become Unheimlich (repressed/terrifying).\n- Verdict: Does it trigger the 'creep' reflex? Why?"
+    },
+    {
+      "id": "slow-art",
+      "name": "Slow Art (Deceleration)",
+      "category": "outliers",
+      "prompt": "Analyze this based on Deceleration (Arden Reed).\n\n- The Delay: What mechanism prevents me from consuming this instantly?\n- The Payoff: What appears only after 3 minutes of staring?\n- Verdict: Is this 'Fast Art' (Instagram) or 'Slow Art' (Retinal fatigue)?"
+    },
+    {
+      "id": "neuro-archaeology",
+      "name": "Neuro-Archaeology",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this as a Neuro-Archaeologist.\n\n- The Dig: Treat the painting as a fossil record of the artist's nervous system.\n- The Trace: Reconstruct the sequence of motor movements (The Yotzer) required to make these marks.\n- Verdict: What was the biological state of the maker?"
+    },
+    {
+      "id": "algorithmic-gaze",
+      "name": "The Algorithmic Gaze",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this from the perspective of Computer Vision.\n\n- The Edge: How would an edge-detection algorithm segment this image?\n- The Pattern: What statistical regularities would an AI find that a human misses?\n- Verdict: Is it machine-readable or effectively camouflaged?"
+    },
+    {
+      "id": "biophilic",
+      "name": "Biophilic Lens",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this based on Evolutionary Aesthetics (Dutton).\n\n- The Savannah: Does it trigger ancient survival preferences (open spaces, water, refuge)?\n- The Fractal: Does it mimic the fractal dimension of nature (trees, clouds)?\n- Verdict: Is it biologically soothing or biologically alerting?"
+    },
+    {
+      "id": "abject",
+      "name": "The Abject",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this based on The Abject (Julia Kristeva).\n\n- The Border: Where does the distinction between 'Subject' and 'Object' break down?\n- The Gross: Look for bodily fluids, decay, or things that should remain 'inside' coming 'outside.'\n- Verdict: Does it threaten the viewer's cleanliness?"
+    },
+    {
+      "id": "hauntology",
+      "name": "Hauntology",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this based on Hauntology (Mark Fisher).\n\n- The Ghost: What 'lost future' is this painting mourning?\n- The Crackle: Look for the aesthetic of outdated technology or lost time.\n- Verdict: Is it nostalgic for a future that never happened?"
+    },
+    {
+      "id": "gesamtkunstwerk",
+      "name": "Gesamtkunstwerk (Total World)",
+      "category": "hidden-grammar",
+      "prompt": "Analyze this based on the concept of Gesamtkunstwerk (Total Work of Art).\n\n- The Ecosystem: Does the work accept the boundaries of the frame, or does it try to design the wall, the light, and the viewer's experience? Is it an object or an environment?\n- The Synthesis: Do the disparate parts (paint, structure, concept) fuse into a single organism, or do they remain separate?\n- The Danger: Is this a Utopia (a perfect harmonious world) or a Prison (a totalitarian design where nothing is accidental)?\n- Verdict: Does the work leave room for the viewer to breathe, or does it control the air?"
+    }
+  ]
+}

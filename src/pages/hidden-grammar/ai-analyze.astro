@@ -5,6 +5,7 @@ import HiddenGrammarNav from '../../components/HiddenGrammarNav.astro';
 const principles = await import('../../data/hg-principles.json');
 const roots = await import('../../data/hg-roots.json');
 const modes = await import('../../data/hg-modes.json');
+const lenses = await import('../../data/hg-lenses.json');
 ---
 
 <BaseLayout
@@ -76,6 +77,16 @@ const modes = await import('../../data/hg-modes.json');
                 <label for="dimensions">Dimensions <span class="optional">(optional, in inches)</span></label>
                 <input type="text" id="dimensions" placeholder="e.g., 24 x 36 or 18 x 24 x 2">
               </div>
+
+              <div class="form-group full-width">
+                <label for="artistStatement">Artist Statement <span class="optional">(optional)</span></label>
+                <textarea id="artistStatement" rows="4" placeholder="Paste the artist statement here..."></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="contextNote">Exhibition Context/Lens <span class="optional">(optional)</span></label>
+                <textarea id="contextNote" rows="3" placeholder="e.g., Theme of the exhibit, specific curator notes, or situational context..."></textarea>
+              </div>
             </div>
           </section>
 
@@ -105,6 +116,34 @@ const modes = await import('../../data/hg-modes.json');
                 <p class="field-hint">
                   When you provide a custom prompt, the AI will use your instructions instead of the pre-formatted modes below.
                   The Hidden Grammar framework data (11 Roots, 46 Principles) will still be available to the AI.
+                </p>
+              </div>
+            </div>
+
+            <!-- Advanced Lenses (Optional) -->
+            <div class="lenses-section">
+              <div class="subsection-header">
+                <h3>Advanced Focus Lenses</h3>
+                <p class="subsection-description">Apply a specific philosophical or critical filter to your analysis</p>
+              </div>
+
+              <div class="form-group">
+                <label for="lensSelector">Select a Lens <span class="optional">(optional)</span></label>
+                <select id="lensSelector" class="lens-select">
+                  <option value="">None (Standard Analysis)</option>
+                  {lenses.categories.map(category => (
+                    <optgroup label={category.name}>
+                      {lenses.lenses
+                        .filter(lens => lens.category === category.id)
+                        .map(lens => (
+                          <option value={lens.id} data-prompt={lens.prompt}>{lens.name}</option>
+                        ))
+                      }
+                    </optgroup>
+                  ))}
+                </select>
+                <p class="field-hint" id="lensDescription">
+                  Select a lens to see its description here.
                 </p>
               </div>
             </div>
@@ -317,6 +356,27 @@ const modes = await import('../../data/hg-modes.json');
   const modeRadios = document.querySelectorAll('input[name="analysisMode"]') as NodeListOf<HTMLInputElement>;
   const customPromptSection = document.querySelector('.custom-prompt-section') as HTMLElement;
   const modesSection = document.querySelector('.preformatted-modes-section') as HTMLElement;
+  const lensSelector = document.getElementById('lensSelector') as HTMLSelectElement;
+  const lensDescription = document.getElementById('lensDescription');
+
+  // Lens Selection Handling
+  lensSelector?.addEventListener('change', () => {
+    const selectedOption = lensSelector.options[lensSelector.selectedIndex];
+    const prompt = selectedOption.getAttribute('data-prompt');
+    
+    if (lensDescription) {
+      if (prompt) {
+        // Show a preview of the prompt (first 100 chars)
+        const preview = prompt.length > 150 ? prompt.substring(0, 150) + '...' : prompt;
+        lensDescription.textContent = `Lens Prompt: "${preview}"`;
+        lensDescription.style.color = 'var(--color-purple)';
+      } else {
+        lensDescription.textContent = 'Select a lens to see its description here.';
+        lensDescription.style.color = 'var(--color-gray-5)';
+      }
+    }
+  });
+
 
   // When user types in custom prompt, deselect all mode radios and dim modes section
   customPromptTextarea?.addEventListener('input', () => {
@@ -378,9 +438,12 @@ const modes = await import('../../data/hg-modes.json');
     const year = (document.getElementById('yearCreated') as HTMLInputElement)?.value;
     const medium = (document.getElementById('medium') as HTMLInputElement)?.value;
     const dimensions = (document.getElementById('dimensions') as HTMLInputElement)?.value;
+    const artistStatement = (document.getElementById('artistStatement') as HTMLTextAreaElement)?.value || '';
+    const contextNote = (document.getElementById('contextNote') as HTMLTextAreaElement)?.value || '';
     const customPrompt = (document.getElementById('customPrompt') as HTMLTextAreaElement)?.value || '';
     const selectedModeRadio = document.querySelector('input[name="analysisMode"]:checked') as HTMLInputElement;
     const mode = selectedModeRadio?.value || 'strategic';
+    const lens = (document.getElementById('lensSelector') as HTMLSelectElement)?.value || '';
     
     // Validate that either custom prompt or mode is selected
     if (!customPrompt.trim() && !selectedModeRadio) {
@@ -408,8 +471,11 @@ const modes = await import('../../data/hg-modes.json');
           year,
           medium,
           dimensions,
+          artistStatement,
+          contextNote,
           mode,
           customPrompt,
+          lens,
         }),
       });
 
@@ -439,6 +505,15 @@ const modes = await import('../../data/hg-modes.json');
           modeName = modeLabel.textContent || mode;
         }
       }
+
+      // Get lens name
+      let lensName = '';
+      if (lens) {
+        const lensOption = (document.getElementById('lensSelector') as HTMLSelectElement)?.querySelector(`option[value="${lens}"]`);
+        if (lensOption) {
+          lensName = lensOption.textContent || lens;
+        }
+      }
       
       analysisMetadata = {
         title,
@@ -447,6 +522,7 @@ const modes = await import('../../data/hg-modes.json');
         medium,
         dimensions,
         mode: modeName,
+        lens: lensName,
         customPrompt,
         timestamp: new Date().toISOString()
       };
@@ -672,6 +748,7 @@ const modes = await import('../../data/hg-modes.json');
           ${analysisMetadata.medium ? `<p><strong>Medium:</strong> ${analysisMetadata.medium}</p>` : ''}
           ${analysisMetadata.dimensions ? `<p><strong>Dimensions:</strong> ${analysisMetadata.dimensions}</p>` : ''}
           <p><strong>Analysis Mode:</strong> ${analysisMetadata.mode}</p>
+          ${analysisMetadata.lens ? `<p><strong>Lens:</strong> ${analysisMetadata.lens}</p>` : ''}
           <p><strong>Analysis Date:</strong> ${new Date(analysisMetadata.timestamp).toLocaleString()}</p>
         </div>
         ${resultsContent?.innerHTML || ''}
@@ -938,6 +1015,10 @@ const modes = await import('../../data/hg-modes.json');
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
     gap: clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
   }
 
   .form-group label {

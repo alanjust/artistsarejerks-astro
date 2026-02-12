@@ -1,0 +1,81 @@
+{
+  "lexicon": [
+    {
+      "term": "Ayni",
+      "origin": "Andean / Quechua",
+      "definition": "\"Sacred Reciprocity.\" The principle that existence is an exchange, not a linear progression.",
+      "inArt": "It reframes narrative. The goal is not \"Resolution\" (ending the story) but \"Exchange\" (feeding the cycle).",
+      "systemMap": "Expands The Narrative (S-P-R)."
+    },
+    {
+      "term": "Chi / Qi",
+      "origin": "Chinese",
+      "definition": "\"Energy Flow\" or \"Breath.\" The vital life force that flows through all things.",
+      "inArt": "In painting (Qiyun), this refers to the rhythmic vitality of the brushstroke itself. If the stroke is \"dead,\" the Qi is blocked. It focuses on circulation rather than direction.",
+      "systemMap": "Expands The Spirit (R-W-Ch)."
+    },
+    {
+      "term": "Hózhó",
+      "origin": "Diné / Navajo",
+      "definition": "\"Beauty,\" \"Harmony,\" or \"Order.\" It is not just an aesthetic description; it is a state of being.",
+      "inArt": "The function of art is to restore the viewer to a state of Hózhó. If art creates anxiety or discord without resolution, it fails this metric.",
+      "systemMap": "Expands Attention (K-S-F) (replacing \"The Hook\" with \"The Harmony\")."
+    },
+    {
+      "term": "In Ixtli In Yollotl",
+      "origin": "Nahua / Aztec",
+      "definition": "\"The Face and The Heart.\" The Nahua definition of a fully realized person/mind.",
+      "inArt": "Intelligence (Face/Judgment) cannot be separated from Vitality (Heart/Will). Thinking is an embodied, emotional act, not just an intellectual one.",
+      "systemMap": "Expands The Mind (Ch-Sh-V)."
+    },
+    {
+      "term": "Itutu",
+      "origin": "Yoruba",
+      "definition": "\"Mystic Coolness.\" A core aesthetic value of grace, composure, and generosity.",
+      "inArt": "The mastery of \"The Discipline\" is shown through ease. The artist (and the artwork) maintains composure even in the midst of chaos or heat.",
+      "systemMap": "Expands The Discipline (A-M-N)."
+    },
+    {
+      "term": "Ma",
+      "origin": "Japanese",
+      "definition": "\"The Gap,\" \"Space,\" or \"The Pause.\"",
+      "inArt": "The understanding that empty space is not a void; it is an active ingredient. It is the \"charged nothing\" that defines the \"something.\"",
+      "systemMap": "Expands The Eye (R-A-H) and The Spirit (R-W-Ch)."
+    },
+    {
+      "term": "Mana",
+      "origin": "Hawaiian / Polynesian",
+      "definition": "Supernatural or divine power that can be accumulated in people, places, or objects.",
+      "inArt": "An artwork is not an inert object; it is a battery that stores Mana. This power comes from the lineage of the maker, the materials used, and the attention paid to it over time.",
+      "systemMap": "Expands The Spirit (R-W-Ch) and The Institution (K-B-D)."
+    },
+    {
+      "term": "Rasquachismo",
+      "origin": "Chicano",
+      "definition": "An underdog aesthetic of \"making do.\"",
+      "inArt": "The inventive use of discarded, broken, or \"low\" materials to create something of dignity and style. It is an attitude of resilience that finds beauty in survival.",
+      "systemMap": "Expands The Hand (Y-Tz-R)."
+    },
+    {
+      "term": "Stochastic",
+      "origin": "General",
+      "definition": "Rule-governed chance. A system where outcomes vary, but the range and odds are constrained.",
+      "inArt": "Micro-uncertainty inside a stable macro-structure (jittered edges, dithered values, repeated motifs with mutation).",
+      "systemMap": "Often strengthens Design Logic, can activate Atmosphere (noise-field air), and can increase Signal Strength via emergence/payoff."
+    },
+    {
+      "term": "Ubuntu",
+      "origin": "Southern African / Nguni",
+      "definition": "\"I am because we are.\" The belief that a person exists only through their relationship to others.",
+      "inArt": "Rejects the \"Individual Genius\" model. The authority of the work comes from its ability to connect the community and honor the collective lineage.",
+      "systemMap": "Expands The Institution (K-B-D)."
+    },
+    {
+      "term": "Wabi-Sabi",
+      "origin": "Japanese",
+      "definition": "The beauty of the imperfect, impermanent, and incomplete.",
+      "inArt": "Acknowledges the \"Hand\" by leaving the mark of the process (the crack, the asymmetry). It values the honest over the perfect.",
+      "systemMap": "Expands The Hand (Y-Tz-R)."
+    }
+  ]
+}

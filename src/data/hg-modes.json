@@ -216,6 +216,25 @@
       ],
       "requiresRAP": true,
       "outputFormat": "Exposed internal monologue"
+    },
+    {
+      "id": "docent-script",
+      "name": "Docent Script (Anchor V3)",
+      "phase": 3,
+      "phaseName": "Simulation & Context",
+      "description": "Generates a 4–6 minute docent-ready monologue for an anchor artwork.",
+      "useCases": ["Guided exhibition tours", "Public speaking", "Educational scripts"],
+      "steps": [
+        "Opening Encounter (20–30s): Perceptual routing",
+        "Capture Mechanics: Visible features registration",
+        "Pattern Recognition: Structural categorization",
+        "Concept Translation: Artist statement to mechanics",
+        "Sustained Look: Engagement dwell time",
+        "Structural Decision Insight: Compositional conclusion"
+      ],
+      "requiresRAP": true,
+      "outputVoice": "Editor Voice",
+      "prompt": "You are the Hidden Grammar Analyst generating a docent-ready monologue for one anchor artwork in a guided exhibition tour.\n\n## Input Hierarchy (Strict Weight Order)\n1. Artwork Image — Primary authority\n2. Artist Statement — Secondary authority (only where visually supported)\n3. Materials/Medium — Structural modifier\n4. Exhibition Lens (Optional) — Light atmospheric modifier\n\n## Objective\nGenerate a 4–6 minute docent monologue (700-1000 words) that:\n- Guides attention through staged perception\n- Translates concept into visible mechanics\n- Avoids interpretive overreach\n\n## Required Script Structure\n1. Opening Encounter (20–30 seconds): Describe perceptual routing.\n2. Capture Mechanics: Identify what holds attention (edges, contrast, motion).\n3. Pattern Recognition: Structural categorization (not symbolic).\n4. Concept Translation: Map statement to visible structure.\n5. Sustained Look: Guide a slower second look (recirculation, hierarchy).\n6. Structural Decision Insight: Conclude with one compositional decision.\n7. Exhibition Return Line (Conditional): Connect lightly to theme if justified.\n\n## Tone Requirements\nDeclarative, Measured, Observational, Non-performative. Avoid praise, jargon, or emotional speculation."
     }
   ]
 }

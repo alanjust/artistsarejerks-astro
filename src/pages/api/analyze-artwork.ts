@@ -8,6 +8,8 @@ export const prerender = false;
 import principlesData from '../../data/hg-principles.json';
 import rootsData from '../../data/hg-roots.json';
 import modesData from '../../data/hg-modes.json';
+import lexiconData from '../../data/hg-lexicon.json';
+import lensesData from '../../data/hg-lenses.json';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -48,7 +50,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     const body = await request.json();
-    const { image, title, artist, year, medium, dimensions, mode, customPrompt } = body;
+    const { image, title, artist, year, medium, dimensions, artistStatement, contextNote, mode, customPrompt, lens } = body;
 
     if (!image) {
       return new Response(JSON.stringify({ error: 'No image provided' }), {
@@ -68,7 +70,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const mediaType = image.split(';')[0].split(':')[1]; // Extract mime type
 
     // Build the system prompt with Hidden Grammar framework
-    const baseFramework = `You are an expert art analyst using the Hidden Grammar framework.
+    let baseFramework = `You are an expert art analyst using the Hidden Grammar framework.
 
 # IDENTITY & CORE PHILOSOPHY
 
@@ -105,7 +107,26 @@ ${principlesData.principles.map((p) => `
 **${p.name}** - ${p.subtitle}
 Mechanism: ${p.claimType}
 `).join('\n')}
+`;
 
+    // Inject Global Lexicon if in Global Mode
+    if (mode === 'global') {
+      baseFramework += `
+---
+
+# GLOBAL LEXICON (CROSS-CULTURAL CONCEPTS)
+Use these concepts to expand analysis beyond Western/Semitic definitions:
+
+${lexiconData.lexicon.map((term) => `
+**${term.term}** (${term.origin})
+Definition: ${term.definition}
+In Art: ${term.inArt}
+System Map: ${term.systemMap}
+`).join('\n')}
+`;
+    }
+
+    baseFramework += `
 ---
 
 # UNIVERSAL OUTPUT CONSTRAINTS (Apply to ALL modes)
@@ -121,6 +142,22 @@ Mechanism: ${p.claimType}
 
     // If custom prompt, use it; otherwise use pre-formatted mode
     let analysisInstructions = '';
+    
+    // Apply Lens if selected (overrides standard mode instructions or augments them)
+    if (lens) {
+      const selectedLens = lensesData.lenses.find(l => l.id === lens);
+      if (selectedLens) {
+        analysisInstructions += `
+# CRITICAL LENS ACTIVE: ${selectedLens.name}
+
+You must analyze the work through this specific lens:
+
+${selectedLens.prompt}
+
+---
+`;
+      }
+    }
 
     if (useCustomPrompt) {
       analysisInstructions = `
@@ -136,6 +173,8 @@ ${customPrompt}
 - **Year:** ${year || 'Not specified'}
 - **Medium:** ${medium || 'Not specified'}
 - **Dimensions:** ${dimensions || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
 
 # YOUR APPROACH
 
@@ -196,7 +235,25 @@ Even with custom instructions, maintain evidence-based reasoning:
 Begin your analysis, responding thoughtfully to the user's custom request while maintaining mechanism-based reasoning and the distinctive Hidden Grammar voice.`;
     } else {
       // Mode-specific instructions
-      if (mode === 'full-audit') {
+      if (mode === 'docent-script') {
+        analysisInstructions = `
+# YOUR TASK: DOCENT SCRIPT (ANCHOR V3)
+
+${selectedMode.prompt}
+
+**Context:**
+- **Artwork Title:** ${title || 'Untitled'}
+- **Artist:** ${artist || 'Unknown Artist'}
+- **Year:** ${year || 'Not specified'}
+- **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
+
+---
+
+Begin the docent script now.`;
+      } else if (mode === 'full-audit') {
         analysisInstructions = `
 # YOUR TASK: FULL HIDDEN GRAMMAR AUDIT
 
@@ -208,6 +265,8 @@ Run a FULL HIDDEN GRAMMAR AUDIT using the canonical template structure.
 - **Year:** ${year || 'Not specified'}
 - **Medium:** ${medium || 'Not specified'}
 - **Dimensions:** ${dimensions || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
 
 # CRITICAL INSTRUCTIONS
 
@@ -532,6 +591,8 @@ Begin your analysis now.`;
 - **Artist:** ${artist || 'Unknown Artist'}
 - **Year:** ${year || 'Work in Progress'}
 - **Medium:** ${medium || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
 
 **Trigger:** Current work in progress
 **Protocol:** Compare **Intent** (Roots) vs. **Execution** (Principles). Identify misalignment.
@@ -671,6 +732,8 @@ ${selectedMode.description}
 - **Artist:** ${artist || 'Unknown Artist'}
 - **Year:** ${year || 'Not specified'}
 - **Medium:** ${medium || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
 
 # MODE CHARACTERISTICS
 
