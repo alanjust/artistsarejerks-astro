@@ -237,7 +237,7 @@ Begin your analysis, responding thoughtfully to the user's custom request while 
       // Mode-specific instructions
       if (mode === 'docent-script') {
         analysisInstructions = `
-# YOUR TASK: DOCENT SCRIPT (ANCHOR V3)
+# YOUR TASK: DOCENT SCRIPT (ANCHOR V1)
 
 ${selectedMode.prompt}
 
