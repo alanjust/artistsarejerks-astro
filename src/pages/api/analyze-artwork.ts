@@ -82,7 +82,7 @@ Governs: ${root.governs}
 Anchor Cues: ${root.anchorCues.join(', ')}
 `).join('\n')}
 
-## The 46 Art Principles (Never use numbers in output - use descriptive names with brief functional explanation)
+## The 54 Art Principles (Never use numbers in output - use descriptive names with brief functional explanation)
 ${principlesData.principles.map((p) => `
 **${p.name}** - ${p.subtitle}
 Mechanism: ${p.claimType}
