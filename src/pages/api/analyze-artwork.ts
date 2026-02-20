@@ -348,7 +348,7 @@ Add as many rows as needed. Keep these statements skeptic-safe.
 > No interpretation yet. No "what it means," only "what it does."
 
 ### 2.1 Tier A – Strong Perceptual Bias
-Examples: Edge Detection, Figure/Ground, Occlusion, Contrast, Motion cues, Depth cues.
+Examples: Edge Detection, Figure/Ground, Occlusion, Contrast, Motion cues, Depth cues, Face Detection, Biological Motion, Gaze Direction, Common Fate, Visual Pop-out.
 
 | Principle (Tier A) | Supporting Obs IDs | Claim Type (Perceptual/Attentional) | Confidence (Low/Med/High) |
 |--------------------|-------------------|-------------------------------------|---------------------------|
@@ -357,7 +357,7 @@ Examples: Edge Detection, Figure/Ground, Occlusion, Contrast, Motion cues, Depth
 |  |  |  |  |
 
 ### 2.2 Tier B – Organizational / Studio Heuristics
-Examples: Value structure, Color temperature, Saturation, Texture/facture, Rhythm, Balance/weight.
+Examples: Value structure, Color temperature, Saturation, Texture/facture, Rhythm, Balance/weight, Peak Shift, Embodied Perspective, Canonical Views.
 
 | Principle (Tier B) | Supporting Obs IDs | Claim Type (Organizational/Studio) | Confidence (Low/Med/High) |
 |--------------------|-------------------|-----------------------------------|---------------------------|
