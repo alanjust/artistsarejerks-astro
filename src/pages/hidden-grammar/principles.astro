@@ -8,10 +8,10 @@ const tierCPrinciples = principles.principles.filter(p => p.tier === 'C');
 const tierDPrinciples = principles.principles.filter(p => p.tier === 'D');
 ---
 
-<BaseLayout title="The 46 Principles - Hidden Grammar">
+<BaseLayout title="The 54 Principles - Hidden Grammar">
   <div class="principles-page">
     <header class="page-header">
-      <h1>The 46 Principles</h1>
+      <h1>The 54 Principles</h1>
       <p class="tagline">Perceptual Mechanisms: How Vision Actually Works</p>
     </header>
 
@@ -31,7 +31,7 @@ const tierDPrinciples = principles.principles.filter(p => p.tier === 'D');
           <li>how depth, surface, and motion cues cohere</li>
           <li>how visual tension and resolution can be felt</li>
         </ul>
-        <p>Meaning is negotiated between the work, the viewer's prior knowledge and mood, and the surrounding context.</p>
+        <p>Meaning is negotiated between the work, the viewer's prior knowledge and mood, and the surrounding context. Completing a Principle inventory does not automatically license an interpretive claim. The move from mechanism to meaning is a deliberate register shift — from observation to judgment.</p>
       </div>
 
       <div class="tiers-explanation">
@@ -140,6 +140,17 @@ const tierDPrinciples = principles.principles.filter(p => p.tier === 'D');
                   <strong>Studio Use:</strong> {principle.studioUse}
                 </div>
               )}
+
+              {principle.combineWith && principle.combineWith.length > 0 && (
+                <div class="principle-detail">
+                  <h4>Combine With</h4>
+                  <ul class="options-list">
+                    {principle.combineWith.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </article>
           ))}
         </div>
@@ -179,6 +190,17 @@ const tierDPrinciples = principles.principles.filter(p => p.tier === 'D');
               {principle.studioUse && (
                 <div class="studio-use">
                   <strong>Studio Use:</strong> {principle.studioUse}
+                </div>
+              )}
+
+              {principle.combineWith && principle.combineWith.length > 0 && (
+                <div class="principle-detail">
+                  <h4>Combine With</h4>
+                  <ul class="options-list">
+                    {principle.combineWith.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </article>

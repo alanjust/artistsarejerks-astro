@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
+import { marked } from 'marked';
 
 // Enable server-side rendering for this endpoint
 export const prerender = false;
@@ -13,35 +14,14 @@ import lensesData from '../../data/hg-lenses.json';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Access environment variables from Cloudflare runtime
+    // Access environment variables — Cloudflare runtime (.dev.vars locally, secrets in production)
     const runtime = locals.runtime;
-
-    console.log('Debug - Runtime available:', !!runtime);
-    console.log('Debug - Runtime env available:', !!runtime?.env);
-    
-    let apiKey = runtime?.env?.ANTHROPIC_API_KEY;
-    
-    if (apiKey) {
-        console.log('Debug - Found API Key in runtime.env');
-    } else {
-        console.log('Debug - Not found in runtime.env, checking fallbacks...');
-        
-        // Fallback checks
-        if (typeof process !== 'undefined' && process.env?.ANTHROPIC_API_KEY) {
-            apiKey = process.env.ANTHROPIC_API_KEY;
-            console.log('Debug - Found API Key in process.env');
-        } else if (import.meta.env.ANTHROPIC_API_KEY) {
-            apiKey = import.meta.env.ANTHROPIC_API_KEY;
-            console.log('Debug - Found API Key in import.meta.env');
-        }
-    }
+    const apiKey = runtime?.env?.ANTHROPIC_API_KEY;
 
     if (!apiKey) {
-        // Log available keys in env (sanitized) to help debugging
-        if (runtime?.env) {
-            console.log('Debug - Available env keys:', Object.keys(runtime.env));
-        }
-        throw new Error('ANTHROPIC_API_KEY environment variable is not set in runtime.env, process.env, or import.meta.env');
+      throw new Error(
+        'ANTHROPIC_API_KEY is not set. Locally: add it to .dev.vars. In production: add it as a Cloudflare Pages secret.'
+      );
     }
 
     // Initialize Anthropic client inside the request handler
@@ -720,8 +700,23 @@ If relevant, provide one paragraph of comparative or contextual perspective. May
 - Evidence-based reasoning throughout
 
 Begin your analysis now.`;
+      } else if ((selectedMode as any).prompt) {
+        // Modes with full prompts in hg-modes.json (studio-foundations, attention-engineering, etc.)
+        // The prompt is used as-is; we inject artwork context as a separate user-facing block
+        const contextBlock = `
+# ARTWORK CONTEXT (for this analysis)
+- **Artwork Title:** ${title || 'Untitled'}
+- **Artist:** ${artist || 'Unknown Artist'}
+- **Year:** ${year || 'Not specified'}
+- **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
+${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
+${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
+`;
+        // The JSON prompt already contains the full instructions; prepend the context block
+        analysisInstructions = contextBlock + '\n\n' + (selectedMode as any).prompt;
       } else {
-        // For other modes, preserve mode-specific voice and characteristics
+        // Generic fallback for modes without a full prompt in the JSON
         analysisInstructions = `
 # YOUR TASK: ${selectedMode.name}
 
@@ -732,104 +727,44 @@ ${selectedMode.description}
 - **Artist:** ${artist || 'Unknown Artist'}
 - **Year:** ${year || 'Not specified'}
 - **Medium:** ${medium || 'Not specified'}
+- **Dimensions:** ${dimensions || 'Not specified'}
 ${artistStatement ? `- **Artist Statement:** ${artistStatement}` : ''}
 ${contextNote ? `- **Exhibition Context/Lens:** ${contextNote}` : ''}
 
-# MODE CHARACTERISTICS
+Analyze this artwork using the Hidden Grammar framework. Apply ${selectedMode.name}'s approach as described. Maintain evidence-based reasoning throughout: observations → mechanisms → effects → conclusions. Do not use Hebrew terms or principle numbers in your output.
 
-This mode has its own distinctive approach and voice. Key characteristics:
+Begin your analysis now.`;
+      }
+    }
 
-**Strategic Mode:** Standard critique using Adam Moss/Editor voice. Identify primary action (Stripping/Building/Holding/Integrating), run stress tests, map mechanics, deliver honest/dishonest verdict.
-
-**Physics Mode:** DeepSeek Logic approach. Tests structural integrity with physics metaphors - gravity, entropy, material truth, capacity. More analytical, less interpretive.
-
-**Historian Mode:** Academic but accessible breakdown. Connects internal logic to art historical lineage, canon fit, and contemporary critique positioning.
-
-**Friction Audit:** Transmission-focused. Tests perceptual fluency (Kinkade risk) vs. cognitive friction (Twombly factor). Scores friction density 0-10.
-
-# ANALYSIS PROTOCOL (Evidence-Based, Mode-Adapted)
-
-**Phase 1 - Visual Evidence Foundation:**
-Make 8-12 concrete observations about what's directly visible:
-- Edge quality (hard, soft, lost) and where
-- Value relationships (contrast, distribution, hierarchy)
-- Spatial cues (overlap, depth indicators, atmospheric effects)
-- Mark-making (stroke types, directional bias, density)
-- Color behavior (dominants, temperature shifts, saturation)
-- Attention patterns (where eye locks vs. glides)
-
-**Phase 2 - Mechanism Identification:**
-Map 3-5 observations to perceptual mechanisms:
-- Describe how visual features function (not what they mean)
-- Explain effects on attention, grouping, depth, or tension
-- Use mechanism language appropriate to this mode's voice
-
-**Phase 3 - Mode-Specific Analysis:**
-Apply this mode's particular lens:
-- **Strategic:** Primary action identification, stress tests, honest/dishonest verdict
-- **Physics:** Structural checks (gravity, entropy, material, capacity)
-- **Historian:** Internal logic + external context (canon fit, trends, critique positioning)
-- **Friction:** Slide test, snag test, canon proxy, friction density score
-
-# OUTPUT APPROACH
-
-Write in the voice and style appropriate to this mode. Structure flexibly based on mode needs:
-
-**Opening:** Lead with mode-appropriate framing
-**Evidence Section:** Ground analysis in visible observations
-**Mechanism Section:** Explain how things function (perceptually/structurally)
-**Mode-Specific Analysis:** Apply this mode's particular criteria and tests
-**Synthesis/Verdict:** Conclude with mode-appropriate takeaways
-
-# MODE VOICE GUIDANCE
-
-**Strategic, Historian, WIP, Tour Guide, Global:** Use "Adam Moss / Editor" voice
-- Conversational, psychological, process-oriented
-- Active language: "the eye wants to", "your hand knows", "attention locks"
-- Cause-effect: "Because X, you get Y"
-- Make absences visible with consequences
-
-**Physics Mode:** Use analytical/structural voice
-- Physics metaphors: weight, balance, friction, capacity
-- Structural integrity focus
-- Pass/fail verdicts on coherence
-- Less interpretive, more diagnostic
-
-**Friction Audit:** Use transmission-focused voice
-- Perceptual fluency assessment
-- Kinkade vs. Twombly spectrum
-- Risk identification
-- Scoring and comparative analysis
-
-**All modes - Rich description patterns:**
-- ✓ "The value range compresses in the mid-tones, which flattens spatial depth. Without darker darks to anchor the foreground, everything hovers at the same distance."
-- ✗ "The values are compressed."
-
-- ✓ "Hard edges demand attention - your visual cortex fires strongest at high-contrast boundaries, which locks focus exactly where the composition needs it."
-- ✗ "The edges create contrast."
-
-# CRITICAL CONSTRAINTS
-
-**Universal (apply to ALL modes):**
-- NO Hebrew terms in output (Ch-Sh-V, Y-Tz-R, etc.) - use English names
-- NO Principle numbers ("Principle #7") - use descriptive mechanism names
-- Evidence-based reasoning: observations → mechanisms → effects → conclusions
-- Mechanism explanations that clarify perceptual/structural function
-
-**Mode-specific RAP compliance:**
-- Modes requiring RAP (Strategic, Historian, WIP, Tour Guide, Global): Roots locked until Evidence Gate passes
-- Modes exempt from RAP (Physics, Technician, Friction Audit, Novelty): May access framework elements more directly
-
-**Voice preservation:**
-- Maintain this mode's distinctive voice and analytical approach
-- Use language patterns appropriate to the mode
-- Structure output to serve mode's specific goals
-- Don't flatten into generic analysis
+    // Inject Partial RAP gate for modes that require Coverage + Constraint but not full RAP
+    const modeRapLevel = (selectedMode as any).rapLevel;
+    if (!useCustomPrompt && modeRapLevel === 'partial') {
+      analysisInstructions += `
 
 ---
 
-Begin your analysis now, maintaining the distinctive voice and approach of ${selectedMode.name}.`;
-      }
+# PARTIAL RAP GATE (ACTIVE FOR THIS MODE)
+
+This mode uses a **Partial Root Access Protocol**. You must satisfy TWO gates before making any interpretive claim (Step 3 / verdict / structural judgment):
+
+**Gate 1 — COVERAGE (must pass):**
+- At least 3 distinct visual observations mapped to named perceptual Principles
+- Each mapping must cite what is directly visible and explain the mechanism
+- If fewer than 3 Principles are mappable with confidence, state this explicitly and restrict output to descriptive/mechanical observations only
+
+**Gate 2 — CONSTRAINT (must pass):**
+- At least 1 conspicuous absence named — something structurally expected given the work's genre, format, or apparent intent that is not present
+- State the absence plainly and describe its perceptual consequence (what fails or goes unresolved because it's missing)
+
+**Gate behavior:**
+- Both gates must PASS before any interpretive move (Step 3, structural verdict, intent inference)
+- If either gate FAILS, stop at mechanisms — describe what you see and how it functions, but make no claims about what it means or whether structure succeeds/fails
+- Do NOT name Roots or Poles under any circumstance in this mode
+- Label your gate check inline as: **Coverage Gate: PASS/FAIL** and **Constraint Gate: PASS/FAIL**
+- Keep gate check brief — one line each is sufficient
+
+This gate applies even when the mode's voice is encouraging or beginner-friendly. The gate is invisible scaffolding, not visible structure — check it internally, report it concisely, then continue in the mode's natural voice.`;
     }
 
     // Combine base framework with analysis instructions
@@ -867,8 +802,8 @@ Begin your analysis now, maintaining the distinctive voice and approach of ${sel
       .map((block) => ('text' in block ? block.text : ''))
       .join('\n\n');
 
-    // Convert markdown to HTML for display
-    const analysisHTML = markdownToHTML(analysisText);
+    // Convert markdown to HTML using marked (handles tables, nested lists, etc.)
+    const analysisHTML = await marked(analysisText, { async: true });
 
     return new Response(
       JSON.stringify({
@@ -901,34 +836,4 @@ Begin your analysis now, maintaining the distinctive voice and approach of ${sel
   }
 };
 
-// Simple markdown to HTML converter
-function markdownToHTML(markdown: string): string {
-  let html = markdown;
 
-  // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-  // Bold
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-  // Italic
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-  // Lists
-  html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-
-  // Paragraphs
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = '<p>' + html + '</p>';
-
-  // Clean up
-  html = html.replace(/<p><h/g, '<h');
-  html = html.replace(/<\/h([1-6])><\/p>/g, '</h$1>');
-  html = html.replace(/<p><ul>/g, '<ul>');
-  html = html.replace(/<\/ul><\/p>/g, '</ul>');
-
-  return html;
-}

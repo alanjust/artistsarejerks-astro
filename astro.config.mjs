@@ -4,7 +4,7 @@ import cloudflare from '@astrojs/cloudflare';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://artistsarejerks-astro.pages.dev',
-  output: 'static', // Static mode with server endpoints support
+  output: 'static', // Astro v5: static with per-route SSR via prerender = false
   adapter: cloudflare({
     imageService: 'passthrough'
   }),

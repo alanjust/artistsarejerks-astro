@@ -1,6 +1,6 @@
 {
   "meta": {
-    "epistemicNotice": "These 46 principles are perceptual mechanisms that influence what gets noticed, how forms organize, and how space is inferred - all before conscious interpretation. They do not determine meaning.",
+    "epistemicNotice": "These 54 principles are perceptual mechanisms that influence what gets noticed, how forms organize, and how space is inferred - all before conscious interpretation. They do not determine meaning.",
     "influences": [
       "what gets noticed first",
       "how forms group, separate, and stabilize",
@@ -371,6 +371,94 @@
       "subtitle": "information richness",
       "tier": "B",
       "claimType": "Perceptual organization / studio heuristic"
+    },
+    {
+      "id": 47,
+      "name": "Face Detection",
+      "subtitle": "specialized neural area",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your brain has dedicated hardware for face processing - the Fusiform Face Area (FFA). Faces grab attention pre-attentively and automatically, before conscious awareness. Pareidolia (seeing faces in clouds, toast, electrical outlets) isn't a bug - it's your face detection system being trigger-happy because missing a face historically had higher survival cost than false positives.",
+      "studioTool": "Faces are attention anchors whether you want them to be or not. Present faces dominate composition; suggested faces (two dots + line) read as face; absent faces useful when you want attention elsewhere; hidden faces create pareidolic discovery moments.",
+      "studioUse": "If there's a face in the composition, it's the starting point for viewer attention. Either make it the focal point and build around it, deliberately subvert expectation by de-emphasizing it, or avoid face-like patterns unless you want them to compete for attention.",
+      "combineWith": []
+    },
+    {
+      "id": 48,
+      "name": "Biological Motion Detection",
+      "subtitle": "animate movement patterns",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Your visual system has specialized processing for animate movement patterns. You can recognize a walking human from just 12 points of light attached to joints - no other information needed. This is distinct from general motion detection. Biological motion = movement that suggests living intention.",
+      "studioTool": "Gesture and posture read as alive vs static even in still images. Dynamic posture (weight shift, mid-action), gestural marks that capture movement quality, implied trajectory, natural articulation create biological motion cues.",
+      "studioUse": "To create vitality: capture mid-gesture, show weight shift and balance, use marks that echo the movement. To create stillness: symmetrical planted stances, vertical/horizontal alignment, resolved positions.",
+      "combineWith": ["Directional Force/Implied Movement", "Implied Time/Narrative Sequence"]
+    },
+    {
+      "id": 49,
+      "name": "Gaze Direction / Social Attention",
+      "subtitle": "where figures look",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Where depicted figures are looking directs viewer attention. This is neurologically distinct from compositional directional force - it's a social attention mechanism. You automatically follow gaze direction of faces. Infants do this at 3 months old. It's hardwired.",
+      "studioTool": "Gaze = attention vector, more powerful than any compositional line. Direct gaze (at viewer) creates confrontation and engagement; averted gaze directs viewer to look where figure is looking; multiple gazes create attention flow; no visible eyes reduces social attention effect.",
+      "studioUse": "If a figure looks at something, viewers will look there too. Use to guide attention to focal point, create narrative relationships (who's looking at whom), establish hierarchy, control engagement level (direct gaze = more intense).",
+      "combineWith": ["Directional Force/Implied Movement", "Focal Blur/Depth of Field"]
+    },
+    {
+      "id": 50,
+      "name": "Common Fate",
+      "subtitle": "grouped movement",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Elements moving together group perceptually - even if different colors, shapes, or sizes. This is a Gestalt principle distinct from static grouping rules. In still images, implied shared motion creates the same grouping effect.",
+      "studioTool": "Marks that share direction and trajectory read as unified group. Parallel directional marks, shared orientation, synchronized implied motion (multiple figures in similar gesture), flow patterns create common fate in static images.",
+      "studioUse": "To group elements: give them shared directional quality, marks that follow similar trajectory, parallel implied motion paths. To separate: different directional vectors, interrupt shared flow, opposing orientation.",
+      "combineWith": ["Grouping", "Directional Force/Implied Movement", "Rhythm and Repetition"]
+    },
+    {
+      "id": 51,
+      "name": "Visual Pop-out / Pre-attentive Features",
+      "subtitle": "instant attention capture",
+      "tier": "A",
+      "claimType": "Perceptual/attentional mechanism",
+      "neuralFact": "Certain features grab attention before conscious processing - in parallel across entire visual field, under 200ms. Pre-attentive features: unique color in field of different colors, unique orientation in field of parallel lines, unique motion direction, unique size, unique shape (when surrounding shapes are homogeneous).",
+      "studioTool": "Pop-out = instant attention magnet, no conscious search required. Single unique feature in field of similar elements = automatic salience.",
+      "studioUse": "To create immediate focal point: make one element unique in key dimension (color, orientation, size), keep surrounding field homogeneous. To avoid unintentional pop-out: be aware of accidental unique elements - one different mark will draw the eye whether you want it to or not.",
+      "combineWith": ["Edge Detection", "Saturation", "Focal Blur/Depth of Field"]
+    },
+    {
+      "id": 52,
+      "name": "Peak Shift / Supernormal Stimuli",
+      "subtitle": "exaggeration amplifies response",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic",
+      "neuralFact": "Exaggerating distinguishing features increases neural response beyond natural stimulus level (V.S. Ramachandran's peak shift principle). Caricature works better than realism for recognition: amplified features = stronger activation = faster recognition. Your brain is tuned to detect distinguishing characteristics; push them further = more satisfying recognition response.",
+      "studioTool": "Peak shift = amplification strategy. Find the distinguishing feature, then push it past natural to supernormal level. Caricature (exaggerate distinctive features); form amplification (push characteristic shapes beyond natural); color exaggeration (natural tendency pushed further).",
+      "studioUse": "Stylization often works better than realism for impact. Naturalism aims for accuracy; peak shift aims for recognition intensity. Distinct from economy of means - economy reduces, peak shift amplifies.",
+      "combineWith": ["Edge Detection", "Color Opponent Channels", "Economy of Means"]
+    },
+    {
+      "id": 53,
+      "name": "Embodied Perspective / Eye-Level Effects",
+      "subtitle": "viewer position and horizon",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic",
+      "neuralFact": "Your visual system is calibrated to standing human eye level as default reference. Deviation from this creates embodied emotional response. Horizon line placement affects how the scene feels because it places the viewer's implied body in specific spatial relationship to depicted space.",
+      "studioTool": "Camera/eye height = emotional stance toward subject. Low horizon (looking up): subject monumental, powerful; viewer in submissive position. High horizon (looking down): subject vulnerable, diminished; viewer in dominant position. Eye-level horizon: neutral, peer relationship.",
+      "studioUse": "Choose viewpoint based on desired relationship between viewer and subject. Not just composition - implied embodied stance. Worm's-eye = you small, world big. Bird's-eye = you above, surveying.",
+      "combineWith": ["Linear Perspective", "Scale Relationships", "Elevation in Picture Plane"]
+    },
+    {
+      "id": 54,
+      "name": "Canonical Views",
+      "subtitle": "optimal recognition",
+      "tier": "B",
+      "claimType": "Perceptual organization / studio heuristic",
+      "neuralFact": "Objects have preferred viewing angles for recognition that provide maximum diagnostic information. For most objects, 3/4 view is optimal - more information than pure profile or pure frontal view.",
+      "studioTool": "Viewpoint choice affects recognizability and information density. Faces: 3/4 optimal (shows features + structure); profile = distinctive but less information; frontal = formal, less dimensional. Chairs/buildings: 3/4 shows structure. Vehicles: 3/4 front or rear.",
+      "studioUse": "For maximum recognizability use canonical view. For specific effects: profile = emblematic, less personal; frontal = confrontational, iconic; extreme angles = dramatic but may sacrifice recognition; 3/4 = balanced, most versatile. If abstraction/defamiliarization is goal - avoid canonical view.",
+      "combineWith": ["Embodied Perspective / Eye-Level Effects", "Edge Detection", "Simultaneity vs. Sequence"]
     }
   ]
 }
