@@ -15,8 +15,9 @@ import lensesData from '../../data/hg-lenses.json';
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Access environment variables — Cloudflare runtime (.dev.vars locally, secrets in production)
+    // Falls back to process.env for Astro dev server (npm run dev)
     const runtime = locals.runtime;
-    const apiKey = runtime?.env?.ANTHROPIC_API_KEY;
+    const apiKey = runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY || import.meta.env.ANTHROPIC_API_KEY;
 
     if (!apiKey) {
       throw new Error(
