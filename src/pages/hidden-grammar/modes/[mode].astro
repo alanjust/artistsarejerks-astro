@@ -1,0 +1,223 @@
+---
+import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
+import { analysisModes } from '../../../data/analysisModes.js';
+
+export function getStaticPaths() {
+  return analysisModes.map(mode => ({
+    params: { mode: mode.id },
+    props: { mode },
+  }));
+}
+
+const { mode } = Astro.props;
+---
+
+<HiddenGrammarLayout
+  title={`${mode.label} — Hidden Grammar`}
+  description={mode.description}
+>
+  <div class="hg-page">
+
+    <!-- Breadcrumb -->
+    <nav class="hg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/hidden-grammar">Home</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <span>{mode.label}</span>
+    </nav>
+
+    <!-- Page header -->
+    <div class="hg-page-header">
+      <h1>{mode.label}</h1>
+      <p>{mode.description}</p>
+    </div>
+
+    <!-- Sub-modes -->
+    {mode.subModes.length > 0 && (
+      <section class="hg-submodes-section" aria-label="Sub-mode selection">
+        <h2 class="hg-section-label">Sub-mode <span class="hg-optional">(optional)</span></h2>
+        <p class="hg-section-hint">Selecting a sub-mode adds specificity to your analysis. Click a prompt card below to continue.</p>
+        <div class="hg-submodes" id="subModeContainer">
+          {mode.subModes.map(sub => (
+            <button
+              type="button"
+              class="hg-submode-btn"
+              data-submode-id={sub.id}
+              title={sub.description || sub.label}
+            >
+              {sub.label}
+            </button>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Prompt cards -->
+    <section class="hg-prompts-section" aria-label="Prompt selection">
+      <h2 class="hg-section-label">Choose a prompt</h2>
+      <div class="hg-grid hg-grid--prompts" id="promptsGrid">
+        {mode.prompts.map(prompt => (
+          <button
+            type="button"
+            class="hg-card hg-prompt-card"
+            data-mode-id={mode.id}
+            data-prompt-id={prompt.id}
+          >
+            <h3 class="hg-card-title hg-prompt-title">{prompt.label}</h3>
+            <p class="hg-card-desc">{prompt.description}</p>
+            <p class="hg-card-arrow">Analyze with this prompt →</p>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- Back -->
+    <div class="hg-back-row">
+      <a href="/hidden-grammar" class="hg-btn hg-btn--ghost">← Back to modes</a>
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .hg-section-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .hg-optional {
+    font-weight: 400;
+    color: #cbd5e1;
+  }
+
+  .hg-section-hint {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: -0.25rem 0 1rem 0;
+  }
+
+  /* Sub-modes */
+  .hg-submodes-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .hg-submodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .hg-submode-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4375rem 0.875rem;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+
+  .hg-submode-btn:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: #eef2ff;
+  }
+
+  .hg-submode-btn.selected {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+  }
+
+  /* Prompt cards */
+  .hg-prompts-section {
+    margin-bottom: 2rem;
+  }
+
+  .hg-prompt-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    font-family: inherit;
+    min-height: 160px;
+  }
+
+  .hg-prompt-card:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .hg-prompt-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  /* Back row */
+  .hg-back-row {
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  @media (max-width: 640px) {
+    .hg-grid--prompts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const selectedSubmode: { id: string | null } = { id: null };
+
+  // Sub-mode toggle
+  document.querySelectorAll('.hg-submode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = (btn as HTMLElement).dataset.submodeId || null;
+      if (selectedSubmode.id === id) {
+        // Deselect
+        selectedSubmode.id = null;
+        btn.classList.remove('selected');
+      } else {
+        // Deselect previous
+        document.querySelectorAll('.hg-submode-btn.selected').forEach(b => b.classList.remove('selected'));
+        selectedSubmode.id = id;
+        btn.classList.add('selected');
+      }
+    });
+  });
+
+  // Prompt card navigation
+  document.querySelectorAll('.hg-prompt-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const modeId = (card as HTMLElement).dataset.modeId;
+      const promptId = (card as HTMLElement).dataset.promptId;
+
+      const params = new URLSearchParams();
+      if (modeId) params.set('mode', modeId);
+      if (promptId) params.set('prompt', promptId);
+      if (selectedSubmode.id) params.set('submode', selectedSubmode.id);
+
+      window.location.href = `/hidden-grammar/ai-analyze?${params.toString()}`;
+    });
+  });
+</script>

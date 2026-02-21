@@ -1,16 +1,189 @@
 import { state } from './state';
 
+// Types matching analysisModes.js structure
+interface SubMode {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+interface Field {
+  id: string;
+  label: string;
+}
+
+interface Prompt {
+  id: string;
+  label: string;
+  description: string;
+  prompt: string;
+}
+
+interface AnalysisMode {
+  id: string;
+  label: string;
+  description: string;
+  subModes: SubMode[];
+  fields: Field[];
+  prompts: Prompt[];
+}
+
+// ── Page initialisation ────────────────────────────────────────────────────
+// Reads URL params, resolves mode/prompt data, renders dynamic fields and header.
+
+export function initPage() {
+  const modesDataEl = document.getElementById('analysisModesData');
+  if (!modesDataEl) return;
+
+  let modes: AnalysisMode[] = [];
+  try {
+    modes = JSON.parse(modesDataEl.textContent || '[]');
+  } catch {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const modeId = params.get('mode') || '';
+  const promptId = params.get('prompt') || '';
+  const submodeId = params.get('submode') || '';
+
+  const mode = modes.find(m => m.id === modeId);
+  const prompt = mode?.prompts.find(p => p.id === promptId);
+  const submode = mode?.subModes.find(s => s.id === submodeId);
+
+  // Store in shared state
+  state.modeId = modeId;
+  state.promptId = promptId;
+  state.submodeId = submodeId;
+  state.promptText = prompt?.prompt || '';
+
+  if (mode && prompt) {
+    // Populate context header
+    const headerEl = document.getElementById('analyzeHeader');
+    const fallbackHeaderEl = document.getElementById('fallbackHeader');
+    const modeNameEl = document.getElementById('analyzeModeName');
+    const promptNameEl = document.getElementById('analyzePromptName');
+    const submodeLabelEl = document.getElementById('analyzeSubmodeName');
+    const backLinkEl = document.getElementById('backToModeLink') as HTMLAnchorElement | null;
+
+    if (headerEl) headerEl.style.display = 'block';
+    if (fallbackHeaderEl) fallbackHeaderEl.style.display = 'none';
+    if (modeNameEl) modeNameEl.textContent = mode.label;
+    if (promptNameEl) promptNameEl.textContent = prompt.label;
+
+    if (submode && submodeLabelEl) {
+      submodeLabelEl.textContent = `Sub-mode: ${submode.label}`;
+      submodeLabelEl.style.display = 'block';
+    }
+
+    if (backLinkEl) {
+      backLinkEl.href = `/hidden-grammar/modes/${modeId}`;
+    }
+
+    // Breadcrumb
+    const breadcrumbModeEl = document.getElementById('breadcrumbMode');
+    const breadcrumbSep2El = document.getElementById('breadcrumbSep2');
+    const breadcrumbPromptEl = document.getElementById('breadcrumbPrompt');
+
+    if (breadcrumbModeEl) breadcrumbModeEl.textContent = mode.label;
+    if (breadcrumbSep2El) breadcrumbSep2El.style.display = '';
+    if (breadcrumbPromptEl) {
+      breadcrumbPromptEl.textContent = prompt.label;
+      breadcrumbPromptEl.style.display = '';
+    }
+
+    // Render dynamic fields
+    renderDynamicFields(mode.fields);
+
+    // Hide fallback fields
+    const fallbackFieldsSection = document.getElementById('fallbackFieldsSection');
+    if (fallbackFieldsSection) fallbackFieldsSection.style.display = 'none';
+
+  } else {
+    // No URL params — show fallback header and fallback fields
+    const breadcrumbModeEl = document.getElementById('breadcrumbMode');
+    if (breadcrumbModeEl) breadcrumbModeEl.textContent = 'Direct Upload';
+  }
+}
+
+function renderDynamicFields(fields: Field[]) {
+  const container = document.getElementById('dynamicFields');
+  const section = document.getElementById('dynamicFieldsSection');
+  if (!container || !section) return;
+
+  container.innerHTML = '';
+
+  fields.forEach(field => {
+    const group = document.createElement('div');
+    const isTextarea = field.id === 'notes' || field.id === 'context' ||
+      field.id === 'artistStatement' || field.id === 'contextNote';
+
+    group.className = `hg-field-group${isTextarea ? ' full-width' : ''}`;
+
+    const label = document.createElement('label');
+    label.className = 'hg-field-label';
+    label.htmlFor = `field_${field.id}`;
+    label.textContent = field.label;
+
+    if (isTextarea) {
+      const textarea = document.createElement('textarea');
+      textarea.className = 'hg-field-textarea';
+      textarea.id = `field_${field.id}`;
+      textarea.name = field.id;
+      textarea.rows = 3;
+      textarea.placeholder = `${field.label}...`;
+      group.appendChild(label);
+      group.appendChild(textarea);
+    } else {
+      const input = document.createElement('input');
+      input.className = 'hg-field-input';
+      input.type = 'text';
+      input.id = `field_${field.id}`;
+      input.name = field.id;
+      input.placeholder = `${field.label}...`;
+      group.appendChild(label);
+      group.appendChild(input);
+    }
+
+    container.appendChild(group);
+  });
+
+  section.style.display = 'block';
+}
+
+// ── Collect field values ───────────────────────────────────────────────────
+
+function collectFields(): Record<string, string> {
+  const fields: Record<string, string> = {};
+
+  // Dynamic fields (from mode)
+  document.querySelectorAll('#dynamicFields [name]').forEach(el => {
+    const input = el as HTMLInputElement | HTMLTextAreaElement;
+    if (input.value.trim()) {
+      fields[input.name] = input.value.trim();
+    }
+  });
+
+  // Fallback fields (when no mode selected)
+  document.querySelectorAll('#fallbackFieldsSection [name]').forEach(el => {
+    const input = el as HTMLInputElement | HTMLTextAreaElement;
+    if (input.value.trim()) {
+      fields[input.name] = input.value.trim();
+    }
+  });
+
+  return fields;
+}
+
+// ── Analysis submission ────────────────────────────────────────────────────
+
 export function initAnalysis() {
-  const analyzeBtn = document.getElementById('analyzeBtn');
+  const analyzeBtn = document.getElementById('analyzeBtn') as HTMLButtonElement | null;
   const loadingState = document.getElementById('loadingState');
   const resultsPanel = document.getElementById('resultsPanel');
   const analysisForm = document.getElementById('analysisForm');
   const resultsContent = document.getElementById('resultsContent');
   const backToForm = document.getElementById('backToForm');
-  const customPromptTextarea = document.getElementById('customPrompt') as HTMLTextAreaElement;
-  const modeRadios = document.querySelectorAll('input[name="analysisMode"]') as NodeListOf<HTMLInputElement>;
-  const customPromptSection = document.querySelector('.custom-prompt-section') as HTMLElement;
-  const modesSection = document.querySelector('.preformatted-modes-section') as HTMLElement;
 
   analyzeBtn?.addEventListener('click', async () => {
     if (!state.uploadedImageData) {
@@ -18,49 +191,22 @@ export function initAnalysis() {
       return;
     }
 
-    // Get form data
-    const title = (document.getElementById('artworkTitle') as HTMLInputElement)?.value || 'Untitled';
-    const artist = (document.getElementById('artistName') as HTMLInputElement)?.value || 'Unknown Artist';
-    const year = (document.getElementById('yearCreated') as HTMLInputElement)?.value;
-    const medium = (document.getElementById('medium') as HTMLInputElement)?.value;
-    const dimensions = (document.getElementById('dimensions') as HTMLInputElement)?.value;
-    const artistStatement = (document.getElementById('artistStatement') as HTMLTextAreaElement)?.value || '';
-    const contextNote = (document.getElementById('contextNote') as HTMLTextAreaElement)?.value || '';
-    const customPrompt = (document.getElementById('customPrompt') as HTMLTextAreaElement)?.value || '';
-    const selectedModeRadio = document.querySelector('input[name="analysisMode"]:checked') as HTMLInputElement;
-    const mode = selectedModeRadio?.value || 'strategic';
-    const lens = (document.getElementById('lensSelector') as HTMLSelectElement)?.value || '';
+    const fields = collectFields();
+    const promptText = state.promptText;
 
-    // Validate that either custom prompt or mode is selected
-    if (!customPrompt.trim() && !selectedModeRadio) {
-      alert('Please either enter a custom prompt or select a pre-formatted analysis mode');
-      if (loadingState) loadingState.style.display = 'none';
-      if (analysisForm) analysisForm.style.display = 'block';
-      return;
-    }
-
-    // Show loading state
+    // Show loading
     if (analysisForm) analysisForm.style.display = 'none';
     if (loadingState) loadingState.style.display = 'flex';
 
     try {
       const response = await fetch('/api/analyze-artwork', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: state.uploadedImageData,
-          title,
-          artist,
-          year,
-          medium,
-          dimensions,
-          artistStatement,
-          contextNote,
-          mode,
-          customPrompt,
-          lens,
+          fields,
+          promptText,
+          interrogationMode: false,
         }),
       });
 
@@ -68,57 +214,29 @@ export function initAnalysis() {
 
       if (!response.ok) {
         console.error('API Error:', result);
-        alert(`Analysis failed: ${result.details || result.error}\n\nAPI Key Present: ${result.apiKeyPresent}\n\nCheck console for more details.`);
+        alert(`Analysis failed: ${result.details || result.error}\n\nCheck console for details.`);
         if (loadingState) loadingState.style.display = 'none';
         if (analysisForm) analysisForm.style.display = 'block';
         return;
       }
 
-      // Display results
-      if (resultsContent) {
-        resultsContent.innerHTML = result.analysis;
-      }
+      // Store output
+      state.outputs = [{ raw: result.raw || '', html: result.analysis }];
+      state.fields = fields;
 
-      // Store raw markdown and metadata for export/copy
-      state.rawMarkdownContent = result.raw || '';
-
-      // Get mode name from the label associated with selected radio
-      let modeName = mode;
-      if (selectedModeRadio) {
-        const modeLabel = selectedModeRadio.closest('.mode-card')?.querySelector('h3');
-        if (modeLabel) {
-          modeName = modeLabel.textContent || mode;
-        }
-      }
-
-      // Get lens name
-      let lensName = '';
-      if (lens) {
-        const lensOption = (document.getElementById('lensSelector') as HTMLSelectElement)?.querySelector(`option[value="${lens}"]`);
-        if (lensOption) {
-          lensName = lensOption.textContent || lens;
-        }
-      }
-
-      state.analysisMetadata = {
-        title,
-        artist,
-        year,
-        medium,
-        dimensions,
-        mode: modeName,
-        lens: lensName,
-        customPrompt,
-        timestamp: new Date().toISOString()
-      };
-
+      // Display
+      if (resultsContent) resultsContent.innerHTML = result.analysis;
       if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
-      window.scrollTo(0, 0);
+
+      // Wire up main copy button
+      wireCopyButton('copyMainOutput', 0);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('Failed to analyze artwork. Please try again.\n\nCheck console for more details.');
+      alert('Failed to analyze artwork. Please try again.');
       if (loadingState) loadingState.style.display = 'none';
       if (analysisForm) analysisForm.style.display = 'block';
     }
@@ -128,20 +246,50 @@ export function initAnalysis() {
     if (analysisForm) analysisForm.style.display = 'block';
     if (resultsPanel) resultsPanel.style.display = 'none';
 
-    // Clear custom prompt
-    if (customPromptTextarea) {
-      customPromptTextarea.value = '';
+    // Clear interrogation history
+    const history = document.getElementById('interrogationHistory');
+    if (history) history.innerHTML = '';
+    state.outputs = [];
+
+    // Reset textarea
+    const interrogationInput = document.getElementById('interrogationInput') as HTMLTextAreaElement | null;
+    if (interrogationInput) interrogationInput.value = '';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// ── Copy button wiring ─────────────────────────────────────────────────────
+
+export function wireCopyButton(buttonId: string, outputIndex: number) {
+  const btn = document.getElementById(buttonId) as HTMLButtonElement | null;
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const output = state.outputs[outputIndex];
+    if (!output?.raw) {
+      alert('No content to copy.');
+      return;
     }
 
-    // Deselect all mode radios
-    modeRadios.forEach(radio => {
-      radio.checked = false;
-    });
-
-    // Remove inactive classes from both sections so they're both accessible
-    customPromptSection?.classList.remove('inactive');
-    modesSection?.classList.remove('inactive');
-
-    window.scrollTo(0, 0);
+    try {
+      await navigator.clipboard.writeText(output.raw);
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+        // Restore icon
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy
+        `;
+      }, 2500);
+    } catch {
+      alert('Copy failed — please select and copy manually.');
+    }
   });
 }

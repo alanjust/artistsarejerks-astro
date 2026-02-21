@@ -1,9 +1,8 @@
 import { initImageUpload } from './image-upload';
-import { initFormInteractions } from './form-interactions';
-import { initAnalysis } from './analysis';
-import { initExports } from './exports';
+import { initPage, initAnalysis } from './analysis';
+import { initInterrogation } from './interrogation';
 
 initImageUpload();
-initFormInteractions();
+initPage();
 initAnalysis();
-initExports();
+initInterrogation();

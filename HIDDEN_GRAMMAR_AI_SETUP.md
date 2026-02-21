@@ -1,219 +1,187 @@
-# Hidden Grammar AI Analysis - Setup Complete
+# Hidden Grammar AI Analysis — Architecture Reference
 
-## What Was Built
-
-I've created **two separate Hidden Grammar tools** for different use cases:
-
-### 1. **Training/Education Form** (Preserved)
-- **URL**: `/hidden-grammar/analyze`
-- **Purpose**: Manual learning tool where users fill out the analysis themselves
-- **Use Case**: Teaching the Hidden Grammar framework, training students
-- **Status**: ✅ Working (Safari Shadow DOM issues fixed)
-
-### 2. **AI-Powered Analysis** (New)
-- **URL**: `/hidden-grammar/ai-analyze`
-- **Purpose**: Instant AI analysis using Claude's vision capabilities
-- **Use Case**: Quick analysis, demonstrations, general public use
-- **Status**: ⚠️ Requires API key setup
+**Updated:** 2026-02-20
+**Status:** Three-level navigation, dynamic fields, interrogation window
 
 ---
 
-## How the AI Analysis Works
+## Navigation Architecture (Three Levels)
 
-### User Flow:
-1. User uploads artwork image
-2. Optionally provides metadata (title, artist, year, medium)
-3. Selects analysis mode (Strategic, WIP, Historian, etc.)
-4. Clicks "Analyze with AI"
-5. Image is sent to Claude API with Hidden Grammar framework prompt
-6. AI generates complete analysis following the framework
-7. Results are displayed with export options
-
-### Technical Architecture:
 ```
-Frontend (ai-analyze.astro)
-  ↓ (uploads image + metadata)
-API Endpoint (/api/analyze-artwork.ts)
-  ↓ (sends to Claude with framework context)
-Claude Vision API
-  ↓ (returns structured analysis)
-Frontend (displays formatted results)
+Level 1: /hidden-grammar
+  → 4 mode category cards (Fine Art, CPG, Comic Book, Commercial Illustration)
+  → Driven entirely by analysisModes.js
+
+Level 2: /hidden-grammar/modes/[mode-id]
+  → SubMode selector (optional — adds specificity)
+  → Prompt cards for the selected mode
+  → Clicking a prompt navigates to Level 3 with URL parameters
+
+Level 3: /hidden-grammar/ai-analyze?mode=[id]&prompt=[id]&submode=[id]
+  → Upload window (permanent fixture)
+  → Dynamic fields (from mode.fields[], rendered client-side from URL params)
+  → Analyze button
+  → Analysis output + Copy button
+  → Interrogation window (follow-up questions)
 ```
 
 ---
 
-## Setup Required
+## Data File: `src/data/analysisModes.js`
 
-### 1. Get Anthropic API Key
-1. Go to https://console.anthropic.com/
-2. Sign up or log in
-3. Navigate to API Keys
-4. Create a new API key
-5. Copy the key
+**Single source of truth** for all mode, prompt, field, and submode data.
 
-### 2. Configure Environment Variable
-Open `.env` file and replace `your-api-key-here` with your actual API key:
+**Exports:**
+- `analysisModes` — array of 4 mode objects
+- `basePrompt` — prepended to every initial analysis (server-side only)
+- `interrogationBase` — prepended to every follow-up call (server-side only)
+- `uiConfig` — controls showCopyButton, interrogationPlaceholder, etc.
 
-```env
-ANTHROPIC_API_KEY=sk-ant-api03-...your-actual-key...
+**Mode object structure:**
+```js
+{
+  id: 'fine-art',
+  label: 'Fine Art',
+  description: '...',
+  subModes: [{ id, label, description? }],
+  fields: [{ id, label }],
+  prompts: [{ id, label, description, prompt }]
+}
 ```
 
-### 3. Restart Dev Server
-```bash
-npm run dev
-```
-
-### 4. Test the Tool
-Visit: `http://localhost:4321/hidden-grammar/ai-analyze`
+**To add a new mode:** Add an entry to the `analysisModes` array.
+**To add a new prompt:** Add to `mode.prompts`.
+**To change what fields appear:** Edit `mode.fields`.
 
 ---
 
-## Files Created/Modified
+## API Endpoint: `POST /api/analyze-artwork`
 
-### New Files:
-- ✅ `/src/pages/hidden-grammar/ai-analyze.astro` - AI analysis interface
-- ✅ `/src/pages/api/analyze-artwork.ts` - API endpoint for Claude integration
-- ✅ `.env` - Environment variables (add your API key here)
-- ✅ `HIDDEN_GRAMMAR_AI_SETUP.md` - This file
-
-### Modified Files:
-- ✅ `/src/pages/hidden-grammar/analyze.astro` - Fixed Safari Shadow DOM issue
-- ✅ `package.json` - Added @anthropic-ai/sdk dependency
-
----
-
-## API Endpoint Details
-
-### Endpoint: `POST /api/analyze-artwork`
-
-**Request Body:**
+### Initial Analysis Request
 ```json
 {
   "image": "data:image/jpeg;base64,...",
-  "title": "Starry Night",
-  "artist": "Vincent van Gogh",
-  "year": "1889",
-  "medium": "Oil on canvas",
-  "mode": "strategic"
+  "fields": {
+    "artist": "Van Gogh",
+    "title": "Starry Night",
+    "medium": "Oil on canvas"
+  },
+  "promptText": "Conduct a full Hidden Grammar analysis...",
+  "interrogationMode": false
 }
 ```
 
-**Response:**
+### Interrogation Request (Follow-up)
+```json
+{
+  "interrogationMode": true,
+  "priorAnalysis": "...full prior analysis text...",
+  "userQuestion": "How does the color temperature affect the mood reading?"
+}
+```
+
+### Response (both modes)
 ```json
 {
   "success": true,
-  "analysis": "<h1>Hidden Grammar Analysis</h1>...",
-  "raw": "# Hidden Grammar Analysis\n..."
+  "analysis": "<h2>Analysis...</h2>",
+  "raw": "## Analysis..."
 }
 ```
 
-### What the API Does:
-1. Receives uploaded image (base64)
-2. Loads Hidden Grammar framework data (Roots, Principles, Modes)
-3. Builds comprehensive system prompt with framework
-4. Sends image + prompt to Claude Sonnet 4.5 via Vision API
-5. Receives AI analysis following the framework structure
-6. Converts markdown to HTML for display
-7. Returns formatted analysis
+---
+
+## Prompt Construction
+
+### Initial Analysis
+- **System:** `basePrompt` (from analysisModes.js) + framework context (11 Roots, 54 Principles)
+- **User:** Field context (labeled plain text) + `promptText` (mode-specific prompt from frontend)
+
+`basePrompt` is read server-side and cannot be overridden by the frontend. `promptText` is sent from the frontend (sourced from analysisModes.js prompt.prompt) and appended after the non-negotiable base.
+
+Field context format: `Artist: Van Gogh / Title: Starry Night / Medium: Oil on canvas`
+
+### Interrogation
+- **System:** `interrogationBase` (from analysisModes.js — non-negotiable)
+- **User:** `PRIOR ANALYSIS:\n[full text]\n\nFOLLOW-UP QUESTION:\n[question]`
 
 ---
 
-## Analysis Structure
+## Dynamic Field System
 
-The AI generates analysis following this structure:
+Fields are defined per mode in `analysisModes.js`. On page load, `initPage()` in `analysis.ts`:
 
-1. **Case Metadata** - Title, artist, date, medium
-2. **Raw Observations** - Observable visual facts only
-3. **Attention Mapping** - Snags, slides, hooks
-4. **Principle Mapping** - 3-5 principles with evidence
-5. **Root Hypothesis** - 1-2 Roots (RAP-gated)
-6. **Transmission & Friction** - Friction level, misreading risks
-7. **Verdict & Recommendation** - Honest/dishonest, justification, one clarifying move
+1. Reads URL params (`mode`, `prompt`, `submode`)
+2. Finds the matching mode in the serialized JSON embedded in the page
+3. Renders `mode.fields[]` as form inputs (textarea for `notes`/`context`, input for everything else)
+4. Populates the context header with mode label + prompt label
 
----
-
-## Differences Between the Two Tools
-
-| Feature | Training Form (`/analyze`) | AI Analysis (`/ai-analyze`) |
-|---------|---------------------------|----------------------------|
-| **Input** | User fills out all fields | User uploads image only |
-| **Analysis** | Manual (educational) | Automatic (AI-powered) |
-| **Time** | 15-30 minutes | 30-60 seconds |
-| **Use Case** | Learning the framework | Quick analysis |
-| **Output** | User's own analysis | AI-generated analysis |
-| **Cost** | Free | API costs (~$0.01-0.05/image) |
+Fields with `id: 'notes'` or `id: 'context'` render as textarea. All others render as single-line input.
 
 ---
 
-## Cost Estimate
+## Interrogation Window
 
-Claude Sonnet 4.5 pricing (as of Jan 2025):
-- **Input**: ~$3 per million tokens
-- **Output**: ~$15 per million tokens
-
-Per analysis:
-- System prompt: ~2,000 tokens
-- Image: ~1,500 tokens (typical)
-- Output: ~2,000 tokens
-- **Total cost**: ~$0.01-0.05 per analysis
+- Appears below analysis output after analysis completes
+- Text input + "Ask" button (or Shift+Enter)
+- Each follow-up sends `interrogationMode: true` with `priorAnalysis` (always the main analysis output)
+- Responses are appended as conversation turns below the main output
+- Each turn has its own Copy button
+- Conversation history persists on the page until "New Analysis" is clicked
 
 ---
 
-## Next Steps
+## Client Script Architecture
 
-### Immediate:
-1. ✅ Add your Anthropic API key to `.env`
-2. ✅ Restart dev server
-3. ✅ Test the AI analysis tool
-
-### Future Enhancements:
-- [ ] Add more analysis modes from the framework
-- [ ] Implement result caching to reduce API costs
-- [ ] Add image quality/size validation
-- [ ] Create gallery of example analyses
-- [ ] Add comparison mode (analyze multiple works)
-- [ ] Export to PDF with formatting
-- [ ] Add rate limiting for public deployment
+```
+src/scripts/ai-analyze/
+├── index.ts          — Entry point, calls init functions
+├── state.ts          — Shared state (image data, outputs, URL param values)
+├── image-upload.ts   — Handles drag/drop, file selection, auto-compression
+├── analysis.ts       — initPage() + initAnalysis() + wireCopyButton()
+├── interrogation.ts  — initInterrogation(), appends conversation turns
+├── exports.ts        — No-op (copy handled inline)
+└── form-interactions.ts — No-op (selection moved to modes page)
+```
 
 ---
 
-## Troubleshooting
+## Layout Architecture
 
-### "Failed to analyze artwork"
-- Check that `.env` has valid API key
-- Verify dev server was restarted after adding key
-- Check browser console for specific error
+**HiddenGrammarLayout** (`src/layouts/HiddenGrammarLayout.astro`)
+- Completely standalone — no dependency on BaseLayout
+- Own header/footer/navigation
+- Does not import AAJ fonts, color tokens, or site components
+- Used by: `hidden-grammar.astro`, `modes/[mode].astro`, `ai-analyze.astro`
 
-### "No image provided"
-- Ensure image upload completed successfully
-- Check image size (max 10MB)
-- Verify image format (JPG, PNG, WebP)
-
-### Analysis takes too long
-- Large images take longer (resize if needed)
-- API can take 20-60 seconds for complex analysis
-- Check network connection
-
-### Safari issues
-- The AI analysis page should work fine in Safari
-- If issues persist, test in Chrome/Firefox
+**BaseLayout** (unchanged)
+- Still used by: `framework.astro`, `roots.astro`, `principles.astro`
+- Artists Are Jerks main site unaffected
 
 ---
 
-## Security Notes
+## Files Modified / Created
 
-⚠️ **Important:**
-- Never commit `.env` to git (already in `.gitignore`)
-- API key gives access to your Anthropic account
-- Consider rate limiting for public deployment
-- Monitor API usage in Anthropic console
+| File | Status |
+|------|--------|
+| `src/data/analysisModes.js` | Source of truth — no changes needed |
+| `src/layouts/HiddenGrammarLayout.astro` | **NEW** — standalone mini-site layout |
+| `src/pages/hidden-grammar.astro` | **REBUILT** — 4 mode cards |
+| `src/pages/hidden-grammar/modes/[mode].astro` | **NEW** — dynamic prompt selection |
+| `src/pages/hidden-grammar/ai-analyze.astro` | **UPDATED** — new layout, dynamic fields, interrogation |
+| `src/pages/api/analyze-artwork.ts` | **UPDATED** — new request shape |
+| `src/scripts/ai-analyze/analysis.ts` | **REWRITTEN** — initPage + new API shape |
+| `src/scripts/ai-analyze/interrogation.ts` | **NEW** — follow-up question handling |
+| `src/scripts/ai-analyze/state.ts` | **UPDATED** — new fields |
+| `src/scripts/ai-analyze/exports.ts` | **EMPTIED** — copy handled inline |
+| `src/scripts/ai-analyze/form-interactions.ts` | **EMPTIED** — selection moved upstream |
+| `src/scripts/ai-analyze/index.ts` | **UPDATED** — new module loading |
+| `astro.config.mjs` | Added webcoreui integration |
 
 ---
 
-## Questions?
+## Unchanged Pages (still on BaseLayout)
 
-- **Framework documentation**: See `HIDDEN_GRAMMAR_COMPLETE.md`
-- **API documentation**: https://docs.anthropic.com/
-- **Astro documentation**: https://docs.astro.build/
-
-Ready to analyze some art! 🎨
+- `/hidden-grammar/framework` — framework overview
+- `/hidden-grammar/roots` — 11 Roots browser
+- `/hidden-grammar/principles` — 54 Principles catalog
