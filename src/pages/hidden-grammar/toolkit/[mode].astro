@@ -3,20 +3,22 @@ import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { allModes, getModeById } from '../../../data/toolkit-modes.js';
 
 export async function getStaticPaths() {
-  return allModes.map(mode => ({
+  return allModes.map((mode: any) => ({
     params: { mode: mode.id },
   }));
 }
 
 const { mode: modeId } = Astro.params;
-const mode = getModeById(modeId);
+const mode = getModeById(modeId) as any;
 
 if (!mode) {
   return Astro.redirect('/hidden-grammar/toolkit');
 }
 
 const isLive = mode.status === 'live';
-const analyzerLink = (mode as any).link || '/hidden-grammar/ai-analyze';
+const analyzerLink = mode.link || '/hidden-grammar/ai-analyze';
+const modeNote = mode.note || null;
+const modeDetail = mode.detail || null;
 ---
 
 <HiddenGrammarLayout title={`${mode.label} — Art Lab Toolkit`}>
@@ -62,27 +64,27 @@ const analyzerLink = (mode as any).link || '/hidden-grammar/ai-analyze';
     </header>
 
     <!-- ── NOTE ──────────────────────────────────────────────── -->
-    {(mode as any).note && (
+    {modeNote && (
       <div class="detail-note">
         <span class="detail-note-icon">ℹ</span>
-        {(mode as any).note}
+        {modeNote}
       </div>
     )}
 
     <!-- ── DETAIL CONTENT ────────────────────────────────────── -->
-    {mode.detail && (
+    {modeDetail && (
       <div class="detail-content">
 
         <section class="detail-section">
           <h2 class="detail-section-title">What it does</h2>
-          <p class="detail-section-body">{mode.detail.what}</p>
+          <p class="detail-section-body">{modeDetail.what}</p>
         </section>
 
-        {mode.detail.when && mode.detail.when.length > 0 && (
+        {modeDetail.when && modeDetail.when.length > 0 && (
           <section class="detail-section">
             <h2 class="detail-section-title">When to use it</h2>
             <ul class="detail-list">
-              {mode.detail.when.map(item => (
+              {modeDetail.when.map((item: string) => (
                 <li>{item}</li>
               ))}
             </ul>
@@ -91,20 +93,20 @@ const analyzerLink = (mode as any).link || '/hidden-grammar/ai-analyze';
 
         <section class="detail-section">
           <h2 class="detail-section-title">What you get back</h2>
-          <p class="detail-section-body">{mode.detail.output}</p>
+          <p class="detail-section-body">{modeDetail.output}</p>
         </section>
 
-        {mode.detail.constraints && (
+        {modeDetail.constraints && (
           <section class="detail-section detail-section--constraint">
             <h2 class="detail-section-title">Framework constraints</h2>
-            <p class="detail-section-body">{mode.detail.constraints}</p>
+            <p class="detail-section-body">{modeDetail.constraints}</p>
           </section>
         )}
 
       </div>
     )}
 
-    {!mode.detail && (
+    {!modeDetail && (
       <div class="detail-placeholder">
         <p>Full documentation for this mode is being written.</p>
         <p>The tagline above is the short version of what it does.</p>
