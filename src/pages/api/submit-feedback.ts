@@ -10,31 +10,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
   });
 
   try {
-    const runtime = (locals as unknown as Record<string, unknown>).runtime as
-      | { env?: Record<string, string> }
-      | undefined;
-
-    const airtableKey =
-      runtime?.env?.AIRTABLE_API_KEY || process.env.AIRTABLE_API_KEY;
-    const airtableBaseId =
-      runtime?.env?.AIRTABLE_BASE_ID || process.env.AIRTABLE_BASE_ID;
+    const airtableKey = locals.runtime?.env?.AIRTABLE_API_KEY || process.env.AIRTABLE_API_KEY;
+    const airtableBaseId = locals.runtime?.env?.AIRTABLE_BASE_ID || process.env.AIRTABLE_BASE_ID;
 
     if (!airtableKey || !airtableBaseId) {
-      // Credentials not configured yet — silently succeed
       console.warn('submit-feedback: Airtable credentials not set. Skipping.');
       return ok;
     }
 
     const body = await request.json();
-    const {
-      rating,
-      comment,
-      modeId,
-      promptId,
-      submodeId,
-      sessionId,
-      timestamp,
-    } = body;
+    const { rating, comment, modeId, promptId, submodeId, sessionId, timestamp } = body;
 
     const airtableRes = await fetch(
       `https://api.airtable.com/v0/${airtableBaseId}/HG%20Feedback`,

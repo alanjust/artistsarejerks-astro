@@ -8,4 +8,6 @@ declare namespace App {
 
 interface Env {
   ANTHROPIC_API_KEY: string;
+  AIRTABLE_API_KEY: string;
+  AIRTABLE_BASE_ID: string;
 }
