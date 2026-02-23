@@ -43,13 +43,14 @@ export const toolkitBuckets = [
         id: 'wip',
         label: 'Work in Progress',
         tagline: "Mid-stream check. Does what you're executing match what you set out to do?",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Studio Tools',
+        link: '/hidden-grammar',
         detail: {
-          what: "Compares your visual execution (what's on the canvas) against your intent (what you were going for). Finds the gap without telling you what to feel about it.",
-          when: ["You're partway through and something feels off", "You've lost the thread of what you were after", "You want a diagnostic, not a verdict"],
-          output: "Alignment assessment. Conflicting signals named. Three refinement questions to solve the problem yourself.",
-          constraints: null,
+          what: "Analyzes only what is physically present and observable right now. Identifies which Roots and Principles are currently active, which appear unresolved, and where visual tension exists between elements. Reports the current state of the work — not problems to fix.",
+          when: ["You're partway through and something feels off", "You've lost the thread of what you were after", "You want a diagnostic read, not a verdict", "You're not ready for a full critique — just a current-state assessment"],
+          output: "Which visual systems are resolved. Which remain in tension. Where the unresolved areas are located in the work. No improvement suggestions.",
+          constraints: "Available within each domain mode: Fine Art, CPG, Comic Book, and Commercial Illustration. Select your domain first, then choose the Work in Progress prompt.",
         }
       },
       {
