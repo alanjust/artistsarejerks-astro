@@ -20,9 +20,7 @@ const processedBuckets = toolkitBuckets.map((bucket: any) => {
 });
 
 function modeHref(mode: any): string {
-  return mode.status === 'live' && mode.link
-    ? mode.link
-    : `/hidden-grammar/toolkit/${mode.id}`;
+  return `/hidden-grammar/toolkit/${mode.id}`;
 }
 ---
 

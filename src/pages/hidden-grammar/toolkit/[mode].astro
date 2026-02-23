@@ -16,7 +16,9 @@ if (!mode) {
 }
 
 const isLive = mode.status === 'live';
-const analyzerLink = mode.link || '/hidden-grammar/ai-analyze';
+const analyzerLink = isLive
+  ? (mode.link || `/hidden-grammar/modes/${mode.id}`)
+  : '/hidden-grammar/ai-analyze';
 const modeNote = mode.note || null;
 const modeDetail = mode.detail || null;
 ---
@@ -48,7 +50,7 @@ const modeDetail = mode.detail || null;
       {isLive ? (
         <div class="detail-cta">
           <a href={analyzerLink} class="hg-btn hg-btn--primary">
-            Open in AI Analyzer →
+            Choose a prompt →
           </a>
         </div>
       ) : (
@@ -120,7 +122,7 @@ const modeDetail = mode.detail || null;
       </a>
       {isLive && (
         <a href={analyzerLink} class="hg-btn hg-btn--primary">
-          Open in AI Analyzer →
+          Choose a prompt →
         </a>
       )}
     </div>
