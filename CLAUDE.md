@@ -100,3 +100,23 @@ Import Zone B data directly:
 import roots from '../data/hg-roots.json';
 import principles from '../data/hg-principles.json';
 ```
+
+### Art Lab / Hidden Grammar — Naming Convention
+
+- **Art Lab** — Public-facing section name used in UI, nav, and visitor-facing copy
+- **Hidden Grammar** — Framework name used in documentation, data files, and internal references
+- Do not conflate these. The section is Art Lab. The analytical system it runs is Hidden Grammar.
+
+### Toolkit — Zone A Addition
+
+The Toolkit is a new navigation layer in Zone A. It organizes all modes by visitor use-case rather than domain. See `src/pages/hidden-grammar/toolkit/CLAUDE.md` for full documentation.
+
+**New files this session:**
+- `src/data/toolkit-modes.js` — All toolkit modes with status, detail, and routing data
+- `src/pages/hidden-grammar/toolkit.astro` — Toolkit list page (four buckets)
+- `src/pages/hidden-grammar/toolkit/[mode].astro` — Dynamic detail pages
+- `src/pages/hidden-grammar/toolkit/CLAUDE.md` — Toolkit-specific documentation
+- `MODES_REGISTRY.md` — Human-readable index of all modes with status tracking
+
+**Known gap — pick up in next session:**
+Live mode detail pages route to the prompt picker (`/hidden-grammar/modes/[id]`) but the analyzer opens without mode/prompt pre-selected. The URL param system already exists in `modes/[mode].astro` — the fix is to pass mode+prompt params through from the Toolkit detail page CTA.
