@@ -10,7 +10,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   });
 
   try {
-    const runtime = (locals as Record<string, unknown>).runtime as
+    const runtime = (locals as unknown as Record<string, unknown>).runtime as
       | { env?: Record<string, string> }
       | undefined;
 
