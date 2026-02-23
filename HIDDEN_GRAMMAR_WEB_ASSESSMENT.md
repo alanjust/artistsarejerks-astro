@@ -14,7 +14,7 @@ The Hidden Grammar system is a **structured art analysis framework** that:
 
 - Analyzes artwork through **observable visual evidence** (not interpretation-first)
 - Uses **11 Hebrew Roots** (Drivers) as analytical categories for how art functions
-- Maps **46 Art Principles** (neural/perceptual mechanisms) to visible features
+- Maps **54 Art Principles** (neural/perceptual mechanisms) to visible features
 - Follows a **strict evidence-gating protocol** (RAP - Root Access Protocol) to prevent premature meaning collapse
 - Generates **structured audit reports** documenting the analysis process
 - Operates in multiple **modes** (Discovery, Historian, WIP, Technician, etc.) for different use cases

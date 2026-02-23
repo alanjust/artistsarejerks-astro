@@ -138,6 +138,34 @@ const modesJSON = JSON.stringify(analysisModes);
       <!-- Interrogation conversation (appended here) -->
       <div id="interrogationHistory" class="hg-interrogation-history"></div>
 
+      <!-- Feedback widget (shown after analysis completes) -->
+      <div id="feedbackWidget" class="hg-feedback-widget" style="display:none" aria-label="Analysis feedback">
+        <div id="feedbackForm">
+          <p class="hg-feedback-prompt">How useful was this analysis?</p>
+          <div class="hg-feedback-stars" role="group" aria-label="Star rating">
+            {[1, 2, 3, 4, 5].map(n => (
+              <button
+                type="button"
+                class="hg-feedback-star"
+                data-value={String(n)}
+                aria-label={`${n} star${n > 1 ? 's' : ''}`}
+                aria-pressed="false"
+              >★</button>
+            ))}
+          </div>
+          <textarea
+            id="feedbackComment"
+            class="hg-feedback-comment"
+            rows={2}
+            placeholder="Optional: what worked, what was confusing..."
+          ></textarea>
+          <button type="button" class="hg-btn hg-btn--ghost" id="feedbackSubmit">Send feedback</button>
+        </div>
+        <div id="feedbackThanks" class="hg-feedback-thanks" style="display:none">
+          <p>Thanks — that helps.</p>
+        </div>
+      </div>
+
       <!-- Interrogation window -->
       <div id="interrogationWindow" class="hg-interrogation-window">
         <h3 class="hg-interrogation-title">Follow-up Questions</h3>
@@ -661,6 +689,75 @@ const modesJSON = JSON.stringify(analysisModes);
     margin-top: 0.75rem;
   }
 
+  /* ── Feedback widget ────────────────────────── */
+  .hg-feedback-widget {
+    padding: 1.25rem 1.75rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbff;
+  }
+
+  .hg-feedback-prompt {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .hg-feedback-stars {
+    display: flex;
+    gap: 0.125rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .hg-feedback-star {
+    background: none;
+    border: none;
+    font-size: 1.625rem;
+    cursor: pointer;
+    color: #cbd5e1;
+    padding: 0.125rem 0.25rem;
+    line-height: 1;
+    transition: color 0.1s ease, transform 0.1s ease;
+    font-family: inherit;
+  }
+
+  .hg-feedback-star:hover,
+  .hg-feedback-star--hover {
+    color: #f59e0b;
+    transform: scale(1.2);
+  }
+
+  .hg-feedback-star--active {
+    color: #f59e0b;
+  }
+
+  .hg-feedback-comment {
+    width: 100%;
+    padding: 0.5625rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: #1e293b;
+    resize: vertical;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.15s ease;
+    box-sizing: border-box;
+  }
+
+  .hg-feedback-comment:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+  }
+
+  .hg-feedback-thanks p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: #64748b;
+  }
+
   /* Mobile */
   @media (max-width: 640px) {
     .hg-form-section {
@@ -680,6 +777,11 @@ const modesJSON = JSON.stringify(analysisModes);
 
     .hg-interrogation-question,
     .hg-interrogation-answer {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .hg-feedback-widget {
       padding-left: 1rem;
       padding-right: 1rem;
     }

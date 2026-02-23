@@ -1,4 +1,5 @@
 import { state } from './state';
+import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
 
 // Types matching analysisModes.js structure
 interface SubMode {
@@ -232,6 +233,9 @@ export function initAnalysis() {
       // Wire up main copy button
       wireCopyButton('copyMainOutput', 0);
 
+      // Show feedback widget
+      showFeedbackWidget();
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
@@ -245,6 +249,9 @@ export function initAnalysis() {
   backToForm?.addEventListener('click', () => {
     if (analysisForm) analysisForm.style.display = 'block';
     if (resultsPanel) resultsPanel.style.display = 'none';
+
+    // Reset feedback widget for next analysis
+    resetFeedbackWidget();
 
     // Clear interrogation history
     const history = document.getElementById('interrogationHistory');

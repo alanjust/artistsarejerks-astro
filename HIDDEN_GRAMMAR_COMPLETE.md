@@ -12,7 +12,7 @@
 
 1. **Landing Page** - `/hidden-grammar`
    - Framework introduction
-   - 11 Roots, 46 Principles, 4 Poles overview
+   - 11 Roots, 54 Principles, 4 Poles overview
    - 4 Primary Actions explained
    - Analysis modes listed
    - Comparison with traditional critique
@@ -50,7 +50,7 @@
    - Jump-to-section navigation
 
 4. **Principles Catalog** - `/hidden-grammar/principles`
-   - All 46 Principles organized by tier
+   - All 54 Principles organized by tier
    - Filter buttons (All / Tier A / B / C / D)
    - Each Principle card shows:
      - Number, name, subtitle
@@ -78,7 +78,7 @@
    - Complete with all metadata
 
 2. **`src/data/hg-principles.json`** (15KB)
-   - 46 Principles cataloged
+   - 54 Principles cataloged
    - Tier classifications (A, B, C, D)
    - Neural facts & studio tools
 
@@ -177,7 +177,7 @@ npm run dev
 
 ### Data Integrity
 - ✅ All 11 Roots converted with full structure
-- ✅ All 46 Principles with tiers & mechanisms
+- ✅ All 454 Principles with tiers & mechanisms
 - ✅ All 4 Poles with system rules
 - ✅ 13 analysis modes documented
 - ✅ Global Lexicon integrated into Roots
@@ -240,7 +240,7 @@ Multiple output formats:
 
 2. **Learn the Framework**
    - Browse all 11 Roots with detailed explanations
-   - Study 46 Principles organized by evidence tier
+   - Study 54 Principles organized by evidence tier
    - Understand RAP protocol & Evidence Gate
    - Read about the 4 Poles
 

@@ -50,3 +50,53 @@
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+
+---
+
+## Hidden Grammar Mini-Site
+
+Before touching anything in `hidden-grammar/`, read:
+- **HIDDEN_GRAMMAR_AI_SETUP.md** — Architecture for the AI analysis section (layouts, data flow, API shape, script modules)
+- **HIDDEN_GRAMMAR_COMPLETE.md** — Full framework reference (Roots, Principles, Poles, analysis modes)
+
+### Two Architectures — Do Not Mix
+
+Hidden Grammar has two distinct zones with different layouts and data sources:
+
+**Zone A: AI Analysis** (`hidden-grammar.astro`, `hidden-grammar/modes/`, `hidden-grammar/ai-analyze.astro`)
+- Uses **HiddenGrammarLayout** (`src/layouts/HiddenGrammarLayout.astro`) — completely standalone
+- Data source: **`src/data/analysisModes.js`** — single source of truth for modes, prompts, fields, submodes
+- Has its own API endpoint: `src/pages/api/analyze-artwork.ts`
+- Do NOT import AAJ fonts, color tokens, or site components here
+- Do NOT use BaseLayout in this zone
+
+**Zone B: Reference Pages** (`hidden-grammar/framework.astro`, `hidden-grammar/roots.astro`, `hidden-grammar/principles.astro`)
+- Uses **BaseLayout** — normal AAJ site layout
+- Data sources: `src/data/hg-roots.json`, `hg-principles.json`, `hg-poles.json`, `hg-modes.json`
+- Uses existing AAJ design tokens and fonts normally
+- Do NOT use HiddenGrammarLayout here
+
+### Critical Rules for Zone A
+
+- `analysisModes.js` is the **only** place to add/edit modes, prompts, fields, and submodes — never hardcode these in page files
+- `basePrompt` and `interrogationBase` are server-side only — never expose or reference in frontend files
+- `promptText` travels from frontend (sourced from `analysisModes.js`) to the API endpoint — this is intentional
+- Client scripts live in `src/scripts/ai-analyze/` — each module has a specific role (see HIDDEN_GRAMMAR_AI_SETUP.md)
+- Three-level navigation is strict: `/hidden-grammar` → `/hidden-grammar/modes/[mode]` → `/hidden-grammar/ai-analyze?params`
+
+### Hidden Grammar Data Files (Zone B)
+
+```
+src/data/
+  hg-roots.json       — 11 Roots with full structure
+  hg-principles.json  — 54 Principles with tiers (A/B/C/D)
+  hg-poles.json       — 4 Poles with system rules
+  hg-modes.json       — 13 analysis modes
+  analysisModes.js    — Zone A AI modes, prompts, fields (source of truth)
+```
+
+Import Zone B data directly:
+```typescript
+import roots from '../data/hg-roots.json';
+import principles from '../data/hg-principles.json';
+```
