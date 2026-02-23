@@ -16,7 +16,7 @@ if (!mode) {
 }
 
 const isLive = mode.status === 'live';
-const analyzerLink = mode.link || '/hidden-grammar/ai-analyze';
+const analyzerLink = (mode as any).link || '/hidden-grammar/ai-analyze';
 ---
 
 <HiddenGrammarLayout title={`${mode.label} — Art Lab Toolkit`}>
@@ -62,10 +62,10 @@ const analyzerLink = mode.link || '/hidden-grammar/ai-analyze';
     </header>
 
     <!-- ── NOTE ──────────────────────────────────────────────── -->
-    {mode.note && (
+    {(mode as any).note && (
       <div class="detail-note">
         <span class="detail-note-icon">ℹ</span>
-        {mode.note}
+        {(mode as any).note}
       </div>
     )}
 

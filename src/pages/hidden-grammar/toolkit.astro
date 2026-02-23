@@ -3,8 +3,8 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 import { toolkitBuckets } from '../../data/toolkit-modes.js';
 
 // Group External Lenses by category within the stress-testing bucket
-function getLensCategories(modes) {
-  const cats = {};
+function getLensCategories(modes: any[]): Record<string, any[]> {
+  const cats: Record<string, any[]> = {};
   for (const mode of modes) {
     const cat = mode.category || 'Other';
     if (!cats[cat]) cats[cat] = [];
@@ -45,7 +45,7 @@ function getLensCategories(modes) {
     <div class="buckets">
       {toolkitBuckets.map(bucket => {
         const isLenses = bucket.id === 'stress-testing';
-        const lensCategories = isLenses ? getLensCategories(bucket.modes) : null;
+        const lensCategories: Record<string, any[]> = isLenses ? getLensCategories(bucket.modes) : {};
 
         return (
           <section class="bucket" id={bucket.id}>
@@ -62,15 +62,15 @@ function getLensCategories(modes) {
                     <div class="cards-grid">
                       {modes.map(mode => (
                         <a
-                          href={mode.status === 'live' && mode.link ? mode.link : `/hidden-grammar/toolkit/${mode.id}`}
+                          href={mode.status === 'live' && (mode as any).link ? (mode as any).link : `/hidden-grammar/toolkit/${mode.id}`}
                           class={`mode-card ${mode.status === 'coming-soon' ? 'mode-card--soon' : ''}`}
                         >
                           <div class="mode-card-top">
                             <span class={`badge ${mode.status === 'live' ? 'badge--live' : 'badge--soon'}`}>
                               {mode.status === 'live' ? 'Live' : 'Coming soon'}
                             </span>
-                            {mode.note && (
-                              <span class="mode-card-note">{mode.note}</span>
+                            {(mode as any).note && (
+                              <span class="mode-card-note">{(mode as any).note}</span>
                             )}
                           </div>
                           <h3 class="mode-card-label">{mode.label}</h3>
@@ -89,15 +89,15 @@ function getLensCategories(modes) {
               <div class="cards-grid">
                 {bucket.modes.map(mode => (
                   <a
-                    href={mode.status === 'live' && mode.link ? mode.link : `/hidden-grammar/toolkit/${mode.id}`}
+                    href={mode.status === 'live' && (mode as any).link ? (mode as any).link : `/hidden-grammar/toolkit/${mode.id}`}
                     class={`mode-card ${mode.status === 'coming-soon' ? 'mode-card--soon' : ''}`}
                   >
                     <div class="mode-card-top">
                       <span class={`badge ${mode.status === 'live' ? 'badge--live' : 'badge--soon'}`}>
                         {mode.status === 'live' ? 'Live' : 'Coming soon'}
                       </span>
-                      {mode.note && (
-                        <span class="mode-card-note">{mode.note}</span>
+                      {(mode as any).note && (
+                        <span class="mode-card-note">{(mode as any).note}</span>
                       )}
                     </div>
                     <h3 class="mode-card-label">{mode.label}</h3>
