@@ -17,7 +17,7 @@ if (!mode) {
 
 const isLive = mode.status === 'live';
 const analyzerLink = isLive
-  ? (mode.link || `/hidden-grammar/modes/${mode.id}`)
+  ? (mode.link || `/hidden-grammar/modes/${mode.id}?from=toolkit`)
   : '/hidden-grammar/ai-analyze';
 const modeNote = mode.note || null;
 const modeDetail = mode.detail || null;

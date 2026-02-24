@@ -20,9 +20,18 @@ const { mode } = Astro.props;
 
     <!-- Breadcrumb -->
     <nav class="hg-breadcrumb" aria-label="Breadcrumb">
-      <a href="/hidden-grammar">Home</a>
+      <a href="/hidden-grammar">Art Lab</a>
       <span class="hg-breadcrumb-sep">›</span>
-      <span>{mode.label}</span>
+      <!-- default: direct path -->
+      <span class="bc-default"><span>{mode.label}</span></span>
+      <!-- toolkit path: hidden until JS reads ?from=toolkit -->
+      <span class="bc-toolkit" hidden>
+        <a href="/hidden-grammar/toolkit">Toolkit</a>
+        <span class="hg-breadcrumb-sep">›</span>
+        <a href={`/hidden-grammar/toolkit/${mode.id}`}>{mode.label}</a>
+        <span class="hg-breadcrumb-sep">›</span>
+        <span>Choose a prompt</span>
+      </span>
     </nav>
 
     <!-- Page header -->
@@ -72,7 +81,10 @@ const { mode } = Astro.props;
 
     <!-- Back -->
     <div class="hg-back-row">
-      <a href="/hidden-grammar" class="hg-btn hg-btn--ghost">← Back to modes</a>
+      <!-- default back button -->
+      <a href="/hidden-grammar" class="hg-btn hg-btn--ghost back-default">← Back to modes</a>
+      <!-- toolkit back button: hidden until JS reads ?from=toolkit -->
+      <a href={`/hidden-grammar/toolkit/${mode.id}`} class="hg-btn hg-btn--ghost back-toolkit" hidden>← Back to {mode.label}</a>
     </div>
 
   </div>
@@ -187,6 +199,14 @@ const { mode } = Astro.props;
 </style>
 
 <script>
+  // Show toolkit breadcrumb/back when arriving from Toolkit
+  if (new URLSearchParams(window.location.search).get('from') === 'toolkit') {
+    document.querySelector('.bc-default')?.setAttribute('hidden', '');
+    document.querySelector('.bc-toolkit')?.removeAttribute('hidden');
+    document.querySelector('.back-default')?.setAttribute('hidden', '');
+    document.querySelector('.back-toolkit')?.removeAttribute('hidden');
+  }
+
   const selectedSubmode: { id: string | null } = { id: null };
 
   // Sub-mode toggle
