@@ -1,120 +1,266 @@
 ---
 import HiddenGrammarLayout from '../layouts/HiddenGrammarLayout.astro';
-import { analysisModes } from '../data/analysisModes.js';
+
+const sections = [
+  {
+    id: 'toolkit',
+    label: 'Analysis Tools',
+    title: 'Toolkit',
+    description: "The primary way to use Art Lab. Pick what you're trying to do — making, analyzing, teaching, or stress-testing — and find the right tool for it.",
+    status: 'live',
+    href: '/hidden-grammar/toolkit',
+    cta: 'Open the Toolkit →',
+  },
+  {
+    id: 'roots',
+    label: 'Framework',
+    title: '11 Hidden Grammar Roots',
+    description: 'The structural categories that organize all 54 Principles. Design Logic, Tactile Execution, Structural Integrity, Atmosphere, and seven more.',
+    status: 'coming-soon',
+    href: '/hidden-grammar/roots',
+    cta: 'Explore the Roots →',
+  },
+  {
+    id: 'principles',
+    label: 'Framework',
+    title: '54 Art Principles',
+    description: 'The complete inventory of perceptual and compositional mechanisms the framework uses. Each Principle maps to a Root and a neural mechanism.',
+    status: 'coming-soon',
+    href: '/hidden-grammar/principles',
+    cta: 'Browse the Principles →',
+  },
+  {
+    id: 'poles',
+    label: 'Framework',
+    title: 'The 4 Poles',
+    description: 'The four opposing forces that create visual tension in any work. Understanding the Poles tells you where a work sits on each axis.',
+    status: 'coming-soon',
+    href: '/hidden-grammar/poles',
+    cta: 'See the Poles →',
+  },
+  {
+    id: 'lenses',
+    label: 'External Frameworks',
+    title: 'Interrogation Lenses',
+    description: '26 external critical and philosophical frameworks — from Object-Oriented Ontology to Hauntology — applied as analytical overlays.',
+    status: 'coming-soon',
+    href: '/hidden-grammar/lenses',
+    cta: 'Browse the Lenses →',
+  },
+  {
+    id: 'reference',
+    label: 'Reference',
+    title: 'Reference Materials',
+    description: "The Feldman Four-Step Critique, Visual Arts Standards, and the Master Project Bible. Foundational documents the framework builds on.",
+    status: 'coming-soon',
+    href: '/hidden-grammar/reference',
+    cta: 'Open Reference →',
+  },
+];
 ---
 
 <HiddenGrammarLayout
-  title="Hidden Grammar"
-  description="Evidence-based visual analysis using the Hidden Grammar framework."
+  title="Art Lab"
+  description="Structured tools for looking at art — grounded in what's visually observable, not in what the art world has decided it means."
 >
   <div class="hg-page">
-    <div class="hg-page-header">
-      <h1>Choose an Analysis Mode</h1>
-      <p>Select the category that best describes the work you're analyzing. Each mode loads prompts and fields tuned for that context.</p>
+
+    <!-- ── INTRO ───────────────────────────────────────────── -->
+    <div class="al-intro">
+      <h1 class="al-intro-title">Art Lab</h1>
+      <p class="al-intro-lead">Most people look at art the way they look at a word in a foreign language — they know something's there, they just can't read it.</p>
+      <p class="al-intro-body">Art Lab gives you the tools to read it. Not art history. Not critical theory. Not what you're supposed to feel. Just the mechanics of what's actually happening between the image and your eyes — and why it works the way it does.</p>
+
+      <div class="al-audiences">
+        <p>If you're making something and feel like it's almost working but can't say why — it's for you.</p>
+        <p>If you've stood in front of a painting and knew something was going on but didn't have the words — it's for you.</p>
+        <p>If you teach art, lead tours, or talk about work to people who think they don't get it — it's for you.</p>
+        <p>If you've always suspected that "appreciating art" was a credential some people have and you don't — it's especially for you. There's no credential. There's just looking, and then looking more carefully.</p>
+      </div>
+
+      <div class="al-how-it-works">
+        <h2 class="al-how-title">How it works</h2>
+        <p>You pick a tool based on what you're trying to figure out. You describe a work or upload an image. You get a structured analysis back — grounded in what's visually observable, not in what the art world has decided the work means.</p>
+        <p>No grades. No right answers. No judgment about what you felt. The analysis tells you what your visual system is doing. You decide what to do with that.</p>
+        <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--primary al-cta">Start with the Toolkit →</a>
+      </div>
     </div>
 
-    <div class="hg-grid hg-modes-grid">
-      {analysisModes.map((mode, i) => (
-        <a href={`/hidden-grammar/modes/${mode.id}`} class="hg-card hg-mode-card">
-          <p class="hg-card-label">Mode {i + 1}</p>
-          <h2 class="hg-card-title">{mode.label}</h2>
-          <p class="hg-card-desc">{mode.description}</p>
-          <div class="hg-card-meta">
-            <span class="hg-meta-pill">{mode.prompts.length} prompts</span>
-            <span class="hg-meta-pill">{mode.subModes.length} sub-modes</span>
+    <!-- ── SECTION CARDS ───────────────────────────────────── -->
+    <div class="al-sections-header">
+      <h2 class="al-sections-title">What's in Art Lab</h2>
+    </div>
+
+    <div class="hg-grid al-sections-grid">
+      {sections.map(section => (
+        <div class={`hg-card al-section-card ${section.status === 'coming-soon' ? 'al-section-card--soon' : ''}`}>
+          <div class="al-card-top">
+            <span class="hg-card-label">{section.label}</span>
+            {section.status === 'coming-soon' && (
+              <span class="al-badge-soon">Coming soon</span>
+            )}
           </div>
-          <p class="hg-card-arrow">Select prompts →</p>
-        </a>
+          <h3 class="hg-card-title">{section.title}</h3>
+          <p class="hg-card-desc">{section.description}</p>
+          {section.status === 'live' ? (
+            <a href={section.href} class="hg-card-arrow">{section.cta}</a>
+          ) : (
+            <span class="al-card-arrow-soon">{section.cta}</span>
+          )}
+        </div>
       ))}
     </div>
 
-    <div class="hg-home-footer">
-      <div class="hg-info-strip">
-        <div class="hg-info-item">
-          <span class="hg-info-label">Framework</span>
-          <span class="hg-info-value">11 Roots · 54 Principles</span>
-        </div>
-        <div class="hg-info-item">
-          <span class="hg-info-label">Protocol</span>
-          <span class="hg-info-value">RAP — evidence-gated interpretation</span>
-        </div>
-        <div class="hg-info-item">
-          <span class="hg-info-label">Output</span>
-          <span class="hg-info-value">Structured analysis + interrogation</span>
-        </div>
-      </div>
-    </div>
   </div>
 </HiddenGrammarLayout>
 
 <style>
-  .hg-modes-grid {
+  /* ── Intro block ──────────────────────────── */
+  .al-intro {
+    max-width: 720px;
+    margin-bottom: 4rem;
+  }
+
+  .al-intro-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .al-intro-lead {
+    font-size: 1.25rem;
+    color: #1e293b;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+    font-weight: 500;
+  }
+
+  .al-intro-body {
+    font-size: 1.0625rem;
+    color: #475569;
+    line-height: 1.7;
+    margin: 0 0 1.75rem;
+  }
+
+  .al-audiences {
+    border-left: 3px solid #4f46e5;
+    padding-left: 1.25rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .al-audiences p {
+    font-size: 1rem;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .al-how-it-works {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+  }
+
+  .al-how-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 0 0 0.75rem;
+  }
+
+  .al-how-it-works p {
+    font-size: 1rem;
+    color: #334155;
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+  }
+
+  .al-how-it-works p:last-of-type {
+    margin-bottom: 1.25rem;
+  }
+
+  .al-cta {
+    display: inline-flex;
+  }
+
+  /* ── Section cards ────────────────────────── */
+  .al-sections-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .al-sections-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .al-sections-grid {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: 1.25rem;
     margin-bottom: 3rem;
   }
 
-  .hg-mode-card {
-    min-height: 220px;
+  .al-section-card {
+    min-height: 200px;
   }
 
-  .hg-card-meta {
+  .al-section-card--soon {
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  .al-section-card--soon:hover {
+    border-color: #e2e8f0;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .al-card-top {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 0.25rem;
   }
 
-  .hg-meta-pill {
-    display: inline-block;
-    padding: 0.1875rem 0.625rem;
-    background: #eef2ff;
-    color: #4f46e5;
-    border-radius: 100px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  /* Info strip */
-  .hg-home-footer {
-    border-top: 1px solid #e2e8f0;
-    padding-top: 2rem;
-  }
-
-  .hg-info-strip {
-    display: flex;
-    gap: 2.5rem;
-    flex-wrap: wrap;
-  }
-
-  .hg-info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .hg-info-label {
+  .al-badge-soon {
     font-size: 0.6875rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #94a3b8;
+    background: #f1f5f9;
+    padding: 0.175rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
   }
 
-  .hg-info-value {
-    font-size: 0.9375rem;
-    color: #475569;
-    font-weight: 500;
+  .al-card-arrow-soon {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #94a3b8;
   }
 
   @media (max-width: 640px) {
-    .hg-modes-grid {
+    .al-sections-grid {
       grid-template-columns: 1fr;
     }
 
-    .hg-info-strip {
-      gap: 1.25rem;
+    .al-how-it-works {
+      padding: 1.25rem;
     }
   }
 </style>
