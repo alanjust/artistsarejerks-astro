@@ -93,21 +93,31 @@ const sections = [
 
     <div class="hg-grid al-sections-grid">
       {sections.map(section => (
-        <div class={`hg-card al-section-card ${section.status === 'coming-soon' ? 'al-section-card--soon' : ''}`}>
-          <div class="al-card-top">
-            <span class="hg-card-label">{section.label}</span>
-            {section.status === 'coming-soon' && (
+        section.status === 'live' ? (
+          <a href={section.href} class="hg-card al-section-card">
+            <div class="al-card-top">
+              <span class="hg-card-label">{section.label}</span>
+            </div>
+            <h3 class="hg-card-title">{section.title}</h3>
+            <p class="hg-card-desc">{section.description}</p>
+            <div class="al-card-footer">
+              <span></span>
+              <span class="al-card-arrow">→</span>
+            </div>
+          </a>
+        ) : (
+          <div class="hg-card al-section-card al-section-card--soon">
+            <div class="al-card-top">
+              <span class="hg-card-label">{section.label}</span>
               <span class="al-badge-soon">Coming soon</span>
-            )}
+            </div>
+            <h3 class="hg-card-title">{section.title}</h3>
+            <p class="hg-card-desc">{section.description}</p>
+            <div class="al-card-footer">
+              <span class="al-card-arrow-soon">{section.cta}</span>
+            </div>
           </div>
-          <h3 class="hg-card-title">{section.title}</h3>
-          <p class="hg-card-desc">{section.description}</p>
-          {section.status === 'live' ? (
-            <a href={section.href} class="hg-card-arrow">{section.cta}</a>
-          ) : (
-            <span class="al-card-arrow-soon">{section.cta}</span>
-          )}
-        </div>
+        )
       ))}
     </div>
 
@@ -246,9 +256,29 @@ const sections = [
     white-space: nowrap;
   }
 
-  .al-card-arrow-soon {
+  .al-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-top: auto;
     padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .al-card-arrow {
+    font-size: 0.875rem;
+    color: #4f46e5;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-4px);
+  }
+
+  .hg-card:hover .al-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .al-card-arrow-soon {
     font-size: 0.875rem;
     font-weight: 600;
     color: #94a3b8;
