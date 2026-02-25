@@ -94,8 +94,8 @@ const moves = moveLines.map((line: string) => {
     <!-- ── MODIFIER NOTE ─────────────────────────────────────── -->
     <div class="lens-section lens-modifier-note">
       <h2 class="lens-section-title">Using This as a Modifier</h2>
-      <p>Interrogation Lenses are designed to work as analytical overlays on top of any primary analysis. Select a lens before or after running a standard Hidden Grammar analysis to reframe the same visual evidence through a different theoretical perspective.</p>
-      <p class="lens-modifier-status">Modifier selection in the analyzer is coming soon.</p>
+      <p>Run any standard Hidden Grammar analysis, then select this lens from the <strong>Apply a Lens</strong> section in the results panel. The AI will re-read the same image through this framework — same visual evidence, different analytical brain.</p>
+      <a href="/hidden-grammar/ai-analyze" class="hg-btn hg-btn--primary lens-modifier-cta">Open the AI Analyzer →</a>
     </div>
 
     <!-- ── BOTTOM NAV ─────────────────────────────────────────── -->
@@ -235,30 +235,25 @@ const moves = moveLines.map((line: string) => {
 
   /* ── Modifier note ────────────────────────────────────────── */
   .lens-modifier-note {
-    background: #fffbeb;
-    border: 1px solid #fcd34d;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
     border-radius: 12px;
     padding: 1.5rem;
   }
 
   .lens-modifier-note .lens-section-title {
-    color: #92400e;
+    color: #4338ca;
   }
 
   .lens-modifier-note p {
     font-size: 0.9375rem;
-    color: #78350f;
+    color: #3730a3;
     line-height: 1.65;
-    margin: 0 0 0.75rem;
+    margin: 0 0 1.25rem;
   }
 
-  .lens-modifier-note p:last-child {
-    margin: 0;
-  }
-
-  .lens-modifier-status {
-    font-weight: 600;
-    font-style: italic;
+  .lens-modifier-cta {
+    display: inline-flex;
   }
 
   /* ── Bottom nav ───────────────────────────────────────────── */

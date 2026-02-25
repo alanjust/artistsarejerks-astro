@@ -584,27 +584,27 @@ const lensesJSON = JSON.stringify(lensesData);
     color: #1e293b;
   }
 
-  /* Markdown output styles */
-  .hg-results-content h1,
-  .hg-results-content h2,
-  .hg-results-content h3,
-  .hg-results-content h4 {
+  /* Markdown output styles — :global() required for dynamically injected innerHTML */
+  .hg-results-content :global(h1),
+  .hg-results-content :global(h2),
+  .hg-results-content :global(h3),
+  .hg-results-content :global(h4) {
     color: #1e293b;
     margin-top: 1.5em;
     margin-bottom: 0.5em;
     line-height: 1.3;
   }
 
-  .hg-results-content h1 { font-size: 1.375rem; }
-  .hg-results-content h2 { font-size: 1.1875rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
-  .hg-results-content h3 { font-size: 1.0625rem; }
-  .hg-results-content h4 { font-size: 0.9375rem; color: #475569; }
+  .hg-results-content :global(h1) { font-size: 1.375rem; }
+  .hg-results-content :global(h2) { font-size: 1.1875rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
+  .hg-results-content :global(h3) { font-size: 1.0625rem; }
+  .hg-results-content :global(h4) { font-size: 0.9375rem; color: #475569; }
 
-  .hg-results-content p { margin: 0.75em 0; }
-  .hg-results-content ul, .hg-results-content ol { padding-left: 1.5em; margin: 0.75em 0; }
-  .hg-results-content li { margin: 0.375em 0; }
+  .hg-results-content :global(p) { margin: 0.75em 0; }
+  .hg-results-content :global(ul), .hg-results-content :global(ol) { padding-left: 1.5em; margin: 0.75em 0; }
+  .hg-results-content :global(li) { margin: 0.375em 0; }
 
-  .hg-results-content table {
+  .hg-results-content :global(table) {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
@@ -613,20 +613,20 @@ const lensesJSON = JSON.stringify(lensesData);
     display: block;
   }
 
-  .hg-results-content th,
-  .hg-results-content td {
+  .hg-results-content :global(th),
+  .hg-results-content :global(td) {
     border: 1px solid #e2e8f0;
     padding: 0.5rem 0.75rem;
     text-align: left;
   }
 
-  .hg-results-content th {
+  .hg-results-content :global(th) {
     background: #f8fafc;
     font-weight: 600;
     color: #374151;
   }
 
-  .hg-results-content blockquote {
+  .hg-results-content :global(blockquote) {
     border-left: 3px solid #c7d2fe;
     padding: 0.25rem 1rem;
     margin: 1em 0;
@@ -635,15 +635,15 @@ const lensesJSON = JSON.stringify(lensesData);
     border-radius: 0 8px 8px 0;
   }
 
-  .hg-results-content code {
+  .hg-results-content :global(code) {
     background: #f1f5f9;
     padding: 0.125em 0.375em;
     border-radius: 4px;
     font-size: 0.875em;
   }
 
-  .hg-results-content strong { color: #1e293b; }
-  .hg-results-content hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5em 0; }
+  .hg-results-content :global(strong) { color: #1e293b; }
+  .hg-results-content :global(hr) { border: none; border-top: 1px solid #e2e8f0; margin: 1.5em 0; }
 
   /* ── Result thumbnail ─────────────────────── */
   .hg-result-thumbnail {
@@ -714,15 +714,20 @@ const lensesJSON = JSON.stringify(lensesData);
   }
 
   /* Inherit markdown styles for interrogation answers */
-  .hg-interrogation-answer-content h2,
-  .hg-interrogation-answer-content h3 {
+  .hg-interrogation-answer-content :global(h2),
+  .hg-interrogation-answer-content :global(h3) {
     color: #1e293b;
     margin-top: 1.25em;
     margin-bottom: 0.4em;
+    font-size: 1.0625rem;
+    line-height: 1.3;
   }
 
-  .hg-interrogation-answer-content p { margin: 0.625em 0; }
-  .hg-interrogation-answer-content ul { padding-left: 1.5em; margin: 0.5em 0; }
+  .hg-interrogation-answer-content :global(p) { margin: 0.625em 0; }
+  .hg-interrogation-answer-content :global(ul) { padding-left: 1.5em; margin: 0.5em 0; }
+  .hg-interrogation-answer-content :global(li) { margin: 0.375em 0; }
+  .hg-interrogation-answer-content :global(strong) { color: #1e293b; }
+  .hg-interrogation-answer-content :global(hr) { border: none; border-top: 1px solid #e2e8f0; margin: 1.25em 0; }
 
   /* ── Interrogation window ─────────────────── */
   .hg-interrogation-window {
