@@ -1,5 +1,6 @@
 import { state } from './state';
 import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
+import { showLensModifier, resetLensModifier } from './lens-modifier';
 
 // Types matching analysisModes.js structure
 interface SubMode {
@@ -103,7 +104,16 @@ export function initPage() {
   } else {
     // No URL params — show fallback header and fallback fields
     const breadcrumbModeEl = document.getElementById('breadcrumbMode');
-    if (breadcrumbModeEl) breadcrumbModeEl.textContent = 'Direct Upload';
+    if (breadcrumbModeEl) breadcrumbModeEl.textContent = 'Open Analysis';
+
+    // Relabel "Additional Context" → "Custom Prompt" in free-form mode
+    const titleEl = document.getElementById('additionalContextTitle');
+    const hintEl = document.getElementById('additionalContextHint');
+    const textareaEl = document.getElementById('additionalContext') as HTMLTextAreaElement | null;
+
+    if (titleEl) titleEl.innerHTML = 'Custom Prompt';
+    if (hintEl) hintEl.textContent = 'Write your own question or instruction for the AI. This is your prompt — ask anything you want about the uploaded image.';
+    if (textareaEl) textareaEl.placeholder = 'e.g. What is the primary compositional strategy in this work? What visual tension exists between the figure and the background?';
   }
 }
 
@@ -193,7 +203,10 @@ export function initAnalysis() {
     }
 
     const fields = collectFields();
-    const promptText = state.promptText;
+    const additionalContext = (document.getElementById('additionalContext') as HTMLTextAreaElement | null)?.value.trim() || '';
+    const promptText = state.promptText
+      ? (additionalContext ? `${state.promptText}\n\nAdditional context from the user: ${additionalContext}` : state.promptText)
+      : additionalContext;
 
     // Show loading
     if (analysisForm) analysisForm.style.display = 'none';
@@ -230,11 +243,19 @@ export function initAnalysis() {
       if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
 
+      // Show uploaded image thumbnail
+      const thumbnail = document.getElementById('resultThumbnail') as HTMLImageElement | null;
+      if (thumbnail && state.uploadedImageData) {
+        thumbnail.src = state.uploadedImageData;
+        thumbnail.style.display = 'block';
+      }
+
       // Wire up main copy button
       wireCopyButton('copyMainOutput', 0);
 
-      // Show feedback widget
+      // Show feedback widget and lens modifier
       showFeedbackWidget();
+      showLensModifier();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -250,8 +271,16 @@ export function initAnalysis() {
     if (analysisForm) analysisForm.style.display = 'block';
     if (resultsPanel) resultsPanel.style.display = 'none';
 
-    // Reset feedback widget for next analysis
+    // Reset thumbnail
+    const thumbnail = document.getElementById('resultThumbnail') as HTMLImageElement | null;
+    if (thumbnail) {
+      thumbnail.style.display = 'none';
+      thumbnail.src = '';
+    }
+
+    // Reset feedback widget and lens modifier for next analysis
     resetFeedbackWidget();
+    resetLensModifier();
 
     // Clear interrogation history
     const history = document.getElementById('interrogationHistory');
@@ -279,24 +308,47 @@ export function wireCopyButton(buttonId: string, outputIndex: number) {
       return;
     }
 
+    const iconHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      Copy
+    `;
+
     try {
-      await navigator.clipboard.writeText(output.raw);
+      // Build HTML payload — include thumbnail for main analysis only
+      const thumbnailHTML = outputIndex === 0 && state.uploadedImageData
+        ? `<img src="${state.uploadedImageData}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Uploaded artwork">`
+        : '';
+      const htmlPayload = `<meta charset="utf-8">${thumbnailHTML}${output.html}`;
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([htmlPayload], { type: 'text/html' }),
+          'text/plain': new Blob([output.raw], { type: 'text/plain' }),
+        }),
+      ]);
+
       btn.textContent = '✓ Copied';
       btn.classList.add('copied');
       setTimeout(() => {
-        btn.textContent = 'Copy';
         btn.classList.remove('copied');
-        // Restore icon
-        btn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          Copy
-        `;
+        btn.innerHTML = iconHTML;
       }, 2500);
     } catch {
-      alert('Copy failed — please select and copy manually.');
+      // Fallback for browsers without ClipboardItem support
+      try {
+        await navigator.clipboard.writeText(output.raw);
+        btn.textContent = '✓ Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = iconHTML;
+        }, 2500);
+      } catch {
+        alert('Copy failed — please select and copy manually.');
+      }
     }
   });
 }

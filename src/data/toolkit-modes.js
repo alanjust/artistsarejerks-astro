@@ -45,7 +45,7 @@ export const toolkitBuckets = [
         tagline: "Mid-stream check. Does what you're executing match what you set out to do?",
         status: 'live',
         phase: 'Studio Tools',
-        link: '/hidden-grammar',
+        link: '/hidden-grammar/toolkit#analyzing',
         detail: {
           what: "Analyzes only what is physically present and observable right now. Identifies which Roots and Principles are currently active, which appear unresolved, and where visual tension exists between elements. Reports the current state of the work — not problems to fix.",
           when: ["You're partway through and something feels off", "You've lost the thread of what you were after", "You want a diagnostic read, not a verdict", "You're not ready for a full critique — just a current-state assessment"],
@@ -137,7 +137,6 @@ export const toolkitBuckets = [
         tagline: "Painting, sculpture, photography, installation — full Hidden Grammar analysis.",
         status: 'live',
         phase: 'Core Analysis',
-        link: '/hidden-grammar/ai-analyze',
         detail: {
           what: "Comprehensive analysis of fine art across five analytical angles: full audit, work in progress, materiality and surface, spatial structure, and historical positioning.",
           when: ["Finished paintings, sculptures, works on paper, photography, installation", "Master studies", "Art history research"],
@@ -151,7 +150,6 @@ export const toolkitBuckets = [
         tagline: "Packaging and product design — shelf performance, brand differentiation, demographic signals.",
         status: 'live',
         phase: 'Core Analysis',
-        link: '/hidden-grammar/ai-analyze',
         detail: {
           what: "Analysis of packaging design across four angles: shelf performance, brand differentiation, demographic alignment, and design in progress.",
           when: ["Retail packaging", "Product design", "Brand visual identity"],
@@ -165,7 +163,6 @@ export const toolkitBuckets = [
         tagline: "Panel structure, page flow, visual storytelling grammar — analyzed as a sequential system.",
         status: 'live',
         phase: 'Core Analysis',
-        link: '/hidden-grammar/ai-analyze',
         detail: {
           what: "Hidden Grammar analysis adapted for sequential art. Covers comprehensive analysis, WIP, audience assessment, style classification, and market context.",
           when: ["American superhero, manga, independent, children's, webcomic formats", "Sequential storytelling analysis", "Audience and market positioning"],
@@ -179,7 +176,6 @@ export const toolkitBuckets = [
         tagline: "Editorial, advertising, book covers, character design — analyzed in its commercial context.",
         status: 'live',
         phase: 'Core Analysis',
-        link: '/hidden-grammar/ai-analyze',
         detail: {
           what: "Analysis of commercial illustration across five angles: comprehensive, WIP, communication clarity, audience signals, and character design.",
           when: ["Editorial illustration", "Advertising campaigns", "Book covers, children's books", "Character design"],

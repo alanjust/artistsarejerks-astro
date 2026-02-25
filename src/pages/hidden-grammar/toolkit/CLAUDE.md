@@ -93,15 +93,13 @@ The `stress-testing` bucket is handled differently in the template — modes are
 
 ---
 
-## Unfinished Item — Live Mode Param Passing
+## Live Mode Param Passing — Resolved
 
-**This is a known gap that needs fixing in the next session.**
+Live mode CTAs route to `/hidden-grammar/modes/[id]` (the prompt picker). From there the user picks a prompt, navigating to `/hidden-grammar/ai-analyze?mode=X&prompt=Y` with everything pre-selected.
 
-When a user clicks "Choose a prompt →" from a live mode detail page, they land on `/hidden-grammar/modes/[mode]`. From there, they choose a prompt, which routes to `/hidden-grammar/ai-analyze?mode=X&prompt=Y`. This works correctly.
+**Fix applied:** Removed `link` overrides from fine-art, cpg, comic-book, and commercial-illustration in `toolkit-modes.js`. Without a `link`, the detail page builds the URL as `/hidden-grammar/modes/${mode.id}`, which is the correct entry point.
 
-However, the Toolkit detail page currently has no way to pass context (which mode, which prompt) through to the analyzer pre-selected. The existing `modes/[mode].astro` → `ai-analyze.astro` URL param system already handles this — the Toolkit just needs to route into that existing flow cleanly rather than bypassing it.
-
-**What needs to happen:** Investigate whether the detail page CTA should deep-link to a specific prompt (pre-selecting mode + prompt in the URL) or always route to the domain's prompt picker first. This depends on whether toolkit modes map 1:1 to prompts or to domains.
+`wip` retains its `link: '/hidden-grammar'` override — it's a sub-prompt inside each domain mode, not a standalone mode page.
 
 ---
 

@@ -1,0 +1,249 @@
+---
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+import lensesData from '../../data/hg-lenses.json';
+
+const { categories, lenses } = lensesData;
+
+// Group lenses by category in frontmatter
+const grouped = categories.map((cat: any) => ({
+  ...cat,
+  lenses: lenses.filter((l: any) => l.category === cat.id),
+}));
+---
+
+<HiddenGrammarLayout title="Interrogation Lenses — Art Lab">
+  <div class="lenses-page">
+
+    <!-- ── PAGE HEADER ─────────────────────────────────────────── -->
+    <header class="lenses-header">
+      <div class="lenses-eyebrow">Art Lab</div>
+      <h1 class="lenses-title">Interrogation Lenses</h1>
+      <p class="lenses-subtitle">
+        Same image. Different brain. Each lens applies a specific philosophical or critical framework to the visual evidence — reframing what you see without changing what's there. Use them to stress-test a reading, expose a blind spot, or hear a voice you wouldn't normally invite into the room.
+      </p>
+      <p class="lenses-note">{lenses.length} lenses across {categories.length} categories</p>
+    </header>
+
+    <!-- ── CATEGORY NAV ─────────────────────────────────────────── -->
+    <nav class="bucket-nav" aria-label="Jump to category">
+      {categories.map((cat: any) => (
+        <a href={`#${cat.id}`} class="bucket-nav-pill">{cat.name}</a>
+      ))}
+    </nav>
+
+    <!-- ── CATEGORIES ───────────────────────────────────────────── -->
+    <div class="buckets">
+      {grouped.map((cat: any) => (
+        <section class="bucket" id={cat.id}>
+          <div class="bucket-header">
+            <h2 class="bucket-title">{cat.name}</h2>
+            <p class="bucket-description">{cat.description}</p>
+          </div>
+          <div class="cards-grid">
+            {cat.lenses.map((lens: any) => (
+              <a href={`/hidden-grammar/lenses/${lens.id}`} class="mode-card">
+                <div class="mode-card-top">
+                  <span class="lens-thinker">{lens.thinker}</span>
+                </div>
+                <h3 class="mode-card-label">{lens.name}</h3>
+                <p class="mode-card-tagline">{lens.tagline}</p>
+                <div class="mode-card-footer">
+                  <span></span>
+                  <span class="mode-card-arrow">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .lenses-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .lenses-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .lenses-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin-bottom: 0.5rem;
+  }
+
+  .lenses-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.75rem;
+    line-height: 1.1;
+  }
+
+  .lenses-subtitle {
+    font-size: 1.125rem;
+    color: #475569;
+    max-width: 640px;
+    line-height: 1.65;
+    margin: 0 0 1rem;
+  }
+
+  .lenses-note {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .bucket-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .bucket-nav-pill {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #4f46e5;
+    background: #eef2ff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .bucket-nav-pill:hover {
+    background: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+  }
+
+  .buckets {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .bucket {
+    scroll-margin-top: 5rem;
+  }
+
+  .bucket-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .bucket-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.5rem;
+  }
+
+  .bucket-description {
+    font-size: 0.9375rem;
+    color: #64748b;
+    max-width: 600px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .mode-card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    min-height: 140px;
+  }
+
+  .mode-card:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .mode-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .lens-thinker {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6366f1;
+    white-space: nowrap;
+  }
+
+  .mode-card-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+  }
+
+  .mode-card-tagline {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+    font-style: italic;
+  }
+
+  .mode-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .mode-card-arrow {
+    font-size: 0.875rem;
+    color: #4f46e5;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-4px);
+  }
+
+  .mode-card:hover .mode-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (max-width: 640px) {
+    .lenses-title { font-size: 1.875rem; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .bucket-nav { gap: 0.375rem; }
+    .bucket-nav-pill { font-size: 0.75rem; padding: 0.3rem 0.75rem; }
+  }
+</style>

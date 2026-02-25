@@ -35,6 +35,18 @@ export function initImageUpload() {
     }
   });
 
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) handleImageUpload(file);
+        break;
+      }
+    }
+  });
+
   removeImage?.addEventListener('click', () => {
     if (imageInput) (imageInput as HTMLInputElement).value = '';
     if (imagePreview) (imagePreview as HTMLImageElement).src = '';

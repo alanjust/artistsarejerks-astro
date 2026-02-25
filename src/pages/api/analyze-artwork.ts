@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const userMessage = `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nFOLLOW-UP QUESTION:\n${userQuestion}`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2048,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
@@ -155,7 +155,7 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
     const userMessageText = fieldContext + (promptText || 'Conduct a Hidden Grammar analysis of this artwork.');
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4096,
       system: systemPrompt,
       messages: [

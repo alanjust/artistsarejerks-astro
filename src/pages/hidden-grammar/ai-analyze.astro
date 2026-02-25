@@ -1,9 +1,11 @@
 ---
 import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 import { analysisModes, uiConfig } from '../../data/analysisModes.js';
+import lensesData from '../../data/hg-lenses.json';
 
 // Serialize mode data for client-side URL param resolution
 const modesJSON = JSON.stringify(analysisModes);
+const lensesJSON = JSON.stringify(lensesData);
 ---
 
 <HiddenGrammarLayout
@@ -35,8 +37,8 @@ const modesJSON = JSON.stringify(analysisModes);
 
     <!-- No-params fallback header -->
     <div class="hg-page-header" id="fallbackHeader">
-      <h1>AI Analysis</h1>
-      <p>Upload an image to begin. <a href="/hidden-grammar" class="hg-inline-link">Choose a mode first</a> to load the appropriate prompts and fields.</p>
+      <h1>Open Analysis</h1>
+      <p>No pre-set prompt. Upload any image and write your own question or instruction in the Custom Prompt field below. For structured Hidden Grammar analysis, <a href="/hidden-grammar/toolkit" class="hg-inline-link">choose a mode from the Toolkit</a>.</p>
     </div>
 
     <!-- Analysis Form -->
@@ -53,8 +55,8 @@ const modesJSON = JSON.stringify(analysisModes);
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <p><strong>Click to upload</strong> or drag &amp; drop</p>
-            <p class="upload-hint">JPG, PNG, WebP — large images auto-optimized</p>
+            <p><strong>Click to upload</strong>, drag &amp; drop, or paste</p>
+            <p class="upload-hint">JPG, PNG, WebP — or paste from clipboard — large images auto-optimized</p>
             <input type="file" id="imageInput" accept="image/*" hidden>
           </div>
 
@@ -96,6 +98,18 @@ const modesJSON = JSON.stringify(analysisModes);
         </div>
       </section>
 
+      <!-- Additional Context / Custom Prompt Section -->
+      <section class="hg-form-section" id="additionalContextSection">
+        <h2 class="hg-form-section-title" id="additionalContextTitle">Additional Context <span class="hg-optional-label">(optional)</span></h2>
+        <p class="hg-context-hint" id="additionalContextHint">Narrow the focus. Tell the AI what you're specifically trying to figure out — a question, a concern, a hunch. Gets appended to the prompt.</p>
+        <textarea
+          id="additionalContext"
+          class="hg-field-textarea hg-context-textarea"
+          rows="3"
+          placeholder="e.g. I'm trying to understand why the spatial depth feels off, or whether the color temperature is working against the composition..."
+        ></textarea>
+      </section>
+
       <!-- Analyze Button -->
       <div class="hg-form-actions">
         <button type="button" class="hg-btn hg-btn--primary hg-analyze-btn" id="analyzeBtn" disabled>
@@ -123,6 +137,7 @@ const modesJSON = JSON.stringify(analysisModes);
 
       <!-- Main analysis output -->
       <div class="hg-results-body">
+        <img id="resultThumbnail" class="hg-result-thumbnail" alt="Uploaded artwork" style="display:none">
         <div id="resultsContent" class="hg-results-content"></div>
         <div class="hg-copy-row" id="mainCopyRow">
           <button class="hg-btn hg-btn--copy" id="copyMainOutput">
@@ -166,6 +181,22 @@ const modesJSON = JSON.stringify(analysisModes);
         </div>
       </div>
 
+      <!-- Lens Modifier (shown after analysis completes) -->
+      <div id="lensModifierSection" class="hg-lens-modifier" style="display:none">
+        <h3 class="hg-lens-modifier-title">Apply a Lens</h3>
+        <p class="hg-lens-modifier-hint">Re-read this image through a specific critical or philosophical framework. Each lens reshapes what's worth noticing without changing what's there.</p>
+        <div class="hg-lens-modifier-controls">
+          <select id="lensSelect" class="hg-lens-select">
+            <option value="">Choose a lens...</option>
+          </select>
+          <button type="button" class="hg-btn hg-btn--secondary" id="applyLensBtn" disabled>Apply Lens</button>
+        </div>
+        <div id="lensLoading" class="hg-interrogation-loading" style="display:none">
+          <div class="hg-loading-spinner hg-loading-spinner--sm"></div>
+          <span>Applying lens...</span>
+        </div>
+      </div>
+
       <!-- Interrogation window -->
       <div id="interrogationWindow" class="hg-interrogation-window">
         <h3 class="hg-interrogation-title">Follow-up Questions</h3>
@@ -197,6 +228,8 @@ const modesJSON = JSON.stringify(analysisModes);
 
 <!-- Embed mode data for client-side resolution -->
 <script type="application/json" id="analysisModesData" set:html={modesJSON}></script>
+<!-- Embed lenses data for lens modifier -->
+<script type="application/json" id="lensesData" set:html={lensesJSON}></script>
 
 <script>
   import '../../scripts/ai-analyze/index';
@@ -416,6 +449,18 @@ const modesJSON = JSON.stringify(analysisModes);
     line-height: 1.5;
   }
 
+  /* ── Additional context ────────────────────── */
+  .hg-context-hint {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0 0 0.875rem 0;
+    line-height: 1.55;
+  }
+
+  .hg-context-textarea {
+    width: 100%;
+  }
+
   /* ── Analyze button ───────────────────────── */
   .hg-form-actions {
     padding: 1.5rem 2rem;
@@ -569,6 +614,26 @@ const modesJSON = JSON.stringify(analysisModes);
 
   .hg-results-content strong { color: #1e293b; }
   .hg-results-content hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5em 0; }
+
+  /* ── Result thumbnail ─────────────────────── */
+  .hg-result-thumbnail {
+    float: right;
+    max-width: 120px;
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin: 0 0 1rem 1.5rem;
+    display: block;
+  }
+
+  @media (max-width: 640px) {
+    .hg-result-thumbnail {
+      float: none;
+      width: 80px;
+      margin: 0 0 1rem 0;
+    }
+  }
 
   .hg-copy-row {
     display: flex;
@@ -758,6 +823,85 @@ const modesJSON = JSON.stringify(analysisModes);
     color: #64748b;
   }
 
+  /* ── Lens modifier ────────────────────────── */
+  .hg-lens-modifier {
+    padding: 1.5rem 1.75rem;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+
+  .hg-lens-modifier-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .hg-lens-modifier-hint {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0 0 1rem 0;
+    line-height: 1.55;
+  }
+
+  .hg-lens-modifier-controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .hg-lens-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5625rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #ffffff;
+    transition: border-color 0.15s ease;
+    appearance: auto;
+  }
+
+  .hg-lens-select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+  }
+
+  /* ── Lens turns (in interrogation history) ── */
+  .hg-lens-turn .hg-lens-turn-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    padding: 0.875rem 1.75rem;
+    background: #f0fdf4;
+    border-bottom: 1px solid #bbf7d0;
+  }
+
+  .hg-lens-turn-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #16a34a;
+  }
+
+  .hg-lens-turn-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .hg-lens-turn-thinker {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-style: italic;
+  }
+
   /* Mobile */
   @media (max-width: 640px) {
     .hg-form-section {
@@ -781,7 +925,8 @@ const modesJSON = JSON.stringify(analysisModes);
       padding-right: 1rem;
     }
 
-    .hg-feedback-widget {
+    .hg-feedback-widget,
+    .hg-lens-modifier {
       padding-left: 1rem;
       padding-right: 1rem;
     }

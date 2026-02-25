@@ -118,5 +118,22 @@ The Toolkit is a new navigation layer in Zone A. It organizes all modes by visit
 - `src/pages/hidden-grammar/toolkit/CLAUDE.md` — Toolkit-specific documentation
 - `MODES_REGISTRY.md` — Human-readable index of all modes with status tracking
 
-**Known gap — pick up in next session:**
-Live mode detail pages route to the prompt picker (`/hidden-grammar/modes/[id]`) but the analyzer opens without mode/prompt pre-selected. The URL param system already exists in `modes/[mode].astro` — the fix is to pass mode+prompt params through from the Toolkit detail page CTA.
+**Toolkit CTA routing:** Live mode detail pages route to `/hidden-grammar/modes/[id]` (the prompt picker), where mode+prompt params are set before navigating to the analyzer. Resolved — `link` overrides removed from fine-art, cpg, comic-book, and commercial-illustration in `toolkit-modes.js`.
+
+---
+
+## Current Work Scope
+
+Experimentation is currently scoped to the Hidden Grammar / Art Lab section only:
+
+```
+src/pages/hidden-grammar/
+src/data/analysisModes.js
+src/data/toolkit-modes.js
+src/data/hg-*.json
+src/scripts/ai-analyze/
+src/layouts/HiddenGrammarLayout.astro
+src/pages/api/analyze-artwork.ts
+```
+
+Do not modify anything outside these paths unless Alan explicitly says otherwise. The rest of the AAJ site is not in scope.
