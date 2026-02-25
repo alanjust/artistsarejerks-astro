@@ -342,7 +342,8 @@ export const toolkitBuckets = [
         id: 'lens-ooo',
         label: 'Object-Oriented Ontology',
         tagline: "Does this work have a secret life, or does it only exist for the viewer?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/ooo',
         phase: 'External Lenses',
         category: 'Ontological & Philosophical',
         detail: {
@@ -356,7 +357,8 @@ export const toolkitBuckets = [
         id: 'lens-phenomenology',
         label: 'Phenomenological',
         tagline: "Is this an intellectual puzzle or a physical event?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/phenomenology',
         phase: 'External Lenses',
         category: 'Ontological & Philosophical',
         detail: {
@@ -370,7 +372,8 @@ export const toolkitBuckets = [
         id: 'lens-deconstruction',
         label: 'Deconstructionist',
         tagline: "Does the work hold together, or does it unravel its own authority?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/deconstruction',
         phase: 'External Lenses',
         category: 'Ontological & Philosophical',
         detail: {
@@ -384,7 +387,8 @@ export const toolkitBuckets = [
         id: 'lens-new-materialism',
         label: 'New Materialist',
         tagline: "Is the artist a dictator of form, or a collaborator with the material?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/new-materialism',
         phase: 'External Lenses',
         category: 'Ontological & Philosophical',
         detail: {
@@ -398,7 +402,8 @@ export const toolkitBuckets = [
         id: 'lens-semiotics',
         label: 'Semiotic',
         tagline: "Is this a readerly text (passive) or a writerly text (requires you to build the meaning)?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/semiotics',
         phase: 'External Lenses',
         category: 'Ontological & Philosophical',
         detail: {
@@ -412,7 +417,8 @@ export const toolkitBuckets = [
         id: 'lens-yau',
         label: 'John Yau Lens',
         tagline: "Is this work brave enough to be awkward?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/john-yau',
         phase: 'External Lenses',
         category: 'Specific Critics',
         detail: {
@@ -426,7 +432,8 @@ export const toolkitBuckets = [
         id: 'lens-saltz',
         label: 'Jerry Saltz Lens',
         tagline: "Does this painting have heat? Is it alive or dead?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/jerry-saltz',
         phase: 'External Lenses',
         category: 'Specific Critics',
         detail: {
@@ -440,7 +447,8 @@ export const toolkitBuckets = [
         id: 'lens-greenberg',
         label: 'Clement Greenberg Lens',
         tagline: "Is the painting honest about being a flat surface covered in pigment, or is it lying?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/clement-greenberg',
         phase: 'External Lenses',
         category: 'Specific Critics',
         detail: {
@@ -454,7 +462,8 @@ export const toolkitBuckets = [
         id: 'lens-institutional',
         label: 'Institutional Critique',
         tagline: "Is this work disrupting the institution or decorating it?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/institutional-critique',
         phase: 'External Lenses',
         category: 'Cultural & Social',
         detail: {
@@ -468,7 +477,8 @@ export const toolkitBuckets = [
         id: 'lens-postmodern',
         label: 'Postmodern',
         tagline: "Is this work acknowledging that everything has already been painted?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/postmodern',
         phase: 'External Lenses',
         category: 'Cultural & Social',
         detail: {
@@ -482,7 +492,8 @@ export const toolkitBuckets = [
         id: 'lens-ngai',
         label: 'Minor Emotions (Ngai)',
         tagline: "Is this Cute, Zany, or Interesting — and what does that mean for the attention economy?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/minor-emotions',
         phase: 'External Lenses',
         category: 'Cultural & Social',
         detail: {
@@ -496,7 +507,8 @@ export const toolkitBuckets = [
         id: 'lens-metamodern',
         label: 'Metamodern',
         tagline: "Does it oscillate between irony and sincerity? Is it hopeful despite the data?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/metamodern',
         phase: 'External Lenses',
         category: 'Cultural & Social',
         detail: {
@@ -510,7 +522,8 @@ export const toolkitBuckets = [
         id: 'lens-uncanny',
         label: 'Uncanny',
         tagline: "Does it trigger the creep reflex? Why?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/uncanny-valley',
         phase: 'External Lenses',
         category: 'Outliers & Stress Tests',
         detail: {
@@ -524,7 +537,8 @@ export const toolkitBuckets = [
         id: 'lens-slow-art',
         label: 'Slow Art',
         tagline: "Is this Fast Art (Instagram) or Slow Art — what appears only after three minutes?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/slow-art',
         phase: 'External Lenses',
         category: 'Outliers & Stress Tests',
         detail: {
@@ -538,7 +552,8 @@ export const toolkitBuckets = [
         id: 'lens-neuro-archaeology',
         label: 'Neuro-Archaeology',
         tagline: "What was the biological state of the maker? The painting as fossil record.",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/neuro-archaeology',
         phase: 'External Lenses',
         category: 'Outliers & Stress Tests',
         detail: {
@@ -552,7 +567,8 @@ export const toolkitBuckets = [
         id: 'lens-hauntology',
         label: 'Hauntology',
         tagline: "What lost future is this work mourning?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/hauntology',
         phase: 'External Lenses',
         category: 'Cultural & Social',
         detail: {
@@ -566,7 +582,8 @@ export const toolkitBuckets = [
         id: 'lens-biophilic',
         label: 'Biophilic',
         tagline: "Is it biologically soothing or biologically alerting?",
-        status: 'coming-soon',
+        status: 'live',
+        link: '/hidden-grammar/lenses/biophilic',
         phase: 'External Lenses',
         category: 'Outliers & Stress Tests',
         detail: {

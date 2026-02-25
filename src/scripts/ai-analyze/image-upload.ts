@@ -8,6 +8,8 @@ export function initImageUpload() {
   const removeImage = document.getElementById('removeImage');
   const analyzeBtn = document.getElementById('analyzeBtn');
 
+  const pasteBtn = document.getElementById('pasteImageBtn');
+
   uploadArea?.addEventListener('click', () => imageInput?.click());
 
   uploadArea?.addEventListener('dragover', (e) => {
@@ -35,6 +37,7 @@ export function initImageUpload() {
     }
   });
 
+  // Desktop: Cmd+V / Ctrl+V anywhere on the page
   document.addEventListener('paste', (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -44,6 +47,32 @@ export function initImageUpload() {
         if (file) handleImageUpload(file);
         break;
       }
+    }
+  });
+
+  // Paste button: works on mobile (iOS 16.4+) and desktop via Clipboard API
+  pasteBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation(); // prevent triggering uploadArea click → file picker
+
+    if (!navigator.clipboard?.read) {
+      alert('Paste is not supported in this browser. Try pressing Cmd+V (Mac) or Ctrl+V (Windows) while on this page.');
+      return;
+    }
+
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find(t => t.startsWith('image/'));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          const file = new File([blob], 'pasted-image', { type: imageType });
+          handleImageUpload(file);
+          return;
+        }
+      }
+      alert('No image found in clipboard. Copy an image first, then tap Paste Image.');
+    } catch {
+      alert('Could not read clipboard. If prompted, allow clipboard access and try again.');
     }
   });
 

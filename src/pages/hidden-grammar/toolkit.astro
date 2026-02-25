@@ -20,7 +20,7 @@ const processedBuckets = toolkitBuckets.map((bucket: any) => {
 });
 
 function modeHref(mode: any): string {
-  return `/hidden-grammar/toolkit/${mode.id}`;
+  return mode.link || `/hidden-grammar/toolkit/${mode.id}`;
 }
 ---
 
@@ -59,30 +59,10 @@ function modeHref(mode: any): string {
           </div>
 
           {bucket.isLenses ? (
-            <div class="lens-categories">
-              {bucket.lensCategories.map(([cat, modes]: [string, any[]]) => (
-                <div class="lens-category">
-                  <h3 class="lens-category-label">{cat}</h3>
-                  <div class="cards-grid">
-                    {modes.map((mode: any) => (
-                      <a href={modeHref(mode)} class={`mode-card ${mode.status === 'coming-soon' ? 'mode-card--soon' : ''}`}>
-                        <div class="mode-card-top">
-                          <span class={`badge ${mode.status === 'live' ? 'badge--live' : 'badge--soon'}`}>
-                            {mode.status === 'live' ? 'Live' : 'Coming soon'}
-                          </span>
-                          {mode.note && <span class="mode-card-note">{mode.note}</span>}
-                        </div>
-                        <h3 class="mode-card-label">{mode.label}</h3>
-                        <p class="mode-card-tagline">{mode.tagline}</p>
-                        <div class="mode-card-footer">
-                          <span class="mode-card-phase">{mode.phase}</span>
-                          <span class="mode-card-arrow">→</span>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div class="lens-cta-panel">
+              <p class="lens-cta-count">17 lenses across 5 categories.</p>
+              <p class="lens-cta-desc">Object-Oriented Ontology, Phenomenology, Hauntology, Deconstruction, and 13 more — each one applies a specific critical or philosophical framework to the same visual evidence. Browse them, read what each one does, then apply the ones that interest you from the AI analyzer results panel.</p>
+              <a href="/hidden-grammar/lenses" class="hg-btn hg-btn--primary">Browse the Interrogation Lenses →</a>
             </div>
           ) : (
             <div class="cards-grid">
@@ -354,6 +334,31 @@ function modeHref(mode: any): string {
     margin: 0 0 0.75rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #f1f5f9;
+  }
+
+  /* ── Lens CTA panel ───────────────────────── */
+  .lens-cta-panel {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    max-width: 620px;
+  }
+
+  .lens-cta-count {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 0 0 0.625rem;
+  }
+
+  .lens-cta-desc {
+    font-size: 0.9375rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0 0 1.25rem;
   }
 
   .toolkit-cta {
