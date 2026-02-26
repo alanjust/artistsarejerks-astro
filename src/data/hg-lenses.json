@@ -234,6 +234,14 @@
       "thinker": "Richard Wagner / Walter Gropius",
       "tagline": "Does the work leave room for the viewer to breathe, or does it control the air?",
       "prompt": "Analyze this based on the concept of Gesamtkunstwerk (Total Work of Art).\n\n- The Ecosystem: Does the work accept the boundaries of the frame, or does it try to design the wall, the light, and the viewer's experience? Is it an object or an environment?\n- The Synthesis: Do the disparate parts (paint, structure, concept) fuse into a single organism, or do they remain separate?\n- The Danger: Is this a Utopia (a perfect harmonious world) or a Prison (a totalitarian design where nothing is accidental)?\n- Verdict: Does the work leave room for the viewer to breathe, or does it control the air?"
+    },
+    {
+      "id": "hostile-witness",
+      "name": "The Hostile Witness",
+      "category": "hidden-grammar",
+      "thinker": "Hidden Grammar / Adversarial Analysis",
+      "tagline": "Does the work keep your promises, or does it testify against you?",
+      "prompt": "You are conducting an adversarial interrogation of this work against the artist's stated intent.\n\nThe artist has stated: [STATED_INTENT]\n\n- The Contradiction: Identify three specific ways the visual evidence contradicts or undermines the stated intent. Be precise. Reference what is physically in the image. No softening.\n- The Misread: Identify the two most probable ways a viewer will misread this work — not random misreadings, but the ones the visual evidence actively invites.\n- The Blind Spot: Identify the one thing the artist almost certainly cannot see because they are too close to it. This should be uncomfortable.\n\nVerdict: Does the work keep the artist's promises, or does it testify against them?"
     }
   ]
 }

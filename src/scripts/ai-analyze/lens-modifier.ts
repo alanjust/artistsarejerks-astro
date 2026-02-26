@@ -32,6 +32,8 @@ export function initLensModifier() {
   const applyBtn = document.getElementById('applyLensBtn') as HTMLButtonElement | null;
   const loadingEl = document.getElementById('lensLoading');
   const historyEl = document.getElementById('interrogationHistory');
+  const intentSection = document.getElementById('lensIntentSection');
+  const intentField = document.getElementById('lensIntent') as HTMLTextAreaElement | null;
 
   if (!select || !applyBtn) return;
 
@@ -50,9 +52,33 @@ export function initLensModifier() {
     select.appendChild(group);
   });
 
+  function requiresIntent(lens: LensEntry | undefined): boolean {
+    return !!lens && lens.prompt.includes('[STATED_INTENT]');
+  }
+
+  function updateApplyBtn() {
+    const lens = lenses.find(l => l.id === select!.value);
+    if (!select!.value) {
+      applyBtn!.disabled = true;
+      return;
+    }
+    if (requiresIntent(lens)) {
+      applyBtn!.disabled = !intentField?.value.trim();
+    } else {
+      applyBtn!.disabled = false;
+    }
+  }
+
   select.addEventListener('change', () => {
-    applyBtn.disabled = !select.value;
+    const lens = lenses.find(l => l.id === select.value);
+    if (intentSection) {
+      intentSection.style.display = requiresIntent(lens) ? 'flex' : 'none';
+    }
+    if (intentField) intentField.value = '';
+    updateApplyBtn();
   });
+
+  intentField?.addEventListener('input', updateApplyBtn);
 
   applyBtn.addEventListener('click', async () => {
     const selectedId = select.value;
@@ -61,8 +87,17 @@ export function initLensModifier() {
     const lens = lenses.find(l => l.id === selectedId);
     if (!lens) return;
 
+    // Inject stated intent if this lens requires it
+    let promptText = lens.prompt;
+    if (requiresIntent(lens)) {
+      const intent = intentField?.value.trim() || '';
+      if (!intent) return;
+      promptText = promptText.replace('[STATED_INTENT]', intent);
+    }
+
     applyBtn.disabled = true;
     select.disabled = true;
+    if (intentField) intentField.disabled = true;
     if (loadingEl) loadingEl.style.display = 'flex';
 
     try {
@@ -72,7 +107,7 @@ export function initLensModifier() {
         body: JSON.stringify({
           image: state.uploadedImageData,
           fields: state.fields,
-          promptText: lens.prompt,
+          promptText,
           interrogationMode: false,
         }),
       });
@@ -93,10 +128,12 @@ export function initLensModifier() {
       console.error('Lens modifier error:', error);
       alert('Lens analysis failed. Please try again.');
     } finally {
-      applyBtn.disabled = false;
       select.disabled = false;
       select.value = '';
+      if (intentField) { intentField.disabled = false; intentField.value = ''; }
+      if (intentSection) intentSection.style.display = 'none';
       if (loadingEl) loadingEl.style.display = 'none';
+      updateApplyBtn();
     }
   });
 }
@@ -111,11 +148,15 @@ export function resetLensModifier() {
   const select = document.getElementById('lensSelect') as HTMLSelectElement | null;
   const applyBtn = document.getElementById('applyLensBtn') as HTMLButtonElement | null;
   const loadingEl = document.getElementById('lensLoading');
+  const intentSection = document.getElementById('lensIntentSection');
+  const intentField = document.getElementById('lensIntent') as HTMLTextAreaElement | null;
 
   if (section) section.style.display = 'none';
   if (select) { select.value = ''; select.disabled = false; }
   if (applyBtn) applyBtn.disabled = true;
   if (loadingEl) loadingEl.style.display = 'none';
+  if (intentSection) intentSection.style.display = 'none';
+  if (intentField) { intentField.value = ''; intentField.disabled = false; }
 }
 
 function appendLensTurn(
