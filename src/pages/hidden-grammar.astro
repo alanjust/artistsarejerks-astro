@@ -12,6 +12,15 @@ const sections = [
     cta: 'Open the Toolkit →',
   },
   {
+    id: 'framework',
+    label: 'Framework',
+    title: 'Hidden Grammar Framework',
+    description: 'The structural system behind the analysis — what the 11 Roots, 54 Principles, and 4 Poles are, how they connect, and why the framework is built this way.',
+    status: 'live',
+    href: '/hidden-grammar/framework',
+    cta: 'Explore the Framework →',
+  },
+  {
     id: 'roots',
     label: 'Framework',
     title: '11 Hidden Grammar Roots',
@@ -25,7 +34,7 @@ const sections = [
     label: 'Framework',
     title: '54 Art Principles',
     description: 'The complete inventory of perceptual and compositional mechanisms the framework uses. Each Principle maps to a Root and a neural mechanism.',
-    status: 'coming-soon',
+    status: 'live',
     href: '/hidden-grammar/principles',
     cta: 'Browse the Principles →',
   },
@@ -65,70 +74,104 @@ const sections = [
 >
   <div class="hg-page">
 
-    <!-- ── INTRO ───────────────────────────────────────────── -->
-    <div class="al-intro">
-      <h1 class="al-intro-title">Art Lab</h1>
-      <p class="al-intro-lead">Most people look at art the way they look at a word in a foreign language — they know something's there, they just can't read it.</p>
-      <p class="al-intro-body">Art Lab gives you the tools to read it. Not art history. Not critical theory. Not what you're supposed to feel. Just the mechanics of what's actually happening between the image and your eyes — and why it works the way it does.</p>
+    <!-- ── TOP: INTRO + SIDEBAR ────────────────────────────── -->
+    <div class="al-body">
 
-      <div class="al-audiences">
-        <p>If you're making something and feel like it's almost working but can't say why — it's for you.</p>
-        <p>If you've stood in front of a painting and knew something was going on but didn't have the words — it's for you.</p>
-        <p>If you teach art, lead tours, or talk about work to people who think they don't get it — it's for you.</p>
-        <p>If you've always suspected that "appreciating art" was a credential some people have and you don't — it's especially for you. There's no credential. There's just looking, and then looking more carefully.</p>
+      <!-- Left: intro content -->
+      <div class="al-intro">
+        <h1 class="al-intro-title">Art Lab</h1>
+        <p class="al-intro-lead">You're making something. You want people to stop, look, and stay with it. Art Lab shows you what's pulling them in — and what's letting them go.</p>
+        <p class="al-intro-body">Most analysis of art runs the wrong direction. It starts with meaning — what does it say, what does it represent — and works backward toward the visual. Art Lab goes the other way. It starts with what your visual system is actually doing in the first seconds of looking. The stuff that happens before meaning. Before judgment. Before the viewer decides whether they're the type of person who understands art.</p>
+        <p class="al-intro-body">That's where the real levers are.</p>
+
+        <div class="al-audiences">
+          <p>When you know what's working — mechanically, visually, biologically — you have options.</p>
+          <p>If you're making work, you can see your choices. Not "here's what's broken" — more like: here are the forces at play, and here are the moves you haven't made yet.</p>
+          <p>If you're looking at work, you can name what you're feeling. Why a piece stops you. Where the unease is coming from.</p>
+          <p>If you're helping someone else look, you have something concrete to point at — not interpretation, but mechanism.</p>
+        </div>
+
+        <div class="al-how-it-works">
+          <h2 class="al-how-title">What it does</h2>
+          <p>Art Lab won't tell you what your work means. That's yours. What it will do is show you what it's doing. From there, you decide.</p>
+          <p>Pick a tool based on what you're trying to figure out. Upload an image or describe a work. Get a structured analysis back — grounded in what's visually observable, not in what the art world has decided it means.</p>
+          <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--primary al-cta">Start with the Toolkit →</a>
+        </div>
       </div>
 
-      <div class="al-how-it-works">
-        <h2 class="al-how-title">How it works</h2>
-        <p>You pick a tool based on what you're trying to figure out. You describe a work or upload an image. You get a structured analysis back — grounded in what's visually observable, not in what the art world has decided the work means.</p>
-        <p>No grades. No right answers. No judgment about what you felt. The analysis tells you what your visual system is doing. You decide what to do with that.</p>
-        <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--primary al-cta">Start with the Toolkit →</a>
+      <!-- Right: sidebar -->
+      <aside class="al-sidebar">
+
+        <div class="al-sidebar-card al-sidebar-why">
+          <h2 class="al-sidebar-card-title">Why this exists</h2>
+          <p>Art Lab grew out of a simple problem — the gap between what an artist intends and what actually lands on the surface. This tool makes that gap visible.</p>
+          <a href="/hidden-grammar/why" class="al-sidebar-link">Read the full story →</a>
+        </div>
+
+        <div class="al-sidebar-card al-sidebar-caution">
+          <h2 class="al-sidebar-card-title">A note before you dig in.</h2>
+          <p>This tool makes things legible that were previously invisible. That's useful. It can also, if you're not careful, turn creating into a performance review.</p>
+          <p>If you're here to improve — to tighten, strengthen, see your choices more clearly — it's for you. But if creating is mostly about pleasure or flow or finding your way, be careful. Once you start measuring, it's hard to stop. The measuring can become the point. And then you're no longer creating — you're scoring.</p>
+          <p>Some artists will call this reductive. They're not wrong. Any analysis of a work reduces it — that's what analysis does. The question is whether what remains after the reduction is useful to you. If it's not, close the tab.</p>
+          <p class="al-sidebar-kicker">Know what you came for.</p>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <!-- ── SECTION CARDS — full width below ──────────────── -->
+    <div class="al-sections">
+      <div class="al-sections-header">
+        <h2 class="al-sections-title">What's in Art Lab</h2>
       </div>
-    </div>
-
-    <!-- ── SECTION CARDS ───────────────────────────────────── -->
-    <div class="al-sections-header">
-      <h2 class="al-sections-title">What's in Art Lab</h2>
-    </div>
-
-    <div class="hg-grid al-sections-grid">
-      {sections.map(section => (
-        section.status === 'live' ? (
-          <a href={section.href} class="hg-card al-section-card">
-            <div class="al-card-top">
-              <span class="hg-card-label">{section.label}</span>
+      <div class="hg-grid al-sections-grid">
+        {sections.map(section => (
+          section.status === 'live' ? (
+            <a href={section.href} class="hg-card al-section-card">
+              <div class="al-card-top">
+                <span class="hg-card-label">{section.label}</span>
+              </div>
+              <h3 class="hg-card-title">{section.title}</h3>
+              <p class="hg-card-desc">{section.description}</p>
+              <div class="al-card-footer">
+                <span></span>
+                <span class="al-card-arrow">→</span>
+              </div>
+            </a>
+          ) : (
+            <div class="hg-card al-section-card al-section-card--soon">
+              <div class="al-card-top">
+                <span class="hg-card-label">{section.label}</span>
+                <span class="al-badge-soon">Coming soon</span>
+              </div>
+              <h3 class="hg-card-title">{section.title}</h3>
+              <p class="hg-card-desc">{section.description}</p>
+              <div class="al-card-footer">
+                <span class="al-card-arrow-soon">{section.cta}</span>
+              </div>
             </div>
-            <h3 class="hg-card-title">{section.title}</h3>
-            <p class="hg-card-desc">{section.description}</p>
-            <div class="al-card-footer">
-              <span></span>
-              <span class="al-card-arrow">→</span>
-            </div>
-          </a>
-        ) : (
-          <div class="hg-card al-section-card al-section-card--soon">
-            <div class="al-card-top">
-              <span class="hg-card-label">{section.label}</span>
-              <span class="al-badge-soon">Coming soon</span>
-            </div>
-            <h3 class="hg-card-title">{section.title}</h3>
-            <p class="hg-card-desc">{section.description}</p>
-            <div class="al-card-footer">
-              <span class="al-card-arrow-soon">{section.cta}</span>
-            </div>
-          </div>
-        )
-      ))}
+          )
+        ))}
+      </div>
     </div>
 
   </div>
 </HiddenGrammarLayout>
 
 <style>
-  /* ── Intro block ──────────────────────────── */
+  /* ── Two-column top: intro + sidebar ──────── */
+  .al-body {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2.5rem;
+    align-items: start;
+    margin-bottom: 3rem;
+  }
+
+  /* ── Intro (left column) ───────────────────── */
   .al-intro {
-    max-width: 720px;
-    margin-bottom: 4rem;
+    min-width: 0;
   }
 
   .al-intro-title {
@@ -202,7 +245,88 @@ const sections = [
     display: inline-flex;
   }
 
-  /* ── Section cards ────────────────────────── */
+  /* ── Sidebar (right column) ────────────────── */
+  .al-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 80px;
+  }
+
+  .al-sidebar-card {
+    border-radius: 10px;
+    padding: 1.25rem 1.375rem;
+  }
+
+  .al-sidebar-card-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+  }
+
+  .al-sidebar-card p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0 0 0.625rem;
+  }
+
+  .al-sidebar-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .al-sidebar-why {
+    background: #f0f4ff;
+    border: 1px solid #c7d2fe;
+  }
+
+  .al-sidebar-why .al-sidebar-card-title {
+    color: #4338ca;
+  }
+
+  .al-sidebar-why p {
+    color: #3730a3;
+  }
+
+  .al-sidebar-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4f46e5;
+    text-decoration: none;
+  }
+
+  .al-sidebar-link:hover {
+    text-decoration: underline;
+  }
+
+  .al-sidebar-caution {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 3px solid #f59e0b;
+  }
+
+  .al-sidebar-caution .al-sidebar-card-title {
+    color: #92400e;
+  }
+
+  .al-sidebar-caution p {
+    color: #78350f;
+  }
+
+  .al-sidebar-kicker {
+    font-weight: 700;
+    font-style: italic;
+  }
+
+  /* ── Section cards — full width ────────────── */
+  .al-sections {
+    width: 100%;
+  }
+
   .al-sections-header {
     margin-bottom: 1.25rem;
     padding-bottom: 1rem;
@@ -284,6 +408,23 @@ const sections = [
     color: #94a3b8;
   }
 
+  /* ── Responsive ────────────────────────────── */
+  @media (max-width: 900px) {
+    .al-body {
+      grid-template-columns: 1fr;
+    }
+
+    .al-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .al-sidebar-card {
+      flex: 1 1 280px;
+    }
+  }
+
   @media (max-width: 640px) {
     .al-sections-grid {
       grid-template-columns: 1fr;
@@ -291,6 +432,10 @@ const sections = [
 
     .al-how-it-works {
       padding: 1.25rem;
+    }
+
+    .al-sidebar {
+      flex-direction: column;
     }
   }
 </style>

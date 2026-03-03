@@ -1,615 +1,669 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 import principles from '../../data/hg-principles.json';
 
-const tierAPrinciples = principles.principles.filter(p => p.tier === 'A');
-const tierBPrinciples = principles.principles.filter(p => p.tier === 'B');
-const tierCPrinciples = principles.principles.filter(p => p.tier === 'C');
-const tierDPrinciples = principles.principles.filter(p => p.tier === 'D');
+const tierA = principles.principles.filter(p => p.tier === 'A');
+const tierB = principles.principles.filter(p => p.tier === 'B');
+const tierC = principles.principles.filter(p => p.tier === 'C');
+const tierD = principles.principles.filter(p => p.tier === 'D');
 ---
 
-<BaseLayout title="The 54 Principles - Hidden Grammar">
-  <div class="principles-page">
-    <header class="page-header">
-      <h1>The 54 Principles</h1>
-      <p class="tagline">Perceptual Mechanisms: How Vision Actually Works</p>
+<HiddenGrammarLayout
+  title="54 Principles"
+  description="The complete inventory of perceptual and compositional mechanisms the Art Lab framework uses."
+>
+  <div class="hg-page pr-page">
+
+    <header class="pr-header">
+      <p class="pr-label">Framework</p>
+      <h1 class="pr-title">54 Art Principles</h1>
+      <p class="pr-subtitle">Some of these Principles map onto things your visual system processes before you've formed a conscious thought — contrast, edge detection, figure-ground. Others are structural: rhythm, tension, spatial relationships that create conditions for a response rather than triggering one directly. The framework tracks both, because both shape what a viewer feels before they decide what to think. They do not determine meaning.</p>
+      <a href="/hidden-grammar/signal-profile" class="pr-signal-link">How does that actually work? →</a>
     </header>
 
-    <div class="intro-section">
-      <p>
-        The 46 Art Principles are <strong>perceptual and neural mechanisms</strong> that influence what gets noticed,
-        how forms organize, and how space is inferred—all before conscious interpretation. They describe mechanisms
-        that tend to influence visual perception, but <strong>they do not determine meaning</strong>.
-      </p>
+    <!-- Tier legend -->
+    <div class="pr-tiers">
+      {[
+        { key: 'A', count: tierA.length, desc: 'Strong perceptual / early-vision biases — robust across viewers and contexts' },
+        { key: 'B', count: tierB.length, desc: 'Mid-level organization — generally reliable, more style- and context-sensitive' },
+        { key: 'C', count: tierC.length, desc: 'Mixed evidence — emotion, narrative, symbolism, cultural conventions' },
+        { key: 'D', count: tierD.length, desc: 'Influential compositional systems with contested empirical support' },
+      ].map(t => (
+        <div class="pr-tier-row">
+          <span class={`pr-badge pr-badge--${t.key.toLowerCase()}`}>Tier {t.key}</span>
+          <span class="pr-tier-count">{t.count}</span>
+          <span class="pr-tier-desc">{t.desc}</span>
+        </div>
+      ))}
+    </div>
 
-      <div class="epistemic-notice">
-        <h3>Epistemic Notice</h3>
-        <p>These principles describe mechanisms that tend to influence:</p>
-        <ul>
-          <li>what gets noticed first</li>
-          <li>how forms group, separate, and stabilize</li>
-          <li>how depth, surface, and motion cues cohere</li>
-          <li>how visual tension and resolution can be felt</li>
-        </ul>
-        <p>Meaning is negotiated between the work, the viewer's prior knowledge and mood, and the surrounding context. Completing a Principle inventory does not automatically license an interpretive claim. The move from mechanism to meaning is a deliberate register shift — from observation to judgment.</p>
+    <!-- Filter -->
+    <div class="pr-filters">
+      <button class="pr-filter pr-filter--active" data-tier="all">All ({principles.principles.length})</button>
+      <button class="pr-filter" data-tier="A">Tier A ({tierA.length})</button>
+      <button class="pr-filter" data-tier="B">Tier B ({tierB.length})</button>
+      <button class="pr-filter" data-tier="C">Tier C ({tierC.length})</button>
+      <button class="pr-filter" data-tier="D">Tier D ({tierD.length})</button>
+    </div>
+
+    <!-- Tier A -->
+    <section class="pr-section" data-tier-section="A">
+      <h2 class="pr-section-title">
+        <span class="pr-badge pr-badge--a">Tier A</span>
+        Early Vision
+      </h2>
+      <p class="pr-section-desc">Strong perceptual biases that engage your visual system before conscious awareness. Processed in the primary visual cortex within milliseconds. Robust across viewers, cultures, and contexts.</p>
+      <div class="pr-grid">
+        {tierA.map(p => (
+          <article class="pr-card">
+            <div class="pr-card-head">
+              <span class="pr-num">#{p.id}</span>
+              <div class="pr-name-block">
+                <h3 class="pr-name">{p.name}</h3>
+                {p.subtitle && <p class="pr-sub">{p.subtitle}</p>}
+              </div>
+              <span class="pr-badge pr-badge--a pr-badge--sm">A</span>
+            </div>
+
+            {p.neuralFact && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Brain</p>
+                <p class="pr-detail-text">{p.neuralFact}</p>
+              </div>
+            )}
+
+            {p.edgeTypes && p.edgeTypes.length > 0 && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Edge Types</p>
+                <ul class="pr-rows">
+                  {p.edgeTypes.map(e => (
+                    <li><strong>{e.type}:</strong> {e.effect}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {p.gestaltPrinciples && p.gestaltPrinciples.length > 0 && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Gestalt Principles</p>
+                <ul class="pr-rows">
+                  {p.gestaltPrinciples.map(g => <li>{g}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {p.studioTool && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Studio Tool</p>
+                <p class="pr-detail-text">{p.studioTool}</p>
+              </div>
+            )}
+
+            {p.howToUse && (
+              <div class="pr-detail pr-detail--use">
+                <p class="pr-detail-label">How to Use It</p>
+                <p class="pr-detail-text">{p.howToUse}</p>
+              </div>
+            )}
+
+            {p.studioUse && (
+              <div class="pr-studio-use">
+                <strong>Studio Use:</strong> {p.studioUse}
+              </div>
+            )}
+
+            {p.combineWith && p.combineWith.length > 0 && (
+              <div class="pr-combine">
+                <p class="pr-detail-label">Pairs with</p>
+                <div class="pr-tags">
+                  {p.combineWith.map(c => <span class="pr-tag">{c}</span>)}
+                </div>
+              </div>
+            )}
+          </article>
+        ))}
       </div>
+    </section>
 
-      <div class="tiers-explanation">
-        <h3>Evidence Tiers</h3>
-        <div class="tier-grid">
-          <div class="tier-card tier-a">
-            <strong>Tier A</strong>
-            <p>{principles.meta.tiers.A}</p>
-            <span class="count">{tierAPrinciples.length} principles</span>
-          </div>
-          <div class="tier-card tier-b">
-            <strong>Tier B</strong>
-            <p>{principles.meta.tiers.B}</p>
-            <span class="count">{tierBPrinciples.length} principles</span>
-          </div>
-          <div class="tier-card tier-c">
-            <strong>Tier C</strong>
-            <p>{principles.meta.tiers.C}</p>
-            <span class="count">{tierCPrinciples.length} principles</span>
-          </div>
-          <div class="tier-card tier-d">
-            <strong>Tier D</strong>
-            <p>{principles.meta.tiers.D}</p>
-            <span class="count">{tierDPrinciples.length} principle</span>
-          </div>
-        </div>
+    <!-- Tier B -->
+    <section class="pr-section" data-tier-section="B">
+      <h2 class="pr-section-title">
+        <span class="pr-badge pr-badge--b">Tier B</span>
+        Mid-Level Organization
+      </h2>
+      <p class="pr-section-desc">Mid-level visual processing — generally reliable across viewers, but more sensitive to style, context, and medium than Tier A. Most studio practice lives here.</p>
+      <div class="pr-grid">
+        {tierB.map(p => (
+          <article class="pr-card">
+            <div class="pr-card-head">
+              <span class="pr-num">#{p.id}</span>
+              <div class="pr-name-block">
+                <h3 class="pr-name">{p.name}</h3>
+                {p.subtitle && <p class="pr-sub">{p.subtitle}</p>}
+              </div>
+              <span class="pr-badge pr-badge--b pr-badge--sm">B</span>
+            </div>
+
+            {p.neuralFact && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Brain</p>
+                <p class="pr-detail-text">{p.neuralFact}</p>
+              </div>
+            )}
+
+            {p.studioTool && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Studio Tool</p>
+                <p class="pr-detail-text">{p.studioTool}</p>
+              </div>
+            )}
+
+            {p.howToUse && (
+              <div class="pr-detail pr-detail--use">
+                <p class="pr-detail-label">How to Use It</p>
+                <p class="pr-detail-text">{p.howToUse}</p>
+              </div>
+            )}
+
+            {p.studioUse && (
+              <div class="pr-studio-use">
+                <strong>Studio Use:</strong> {p.studioUse}
+              </div>
+            )}
+
+            {p.combineWith && p.combineWith.length > 0 && (
+              <div class="pr-combine">
+                <p class="pr-detail-label">Pairs with</p>
+                <div class="pr-tags">
+                  {p.combineWith.map(c => <span class="pr-tag">{c}</span>)}
+                </div>
+              </div>
+            )}
+          </article>
+        ))}
       </div>
+    </section>
+
+    <!-- Tier C -->
+    <section class="pr-section" data-tier-section="C">
+      <h2 class="pr-section-title">
+        <span class="pr-badge pr-badge--c">Tier C</span>
+        Cultural &amp; Cognitive
+      </h2>
+      <p class="pr-section-desc">Mixed evidence or higher-level cognitive and cultural associations — emotion, narrative, symbolism, learned conventions. Real as design tools, but effects are more variable and culturally contingent.</p>
+      <div class="pr-grid">
+        {tierC.map(p => (
+          <article class="pr-card">
+            <div class="pr-card-head">
+              <span class="pr-num">#{p.id}</span>
+              <div class="pr-name-block">
+                <h3 class="pr-name">{p.name}</h3>
+                {p.subtitle && <p class="pr-sub">{p.subtitle}</p>}
+              </div>
+              <span class="pr-badge pr-badge--c pr-badge--sm">C</span>
+            </div>
+
+            {p.neuralFact && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Brain</p>
+                <p class="pr-detail-text">{p.neuralFact}</p>
+              </div>
+            )}
+
+            {p.studioTool && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Studio Tool</p>
+                <p class="pr-detail-text">{p.studioTool}</p>
+              </div>
+            )}
+
+            {p.howToUse && (
+              <div class="pr-detail pr-detail--use">
+                <p class="pr-detail-label">How to Use It</p>
+                <p class="pr-detail-text">{p.howToUse}</p>
+              </div>
+            )}
+
+            {p.combineWith && p.combineWith.length > 0 && (
+              <div class="pr-combine">
+                <p class="pr-detail-label">Pairs with</p>
+                <div class="pr-tags">
+                  {p.combineWith.map(c => <span class="pr-tag">{c}</span>)}
+                </div>
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Tier D -->
+    <section class="pr-section" data-tier-section="D">
+      <h2 class="pr-section-title">
+        <span class="pr-badge pr-badge--d">Tier D</span>
+        Design Systems
+      </h2>
+      <p class="pr-section-desc">Historically influential compositional frameworks with contested empirical support. Real as design tools. Their claim to universal perceptual authority doesn't hold up under controlled testing.</p>
+      <div class="pr-grid">
+        {tierD.map(p => (
+          <article class="pr-card">
+            <div class="pr-card-head">
+              <span class="pr-num">#{p.id}</span>
+              <div class="pr-name-block">
+                <h3 class="pr-name">{p.name}</h3>
+                {p.subtitle && <p class="pr-sub">{p.subtitle}</p>}
+              </div>
+              <span class="pr-badge pr-badge--d pr-badge--sm">D</span>
+            </div>
+
+            {p.neuralFact && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Brain</p>
+                <p class="pr-detail-text">{p.neuralFact}</p>
+              </div>
+            )}
+
+            {p.studioTool && (
+              <div class="pr-detail">
+                <p class="pr-detail-label">Studio Tool</p>
+                <p class="pr-detail-text">{p.studioTool}</p>
+              </div>
+            )}
+
+            {p.howToUse && (
+              <div class="pr-detail pr-detail--use">
+                <p class="pr-detail-label">How to Use It</p>
+                <p class="pr-detail-text">{p.howToUse}</p>
+              </div>
+            )}
+
+            {p.combineWith && p.combineWith.length > 0 && (
+              <div class="pr-combine">
+                <p class="pr-detail-label">Pairs with</p>
+                <div class="pr-tags">
+                  {p.combineWith.map(c => <span class="pr-tag">{c}</span>)}
+                </div>
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <div class="pr-nav">
+      <a href="/hidden-grammar/framework" class="hg-btn hg-btn--ghost">← Framework</a>
+      <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--primary">Open the Toolkit →</a>
     </div>
 
-    <div class="filter-controls">
-      <button class="filter-btn active" data-tier="all">All Principles</button>
-      <button class="filter-btn" data-tier="A">Tier A ({tierAPrinciples.length})</button>
-      <button class="filter-btn" data-tier="B">Tier B ({tierBPrinciples.length})</button>
-      <button class="filter-btn" data-tier="C">Tier C ({tierCPrinciples.length})</button>
-      <button class="filter-btn" data-tier="D">Tier D ({tierDPrinciples.length})</button>
-    </div>
-
-    <div class="principles-container">
-      <!-- Tier A Principles -->
-      <section class="tier-section" data-tier="A">
-        <h2 class="tier-heading">
-          <span class="tier-badge tier-a">Tier A</span>
-          Strong Perceptual / Early-Vision Biases
-        </h2>
-        <div class="principles-grid">
-          {tierAPrinciples.map((principle) => (
-            <article class="principle-card" data-tier="A">
-              <div class="principle-header">
-                <span class="principle-number">#{principle.id}</span>
-                <div class="principle-title">
-                  <h3>{principle.name}</h3>
-                  <p class="principle-subtitle">{principle.subtitle}</p>
-                </div>
-              </div>
-
-              {principle.neuralFact && (
-                <div class="principle-detail">
-                  <h4>Neural Fact</h4>
-                  <p>{principle.neuralFact}</p>
-                </div>
-              )}
-
-              {principle.studioTool && (
-                <div class="principle-detail">
-                  <h4>Studio Tool</h4>
-                  <p>{principle.studioTool}</p>
-                </div>
-              )}
-
-              {principle.edgeTypes && (
-                <div class="principle-detail">
-                  <h4>Edge Types</h4>
-                  <ul class="edge-types">
-                    {principle.edgeTypes.map((edge) => (
-                      <li>
-                        <strong>{edge.type}:</strong> {edge.effect}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {principle.gestaltPrinciples && (
-                <div class="principle-detail">
-                  <h4>Gestalt Principles</h4>
-                  <ul class="gestalt-list">
-                    {principle.gestaltPrinciples.map((gp) => (
-                      <li>{gp}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {principle.options && (
-                <div class="principle-detail">
-                  <ul class="options-list">
-                    {principle.options.map((opt) => (
-                      <li>{opt}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {principle.studioUse && (
-                <div class="studio-use">
-                  <strong>Studio Use:</strong> {principle.studioUse}
-                </div>
-              )}
-
-              {principle.combineWith && principle.combineWith.length > 0 && (
-                <div class="principle-detail">
-                  <h4>Combine With</h4>
-                  <ul class="options-list">
-                    {principle.combineWith.map((item) => (
-                      <li>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <!-- Tier B Principles -->
-      <section class="tier-section" data-tier="B">
-        <h2 class="tier-heading">
-          <span class="tier-badge tier-b">Tier B</span>
-          Mid-Level Organization / Studio Heuristics
-        </h2>
-        <div class="principles-grid">
-          {tierBPrinciples.map((principle) => (
-            <article class="principle-card" data-tier="B">
-              <div class="principle-header">
-                <span class="principle-number">#{principle.id}</span>
-                <div class="principle-title">
-                  <h3>{principle.name}</h3>
-                  <p class="principle-subtitle">{principle.subtitle}</p>
-                </div>
-              </div>
-
-              {principle.neuralFact && (
-                <div class="principle-detail">
-                  <h4>Neural Fact</h4>
-                  <p>{principle.neuralFact}</p>
-                </div>
-              )}
-
-              {principle.studioTool && (
-                <div class="principle-detail">
-                  <h4>Studio Tool</h4>
-                  <p>{principle.studioTool}</p>
-                </div>
-              )}
-
-              {principle.studioUse && (
-                <div class="studio-use">
-                  <strong>Studio Use:</strong> {principle.studioUse}
-                </div>
-              )}
-
-              {principle.combineWith && principle.combineWith.length > 0 && (
-                <div class="principle-detail">
-                  <h4>Combine With</h4>
-                  <ul class="options-list">
-                    {principle.combineWith.map((item) => (
-                      <li>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <!-- Tier C Principles -->
-      <section class="tier-section" data-tier="C">
-        <h2 class="tier-heading">
-          <span class="tier-badge tier-c">Tier C</span>
-          Cognitive/Affective or Cultural Association
-        </h2>
-        <div class="principles-grid">
-          {tierCPrinciples.map((principle) => (
-            <article class="principle-card" data-tier="C">
-              <div class="principle-header">
-                <span class="principle-number">#{principle.id}</span>
-                <div class="principle-title">
-                  <h3>{principle.name}</h3>
-                  <p class="principle-subtitle">{principle.subtitle}</p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <!-- Tier D Principles -->
-      <section class="tier-section" data-tier="D">
-        <h2 class="tier-heading">
-          <span class="tier-badge tier-d">Tier D</span>
-          Design System / Heuristic
-        </h2>
-        <div class="principles-grid">
-          {tierDPrinciples.map((principle) => (
-            <article class="principle-card" data-tier="D">
-              <div class="principle-header">
-                <span class="principle-number">#{principle.id}</span>
-                <div class="principle-title">
-                  <h3>{principle.name}</h3>
-                  <p class="principle-subtitle">{principle.subtitle}</p>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
   </div>
-</BaseLayout>
+</HiddenGrammarLayout>
 
 <script>
-  // Filter functionality
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const tierSections = document.querySelectorAll('.tier-section');
+  const filters = document.querySelectorAll<HTMLButtonElement>('.pr-filter');
+  const sections = document.querySelectorAll<HTMLElement>('.pr-section');
 
-  filterBtns.forEach(btn => {
+  filters.forEach(btn => {
     btn.addEventListener('click', () => {
-      const tier = (btn as HTMLElement).dataset.tier;
+      const tier = btn.dataset.tier;
 
-      // Update active button
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      filters.forEach(b => b.classList.remove('pr-filter--active'));
+      btn.classList.add('pr-filter--active');
 
-      // Show/hide sections
-      if (tier === 'all') {
-        tierSections.forEach(section => {
-          (section as HTMLElement).style.display = 'block';
-        });
-      } else {
-        tierSections.forEach(section => {
-          if ((section as HTMLElement).dataset.tier === tier) {
-            (section as HTMLElement).style.display = 'block';
-          } else {
-            (section as HTMLElement).style.display = 'none';
-          }
-        });
-      }
+      sections.forEach(sec => {
+        sec.style.display = (tier === 'all' || sec.dataset.tierSection === tier) ? 'block' : 'none';
+      });
     });
   });
 </script>
 
 <style>
-  .principles-page {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--space-xl) var(--space-m);
+  .pr-page {
+    max-width: 1100px;
   }
 
-  .page-header {
-    text-align: center;
-    margin-bottom: var(--space-2xl);
-    padding-bottom: var(--space-xl);
-    border-bottom: 3px solid var(--color-orange);
+  /* ── Header ─────────────────────────────────── */
+  .pr-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e2e8f0;
+    max-width: 720px;
   }
 
-  .page-header h1 {
-    font-family: var(--font-display);
-    font-size: var(--text-5xl);
-    color: var(--color-orange);
-    margin-bottom: var(--space-s);
-  }
-
-  .tagline {
-    font-size: var(--text-xl);
-    color: var(--color-gray-6);
-  }
-
-  .intro-section {
-    background: var(--color-cream);
-    padding: var(--space-xl);
-    border-radius: 12px;
-    margin-bottom: var(--space-3xl);
-    line-height: 1.7;
-  }
-
-  .intro-section > p {
-    margin-bottom: var(--space-l);
-  }
-
-  .epistemic-notice {
-    background: var(--color-white);
-    padding: var(--space-l);
-    border-left: 4px solid var(--color-purple);
-    border-radius: 6px;
-    margin-bottom: var(--space-l);
-  }
-
-  .epistemic-notice h3 {
-    font-family: var(--font-heading);
-    font-size: var(--text-xl);
-    color: var(--color-purple);
-    margin-bottom: var(--space-m);
-  }
-
-  .epistemic-notice ul {
-    margin: var(--space-m) 0;
-    padding-left: var(--space-l);
-  }
-
-  .epistemic-notice li {
-    margin-bottom: var(--space-xs);
-  }
-
-  .tiers-explanation h3 {
-    font-family: var(--font-heading);
-    font-size: var(--text-xl);
-    color: var(--color-purple);
-    margin-bottom: var(--space-m);
-  }
-
-  .tier-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-m);
-  }
-
-  .tier-card {
-    background: var(--color-white);
-    padding: var(--space-l);
-    border-radius: 8px;
-    border-left: 4px solid;
-  }
-
-  .tier-card.tier-a {
-    border-color: var(--color-green);
-  }
-
-  .tier-card.tier-b {
-    border-color: var(--color-blue);
-  }
-
-  .tier-card.tier-c {
-    border-color: var(--color-orange);
-  }
-
-  .tier-card.tier-d {
-    border-color: var(--color-gray-5);
-  }
-
-  .tier-card strong {
-    display: block;
-    font-family: var(--font-heading);
-    font-size: var(--text-lg);
-    margin-bottom: var(--space-s);
-    color: var(--color-purple);
-  }
-
-  .tier-card p {
-    font-size: var(--text-sm);
-    color: var(--color-gray-7);
-    margin-bottom: var(--space-s);
-  }
-
-  .tier-card .count {
-    display: block;
-    font-size: var(--text-xs);
-    color: var(--color-gray-6);
-    font-weight: 600;
+  .pr-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #4f46e5;
+    margin: 0 0 0.75rem;
   }
 
-  .filter-controls {
-    display: flex;
-    gap: var(--space-s);
-    margin-bottom: var(--space-2xl);
-    flex-wrap: wrap;
-    justify-content: center;
+  .pr-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.875rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 
-  .filter-btn {
-    padding: var(--space-s) var(--space-l);
-    border: 2px solid var(--color-gray-4);
-    background: var(--color-white);
-    color: var(--color-gray-7);
-    border-radius: 6px;
-    font-family: var(--font-body);
-    font-size: var(--text-base);
+  .pr-subtitle {
+    font-size: 1.0625rem;
+    color: #475569;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .pr-signal-link {
+    display: inline-block;
+    font-size: 0.9375rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: #4f46e5;
+    text-decoration: none;
+    margin-top: 0.75rem;
   }
 
-  .filter-btn:hover {
-    border-color: var(--color-purple);
-    color: var(--color-purple);
+  .pr-signal-link:hover {
+    text-decoration: underline;
   }
 
-  .filter-btn.active {
-    background: var(--color-purple);
-    color: var(--color-white);
-    border-color: var(--color-purple);
-  }
-
-  .principles-container {
+  /* ── Tier legend ─────────────────────────────── */
+  .pr-tiers {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3xl);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    max-width: 720px;
   }
 
-  .tier-section {
-    scroll-margin-top: var(--space-xl);
-  }
-
-  .tier-heading {
-    font-family: var(--font-heading);
-    font-size: var(--text-2xl);
-    color: var(--color-purple);
-    margin-bottom: var(--space-xl);
+  .pr-tier-row {
     display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .pr-tier-count {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #64748b;
+    flex-shrink: 0;
+    min-width: 1.5rem;
+  }
+
+  .pr-tier-desc {
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  /* ── Badges ──────────────────────────────────── */
+  .pr-badge {
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-m);
-  }
-
-  .tier-badge {
-    display: inline-block;
-    padding: var(--space-xs) var(--space-m);
-    border-radius: 6px;
-    font-size: var(--text-base);
+    font-size: 0.6875rem;
     font-weight: 700;
-    color: var(--color-white);
-  }
-
-  .tier-badge.tier-a {
-    background: var(--color-green);
-  }
-
-  .tier-badge.tier-b {
-    background: var(--color-blue);
-  }
-
-  .tier-badge.tier-c {
-    background: var(--color-orange);
-  }
-
-  .tier-badge.tier-d {
-    background: var(--color-gray-5);
-  }
-
-  .principles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--space-l);
-  }
-
-  .principle-card {
-    background: var(--color-white);
-    border: 2px solid var(--color-gray-3);
-    border-radius: 8px;
-    padding: var(--space-l);
-    transition: all 0.2s;
-  }
-
-  .principle-card:hover {
-    border-color: var(--color-orange);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  .principle-header {
-    display: flex;
-    gap: var(--space-m);
-    margin-bottom: var(--space-m);
-    padding-bottom: var(--space-m);
-    border-bottom: 2px solid var(--color-gray-2);
-  }
-
-  .principle-number {
-    font-family: var(--font-heading);
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--color-orange);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .principle-title {
+  .pr-badge--a { background: #1e293b; color: #fff; }
+  .pr-badge--b { background: #475569; color: #fff; }
+  .pr-badge--c { background: #94a3b8; color: #fff; }
+  .pr-badge--d { background: #e2e8f0; color: #475569; }
+
+  .pr-badge--sm {
+    font-size: 0.625rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  /* ── Filter ──────────────────────────────────── */
+  .pr-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .pr-filter {
+    padding: 0.5rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+
+  .pr-filter:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+  }
+
+  .pr-filter--active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+  }
+
+  /* ── Tier sections ───────────────────────────── */
+  .pr-section {
+    margin-bottom: 4rem;
+  }
+
+  .pr-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.625rem;
+  }
+
+  .pr-section-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+    max-width: 680px;
+  }
+
+  /* ── Cards grid ──────────────────────────────── */
+  .pr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+    gap: 1.25rem;
+  }
+
+  .pr-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pr-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08);
+  }
+
+  /* ── Card head ───────────────────────────────── */
+  .pr-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .pr-num {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #94a3b8;
+    flex-shrink: 0;
+    padding-top: 0.125rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pr-name-block {
     flex: 1;
+    min-width: 0;
   }
 
-  .principle-title h3 {
-    font-family: var(--font-heading);
-    font-size: var(--text-lg);
-    color: var(--color-purple);
-    margin: 0 0 var(--space-xs) 0;
+  .pr-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.2rem;
+    line-height: 1.3;
   }
 
-  .principle-subtitle {
-    font-size: var(--text-sm);
-    color: var(--color-gray-6);
+  .pr-sub {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.3;
+    font-style: italic;
+  }
+
+  /* ── Card detail blocks ──────────────────────── */
+  .pr-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .pr-detail--use {
+    background: #f8fafc;
+    border-left: 2px solid #4f46e5;
+    border-radius: 0 6px 6px 0;
+    padding: 0.625rem 0.75rem;
+    margin-left: -0.25rem;
+  }
+
+  .pr-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
     margin: 0;
   }
 
-  .principle-detail {
-    margin-bottom: var(--space-m);
+  .pr-detail--use .pr-detail-label {
+    color: #6366f1;
   }
 
-  .principle-detail h4 {
-    font-family: var(--font-heading);
-    font-size: var(--text-base);
-    color: var(--color-gray-8);
-    margin-bottom: var(--space-xs);
+  .pr-detail-text {
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.65;
+    margin: 0;
   }
 
-  .principle-detail p {
-    font-size: var(--text-sm);
-    line-height: 1.6;
-    color: var(--color-gray-7);
-  }
-
-  .principle-detail ul {
+  /* ── Rows (edge types, gestalt) ──────────────── */
+  .pr-rows {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
   }
 
-  .principle-detail li {
-    font-size: var(--text-sm);
-    padding: var(--space-xs) 0;
-    border-bottom: 1px solid var(--color-gray-2);
-    color: var(--color-gray-7);
-  }
-
-  .principle-detail li:last-child {
-    border-bottom: none;
-  }
-
-  .edge-types li,
-  .gestalt-list li {
-    padding: var(--space-xs) var(--space-s);
-    background: var(--color-cream);
-    border-left: 3px solid var(--color-purple);
-    border-bottom: none;
-    margin-bottom: var(--space-xs);
+  .pr-rows li {
+    font-size: 0.875rem;
+    color: #475569;
+    padding: 0.3rem 0.625rem;
+    background: #f8fafc;
     border-radius: 4px;
+    line-height: 1.45;
   }
 
-  .studio-use {
-    background: var(--color-cream);
-    padding: var(--space-m);
+  .pr-rows li strong {
+    color: #1e293b;
+  }
+
+  /* ── Studio use ──────────────────────────────── */
+  .pr-studio-use {
+    font-size: 0.875rem;
+    color: #334155;
+    background: #f1f5f9;
     border-radius: 6px;
-    font-size: var(--text-sm);
-    margin-top: var(--space-m);
+    padding: 0.625rem 0.75rem;
+    line-height: 1.55;
   }
 
-  .studio-use strong {
-    color: var(--color-purple);
+  .pr-studio-use strong {
+    color: #1e293b;
   }
 
-  @media (max-width: 768px) {
-    .page-header h1 {
-      font-size: var(--text-4xl);
-    }
+  /* ── Combine with tags ───────────────────────── */
+  .pr-combine {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
 
-    .tier-grid {
+  .pr-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .pr-tag {
+    font-size: 0.75rem;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.175rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* ── Nav ─────────────────────────────────────── */
+  .pr-nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── Responsive ──────────────────────────────── */
+  @media (max-width: 640px) {
+    .pr-grid {
       grid-template-columns: 1fr;
     }
 
-    .principles-grid {
-      grid-template-columns: 1fr;
+    .pr-filters {
+      gap: 0.375rem;
     }
 
-    .filter-controls {
-      justify-content: stretch;
+    .pr-filter {
+      font-size: 0.8125rem;
+      padding: 0.4375rem 0.75rem;
     }
 
-    .filter-btn {
-      flex: 1;
-      min-width: 100px;
+    .pr-nav {
+      flex-direction: column;
+    }
+
+    .pr-tier-row {
+      flex-wrap: wrap;
     }
   }
 </style>

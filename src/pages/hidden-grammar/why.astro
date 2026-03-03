@@ -1,0 +1,88 @@
+---
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout
+  title="Why I Built This"
+  description="The origin story behind Art Lab — why Alan Just built a tool to make the invisible grammar of visual art legible."
+>
+  <div class="hg-page">
+
+    <div class="hg-breadcrumb">
+      <a href="/hidden-grammar">Art Lab</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <span>Why I Built This</span>
+    </div>
+
+    <article class="why-article">
+      <h1 class="why-title">Why I Built This</h1>
+
+      <div class="why-body">
+
+        <p>I talk to myself when I make art. Always have.</p>
+
+        <p>Not out loud — through materials. Through the way a mark lands or doesn't. Through the decision to scrape something back, or let it stay. It's a conversation with an idea I'm trying to get out of my head and onto a surface. And like most conversations, it's imprecise. Interrupted. Full of things I meant to say and didn't quite.</p>
+
+        <p>I've been voice-to-texting notes for a while. The app hears what it thinks I said, and writes down something close — but not it. The syntax goes sideways. The idea I was chasing two sentences ago drops out. I go back later and read it and have absolutely no idea what I was trying to say.</p>
+
+        <p>Making art does the same thing. The internal thing — the feeling, the image, the half-formed thought — goes through a translation. Materials. Surface. Process. Grammar. And somewhere in that translation, things get lost. Or distorted. Or what you thought came through didn't.</p>
+
+        <p>The artist usually can't see this. I couldn't see it. You're too close to the original intention. You know what you meant, so you read it back in. The curse of knowledge, they call it. You believe the idea is on the surface because you can still feel it in your chest.</p>
+
+        <p>And then you show the work to someone. And there's this silence. Or polite confusion. Or feedback that tells you they saw something completely different — not wrong, exactly, but nowhere near what you were reaching for.</p>
+
+        <p>That's the gap. It's not a failure of the viewer. It's not a failure of the artist. It's the gap that exists between any internal thing and its external form. Voice-to-text has it. Journals have it. Paintings have it.</p>
+
+        <p>I built Art Lab because I wanted to see the gap clearly — not to close it, but to make it legible. To have something that would look at the surface of the work and report back what's actually there, not what I intended to put there.</p>
+
+        <p>What came out of that, over years of digging into neuroaesthetics and visual cognition, is a framework for reading what the surface is doing. Not what it means. What it's doing — to the eye, to the visual system, in the first seconds before meaning forms.</p>
+
+        <p>It turns out that's the layer where most of the action is.</p>
+
+      </div>
+
+      <div class="why-footer">
+        <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--primary">Start with the Toolkit →</a>
+        <a href="/hidden-grammar" class="hg-btn hg-btn--ghost">← Back to Art Lab</a>
+      </div>
+
+    </article>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .why-article {
+    max-width: 660px;
+  }
+
+  .why-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 2.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .why-body p {
+    font-size: 1.125rem;
+    color: #334155;
+    line-height: 1.8;
+    margin: 0 0 1.5rem;
+  }
+
+  .why-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .why-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+  }
+</style>
