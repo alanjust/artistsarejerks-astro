@@ -239,7 +239,10 @@ export function initAnalysis() {
       state.fields = fields;
 
       // Display
-      if (resultsContent) resultsContent.innerHTML = result.analysis;
+      if (resultsContent) {
+        resultsContent.innerHTML = result.analysis;
+        buildSidebar(resultsContent);
+      }
       if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
 
@@ -277,6 +280,12 @@ export function initAnalysis() {
       thumbnail.style.display = 'none';
       thumbnail.src = '';
     }
+
+    // Reset sidebar
+    const sidebar = document.getElementById('resultsSidebar');
+    const sidebarList = document.getElementById('sidebarList');
+    if (sidebar) sidebar.style.display = 'none';
+    if (sidebarList) sidebarList.innerHTML = '';
 
     // Reset feedback widget and lens modifier for next analysis
     resetFeedbackWidget();
@@ -351,4 +360,59 @@ export function wireCopyButton(buttonId: string, outputIndex: number) {
       }
     }
   });
+}
+
+// ── Sidebar builder ────────────────────────────────────────────────────────────────
+// Reads H2 headings from the rendered analysis, builds sticky sidebar nav,
+// and marks the first H2 as Key Findings if the text matches.
+
+function buildSidebar(contentEl: HTMLElement) {
+  const headings = Array.from(contentEl.querySelectorAll('h2'));
+  const sidebar = document.getElementById('resultsSidebar');
+  const sidebarList = document.getElementById('sidebarList');
+  if (!sidebar || !sidebarList || headings.length < 2) return;
+
+  sidebarList.innerHTML = '';
+
+  headings.forEach((h2, i) => {
+    // Assign anchor ID
+    const id = `hg-section-${i}`;
+    h2.id = id;
+
+    // Mark Key Findings heading for special styling
+    const text = h2.textContent?.trim().toLowerCase() || '';
+    if (i === 0 && (text.includes('key finding') || text.includes('key signal'))) {
+      h2.classList.add('hg-key-findings');
+    }
+
+    // Build sidebar link
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = `#${id}`;
+    a.className = 'hg-sidebar-link';
+    a.textContent = h2.textContent || `Section ${i + 1}`;
+    li.appendChild(a);
+    sidebarList.appendChild(li);
+  });
+
+  sidebar.style.display = 'block';
+
+  // Highlight active section on scroll
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const link = sidebarList.querySelector(`a[href="#${id}"]`);
+        if (link) {
+          if (entry.isIntersecting) {
+            sidebarList.querySelectorAll('.hg-sidebar-link--active').forEach(el => el.classList.remove('hg-sidebar-link--active'));
+            link.classList.add('hg-sidebar-link--active');
+          }
+        }
+      });
+    },
+    { rootMargin: '-10% 0px -80% 0px', threshold: 0 }
+  );
+
+  headings.forEach(h2 => observer.observe(h2));
 }

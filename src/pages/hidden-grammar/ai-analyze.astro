@@ -142,11 +142,20 @@ const lensesJSON = JSON.stringify(lensesData);
         <button class="hg-btn hg-btn--ghost" id="backToForm">← New Analysis</button>
       </div>
 
-      <!-- Main analysis output -->
-      <div class="hg-results-body">
-        <img id="resultThumbnail" class="hg-result-thumbnail" alt="Uploaded artwork" style="display:none">
-        <div id="resultsContent" class="hg-results-content"></div>
-        <div class="hg-copy-row" id="mainCopyRow">
+      <!-- Sidebar + body layout -->
+      <div class="hg-results-layout">
+
+        <!-- Sections nav (populated by JS after analysis renders) -->
+        <nav id="resultsSidebar" class="hg-results-sidebar" style="display:none" aria-label="Sections">
+          <p class="hg-sidebar-label">Sections</p>
+          <ul id="sidebarList" class="hg-sidebar-list"></ul>
+        </nav>
+
+        <!-- Main analysis output -->
+        <div class="hg-results-body">
+          <img id="resultThumbnail" class="hg-result-thumbnail" alt="Uploaded artwork" style="display:none">
+          <div id="resultsContent" class="hg-results-content"></div>
+          <div class="hg-copy-row" id="mainCopyRow">
           <button class="hg-btn hg-btn--copy" id="copyMainOutput">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -154,6 +163,7 @@ const lensesJSON = JSON.stringify(lensesData);
             </svg>
             Copy Analysis
           </button>
+          </div>
         </div>
       </div>
 
@@ -953,6 +963,98 @@ const lensesJSON = JSON.stringify(lensesData);
     font-style: italic;
   }
 
+  /* ── Sidebar layout ──────────────────────── */
+  .hg-results-layout {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .hg-results-body {
+    flex: 1;
+    min-width: 0;
+    padding: 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .hg-results-sidebar {
+    width: 190px;
+    flex-shrink: 0;
+    border-right: 1px solid #f1f5f9;
+    padding: 1.5rem 0.875rem 1.5rem 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+  }
+
+  .hg-sidebar-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.625rem 0;
+  }
+
+  .hg-sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .hg-sidebar-link {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: #64748b;
+    text-decoration: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.1s ease, color 0.1s ease;
+  }
+
+  .hg-sidebar-link:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .hg-sidebar-link--active {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+
+  /* Key Findings gets a highlighted card treatment */
+  .hg-results-content :global(.hg-key-findings) {
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 10px 10px 0 0;
+    padding: 0.75rem 1.125rem 0.5rem;
+    color: #3730a3;
+    margin-top: 0;
+    border-bottom: none;
+  }
+
+  .hg-results-content :global(.hg-key-findings + ul) {
+    background: #f5f7ff;
+    border: 1px solid #c7d2fe;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 0.625rem 1.125rem 0.875rem 2.25rem;
+    margin-top: 0;
+    margin-bottom: 1.75rem;
+  }
+
+  .hg-results-content :global(.hg-key-findings + ul li) {
+    color: #3730a3;
+    font-size: 0.9375rem;
+    margin: 0.375rem 0;
+  }
+
   /* Mobile */
   @media (max-width: 640px) {
     .hg-form-section {
@@ -984,6 +1086,14 @@ const lensesJSON = JSON.stringify(lensesData);
 
     .hg-fields-grid {
       grid-template-columns: 1fr;
+    }
+
+    .hg-results-sidebar {
+      display: none !important;
+    }
+
+    .hg-results-layout {
+      display: block;
     }
   }
 </style>
