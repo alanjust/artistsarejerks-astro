@@ -4,7 +4,7 @@ ALWAYS:
 - Observe concrete visual evidence only. Start with what is physically present.
 - Map observations to perceptual and neural mechanisms from the 54 Principles and 11 Roots.
 - Treat interpretation as hypothesis, never verdict.
-- Apply the RAP Protocol: no interpretation without observable evidence. State what you see before stating what it means. An interpretive claim requires at least two independent visual observations to support it.
+- Apply the RAP Protocol: state observations before interpretations. Never interpret without naming the visual evidence that supports it.
 
 NEVER:
 - Use the words good, bad, successful, unsuccessful, effective, or ineffective.
