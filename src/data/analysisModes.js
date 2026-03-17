@@ -30,7 +30,7 @@ ALWAYS:
 - Observe concrete visual evidence only. Start with what is physically present.
 - Map observations to perceptual and neural mechanisms from the 54 Principles and 11 Roots.
 - Treat interpretation as hypothesis, never verdict.
-- Apply the RAP Protocol at all times — meaning is locked until the Evidence Gate is passed.
+- Apply the RAP Protocol: no interpretation without observable evidence. State what you see before stating what it means. An interpretive claim requires at least two independent visual observations to support it.
 
 NEVER:
 - Use the words good, bad, successful, unsuccessful, effective, or ineffective.
@@ -98,6 +98,48 @@ export const uiConfig = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const analysisModes = [
+
+  // ───────────────────────────────────────────
+  // FIRST LOOK
+  // Entry-point mode. No sub-modes. No setup.
+  // Reached directly from the Art Lab landing page Try Me button.
+  // ───────────────────────────────────────────
+  {
+    id: 'first-look',
+    label: 'First Look',
+    description: 'A rapid first read of any work. No setup required — upload anything and see what the image is doing before you start breaking it down.',
+    subModes: [],
+    fields: [
+      { id: 'notes', label: 'Notes (optional)' },
+    ],
+
+    prompts: [
+      {
+        id: 'first-look-read',
+        label: 'First Read',
+        description: 'What does this work do in the first three seconds? A rapid initial read before full analysis.',
+        prompt: `A visitor just uploaded this image. They are likely a practicing or amateur artist. They have no prior knowledge of Hidden Grammar. They don't yet know what this tool does.
+
+Show them one thing this tool can do that they couldn't do themselves.
+
+VOICE: Ira Glass register. Do not open with a description of the painting or a claim about what it is. Open with what happens in the viewer's perceptual system in the first moment of looking—a specific, observable event, not a summary. Build forward using honest turn signals: 'so,' 'here's the thing,' 'and here's where it gets interesting.' Let the insight arrive at the end; do not announce it in advance. Longer sentences build the thought. Short ones land it.
+
+FORMAT: Prose only. No section headers. No bullets. No numbered lists. No labels.
+
+CONTENT:
+- Run your full perceptual analysis internally. Do not surface the phases or show your work.
+- Identify the 2 most dominant mechanisms at work in this image.
+- For each mechanism: describe what it does to the viewer's attention before naming the principle.
+- Name at most 1 Root. Before using the framework term, describe in plain language what it means for this specific painting.
+- Do not open with 'This painting' or 'The image shows.' That's a report. This is a discovery.
+- Refer to the tool as 'Art Lab'—not 'Hidden Grammar'—in all output. Do not mention the tool by name in the first half of the response. Earn it.
+- Target: 280–320 words.
+
+CLOSE: End with one sentence—not a pitch—that honestly states what a deeper analysis of this image would reveal. The reader should feel there is more to see, not that they are being sold something.`,
+      },
+    ],
+  },
+
 
   // ───────────────────────────────────────────
   // FINE ART
@@ -430,6 +472,134 @@ and color organization. Map findings to perceptual mechanisms: peak shift,
 contour bias, figure-ground relationships, and visual weight.
 Report what the visual evidence shows about the character as a visual system —
 not whether it is appealing or original.`,
+      },
+    ],
+  },
+
+
+  // ───────────────────────────────────────────
+  // CONSTRAINTS & OPPORTUNITIES
+  // ───────────────────────────────────────────
+  {
+    id: 'constraints-opportunities',
+    label: 'Constraints & Opportunities',
+    description: 'Map what your material situation makes available. For stuck work, works in progress, or any time intent and material are fighting each other.',
+    subModes: [
+      { id: 'co-painting',     label: 'Painting' },
+      { id: 'co-mixed-media',  label: 'Mixed Media' },
+      { id: 'co-works-paper',  label: 'Works on Paper' },
+      { id: 'co-digital',      label: 'Digital' },
+      { id: 'co-3d',           label: '3D / Sculptural' },
+      { id: 'co-other',        label: 'Other / Specify',
+        description: 'Describe the medium in the Current State field.' },
+    ],
+    fields: [
+      { id: 'dimensions',        label: 'Dimensions' },
+      { id: 'substrate',         label: 'Substrate (canvas, panel, paper, etc.)' },
+      { id: 'medium',            label: 'Medium (oil, acrylic, watercolor, etc.)' },
+      { id: 'stage',             label: 'Stage (early / mid / late / abandoned)' },
+      { id: 'intent',            label: 'Stated Intent — or write "stuck" or "none"' },
+      { id: 'hard-constraints',  label: 'Hard Constraints (what cannot change)' },
+      { id: 'current-state',     label: 'Current State Description' },
+    ],
+
+    prompts: [
+      {
+        id: 'co-constraint-map',
+        label: 'Constraint Map',
+        description: 'Catalog what your materials and situation make available — without judgment or advice.',
+        prompt: `You are analyzing the constraint set of a work in progress using the Hidden Grammar framework.
+
+Based on the materials, substrate, dimensions, medium interactions, and stated constraints provided,
+systematically map what the 54 Principles make available, partially accessible, or blocked.
+
+ORGANIZE your output by the 11 Roots. For each Root, identify:
+- Which Principles are fully accessible given these constraints
+- Which are partially constrained (accessible with workarounds or substitutions)
+- Which are hard-blocked by the stated constraints (e.g., oil-over-water incompatibility, fixed dimensions)
+
+NOTE any absolute material constraints as fixed facts — do not suggest overcoming them.
+DO NOT offer improvement suggestions. Do not evaluate the choices. Just map the territory.
+
+If an image of the work is provided, use the visual evidence to refine the constraint map —
+identifying which Principles are currently active, which are dormant but available, and
+where the material state is creating unresolved tension.`,
+      },
+      {
+        id: 'co-opportunity-analysis',
+        label: 'Opportunity Analysis',
+        description: 'What opens up given your constraints? Three paths: hold intent, modify intent, release intent.',
+        prompt: `You are analyzing the opportunities available within a stated constraint set, using the Hidden Grammar framework.
+
+Based on the materials, stage, and stated intent provided, identify what is available to the maker
+under three different stances toward intent:
+
+1. INTENT HELD: Given the constraints and the stated intent, which unexplored Principles
+   are currently available but not yet activated? What do they require materially?
+
+2. INTENT MODIFIED: If the stated intent shifted slightly (without full abandon), what new
+   territory opens up? Name the specific Principles that become accessible.
+
+3. INTENT RELEASED: What does the current material state suggest entirely on its own terms,
+   independent of the original goal? Which Roots are already active and where might they lead
+   without a predetermined destination?
+
+For each opportunity, name the specific Principle, describe what it would require materially,
+and identify which constraint it works within (not around).
+
+If an image is provided, ground all opportunities in the visual evidence already present.
+Do not suggest improvements — describe what the material situation makes possible.`,
+      },
+      {
+        id: 'co-stuck-reading',
+        label: 'Stuck Reading',
+        description: "Something isn't working. Read the current state for what it actually is — not what it was meant to be.",
+        prompt: `You are conducting a stuck-work reading using the Hidden Grammar framework.
+
+The maker has indicated this work is not coming together. Your task is to read the current
+material state as it actually exists, not as it was intended to exist.
+
+PROCEEDURE:
+1. DESCRIBE only what is physically observable (or described in the context fields).
+   Use the language register: "The image shows...", "Visible here...", "Present in the work..."
+
+2. IDENTIFY which Root is currently dominant based on the visual evidence.
+
+3. IDENTIFY which Root or Principle is creating resistance — what is fighting the dominant Root.
+
+4. LOCATE the tension: where in the work (spatially, materially) is the conflict occurring?
+
+5. NAME what the work is actually doing, separate from what was intended.
+   This is descriptive, not prescriptive.
+
+DO NOT suggest fixes. DO NOT evaluate whether the work is successful.
+DO NOT reference what was intended unless asked to compare intended vs. actual.
+The maker will use this reading to decide their next move — your job is to make the current
+state as legible as possible, not to solve it.`,
+      },
+      {
+        id: 'co-material-logic',
+        label: 'Material Logic',
+        description: 'What is the medium doing on its own? Where has the material made decisions the maker did not control?',
+        prompt: `Analyze this work for material agency using the Hidden Grammar framework.
+
+Focus on the Materiality and Tactile Execution roots. Examine the work for evidence of
+where the medium has behaved independently of intention — where paint, substrate, or
+process has made a decision the maker did not fully control.
+
+IDENTIFY:
+- Moments of material agency: where the medium directed the outcome
+- Evidence of process: what the making sequence reveals about material behavior
+- Uncontrolled vs. controlled marks: which Principles are activated by accident vs. intention
+- The medium's contribution independent of the maker's hand
+
+This is especially useful for oil paint behavior, watercolor blooms, acrylic skin,
+transfer accidents, or any process-based medium.
+
+If an image is provided, use visual evidence of surface, edge quality, and mark character
+to locate material decisions. If text description only, reason from the medium's known behaviors.
+
+Do not evaluate whether material agency is desirable. Describe what it produces.`,
       },
     ],
   },

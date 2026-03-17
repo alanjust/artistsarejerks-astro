@@ -81,13 +81,18 @@ const sections = [
       <div class="al-intro">
         <h1 class="al-intro-title">Art Lab</h1>
 
+        <div class="al-try-me">
+          <a href="/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read" class="al-try-me-btn">
+            <span class="al-try-me-label">Try Me</span>
+            <span class="al-try-me-sub">upload anything</span>
+          </a>
+        </div>
+
         <!-- Origin story -->
-        <p class="al-intro-body">I talk to myself when I make art. Always have.</p>
-        <p class="al-intro-body">Not out loud—through materials. The way a mark lands or doesn't. The decision to scrape something back, or let it stay. It's a conversation with an idea I'm trying to get out of my head and onto a surface.</p>
-        <p class="al-intro-body">Making art does what voice-to-text does. The internal thing—the feeling, the image, the half-formed thought—goes through a translation. Materials. Surface. Process. And somewhere in that translation, things get lost. Or distorted. Or what you thought came through didn't.</p>
-        <p class="al-intro-body">The artist usually can't see this. You're too close to the original intention. You know what you meant, so you read it back in. The curse of knowledge. You believe the idea is on the surface because you can still feel it in your chest.</p>
-        <p class="al-intro-body">Then you show the work to someone. There's a silence. Or polite confusion. Or feedback that tells you they saw something completely different—not wrong, exactly, but nowhere near what you were reaching for.</p>
-        <p class="al-intro-body">That's the gap. Art Lab makes it visible.</p>
+        <p class="al-intro-body"><strong>Here's something that happens a lot with art</strong> — you're standing in front of something, or you've just finished something, and there's either clearly a response happening or there isn't. A pull. An unease. Or just nothing — the work sitting there, going nowhere. And the language you usually get back, from criticism or feedback or your own internal monologue, is about meaning. What it represents. What it intends. What it says.</p>
+        <p class="al-intro-body">But meaning-based language can't tell you why something stops you cold — and it can't tell you why something that should be working isn't. Those are visual problems. Perceptual problems. They're happening at a level below intention, below interpretation, before anyone has decided what the work is about.</p>
+        <p class="al-intro-body">Upload an image here — yours, someone else's, something you're mid-process on, something you photographed and couldn't shake — and what comes back is a read of the visual mechanics. Where attention goes first, and why. What the nervous system does in the first seconds before meaning has arrived. The stuff that was already happening when you thought you were still deciding what to look at.</p>
+        <p class="al-intro-body">If you're making work, it shows you where your choices are landing — or aren't. If you're teaching — running a tour, building a critique, trying to say something useful in front of a painting without reaching for art-speak — it gives you something concrete to point at. And if you're just curious what this tool actually does: upload anything. See what comes back.</p>
         <a href="/hidden-grammar/why" class="al-text-link">Why I built this →</a>
 
         <!-- Art world + brain flags -->
@@ -250,6 +255,45 @@ const sections = [
 
   .al-text-link:hover {
     text-decoration: underline;
+  }
+
+  /* ── Try Me ────────────────────────────────── */
+  .al-try-me {
+    margin: 1.25rem 0 2rem;
+  }
+
+  .al-try-me-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #16a34a;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .al-try-me-btn:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+  }
+
+  .al-try-me-label {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .al-try-me-sub {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #bbf7d0;
+    letter-spacing: 0.01em;
   }
 
   .al-section-rule {

@@ -9,8 +9,8 @@ const lensesJSON = JSON.stringify(lensesData);
 ---
 
 <HiddenGrammarLayout
-  title="AI Analysis"
-  description="Upload artwork and receive instant AI-powered analysis using the Hidden Grammar framework."
+  title="Art Analyzer"
+  description="Upload artwork and receive instant analysis using Art Lab."
 >
   <div class="hg-page hg-analyze-page">
 
@@ -38,7 +38,7 @@ const lensesJSON = JSON.stringify(lensesData);
     <!-- No-params fallback header -->
     <div class="hg-page-header" id="fallbackHeader">
       <h1>Open Analysis</h1>
-      <p>No pre-set prompt. Upload any image and write your own question or instruction in the Custom Prompt field below. For structured Hidden Grammar analysis, <a href="/hidden-grammar/toolkit" class="hg-inline-link">choose a mode from the Toolkit</a>.</p>
+      <p>No pre-set prompt. Upload any image and write your own question or instruction in the Custom Prompt field below. For a structured Art Lab analysis, <a href="/hidden-grammar/toolkit" class="hg-inline-link">choose a mode from the Toolkit</a>.</p>
     </div>
 
     <!-- Analysis Form -->
@@ -108,7 +108,7 @@ const lensesJSON = JSON.stringify(lensesData);
       <!-- Additional Context / Custom Prompt Section -->
       <section class="hg-form-section" id="additionalContextSection">
         <h2 class="hg-form-section-title" id="additionalContextTitle">Additional Context <span class="hg-optional-label">(optional)</span></h2>
-        <p class="hg-context-hint" id="additionalContextHint">Narrow the focus. Tell the AI what you're specifically trying to figure out — a question, a concern, a hunch. Gets appended to the prompt.</p>
+        <p class="hg-context-hint" id="additionalContextHint">Narrow the focus. Tell the Art Analyzer what you're specifically trying to figure out — a question, a concern, a hunch. Gets appended to the prompt.</p>
         <textarea
           id="additionalContext"
           class="hg-field-textarea hg-context-textarea"
@@ -123,7 +123,7 @@ const lensesJSON = JSON.stringify(lensesData);
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m8 3 4 8 5-5 5 15H2L8 3z"></path>
           </svg>
-          Analyze with AI
+          Analyze This
         </button>
       </div>
     </div>
@@ -132,7 +132,7 @@ const lensesJSON = JSON.stringify(lensesData);
     <div id="loadingState" class="hg-loading" style="display: none;">
       <div class="hg-loading-spinner"></div>
       <p class="hg-loading-text">Analyzing artwork...</p>
-      <p class="hg-loading-sub">AI is examining the visual grammar</p>
+      <p class="hg-loading-sub">the Art Analyzer is examining the visual grammar</p>
     </div>
 
     <!-- Results Panel -->
@@ -166,9 +166,6 @@ const lensesJSON = JSON.stringify(lensesData);
           </div>
         </div>
       </div>
-
-      <!-- Interrogation conversation (appended here) -->
-      <div id="interrogationHistory" class="hg-interrogation-history"></div>
 
       <!-- Feedback widget (shown after analysis completes) -->
       <div id="feedbackWidget" class="hg-feedback-widget" style="display:none" aria-label="Analysis feedback">
@@ -218,25 +215,36 @@ const lensesJSON = JSON.stringify(lensesData);
         </div>
       </div>
 
-      <!-- Interrogation window -->
+    </div>
+
+    <!-- ── Always-on Studio Chat ──────────────────────────────────────── -->
+    <!-- Visible from page load. Pre-analysis: open studio conversation.  -->
+    <!-- Post-analysis: anchored to the results. Context switches via JS. -->
+    <div class="hg-studio-chat" id="studioChatSection">
+
+      <!-- Conversation history (pre- and post-analysis turns appended here) -->
+      <div id="interrogationHistory" class="hg-interrogation-history"></div>
+
+      <!-- Input window -->
       <div id="interrogationWindow" class="hg-interrogation-window">
-        <h3 class="hg-interrogation-title">Follow-up Questions</h3>
-        <p class="hg-interrogation-hint">Ask a follow-up question about this analysis. The AI stays anchored to the visual evidence already identified.</p>
+        <div class="hg-interrogation-header">
+          <div class="hg-interrogation-header-text">
+            <h3 class="hg-interrogation-title" id="interrogationTitle">Studio Chat</h3>
+            <p class="hg-interrogation-hint" id="interrogationHint">Ask anything — about your constraints, what a principle means, why something isn't working, or how this tool works. No image needed.</p>
+          </div>
+          <span class="hg-chat-mode-tag hg-chat-mode-tag--open" id="interrogationModeTag">Open studio chat</span>
+        </div>
         <div class="hg-interrogation-form">
           <textarea
             id="interrogationInput"
             class="hg-interrogation-textarea"
             rows="3"
-            placeholder={uiConfig.interrogationPlaceholder}
+            placeholder="Describe what you're working on, what's not working, or ask a question about the framework..."
           ></textarea>
           <div class="hg-interrogation-actions">
-            <button type="button" class="hg-btn hg-btn--secondary" id="interrogationSubmit">
-              {uiConfig.interrogationSubmitLabel}
-            </button>
+            <button type="button" class="hg-btn hg-btn--secondary" id="interrogationSubmit">Ask</button>
           </div>
         </div>
-
-        <!-- Loading indicator for interrogation -->
         <div id="interrogationLoading" class="hg-interrogation-loading" style="display:none">
           <div class="hg-loading-spinner hg-loading-spinner--sm"></div>
           <span>Thinking...</span>
@@ -743,11 +751,39 @@ const lensesJSON = JSON.stringify(lensesData);
   .hg-interrogation-answer-content :global(strong) { color: #1e293b; }
   .hg-interrogation-answer-content :global(hr) { border: none; border-top: 1px solid #e2e8f0; margin: 1.25em 0; }
 
+  /* ── Always-on studio chat container ───────── */
+  .hg-studio-chat {
+    margin-top: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
   /* ── Interrogation window ─────────────────── */
   .hg-interrogation-window {
     padding: 1.5rem 1.75rem;
     background: #fafbff;
     border-top: 1px solid #e2e8f0;
+  }
+
+  /* No top border when it's the first / only child (no history yet) */
+  .hg-studio-chat .hg-interrogation-history:empty + .hg-interrogation-window {
+    border-top: none;
+  }
+
+  .hg-interrogation-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hg-interrogation-header-text {
+    flex: 1;
+    min-width: 0;
   }
 
   .hg-interrogation-title {
@@ -760,7 +796,33 @@ const lensesJSON = JSON.stringify(lensesData);
   .hg-interrogation-hint {
     font-size: 0.875rem;
     color: #94a3b8;
-    margin: 0 0 1rem 0;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Mode tag — switches between open-chat and analysis-anchored states */
+  .hg-chat-mode-tag {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .hg-chat-mode-tag--open {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+
+  .hg-chat-mode-tag--analysis {
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
   }
 
   .hg-interrogation-form {
@@ -1066,8 +1128,12 @@ const lensesJSON = JSON.stringify(lensesData);
     }
 
     .hg-results-body,
-    .hg-interrogation-window,
     .hg-results-header {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .hg-interrogation-window {
       padding-left: 1rem;
       padding-right: 1rem;
     }
@@ -1095,5 +1161,14 @@ const lensesJSON = JSON.stringify(lensesData);
     .hg-results-layout {
       display: block;
     }
+  }
+
+  .hg-analyze-btn.hg-btn--primary {
+    background: #16a34a;
+  }
+
+  .hg-analyze-btn.hg-btn--primary:hover:not(:disabled) {
+    background: #15803d;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
   }
 </style>
