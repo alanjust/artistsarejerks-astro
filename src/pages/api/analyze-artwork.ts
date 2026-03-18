@@ -2,6 +2,18 @@ import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
 import { marked } from 'marked';
 
+// Parse IMAGE PROPERTIES and VIEWER EFFECTS sections from raw markdown output
+async function parseSections(raw: string): Promise<{ imagePropertiesHTML: string; viewerEffectsHTML: string }> {
+  const ipMatch = raw.match(/##\s*IMAGE PROPERTIES\s*([\s\S]*?)(?=##\s*VIEWER EFFECTS|$)/i);
+  const veMatch = raw.match(/##\s*VIEWER EFFECTS\s*([\s\S]*)$/i);
+  const ipRaw = ipMatch?.[1]?.trim() || '';
+  const veRaw = veMatch?.[1]?.trim() || '';
+  return {
+    imagePropertiesHTML: ipRaw ? await marked(ipRaw, { async: true }) : '',
+    viewerEffectsHTML: veRaw ? await marked(veRaw, { async: true }) : '',
+  };
+}
+
 // Enable server-side rendering for this endpoint
 export const prerender = false;
 
@@ -32,11 +44,60 @@ export const POST: APIRoute = async ({ request, locals }) => {
       fields,
       promptText,
       interrogationMode,
+      explorationMode,
+      chatMode,
       priorAnalysis,
       userQuestion,
+      conversationHistory,
     } = body;
 
+    // ── EXPLORATION MODE ─────────────────────────────────────────────────────
+    // Post-analysis: surfaces 2–3 experimental angles grounded in prior analysis.
+    if (explorationMode === true) {
+      if (!priorAnalysis) {
+        return new Response(
+          JSON.stringify({ error: 'Exploration mode requires priorAnalysis' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const explorationPrompt = `You are responding to a maker who has just received a Hidden Grammar analysis of their work in progress and wants to know where it could go from here.
+
+Your task is to surface 2–3 distinct angles for experimentation — grounded entirely in the visual evidence already observed in the analysis above.
+
+RULES:
+- Each angle must be rooted in a specific observation from the prior analysis. Name it explicitly.
+- Frame each angle as a possibility the current visual state makes available — not as a correction, fix, or improvement.
+- Do not evaluate the current work. Do not use the words better, improve, fix, stronger, weaker, or successful.
+- If you cannot identify 3 genuinely distinct angles from the evidence, give 2. Do not pad to reach 3.
+- Each angle: 3–5 sentences. Name what's available, describe what it would require materially or visually, and name the perceptual mechanism it would activate.
+
+VOICE: Direct and plain. No encouragement. No hedging. Write as if you are handing someone a set of keys and telling them what each one opens.
+
+FORMAT: Number each angle (1, 2, 3). Plain prose per angle. No bullet sub-points. No section headers.`;
+
+      const explorationMsg = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: explorationPrompt,
+        messages: [{ role: 'user', content: `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nWhat angles for experimentation does this work make available from here?` }],
+      });
+
+      const explorationText = explorationMsg.content
+        .filter((b: any) => b.type === 'text')
+        .map((b: any) => ('text' in b ? b.text : ''))
+        .join('\n\n');
+
+      const explorationHTML = await marked(explorationText, { async: true });
+
+      return new Response(
+        JSON.stringify({ success: true, analysis: explorationHTML }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     // ── INTERROGATION MODE ──────────────────────────────────────────────────
+    // Post-analysis: anchored to a prior analysis output
     if (interrogationMode === true) {
       if (!priorAnalysis || !userQuestion) {
         return new Response(
@@ -45,10 +106,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         );
       }
 
-      // System: interrogationBase (non-negotiable)
-      // User: full prior analysis + follow-up question
       const systemPrompt = String(interrogationBase);
-
       const userMessage = `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nFOLLOW-UP QUESTION:\n${userQuestion}`;
 
       const message = await anthropic.messages.create({
@@ -71,7 +129,103 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
+    // ── CHAT MODE ───────────────────────────────────────────────────────────
+    // Pre-analysis or exploratory: no image required.
+    // Free-form studio consultation using Hidden Grammar as context.
+    // Supports multi-turn conversation history.
+    if (chatMode === true) {
+      if (!userQuestion) {
+        return new Response(
+          JSON.stringify({ error: 'Chat mode requires userQuestion' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const frameworkCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}`).join('\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}`;
+
+      const chatSystemPrompt = `You are a studio consultant using the Hidden Grammar framework — a neuroaesthetic system built on 11 Roots and 54 Principles grounded in visual perception research.\n\nYou are available before, during, and after any formal analysis. Your role here is exploratory and conversational:\n- Help the maker think through constraints, materials, intent, and stuck places\n- Answer questions about what the Hidden Grammar framework means and how to use it\n- Discuss visual problems in plain terms, grounded in perceptual mechanisms\n- When asked what a tool does or means, explain it clearly\n\nTONE: Direct and practical. No encouragement for its own sake. No quality judgments.\nLANGUAGE: Plain English. Define any framework terms the first time you use them.\n\nWhen a maker describes constraints (substrate, medium, dimensions, stage, intent), identify:\n- What those constraints make available (not just what they limit)\n- Which principles are accessible given those constraints\n- What changes if intent is held vs. modified vs. released\n- What the current material state suggests on its own terms\n\nNever tell a maker their work is good or bad. Describe mechanisms, not verdicts.\n${frameworkCtx}`;
+
+      const history: Array<{ role: 'user' | 'assistant'; content: string }> = Array.isArray(conversationHistory)
+        ? conversationHistory
+        : [];
+
+      let questionWithContext = userQuestion;
+      if (fields && typeof fields === 'object' && Object.keys(fields).length > 0 && history.length === 0) {
+        const labelMap: Record<string, string> = {
+          dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
+          stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
+          'current-state': 'Current State',
+        };
+        const parts = Object.entries(fields)
+          .filter(([, v]) => v && String(v).trim())
+          .map(([k, v]) => `${labelMap[k] || k}: ${v}`);
+        if (parts.length > 0) {
+          questionWithContext = `WORK CONTEXT:\n${parts.join('\n')}\n\n${userQuestion}`;
+        }
+      }
+
+      const chatMessages = [...history, { role: 'user' as const, content: questionWithContext }];
+
+      const chatMsg = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: chatSystemPrompt,
+        messages: chatMessages,
+      });
+
+      const responseText = chatMsg.content
+        .filter((b: any) => b.type === 'text')
+        .map((b: any) => ('text' in b ? b.text : ''))
+        .join('\n\n');
+
+      const responseHTML = await marked(responseText, { async: true });
+
+      return new Response(
+        JSON.stringify({ success: true, analysis: responseHTML, raw: responseText }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     // ── INITIAL ANALYSIS MODE ───────────────────────────────────────────────
+    // Text-only path: when a C&O or similar mode runs without an image
+    if (!image && promptText) {
+      const txtFwCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}\nGoverns: ${r.governs}`).join('\n\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}\n\n---\n\n# UNIVERSAL OUTPUT CONSTRAINTS\n- NEVER use Hebrew consonant abbreviations — use English names only\n- NEVER reference principles by number — use descriptive names\n- Evidence-based reasoning: observations → mechanisms → effects → conclusions`;
+
+      const txtSystemPrompt = String(basePrompt) + txtFwCtx;
+
+      let txtFieldCtx = '';
+      if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
+        const lm: Record<string, string> = {
+          dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
+          stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
+          'current-state': 'Current State', notes: 'Notes',
+        };
+        const parts = Object.entries(fields)
+          .filter(([, v]) => v && String(v).trim())
+          .map(([k, v]) => `${lm[k] || k}: ${v}`);
+        if (parts.length > 0) txtFieldCtx = `WORK CONTEXT:\n${parts.join('\n')}\n\n`;
+      }
+
+      const txtMsg = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 3000,
+        system: txtSystemPrompt,
+        messages: [{ role: 'user', content: txtFieldCtx + promptText }],
+      });
+
+      const txtText = txtMsg.content
+        .filter((b: any) => b.type === 'text')
+        .map((b: any) => ('text' in b ? b.text : ''))
+        .join('\n\n');
+
+      const txtHTML = await marked(txtText, { async: true });
+
+      return new Response(
+        JSON.stringify({ success: true, analysis: txtHTML, raw: txtText }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (!image) {
       return new Response(
         JSON.stringify({ error: 'No image provided' }),
@@ -185,9 +339,10 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
       .join('\n\n');
 
     const analysisHTML = await marked(analysisText, { async: true });
+    const { imagePropertiesHTML, viewerEffectsHTML } = await parseSections(analysisText);
 
     return new Response(
-      JSON.stringify({ success: true, analysis: analysisHTML, raw: analysisText }),
+      JSON.stringify({ success: true, analysis: analysisHTML, raw: analysisText, imageProperties: imagePropertiesHTML, viewerEffects: viewerEffectsHTML }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
 

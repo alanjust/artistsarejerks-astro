@@ -17,4 +17,8 @@ export const state = {
   // All analysis outputs for copy operations
   // Index 0 = main analysis, 1+ = interrogation responses
   outputs: [] as Array<{ raw: string; html: string }>,
+
+  // Parsed section HTML (populated when API returns structured sections)
+  imagePropertiesHTML: '',
+  viewerEffectsHTML: '',
 };

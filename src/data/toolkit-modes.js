@@ -54,6 +54,25 @@ export const toolkitBuckets = [
         }
       },
       {
+        id: 'constraints-opportunities',
+        label: 'Constraints & Opportunities',
+        tagline: "Map what your material situation makes available. Useful for stuck work, shifting intent, or when material and goal are fighting each other.",
+        status: 'live',
+        phase: 'Studio Tools',
+        link: '/hidden-grammar/modes/constraints-opportunities',
+        detail: {
+          what: "Maps what the 54 Principles make available, partially accessible, or blocked given your specific constraints — substrate, medium, dimensions, stage, and intent. Runs three parallel analyses: intent held, intent modified, and intent released. Image is optional; text description of the current state works too.",
+          when: [
+            "A work isn't coming together and you don't know why",
+            "You want to see what's actually available given your specific materials",
+            "You need to decide whether to push forward with the stated intent or let the material suggest something else",
+            "You want to understand what a hard constraint (like medium incompatibility) opens or closes",
+          ],
+          output: "Constraint map organized by Root. Opportunity analysis across three intent stances. Stuck reading that describes the current material state as it exists, not as intended. Material logic read for where the medium made its own decisions.",
+          constraints: "Image optional — can run on text description alone. Sub-modes: Painting, Mixed Media, Works on Paper, Digital, 3D/Sculptural.",
+        }
+      },
+      {
         id: 'technician',
         label: 'Technician Mode',
         tagline: "You know what you want the work to do. This finds the specific tool that does it.",
@@ -134,7 +153,7 @@ export const toolkitBuckets = [
       {
         id: 'fine-art',
         label: 'Fine Art',
-        tagline: "Painting, sculpture, photography, installation — full Hidden Grammar analysis.",
+        tagline: "Painting, sculpture, photography, installation — full Art Lab analysis.",
         status: 'live',
         phase: 'Core Analysis',
         detail: {
@@ -164,7 +183,7 @@ export const toolkitBuckets = [
         status: 'live',
         phase: 'Core Analysis',
         detail: {
-          what: "Hidden Grammar analysis adapted for sequential art. Covers comprehensive analysis, WIP, audience assessment, style classification, and market context.",
+          what: "Art Lab analysis adapted for sequential art. Covers comprehensive analysis, WIP, audience assessment, style classification, and market context.",
           when: ["American superhero, manga, independent, children's, webcomic formats", "Sequential storytelling analysis", "Audience and market positioning"],
           output: "Panel composition, page flow, narrative grammar analyzed. Eye movement, closure, and figure-ground mapped.",
           constraints: "Story quality not assessed. Visual mechanisms only.",
@@ -238,12 +257,12 @@ export const toolkitBuckets = [
       },
       {
         id: 'full-audit',
-        label: 'Full Hidden Grammar Audit',
+        label: 'Full Art Lab Audit',
         tagline: "The comprehensive scan. All six sections, strict gates, maximum rigor.",
         status: 'coming-soon',
         phase: 'System Debug',
         detail: {
-          what: "Complete Hidden Grammar audit using the full six-section template. Intake, evidence capture, principle mapping, checks, root claims, competing interpretations, verdict. Entropy gate and RAP gates strictly enforced.",
+          what: "Complete Art Lab audit using the full six-section template. Intake, evidence capture, principle mapping, checks, root claims, competing interpretations, verdict. Entropy gate and RAP gates strictly enforced.",
           when: ["Comprehensive formal documentation", "Maximum analytical rigor needed", "Research or professional contexts"],
           output: "All six sections populated. Raw observations separated from interpretation. Rule paths logged for every major claim.",
           constraints: "Entropy Gate: if dominant, audit stops before Root claims. Full RAP enforced. No numbered lists.",
@@ -268,7 +287,7 @@ export const toolkitBuckets = [
         status: 'coming-soon',
         phase: 'Studio Tools',
         detail: {
-          what: "Educational critique mode for beginning students at any age. Uses a modified Feldman four-step structure with Hidden Grammar's mechanism-based approach. Strengths first. Evidence-based praise. Multiple growth pathways, never one correct answer.",
+          what: "Educational critique mode for beginning students at any age. Uses a modified Feldman four-step structure with Art Lab's mechanism-based approach. Strengths first. Evidence-based praise. Multiple growth pathways, never one correct answer.",
           when: ["High school or college art students", "Adult beginners at any age", "First-year foundational critique", "Anyone who needs encouragement without softness"],
           output: "Description (what's present). Analysis (how it's organized). Interpretation (framed as hypothesis). Growth path with three options, not one answer.",
           constraints: "No Hebrew terms. Partial RAP enforced. National Core Arts Standards and Feldman four-step integrated.",
@@ -307,7 +326,7 @@ export const toolkitBuckets = [
         status: 'coming-soon',
         phase: 'Simulation & Context',
         detail: {
-          what: "Writes exhibition label copy for a general audience. Uses Hidden Grammar Root logic as the structural basis but translates every term into accessible language.",
+          what: "Writes exhibition label copy for a general audience. Uses Art Lab Root logic as the structural basis but translates every term into accessible language.",
           when: ["Exhibition labels and wall text", "Artist statements for public contexts", "Gallery documentation"],
           output: "150-word wall text. Root logic embedded, not visible. Absence of a key Root used as the structural focal point.",
           constraints: "No Hebrew terms. No framework jargon. Plain English only.",
