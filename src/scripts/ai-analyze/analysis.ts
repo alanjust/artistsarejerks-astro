@@ -1,6 +1,7 @@
 import { state } from './state';
 import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
 import { showLensModifier, resetLensModifier } from './lens-modifier';
+import { updateChatWindowContext, clearChatHistory } from './interrogation';
 
 // Types matching analysisModes.js structure
 interface SubMode {
@@ -234,14 +235,24 @@ export function initAnalysis() {
         return;
       }
 
+      // Strip AI-injected tier labels from all HTML sections:
+      // "Tier A — " (prefix before principle name) and "(Tier A)" (standalone parenthetical)
+      const stripTiers = (html: string) =>
+        html
+          .replace(/\bTier\s+[A-D]\s*[—–\-]\s*/g, '')
+          .replace(/\s*\(Tier\s+[A-D]\)/g, '');
+
       // Store output
       state.outputs = [{ raw: result.raw || '', html: result.analysis }];
       state.fields = fields;
+      state.imagePropertiesHTML = stripTiers(result.imageProperties || '');
+      state.viewerEffectsHTML = stripTiers(result.viewerEffects || '');
 
       // Display
       if (resultsContent) {
-        resultsContent.innerHTML = result.analysis;
+        resultsContent.innerHTML = stripTiers(result.analysis);
         buildSidebar(resultsContent);
+        linkPrincipleNames(resultsContent);
       }
       if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
@@ -253,12 +264,25 @@ export function initAnalysis() {
         thumbnail.style.display = 'block';
       }
 
+      // Inject view toggle if sections are present
+      if (result.imageProperties && result.viewerEffects) {
+        injectViewToggle(result.imageProperties, result.viewerEffects);
+      }
+
       // Wire up main copy button
       wireCopyButton('copyMainOutput', 0);
+
+      // Show exploration panel for WIP and C&O modes
+      const isWip = state.promptId.includes('wip');
+      const isCO = state.modeId === 'constraints-opportunities';
+      if (isWip || isCO) injectExplorationPanel(result.raw || '');
 
       // Show feedback widget and lens modifier
       showFeedbackWidget();
       showLensModifier();
+
+      // Switch chat window into post-analysis mode
+      updateChatWindowContext(true);
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -287,9 +311,27 @@ export function initAnalysis() {
     if (sidebar) sidebar.style.display = 'none';
     if (sidebarList) sidebarList.innerHTML = '';
 
+    // Remove toggle and section divs
+    document.getElementById('viewToggle')?.remove();
+    document.getElementById('sectionIP')?.remove();
+    document.getElementById('sectionVE')?.remove();
+
+    // Reset exploration panel
+    const explorationPanel = document.getElementById('explorationPanel');
+    const explorationOutput = document.getElementById('explorationOutput');
+    if (explorationPanel) explorationPanel.style.display = 'none';
+    if (explorationOutput) { explorationOutput.innerHTML = ''; explorationOutput.style.display = 'none'; }
+    document.querySelector('.hg-exploration-spinner')?.remove();
+    state.imagePropertiesHTML = '';
+    state.viewerEffectsHTML = '';
+
     // Reset feedback widget and lens modifier for next analysis
     resetFeedbackWidget();
     resetLensModifier();
+
+    // Clear chat history and reset chat window to open mode
+    clearChatHistory();
+    updateChatWindowContext(false);
 
     // Clear interrogation history
     const history = document.getElementById('interrogationHistory');
@@ -362,6 +404,155 @@ export function wireCopyButton(buttonId: string, outputIndex: number) {
   });
 }
 
+// ── View toggle ───────────────────────────────────────────────────────────────────
+// Injects a three-button toggle (Full / Image Properties / Viewer Effects)
+// into the results header and wires the section visibility switching.
+
+function injectViewToggle(ipHTML: string, veHTML: string) {
+  const resultsContent = document.getElementById('resultsContent');
+  const resultsHeader = document.querySelector('.hg-results-header');
+  if (!resultsContent || !resultsHeader) return;
+
+  // Build section containers and insert after resultsContent
+  const ipDiv = document.createElement('div');
+  ipDiv.id = 'sectionIP';
+  ipDiv.className = 'hg-section-panel hg-section-panel--ip';
+  ipDiv.style.display = 'none';
+  ipDiv.innerHTML = `<div class="hg-section-eyebrow hg-section-eyebrow--ip">Image Properties — what is physically present</div>${ipHTML}`;
+
+  const veDiv = document.createElement('div');
+  veDiv.id = 'sectionVE';
+  veDiv.className = 'hg-section-panel hg-section-panel--ve';
+  veDiv.style.display = 'none';
+  veDiv.innerHTML = `<div class="hg-section-eyebrow hg-section-eyebrow--ve">Viewer Effects — predicted nervous system response</div>${veHTML}`;
+
+  resultsContent.after(ipDiv);
+  ipDiv.after(veDiv);
+
+  // Build toggle bar and append to results header
+  const toggle = document.createElement('div');
+  toggle.id = 'viewToggle';
+  toggle.className = 'hg-view-toggle';
+  toggle.innerHTML = `
+    <button class="hg-toggle-btn hg-toggle-btn--active" data-view="full">Full Analysis</button>
+    <button class="hg-toggle-btn" data-view="properties">
+      <span class="hg-toggle-pip hg-toggle-pip--ip"></span>Image Properties
+    </button>
+    <button class="hg-toggle-btn" data-view="effects">
+      <span class="hg-toggle-pip hg-toggle-pip--ve"></span>Viewer Effects
+    </button>
+  `;
+  resultsHeader.appendChild(toggle);
+
+  // Wire toggle clicks
+  toggle.querySelectorAll<HTMLButtonElement>('.hg-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.getAttribute('data-view');
+      toggle.querySelectorAll('.hg-toggle-btn').forEach(b => b.classList.remove('hg-toggle-btn--active'));
+      btn.classList.add('hg-toggle-btn--active');
+
+      const full = document.getElementById('resultsContent');
+      const ip = document.getElementById('sectionIP');
+      const ve = document.getElementById('sectionVE');
+      const sidebar = document.getElementById('resultsSidebar');
+      const copyRow = document.getElementById('mainCopyRow');
+
+      if (view === 'full') {
+        if (full) full.style.display = '';
+        if (ip) ip.style.display = 'none';
+        if (ve) ve.style.display = 'none';
+        if (sidebar) sidebar.style.display = 'block';
+        if (copyRow) copyRow.style.display = 'flex';
+      } else if (view === 'properties') {
+        if (full) full.style.display = 'none';
+        if (ip) ip.style.display = '';
+        if (ve) ve.style.display = 'none';
+        if (sidebar) sidebar.style.display = 'none';
+        if (copyRow) copyRow.style.display = 'none';
+      } else {
+        if (full) full.style.display = 'none';
+        if (ip) ip.style.display = 'none';
+        if (ve) ve.style.display = '';
+        if (sidebar) sidebar.style.display = 'none';
+        if (copyRow) copyRow.style.display = 'none';
+      }
+    });
+  });
+}
+
+// ── Exploration panel ─────────────────────────────────────────────────────────────
+// Shows the "What could this become?" button for WIP and C&O modes.
+// On click, fires a pre-built API call and renders 2–3 experimental angles inline.
+
+function injectExplorationPanel(priorAnalysis: string) {
+  const panel = document.getElementById('explorationPanel');
+  const btn = document.getElementById('explorationBtn') as HTMLButtonElement | null;
+  const output = document.getElementById('explorationOutput');
+  if (!panel || !btn || !output) return;
+
+  panel.style.display = 'block';
+
+  btn.addEventListener('click', async () => {
+    // Replace button with spinner
+    const spinner = document.createElement('div');
+    spinner.className = 'hg-exploration-spinner';
+    spinner.innerHTML = `<div class="hg-exploration-spin"></div><span class="hg-exploration-spin-label">Finding angles…</span>`;
+    btn.replaceWith(spinner);
+
+    try {
+      const response = await fetch('/api/analyze-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          explorationMode: true,
+          priorAnalysis,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.analysis) {
+        spinner.replaceWith(btn);
+        btn.disabled = false;
+        alert('Could not generate directions. Please try again.');
+        return;
+      }
+
+      spinner.remove();
+      document.querySelector('.hg-exploration-question')?.remove();
+      output.innerHTML = result.analysis;
+      output.style.display = 'block';
+
+      // Inject a copy button into each angle card
+      output.querySelectorAll('li').forEach((li, i) => {
+        const copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'hg-angle-copy-btn';
+        copyBtn.textContent = 'Copy this angle';
+        copyBtn.addEventListener('click', async () => {
+          const text = li.innerText.replace('Copy this angle', '').trim();
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = 'Copied ✓';
+            setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
+          } catch {
+            copyBtn.textContent = 'Copy failed';
+            setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
+          }
+        });
+        li.appendChild(copyBtn);
+      });
+
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch {
+      spinner.replaceWith(btn);
+      btn.disabled = false;
+      alert('Could not generate directions. Please try again.');
+    }
+  });
+}
+
 // ── Sidebar builder ────────────────────────────────────────────────────────────────
 // Reads H2 headings from the rendered analysis, builds sticky sidebar nav,
 // and marks the first H2 as Key Findings if the text matches.
@@ -378,6 +569,7 @@ function buildSidebar(contentEl: HTMLElement) {
     // Assign anchor ID
     const id = `hg-section-${i}`;
     h2.id = id;
+    h2.style.scrollMarginTop = '80px';
 
     // Mark Key Findings heading for special styling
     const text = h2.textContent?.trim().toLowerCase() || '';
@@ -415,4 +607,274 @@ function buildSidebar(contentEl: HTMLElement) {
   );
 
   headings.forEach(h2 => observer.observe(h2));
+}
+
+// ── Principle linking ──────────────────────────────────────────────────────────
+// Finds principle names in rendered analysis text and wraps them in trigger
+// buttons. Click shows a popover (pointer devices) or bottom sheet (haptic).
+
+interface Principle {
+  id: number;
+  name: string;
+  subtitle?: string;
+  tier: string;
+  neuralFact?: string;
+  studioTool?: string;
+}
+
+function getPrinciples(): Principle[] {
+  const el = document.getElementById('principlesData');
+  if (!el) return [];
+  try {
+    const data = JSON.parse(el.textContent || '{}');
+    return data.principles || [];
+  } catch {
+    return [];
+  }
+}
+
+function linkPrincipleNames(contentEl: HTMLElement) {
+  const principles = getPrinciples();
+  if (!principles.length) return;
+
+  // Sort longest-first so "Figure-Ground Relationships" matches before "Figure-Ground"
+  const sorted = [...principles].sort((a, b) => b.name.length - a.name.length);
+
+  // Escape special regex chars in each name
+  const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = sorted.map(p => escapeRe(p.name)).join('|');
+  const regex = new RegExp(`(?<![\\w-])(${pattern})(?![\\w-])`, 'gi');
+
+  // Lookup: lowercase name → principle object
+  const principleMap = new Map(principles.map(p => [p.name.toLowerCase(), p]));
+
+  // Only process text nodes outside headings, buttons, links, or existing triggers
+  const skipTags = new Set(['H1','H2','H3','H4','H5','H6','BUTTON','A','SCRIPT','STYLE']);
+  const filter: NodeFilter = {
+    acceptNode(node: Node) {
+      let el = (node as Text).parentElement;
+      while (el) {
+        if (skipTags.has(el.tagName)) return NodeFilter.FILTER_SKIP;
+        if (el.classList.contains('hg-principle-trigger')) return NodeFilter.FILTER_SKIP;
+        el = el.parentElement;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  };
+
+  const walker = document.createTreeWalker(contentEl, NodeFilter.SHOW_TEXT, filter);
+  const textNodes: Text[] = [];
+  let node;
+  while ((node = walker.nextNode())) textNodes.push(node as Text);
+
+  textNodes.forEach(textNode => {
+    const text = textNode.nodeValue || '';
+    regex.lastIndex = 0;
+    if (!regex.test(text)) { regex.lastIndex = 0; return; }
+    regex.lastIndex = 0;
+
+    const parent = textNode.parentNode;
+    if (!parent) return;
+
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+
+      const principle = principleMap.get(match[0].toLowerCase());
+      if (principle) {
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'hg-principle-trigger';
+        trigger.textContent = match[0];
+        trigger.dataset.principleId = String(principle.id);
+        fragment.appendChild(trigger);
+      } else {
+        fragment.appendChild(document.createTextNode(match[0]));
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    parent.replaceChild(fragment, textNode);
+  });
+
+  // Wire the overlay once after all triggers are injected
+  initPrincipleOverlay(principles);
+}
+
+// ── Principle overlay (popover + bottom sheet) ─────────────────────────────────
+
+let overlayInitialized = false;
+
+function initPrincipleOverlay(principles: Principle[]) {
+  if (overlayInitialized) return;
+  overlayInitialized = true;
+
+  const isHaptic = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  const principleMap = new Map(principles.map(p => [p.id, p]));
+
+  // ── Popover (pointer devices) ──────────────────────────────────────────────
+  const popover = document.getElementById('principlePopover');
+  const ppName = popover?.querySelector('.hg-pp-name');
+  const ppSub = popover?.querySelector('.hg-pp-sub');
+  const ppNeural = popover?.querySelector('.hg-pp-neural');
+  const ppStudio = popover?.querySelector('.hg-pp-studio');
+  const ppLink = popover?.querySelector('.hg-pp-link') as HTMLAnchorElement | null;
+  const ppClose = popover?.querySelector('.hg-pp-close');
+
+  // ── Bottom sheet (haptic devices) ─────────────────────────────────────────
+  const sheet = document.getElementById('principleSheet');
+  const psBackdrop = sheet?.querySelector('.hg-ps-backdrop');
+  const psName = sheet?.querySelector('.hg-ps-name');
+  const psSub = sheet?.querySelector('.hg-ps-sub');
+  const psNeural = sheet?.querySelector('.hg-ps-neural');
+  const psStudio = sheet?.querySelector('.hg-ps-studio');
+  const psLink = sheet?.querySelector('.hg-ps-link') as HTMLAnchorElement | null;
+  const psClose = sheet?.querySelector('.hg-ps-close');
+
+  function fillPopover(p: Principle) {
+    if (!popover || !ppName || !ppSub || !ppNeural || !ppStudio || !ppLink) return;
+    ppName.textContent = p.name;
+    ppSub.textContent = p.subtitle || '';
+    ppNeural.textContent = p.neuralFact || '';
+    ppStudio.textContent = p.studioTool || '';
+    ppLink.href = `/hidden-grammar/principles#principle-${p.id}`;
+    // Hide studio section if empty
+    const studioSection = ppStudio.closest('.hg-pp-section') as HTMLElement | null;
+    if (studioSection) studioSection.style.display = p.studioTool ? '' : 'none';
+    const neuralSection = ppNeural.closest('.hg-pp-section') as HTMLElement | null;
+    if (neuralSection) neuralSection.style.display = p.neuralFact ? '' : 'none';
+  }
+
+  function fillSheet(p: Principle) {
+    if (!sheet || !psName || !psSub || !psNeural || !psStudio || !psLink) return;
+    psName.textContent = p.name;
+    psSub.textContent = p.subtitle || '';
+    psNeural.textContent = p.neuralFact || '';
+    psStudio.textContent = p.studioTool || '';
+    psLink.href = `/hidden-grammar/principles#principle-${p.id}`;
+    const studioSection = psStudio.closest('.hg-ps-section') as HTMLElement | null;
+    if (studioSection) studioSection.style.display = p.studioTool ? '' : 'none';
+    const neuralSection = psNeural.closest('.hg-ps-section') as HTMLElement | null;
+    if (neuralSection) neuralSection.style.display = p.neuralFact ? '' : 'none';
+  }
+
+  function showPopover(trigger: HTMLElement, p: Principle) {
+    if (!popover) return;
+    fillPopover(p);
+    // Show off-screen to measure real height, then position
+    popover.style.visibility = 'hidden';
+    popover.style.top = '-9999px';
+    popover.style.left = '-9999px';
+    popover.classList.add('hg-pp--visible');
+    // rAF gives browser time to lay out before we measure
+    requestAnimationFrame(() => {
+      positionPopover(trigger, popover!);
+      popover!.style.visibility = '';
+      popover!.setAttribute('aria-hidden', 'false');
+    });
+  }
+
+  function hidePopover() {
+    if (!popover) return;
+    popover.classList.remove('hg-pp--visible');
+    popover.setAttribute('aria-hidden', 'true');
+  }
+
+  function showSheet(p: Principle) {
+    if (!sheet) return;
+    fillSheet(p);
+    sheet.classList.add('hg-ps--visible');
+    sheet.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideSheet() {
+    if (!sheet) return;
+    sheet.classList.remove('hg-ps--visible');
+    sheet.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function positionPopover(trigger: HTMLElement, pop: HTMLElement) {
+    const triggerRect = trigger.getBoundingClientRect();
+    const popRect = pop.getBoundingClientRect();
+    const popWidth = popRect.width || 320;
+    const popHeight = popRect.height || 300;
+    const margin = 10;
+    const vp = { w: window.innerWidth, h: window.innerHeight };
+
+    let left = triggerRect.left;
+    let top = triggerRect.bottom + margin;
+
+    // Flip horizontally if too close to right edge
+    if (left + popWidth > vp.w - 16) {
+      left = Math.max(16, vp.w - popWidth - 16);
+    }
+
+    // Prefer below; flip above if it would be clipped
+    if (top + popHeight > vp.h - 16) {
+      const topAbove = triggerRect.top - popHeight - margin;
+      // Use above if it fits; otherwise pin to top of viewport
+      top = topAbove >= 8 ? topAbove : Math.max(8, vp.h - popHeight - 16);
+    }
+
+    pop.style.left = `${left}px`;
+    pop.style.top = `${top}px`;
+  }
+
+  // Delegate trigger clicks (works for triggers added after init too)
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+
+    // Close popover on outside click
+    if (popover?.classList.contains('hg-pp--visible')) {
+      if (!popover.contains(target) && !target.classList.contains('hg-principle-trigger')) {
+        hidePopover();
+      }
+    }
+
+    // Handle trigger click
+    if (target.classList.contains('hg-principle-trigger')) {
+      e.stopPropagation();
+      const id = parseInt(target.dataset.principleId || '0', 10);
+      const principle = principleMap.get(id);
+      if (!principle) return;
+
+      if (isHaptic) {
+        showSheet(principle);
+      } else {
+        // Toggle: close if already showing for same trigger
+        if (popover?.classList.contains('hg-pp--visible')) {
+          hidePopover();
+        } else {
+          showPopover(target, principle);
+        }
+      }
+    }
+  });
+
+  // Popover close button
+  ppClose?.addEventListener('click', hidePopover);
+
+  // Sheet close button and backdrop
+  psClose?.addEventListener('click', hideSheet);
+  psBackdrop?.addEventListener('click', hideSheet);
+
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hidePopover();
+      hideSheet();
+    }
+  });
 }

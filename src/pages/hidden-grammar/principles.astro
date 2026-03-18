@@ -55,7 +55,7 @@ const tierD = principles.principles.filter(p => p.tier === 'D');
       <p class="pr-section-desc">Strong perceptual biases that engage your visual system before conscious awareness. Processed in the primary visual cortex within milliseconds. Robust across viewers, cultures, and contexts.</p>
       <div class="pr-grid">
         {tierA.map(p => (
-          <article class="pr-card">
+          <article class="pr-card" id={`principle-${p.id}`}>
             <div class="pr-card-head">
               <span class="pr-num">#{p.id}</span>
               <div class="pr-name-block">
@@ -134,7 +134,7 @@ const tierD = principles.principles.filter(p => p.tier === 'D');
       <p class="pr-section-desc">Mid-level visual processing — generally reliable across viewers, but more sensitive to style, context, and medium than Tier A. Most studio practice lives here.</p>
       <div class="pr-grid">
         {tierB.map(p => (
-          <article class="pr-card">
+          <article class="pr-card" id={`principle-${p.id}`}>
             <div class="pr-card-head">
               <span class="pr-num">#{p.id}</span>
               <div class="pr-name-block">
@@ -193,7 +193,7 @@ const tierD = principles.principles.filter(p => p.tier === 'D');
       <p class="pr-section-desc">Mixed evidence or higher-level cognitive and cultural associations — emotion, narrative, symbolism, learned conventions. Real as design tools, but effects are more variable and culturally contingent.</p>
       <div class="pr-grid">
         {tierC.map(p => (
-          <article class="pr-card">
+          <article class="pr-card" id={`principle-${p.id}`}>
             <div class="pr-card-head">
               <span class="pr-num">#{p.id}</span>
               <div class="pr-name-block">
@@ -246,7 +246,7 @@ const tierD = principles.principles.filter(p => p.tier === 'D');
       <p class="pr-section-desc">Historically influential compositional frameworks with contested empirical support. Real as design tools. Their claim to universal perceptual authority doesn't hold up under controlled testing.</p>
       <div class="pr-grid">
         {tierD.map(p => (
-          <article class="pr-card">
+          <article class="pr-card" id={`principle-${p.id}`}>
             <div class="pr-card-head">
               <span class="pr-num">#{p.id}</span>
               <div class="pr-name-block">
@@ -483,6 +483,7 @@ const tierD = principles.principles.filter(p => p.tier === 'D');
   }
 
   .pr-card {
+    scroll-margin-top: 90px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
