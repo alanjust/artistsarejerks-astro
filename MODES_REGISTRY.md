@@ -50,7 +50,7 @@
 | ID | Label | Status | Prompt source | Notes |
 |----|-------|--------|---------------|-------|
 | `strategic` | Strategic Mode | **STUB** | hg-modes.json | Standard critique, connects to Master Project Bible |
-| `physics` | Physics Mode | **DOCUMENTED** | hg-modes.json | Gravity / Entropy / Material / Capacity checks |
+| `physics` | Physics Mode | **LIVE** | hg-modes.json | Gravity / Entropy / Material / Capacity checks |
 | `historian` | Historian Mode | **STUB** | hg-modes.json, prompt_console v3.3 | Academic breakdown, canon positioning |
 | `friction` | Friction Audit | **STUB** | hg-modes.json, prompt_console v3.3 | Twombly vs. Kinkade test, friction density 0–10 |
 
@@ -59,9 +59,9 @@
 
 | ID | Label | Status | Prompt source | Notes |
 |----|-------|--------|---------------|-------|
-| `studio-foundations` | Studio Foundations | **DOCUMENTED** | hg-modes.json | Beginner critique, Feldman 4-step, IR-aligned |
-| `attention-engineering` | Attention Engineering | **DOCUMENTED** | hg-modes.json | Dwell time, snags/slides, friction engineering |
-| `attention-engineering-ir` | Attention Engineering (IR) | **DOCUMENTED** | hg-modes.json | AE + split novelty score + Attention Pattern Profile |
+| `studio-foundations` | Studio Foundations | **LIVE** | hg-modes.json | Beginner critique, Feldman 4-step, IR-aligned |
+| `attention-engineering` | Attention Engineering | **LIVE** | hg-modes.json | Dwell time, snags/slides, friction engineering |
+| `attention-engineering-ir` | Attention Engineering (IR) | **LIVE** | hg-modes.json | AE + split novelty score + Attention Pattern Profile |
 | `wip` | WIP Mode | **STUB** | hg-modes.json, prompt_console v3.3 | Mid-stream check, alignment of intent vs. execution |
 | `technician` | Technician Mode | **STUB** | hg-modes.json, prompt_console v3.3 | Root → Principle mapping, neural mechanism target |
 | `novelty` | Novelty Check | **STUB** | hg-modes.json, prompt_console v3.3 | Cliché shield, common→unique spectrum, score 1–10 |
@@ -77,8 +77,8 @@
 
 | ID | Label | Status | Prompt source | Notes |
 |----|-------|--------|---------------|-------|
-| `tour-guide` | Tour Guide Mode | **DOCUMENTED** | hg-modes.json | Museum docent, Schneider-specific, IR-aligned |
-| `docent-script` | Docent Script (Anchor V1) | **DOCUMENTED** | hg-modes.json | 4–6 min monologue, anchor artwork format |
+| `tour-guide` | Tour Guide Mode | **LIVE** | hg-modes.json | Museum docent, Schneider-specific, IR-aligned |
+| `docent-script` | Docent Script (Anchor V1) | **LIVE** | hg-modes.json | 4–6 min monologue, anchor artwork format |
 | `global` | Global Mode | **STUB** | hg-modes.json, prompt_console v3.3 | Non-Western lenses, Global Echoes database |
 | `curator` | Curator Mode | **GAP** | prompt_console v3.3 | 150-word wall text, Root logic in plain English |
 | `gift-living` | Gift: Living With It | **GAP** | prompt_console v3.3 | Room physics stress test — value, peripheral, buzz |
@@ -163,8 +163,8 @@
 
 | Status | Count | Notes |
 |--------|-------|-------|
-| LIVE | 4 domain modes + 19 prompts | In the AI tool, functional |
-| DOCUMENTED | 6 | Full prompts written, ready to add to analysisModes.js |
+| LIVE | 5 domain cards (4 domain + 1 analytical-lenses) + 25 prompts | In the AI tool, functional |
+| DOCUMENTED | 0 | All documented modes wired in |
 | STUB | 10 | In hg-modes.json, prompts need writing |
 | GAP | 36 | In source docs only, nothing in the site |
 | **Total** | **56+** | — |

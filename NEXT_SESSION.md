@@ -1,5 +1,5 @@
 # Next Session Briefing
-<!-- Updated end of Mar 18 session. Read before touching anything. -->
+<!-- Updated end of Mar 20 session. Read before touching anything. -->
 
 ---
 
@@ -8,7 +8,7 @@
 ### Art Lab Landing Page (`hidden-grammar.astro`) — COMPLETE
 Fully rebuilt. Current structure (top to bottom):
 1. **Try Me button** — full-width green CTA → `/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read`
-2. **Persona cards** — three-column grid (Working artist / Educator / Just curious), each linking to toolkit section
+2. **Persona cards** — three-column grid (Working artist / Educator / Just curious), routing: Working artist → `toolkit#making`, Educator → `toolkit#talking`, Just curious → `toolkit`
 3. **Origin story copy** — Ira Glass voice, four paragraphs + "Why I built this →"
 4. **Section rule**
 5. **Second copy block** — brain flags / real levers + "How the visual grammar works →"
@@ -53,9 +53,17 @@ Principle names in analysis output are now interactive:
 
 ---
 
-## Two Open Items
+## Open Items
 
-### Item 1: Toolkit → Analyzer Flow Continuity — NOT DONE
+### Item 1: Wire 6 Documented Modes — COMPLETE
+New `analytical-lenses` domain card added to `analysisModes.js` with 6 prompt entries:
+Studio Foundations, Attention Engineering, Attention Engineering (IR), Physics Mode, Tour Guide Mode, Docent Script (Anchor V1).
+Fields: title, artist, year, medium, dimensions, notes.
+MODES_REGISTRY updated: all 6 flipped to LIVE. Count: 5 domain cards, 25 prompts total.
+
+---
+
+### Item 2: Toolkit → Analyzer Flow Continuity — NOT DONE
 **What works:** Toolkit live mode detail pages route to `/hidden-grammar/modes/[mode]` (the prompt picker). This is architecturally correct — domain modes (Fine Art, CPG, etc.) have multiple prompts and the picker is the right step.
 
 **What's missing:** When a user arrives at `modes/[mode]` from the Toolkit, it feels like a detour — there's no visual continuity showing they're mid-flow.
@@ -68,7 +76,7 @@ Principle names in analysis output are now interactive:
 
 ---
 
-### Item 2: WIP Detail Page Signposting — NOT DONE
+### Item 3: WIP Detail Page Signposting — NOT DONE
 **Situation:** WIP is live in `toolkit-modes.js` and routes to `/hidden-grammar` (domain picker) via `link` override. This is correct — WIP is a prompt within each domain, not a standalone mode.
 
 **What's missing:** The WIP detail page in `toolkit/[mode].astro` doesn't clearly explain *why* it routes to domain selection first, or what happens next. A user who clicks "WIP" from the Toolkit and lands on the WIP detail page may not understand that they need to pick a domain before they can get to WIP.
