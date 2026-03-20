@@ -1,0 +1,118 @@
+---
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout
+  title="You Were Not Alone — Art Lab"
+  description="On using AI as an interviewer rather than a generator — and what it found in a painting about yearning."
+>
+  <div class="hg-page">
+
+    <nav class="hg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/hidden-grammar">Art Lab</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <span>You Were Not Alone</span>
+    </nav>
+
+    <article class="na-article">
+      <h1 class="na-title">You Were Not Alone</h1>
+
+      <div class="na-body">
+
+        <p>I knew what I wanted the viewer to feel. Yearning. Not depicted — experienced. The way Beckett doesn't describe waiting in <em>Waiting for Godot</em>. He makes you wait. The structure creates the feeling.</p>
+
+        <p>I had the intent. I didn't know my structure was working against it.</p>
+
+        <p>That's the part artists don't talk about much. Not because it's rare — it's constant. You make work inside a kind of productive blindness. You know what you're reaching for. You can't always see what's fighting the reach.</p>
+
+        <p>Normally, you'd take it to someone whose eye you trust. But there's a tax. You perform the coherent version of your thinking. Which means you get feedback on the performance, not the problem.</p>
+
+        <hr class="na-rule">
+
+        <p>I started using an AI differently. Not as a generator. As an interviewer.</p>
+
+        <p>The idea comes from Jack Clark — co-founder of Anthropic, the company behind Claude, and someone who spends a lot of time thinking about what AI is actually good for — who described asking an AI to interview him about what he wanted to build before writing a single line of code. The output got better because the input was finally honest.</p>
+
+        <p>I tried it with the painting.</p>
+
+        <p>Questions came back. What was I trying to create? What experience did I want the viewer to have? What was I afraid wasn't working?</p>
+
+        <p>That last one. With another person, I'd have deflected. With the AI, I just answered.</p>
+
+        <hr class="na-rule">
+
+        <p>What came back wasn't about medium. No pigment recommendations. No mark-making advice. A structural diagnosis: the edges were too defined. The painting was closed. Nothing was reaching.</p>
+
+        <p>For a painting about yearning, that's fatal.</p>
+
+        <p>Yearning needs an outside. Something beyond the frame the eye moves toward but can't reach. I needed to soften those edges — and redirect the foreground gaze past the canvas boundary. Toward the unreachable thing.</p>
+
+        <p>Beckett's mechanism exactly. Godot never comes. The edge stays open. Absence is the engine.</p>
+
+        <p>My painting had definition where it needed ambiguity. It completed a world when it needed to leave one open.</p>
+
+        <hr class="na-rule">
+
+        <p>The AI didn't make the painting. It named what was working against my intent. I still had to solve it.</p>
+
+        <p>But the reason it worked is the same reason it couldn't have worked as well with another person. No stakes. No performance. I could say where my thinking was uncertain — where I suspected I was wrong — without the cost of looking that way in front of someone whose opinion of me matters.</p>
+
+        <p>The AI kept my secrets. The secret being, mostly, that I didn't entirely know what I was doing.</p>
+
+        <p>That's not a failure condition. That's just making.</p>
+
+        <hr class="na-rule">
+
+        <p>What the AI gave me wasn't a solution. It gave me a question I could finally answer honestly.</p>
+
+        <p>That's what a trusted companion does.</p>
+
+      </div>
+
+      <div class="na-footer">
+        <a href="/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read" class="hg-btn hg-btn--primary">Try it with your own work →</a>
+        <a href="/hidden-grammar" class="hg-btn hg-btn--ghost">← Back to Art Lab</a>
+      </div>
+
+    </article>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .na-article {
+    max-width: 660px;
+  }
+
+  .na-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 2.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .na-body p {
+    font-size: 1.125rem;
+    color: #334155;
+    line-height: 1.8;
+    margin: 0 0 1.5rem;
+  }
+
+  .na-rule {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 2rem 0;
+  }
+
+  .na-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+  }
+</style>
