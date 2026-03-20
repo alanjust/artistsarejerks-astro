@@ -102,8 +102,9 @@ export const toolkitBuckets = [
         id: 'attention-engineering',
         label: 'Attention Engineering',
         tagline: "Where does the eye lock? Where does it slide? This tells you both — and how to change it.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Studio Tools',
+        link: '/hidden-grammar/ai-analyze?mode=analysis-tools&prompt=attention-engineering',
         note: "Also useful for analyzing someone else's work.",
         detail: {
           what: "Dwell-time focused analysis. Maps where viewer attention locks (snags) and where it glides past (slides). Identifies structural predictability and gives you concrete moves to create perceptual friction.",
@@ -206,8 +207,9 @@ export const toolkitBuckets = [
         id: 'physics',
         label: 'Physics Mode',
         tagline: "Structural integrity only. No interpretation. Gravity, entropy, material, capacity — pass or fail.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Core Analysis',
+        link: '/hidden-grammar/ai-analyze?mode=analysis-tools&prompt=physics',
         detail: {
           what: "Tests the structural mechanics of a work while ignoring meaning entirely. Five checks in sequence: gravity (weight distribution), entropy (signal cancellation), material (medium honesty), capacity (idea vs. format fit), verdict.",
           when: ["You want structural truth without interpretation", "Technical validation of a finished work", "Something's off and you can't name it"],
@@ -245,14 +247,29 @@ export const toolkitBuckets = [
         id: 'attention-engineering-analyzing',
         label: 'Attention Engineering',
         tagline: "Dwell time map. Where does attention live and die in this work?",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Studio Tools',
+        link: '/hidden-grammar/ai-analyze?mode=analysis-tools&prompt=attention-engineering',
         note: "Also useful mid-process on your own work.",
         detail: {
           what: "Same tool as in the Making section. Works equally well on finished work by others — maps where viewer attention locks and slides, diagnoses structural predictability, and identifies friction engineering opportunities.",
           when: ["Analyzing a work you didn't make", "Understanding why a piece does or doesn't hold attention", "Comparative analysis"],
           output: "Novelty diagnosis. Dwell time map. Interest gaps. Friction engineering moves.",
           constraints: null,
+        }
+      },
+      {
+        id: 'attention-engineering-ir',
+        label: 'Attention Engineering (IR)',
+        tagline: "Same structural diagnosis — plus a fifth section that turns the findings back on the artist as identity data.",
+        status: 'live',
+        phase: 'Studio Tools',
+        link: '/hidden-grammar/ai-analyze?mode=analysis-tools&prompt=attention-engineering-ir',
+        detail: {
+          what: "Attention Engineering with an added Intelligent Reflection layer. Runs the same dwell time and novelty diagnosis, but adds a split novelty score (structural vs. perceptual, not averaged) and an Attention Pattern Profile — what your pattern of choices reveals about how you're wired to see.",
+          when: ["You want structural diagnosis and self-knowledge", "You've done AE and want to go deeper", "You can handle a harder question than 'what's wrong with the work'"],
+          output: "Split novelty score (structural/perceptual). Dwell time map. Interest gaps. Friction moves. Attention Pattern Profile with one productive question to take back to the studio.",
+          constraints: "Partial RAP enforced. Coverage and Constraint gates must pass before pattern claims.",
         }
       },
       {
@@ -284,8 +301,9 @@ export const toolkitBuckets = [
         id: 'studio-foundations',
         label: 'Studio Foundations',
         tagline: "Beginner-friendly critique. Builds confidence while teaching how visual systems actually work.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Studio Tools',
+        link: '/hidden-grammar/ai-analyze?mode=presentation-tools&prompt=studio-foundations',
         detail: {
           what: "Educational critique mode for beginning students at any age. Uses a modified Feldman four-step structure with Art Lab's mechanism-based approach. Strengths first. Evidence-based praise. Multiple growth pathways, never one correct answer.",
           when: ["High school or college art students", "Adult beginners at any age", "First-year foundational critique", "Anyone who needs encouragement without softness"],
@@ -297,8 +315,9 @@ export const toolkitBuckets = [
         id: 'tour-guide',
         label: 'Tour Guide Mode',
         tagline: "Museum docent script. Gets a general audience from first glance to genuine looking.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Simulation & Context',
+        link: '/hidden-grammar/ai-analyze?mode=presentation-tools&prompt=tour-guide',
         detail: {
           what: "Generates a structured docent script bridging perceptual mechanics to general audiences. Warm, curiosity-led, structurally grounded. Designed specifically for the Schneider Museum of Art context but adaptable anywhere.",
           when: ["Museum tours", "Gallery talks", "Any public presentation of a single work"],
@@ -310,8 +329,9 @@ export const toolkitBuckets = [
         id: 'docent-script',
         label: 'Docent Script (Anchor)',
         tagline: "4–6 minute spoken monologue for an anchor artwork in a larger exhibition tour.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Simulation & Context',
+        link: '/hidden-grammar/ai-analyze?mode=presentation-tools&prompt=docent-script',
         detail: {
           what: "Generates a complete 4–6 minute docent-ready monologue for a single anchor work. Structured in six sections: opening position, capture mechanics, default pattern recognition, meaning alignment, sustained look, editing insight.",
           when: ["Exhibition tours with a key anchor work", "Public speaking preparation", "Written educational scripts"],
