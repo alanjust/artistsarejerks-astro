@@ -191,6 +191,44 @@ const { mode } = Astro.props;
     border-top: 1px solid #e2e8f0;
   }
 
+  .flow-step-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border-radius: 20px;
+  }
+
+  .flow-step--done {
+    background: #f1f5f9;
+    color: #94a3b8;
+  }
+
+  .flow-step--active {
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+  }
+
+  .flow-step--pending {
+    background: #f8fafc;
+    color: #cbd5e1;
+  }
+
+  .flow-step-arrow {
+    font-size: 0.75rem;
+    color: #cbd5e1;
+  }
+
   @media (max-width: 640px) {
     .hg-grid--prompts {
       grid-template-columns: 1fr;
@@ -205,6 +243,21 @@ const { mode } = Astro.props;
     document.querySelector('.bc-toolkit')?.removeAttribute('hidden');
     document.querySelector('.back-default')?.setAttribute('hidden', '');
     document.querySelector('.back-toolkit')?.removeAttribute('hidden');
+
+    // Inject step indicator
+    const header = document.querySelector('.hg-page-header');
+    if (header) {
+      const stepBar = document.createElement('div');
+      stepBar.className = 'flow-step-bar';
+      stepBar.innerHTML = `
+        <span class="flow-step flow-step--done">1 — Choose a tool</span>
+        <span class="flow-step-arrow">→</span>
+        <span class="flow-step flow-step--active">2 — Choose a prompt</span>
+        <span class="flow-step-arrow">→</span>
+        <span class="flow-step flow-step--pending">3 — Analyze</span>
+      `;
+      header.insertAdjacentElement('beforebegin', stepBar);
+    }
   }
 
   const selectedSubmode: { id: string | null } = { id: null };
