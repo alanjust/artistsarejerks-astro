@@ -761,5 +761,99 @@ Do not evaluate whether material agency is desirable. Describe what it produces.
     ],
   },
 
+  // ───────────────────────────────────────────
+  // JUST CURIOUS
+  // No framework required. Accessible entry point for anyone who
+  // responded to a work but can't say why. Four flavors of curiosity.
+  // ───────────────────────────────────────────
+  {
+    id: 'just-curious',
+    label: 'Just Curious',
+    description: 'No background required. Upload something you responded to — yours or anyone else\'s — and find out what\'s actually happening in it.',
+    subModes: [],
+    fields: [
+      { id: 'notes', label: 'Tell us anything you want us to know (optional)' },
+    ],
+
+    prompts: [
+      {
+        id: 'just-curious-surprise',
+        label: 'Something surprised you',
+        description: 'You saw it and it stopped you. You didn\'t expect it to. Find out what your visual system was actually responding to.',
+        prompt: `A visitor uploaded this image. They're not an art professional. They encountered this work — in person, online, somewhere — and it surprised them. They can't fully say why. They just want to understand what happened.
+
+Your job is to find the specific visual mechanism that created the surprise.
+
+APPROACH:
+- Identify the one element that breaks the viewer's expected visual pattern — the edge, relationship, scale, weight, or color decision that the eye didn't predict.
+- Explain what the visual system was expecting, and what it got instead.
+- Name the perceptual mechanism in plain language — no art-speak.
+- Do not evaluate the work. Do not say it's good or not good. Just describe what happened.
+
+VOICE: Ira Glass register. Open with the moment of surprise — the specific visual event — not a description of the whole work. Build toward the mechanism. Let the explanation arrive; don't announce it. Use honest turn signals: "so," "here's what's happening," "and what's strange is." Short sentences land the point after longer sentences build it.
+
+FORMAT: Prose only. No headers. No bullets. No numbered lists. 200–300 words.`,
+      },
+
+      {
+        id: 'just-curious-body-first',
+        label: 'Your body responded before your brain',
+        description: 'Something happened physically — a pull, a recoil, a stillness — before you had a thought about the work. Find out what caused it.',
+        prompt: `A visitor uploaded this image. They had a physical response to it before they could form a thought. A pull. An unease. A kind of stillness. Something in the body — not in the mind.
+
+Your job is to identify what in the image caused that pre-cognitive response.
+
+APPROACH:
+- Look for the visual properties that trigger the fastest neural responses: high-contrast edges, large-scale value shifts, spatial compression or expansion, unexpected weight distribution, or disrupted figure-ground relationships.
+- These are the properties that reach the visual system before conscious thought arrives.
+- Explain what the body was responding to — not what the work "means," but what it was physically doing to the viewer's perceptual system.
+- No interpretation. No meaning claims. Just the mechanism.
+
+VOICE: Ira Glass register. Open with the physical event — the body's response — before explaining what caused it. The explanation should feel like an arrival, not a lecture. Use "so," "here's the thing," "what's actually happening is." Keep the plain-language register throughout.
+
+FORMAT: Prose only. No headers. No bullets. 200–300 words.`,
+      },
+
+      {
+        id: 'just-curious-accidental-mastery',
+        label: 'You made something and aren\'t sure why it works',
+        description: 'You made this. Something in it is landing. You don\'t fully know what — or whether you can do it again. Find out what\'s actually there.',
+        prompt: `A visitor uploaded this image. They made it. Something in it is working — people respond to it, or they look at it and feel something happened — and the maker isn't sure exactly what they did. They want to know what's actually functioning in this work, and why.
+
+Your job is to identify the specific visual decisions that are landing and name the mechanism behind each.
+
+APPROACH:
+- Don't evaluate. Don't tell them it's good.
+- Identify what is physically present that is generating a response: specific edges, weight distributions, spatial systems, color relationships, mark decisions that carry structural information.
+- For each one you name, explain the perceptual mechanism — what it does to a viewer's visual system and why.
+- Be specific. "Interesting composition" is not useful. Name the actual decision.
+
+VOICE: Ira Glass register. The maker knows their own work better than you do — don't condescend. Sound like someone pointing at things worth noticing, not someone issuing verdicts. Open with what's working before explaining why. Use "so," "here's what's happening," "what that does is."
+
+FORMAT: Prose only. No headers. No bullets. 250–350 words.`,
+      },
+
+      {
+        id: 'just-curious-do-more',
+        label: 'You want to do more of what makes this good',
+        description: 'Something in this is working and you want to understand it precisely enough to build on it. Not a compliment — a working description.',
+        prompt: `A visitor uploaded this image. They're not looking for praise. They want to understand what's working in this image precisely enough that they can do more of it — build on it, develop it, reproduce it intentionally rather than accidentally.
+
+Your job is to name the specific visual quality or system that is generating the response, and describe it with enough precision that someone could work from your description.
+
+APPROACH:
+- Identify the primary visual system that's working: the structural logic of the composition, the edge system, the spatial relationships, the color logic, the mark quality — whatever is carrying the most weight.
+- Describe it precisely. Not "strong composition" — describe the specific spatial logic and why it holds attention. Not "interesting color" — describe the specific temperature or saturation relationship and what it does.
+- Name one thing that is doing a lot of work that could be pushed further.
+- Name one thing that is partially resolved that's worth returning to.
+
+VOICE: Ira Glass register. You're talking to someone who made this and wants to make more. The useful answer is specific, not encouraging. Use "here's what's actually happening," "the thing that's doing the work is," "and here's where it gets interesting."
+
+FORMAT: Prose only. No headers. No bullets. 250–350 words.`,
+      },
+
+    ],
+  },
+
 ];
 

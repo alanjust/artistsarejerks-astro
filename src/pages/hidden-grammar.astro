@@ -88,6 +88,8 @@ const sections = [
           </a>
         </div>
 
+        <p class="al-map-note">You're uploading a photo. The physical work of the original—its scale, surface, and material weight—doesn't come through. The analysis is real, but it's working from a reduced signal. A map, not the territory.</p>
+
         <!-- Personas -->
         <div class="al-personas">
           <h2 class="al-personas-title">What are you here to do?</h2>
@@ -95,26 +97,26 @@ const sections = [
 
           <div class="al-persona-cards">
 
-            <a href="/hidden-grammar/toolkit#making" class="al-persona-card al-persona-card--artist">
+            <a href="/hidden-grammar/for/artist" class="al-persona-card al-persona-card--artist">
               <span class="al-persona-label">Working artist</span>
               <p class="al-persona-body">You're mid-process, or you just finished something, and you want to know what it's actually doing — not what it means, but what it's doing. Where the eye goes. What's holding and what's sliding past.</p>
               <p class="al-persona-body">That's a different question than most feedback gives you. Art Lab is built around it.</p>
               <span class="al-persona-cta">Show me the studio tools →</span>
             </a>
 
-            <a href="/hidden-grammar/toolkit#talking" class="al-persona-card al-persona-card--edu">
-              <span class="al-persona-label">Educator, docent, presenter</span>
-              <p class="al-persona-body">You're standing in front of a work — or you will be, next Thursday, with a group of people who didn't necessarily choose to be there. You need something concrete to point at. Not interpretation. Not art-speak. Something you can actually say.</p>
-              <p class="al-persona-body">There are tools here built specifically for that.</p>
-              <span class="al-persona-cta">Show me the teaching tools →</span>
-            </a>
-
-            <a href="/hidden-grammar/toolkit" class="al-persona-card al-persona-card--curious">
+            <a href="/hidden-grammar/for/curious" class="al-persona-card al-persona-card--curious">
               <span class="al-persona-label">Just curious</span>
               <p class="al-persona-body">You don't need a reason. You saw something—in a museum, online, somewhere—and it did something to you, and you want to know what.</p>
               <p class="al-persona-body">Or you made something just for the pleasure of it, and you're curious what it's actually doing.</p>
               <p class="al-persona-body">No agenda required. Start here and see what comes back.</p>
               <span class="al-persona-cta">Browse the tools →</span>
+            </a>
+
+            <a href="/hidden-grammar/for/educator" class="al-persona-card al-persona-card--edu">
+              <span class="al-persona-label">Educator, docent, presenter</span>
+              <p class="al-persona-body">You're standing in front of a work — or you will be, next Thursday, with a group of people who didn't necessarily choose to be there. You need something concrete to point at. Not interpretation. Not art-speak. Something you can actually say.</p>
+              <p class="al-persona-body">There are tools here built specifically for that.</p>
+              <span class="al-persona-cta">Show me the teaching tools →</span>
             </a>
 
           </div>
@@ -252,7 +254,7 @@ const sections = [
 
   /* ── Try Me ────────────────────────────────── */
   .al-try-me {
-    margin: 1.25rem 0 2rem;
+    margin: 1.25rem 0 0.75rem;
   }
 
   .al-try-me-btn {
@@ -293,6 +295,16 @@ const sections = [
     border: none;
     border-top: 1px solid #e2e8f0;
     margin: 2rem 0;
+  }
+
+  /* ── Map note ──────────────────────────────── */
+  .al-map-note {
+    font-size: 1.0rem;
+    font-weight: 500;
+    font-style: italic;
+    color: #16a34a;
+    line-height: 1.6;
+    margin: 0 0 2rem;
   }
 
   /* ── Persona cards ─────────────────────────── */

@@ -1,5 +1,5 @@
 # Next Session Briefing
-<!-- Updated end of Mar 20 session. Read before touching anything. -->
+<!-- Updated end of Mar 21 session. Read before touching anything. -->
 
 ---
 
@@ -8,7 +8,7 @@
 ### Art Lab Landing Page (`hidden-grammar.astro`) — COMPLETE
 Fully rebuilt. Current structure (top to bottom):
 1. **Try Me button** — full-width green CTA → `/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read`
-2. **Persona cards** — three-column grid (Working artist / Educator / Just curious), routing: Working artist → `toolkit#making`, Educator → `toolkit#talking`, Just curious → `toolkit`
+2. **Persona cards** — three-column grid (Working artist / Educator / Just curious), routing: Working artist → `/hidden-grammar/for/artist`, Educator → `/hidden-grammar/for/educator`, Just curious → `/hidden-grammar/for/curious`
 3. **Origin story copy** — Ira Glass voice, four paragraphs + "Why I built this →"
 4. **Section rule**
 5. **Second copy block** — brain flags / real levers + "How the visual grammar works →"
@@ -56,14 +56,31 @@ Principle names in analysis output are now interactive:
 ## Open Items
 
 ### Item 1: Wire 6 Documented Modes — COMPLETE
-New `analytical-lenses` domain card added to `analysisModes.js` with 6 prompt entries:
-Studio Foundations, Attention Engineering, Attention Engineering (IR), Physics Mode, Tour Guide Mode, Docent Script (Anchor V1).
-Fields: title, artist, year, medium, dimensions, notes.
+New `analysis-tools` and `presentation-tools` domain cards added to `analysisModes.js`.
+- `analysis-tools`: Attention Engineering, Attention Engineering (IR), Physics Mode
+- `presentation-tools`: Studio Foundations, Tour Guide Mode, Docent Script (Anchor V1)
 MODES_REGISTRY updated: all 6 flipped to LIVE. Count: 5 domain cards, 25 prompts total.
+toolkit-modes.js updated: all 6 modes flipped to live with direct-to-analyzer links. AE-IR entry added to Analyzing bucket.
 
 ---
 
-### Item 2: Toolkit → Analyzer Flow Continuity — NOT DONE
+### Item 2: Bug 2 (WIP CTA Loops) — COMPLETE
+WIP `link` in `toolkit-modes.js` changed from `/hidden-grammar/toolkit#analyzing` (backward) to `/hidden-grammar/modes/fine-art` (forward to domain picker). The `constraints` field already explains why domain selection is required first.
+
+---
+
+### Item 3: Persona Entry Pages — COMPLETE
+Three persona entry pages built at:
+- `/hidden-grammar/for/artist` — Making + Analyzing live tools only, purple accent, "See all tools →" footer
+- `/hidden-grammar/for/educator` — Talking bucket full (live + coming-soon), green accent, coming-soon cards dimmed
+- `/hidden-grammar/for/curious` — Four-card prompt selector for `just-curious` mode (no toolkit link above fold), amber accent, "Browse all the tools →" footer
+Persona card CTAs in `hidden-grammar.astro` updated to `/hidden-grammar/for/*` routes.
+`just-curious` mode added to `analysisModes.js` with four prompts:
+- `just-curious-surprise`, `just-curious-body-first`, `just-curious-accidental-mastery`, `just-curious-do-more`
+
+---
+
+### Item 4: Toolkit → Analyzer Flow Continuity — NOT DONE
 **What works:** Toolkit live mode detail pages route to `/hidden-grammar/modes/[mode]` (the prompt picker). This is architecturally correct — domain modes (Fine Art, CPG, etc.) have multiple prompts and the picker is the right step.
 
 **What's missing:** When a user arrives at `modes/[mode]` from the Toolkit, it feels like a detour — there's no visual continuity showing they're mid-flow.
@@ -76,23 +93,12 @@ MODES_REGISTRY updated: all 6 flipped to LIVE. Count: 5 domain cards, 25 prompts
 
 ---
 
-### Item 3: WIP Detail Page Signposting — NOT DONE
-**Situation:** WIP is live in `toolkit-modes.js` and routes to `/hidden-grammar` (domain picker) via `link` override. This is correct — WIP is a prompt within each domain, not a standalone mode.
-
-**What's missing:** The WIP detail page in `toolkit/[mode].astro` doesn't clearly explain *why* it routes to domain selection first, or what happens next. A user who clicks "WIP" from the Toolkit and lands on the WIP detail page may not understand that they need to pick a domain before they can get to WIP.
-
-**Suggested fix:** Add a "How to get there" step-list to the WIP detail page constraints/notes section explaining: pick your domain → pick WIP prompt → analyze.
-
-**File to touch:** `src/data/toolkit-modes.js` — add a `howToAccess` field to the WIP entry, rendered in `toolkit/[mode].astro`
-
----
-
 ## Architecture Reference
 
 ### Zone Map — Do Not Mix
 | Zone | Layout | Pages |
 |------|--------|-------|
-| A — AI tools | `HiddenGrammarLayout` | `hidden-grammar.astro`, `hidden-grammar/toolkit*`, `hidden-grammar/modes/*`, `hidden-grammar/ai-analyze.astro` |
+| A — AI tools | `HiddenGrammarLayout` | `hidden-grammar.astro`, `hidden-grammar/for/*`, `hidden-grammar/toolkit*`, `hidden-grammar/modes/*`, `hidden-grammar/ai-analyze.astro` |
 | B — Reference | `BaseLayout` | `hidden-grammar/framework.astro`, `hidden-grammar/roots.astro`, `hidden-grammar/principles.astro` |
 
 ### Correct User Flow (Zone A)

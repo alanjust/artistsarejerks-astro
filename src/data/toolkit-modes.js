@@ -45,7 +45,7 @@ export const toolkitBuckets = [
         tagline: "Mid-stream check. Does what you're executing match what you set out to do?",
         status: 'live',
         phase: 'Studio Tools',
-        link: '/hidden-grammar/toolkit#analyzing',
+        link: '/hidden-grammar/modes/fine-art',
         detail: {
           what: "Analyzes only what is physically present and observable right now. Identifies which Roots and Principles are currently active, which appear unresolved, and where visual tension exists between elements. Reports the current state of the work — not problems to fix.",
           when: ["You're partway through and something feels off", "You've lost the thread of what you were after", "You want a diagnostic read, not a verdict", "You're not ready for a full critique — just a current-state assessment"],
