@@ -2,8 +2,8 @@
 import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { toolkitBuckets } from '../../../data/toolkit-modes.js';
 
-const making = toolkitBuckets.find(b => b.id === 'making');
-const analyzing = toolkitBuckets.find(b => b.id === 'analyzing');
+const making = toolkitBuckets.find(b => b.id === 'making')!;
+const analyzing = toolkitBuckets.find(b => b.id === 'analyzing')!;
 
 const liveMaking = making.modes.filter(m => m.status === 'live');
 const liveAnalyzing = analyzing.modes.filter(m => m.status === 'live');

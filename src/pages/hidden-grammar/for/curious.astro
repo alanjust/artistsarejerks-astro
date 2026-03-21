@@ -2,7 +2,7 @@
 import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { analysisModes } from '../../../data/analysisModes.js';
 
-const mode = analysisModes.find(m => m.id === 'just-curious');
+const mode = analysisModes.find(m => m.id === 'just-curious')!;
 ---
 
 <HiddenGrammarLayout

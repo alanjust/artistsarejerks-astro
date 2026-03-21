@@ -2,7 +2,7 @@
 import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { toolkitBuckets } from '../../../data/toolkit-modes.js';
 
-const talking = toolkitBuckets.find(b => b.id === 'talking');
+const talking = toolkitBuckets.find(b => b.id === 'talking')!;
 ---
 
 <HiddenGrammarLayout
