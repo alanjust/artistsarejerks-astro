@@ -83,71 +83,75 @@ const sections = [
 
         <p class="al-intro-kicker">Tools for looking at art. Starting with what you can actually see.</p>
 
+        <!-- Flow diagram -->
+        <div class="al-flow">
+          <p class="al-flow-label">huh?</p>
+          <div class="al-flow-steps">
+            <div class="al-flow-node al-flow-node--image">
+              <span class="al-flow-node-top">your image</span>
+            </div>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--upload">
+              <span class="al-flow-node-top">upload it</span>
+              <span class="al-flow-node-zone">drop here</span>
+            </div>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--analyze">
+              <span class="al-flow-node-btn">Analyze</span>
+            </div>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--results">
+              <span class="al-flow-node-top">analysis</span>
+              <span class="al-flow-node-line"></span>
+              <span class="al-flow-node-line al-flow-node-line--short"></span>
+            </div>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--question">
+              <span class="al-flow-node-input">why does the eye go there?</span>
+            </div>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--results">
+              <span class="al-flow-node-top">more</span>
+              <span class="al-flow-node-line"></span>
+              <span class="al-flow-node-line al-flow-node-line--short"></span>
+            </div>
+            <span class="al-flow-arrow al-flow-arrow--loop">↺ keep going</span>
+            <span class="al-flow-arrow">→</span>
+            <div class="al-flow-node al-flow-node--copy">
+              <span class="al-flow-node-btn al-flow-node-btn--copy">Copy</span>
+            </div>
+          </div>
+        </div>
+
         <div class="al-try-me">
           <a href="/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read" class="al-try-me-btn">
             <span class="al-try-me-label">Try Me</span>
             <span class="al-try-me-sub">upload anything</span>
           </a>
+          <a href="/hidden-grammar/start" class="al-start-btn">
+            <span class="al-start-label">Start Analyzing</span>
+          </a>
         </div>
 
         <p class="al-map-note">You're uploading a photo. The physical work of the original—its scale, surface, and material weight—doesn't come through. The analysis is real, but it's working from a reduced signal. A map, not the territory.</p>
 
-        <!-- Personas -->
-        <div class="al-personas">
-          <h2 class="al-personas-title">What are you here to do?</h2>
-          <p class="al-personas-intro">Pick the one that fits. Each path surfaces the tools most useful for where you are.</p>
+        <div class="al-section-rule"></div>
 
-          <div class="al-persona-cards">
+        <!-- Field guide -->
+        <p class="al-intro-body">Think about the last time a painting stopped you. Not a painting you understood — one that stopped you before you knew why. Something happened. You just don't know what.</p>
 
-            <a href="/hidden-grammar/for/artist" class="al-persona-card al-persona-card--artist">
-              <span class="al-persona-label">Working artist</span>
-              <p class="al-persona-body">You're mid-process, or you just finished something, and you want to know what it's actually doing — not what it means, but what it's doing. Where the eye goes. What's holding and what's sliding past.</p>
-              <p class="al-persona-body">That's a different question than most feedback gives you. Art Lab is built around it.</p>
-              <span class="al-persona-cta">Show me the studio tools →</span>
-            </a>
+        <p class="al-intro-body">That's the question Art Lab is built to answer.</p>
 
-            <a href="/hidden-grammar/for/curious" class="al-persona-card al-persona-card--curious">
-              <span class="al-persona-label">Just curious</span>
-              <p class="al-persona-body">You don't need a reason. You saw something—in a museum, online, somewhere—and it did something to you, and you want to know what.</p>
-              <p class="al-persona-body">Or you made something just for the pleasure of it, and you're curious what it's actually doing.</p>
-              <p class="al-persona-body">No agenda required. Start here and see what comes back.</p>
-              <span class="al-persona-cta">Browse the tools →</span>
-            </a>
+        <p class="al-intro-body">Upload an image — yours, someone else's, something you photographed at a museum and couldn't shake — and what comes back isn't interpretation. It's a structural read of what the work is actually doing to the eye in the first seconds of contact. Which edges are pulling attention. Where the eye moves and where it stalls. What the visual system is predicting, and whether the work confirms or violates that prediction.</p>
 
-            <a href="/hidden-grammar/for/educator" class="al-persona-card al-persona-card--edu">
-              <span class="al-persona-label">Educator, docent, presenter</span>
-              <p class="al-persona-body">You're standing in front of a work — or you will be, next Thursday, with a group of people who didn't necessarily choose to be there. You need something concrete to point at. Not interpretation. Not art-speak. Something you can actually say.</p>
-              <p class="al-persona-body">There are tools here built specifically for that.</p>
-              <span class="al-persona-cta">Show me the teaching tools →</span>
-            </a>
+        <p class="al-intro-body">So here's what that looks like in practice. A painter finds out why the eye keeps going to the wrong corner. A museum visitor gets language for what's happening in an encounter they couldn't name. A comic artist learns whether their visual register is reading the way they intend for the market they're targeting.</p>
 
-          </div>
-        </div>
+        <p class="al-intro-body">The framework running underneath all of this is called Hidden Grammar — fifty-four perceptual mechanisms describing how visual communication works at the level of the nervous system, before culture, before taste, before any of the interpretive frameworks we usually reach for. The tools run that framework against whatever you put in front of them.</p>
+
+        <p class="al-intro-body">What comes back is usually surprising.</p>
 
         <div class="al-section-rule"></div>
 
-        <!-- Origin story -->
-        <p class="al-intro-body">Here's a thing that happens. You're standing in front of a painting—or you've just finished one—and something is either happening or it isn't. A pull. A restlessness. Or just nothing: the work sitting there, inert.</p>
-
-        <p class="al-intro-body">And the language that comes back to you, from critics or teachers or your own internal monologue, is always about meaning. What the work represents. What the artist intended. What it says about the culture or the moment or the painter's biography.</p>
-
-        <p class="al-intro-body">That language can't tell you why something stopped you cold. It can't tell you why something that should be working isn't. Those aren't interpretation problems. They're visual problems—perceptual problems—happening at a level below meaning, before anyone has decided what the work is about.</p>
-
-        <p class="al-intro-body">Art Lab starts earlier in that sequence. Upload an image—yours, someone else's, something you photographed and couldn't shake—and what comes back is a read of the observable mechanics. Where attention goes first, and why. What's creating tension and what's releasing it. Which decisions are doing the work and which ones are coasting.</p>
-
-        <p class="al-intro-body">It doesn't tell you what the painting means. It shows you what it's doing.</p>
-
-        <a href="/hidden-grammar/why" class="al-text-link">Why I built this →</a>
-
-        <!-- Art world + brain flags -->
-        <div class="al-section-rule"></div>
-        <p class="al-intro-body">The art world measures success by price and placement. Which galleries, which critics, which biennials. Art Lab runs on a different measure: whether someone stops in front of your work long enough for something to happen to them.</p>
-
-        <p class="al-intro-body">That's not random. It's not taste. It comes down to specific, nameable visual decisions—decisions that land on the nervous system before the viewer has formed a single thought about the work. Before meaning. Before judgment. Before they've decided whether they're the kind of person who gets art.</p>
-
-        <p class="al-intro-body">Those decisions are learnable. That's what this is for.</p>
-
-        <a href="/hidden-grammar/grammar" class="al-text-link">How the visual grammar works →</a>
 
         <!-- Caution -->
         <div class="al-caution">
@@ -168,6 +172,8 @@ const sections = [
           <h2 class="al-sidebar-card-title">Reading</h2>
           <ul class="al-reading-list">
             <li><a href="/hidden-grammar/why" class="al-reading-link">Why I built this</a></li>
+            <li><a href="/hidden-grammar/keeping-score" class="al-reading-link">A different way to keep score</a></li>
+            <li><a href="/hidden-grammar/grammar" class="al-reading-link">The grammar of visual art</a></li>
           </ul>
         </div>
 
@@ -268,9 +274,139 @@ const sections = [
     text-decoration: underline;
   }
 
+  /* ── Flow diagram ───────────────────────────── */
+  .al-flow {
+    margin: 1.5rem 0 1.25rem;
+  }
+
+  .al-flow-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.625rem;
+  }
+
+  .al-flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .al-flow-arrow {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    flex-shrink: 0;
+  }
+
+  .al-flow-arrow--loop {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  .al-flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    border-radius: 6px;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
+    min-width: 56px;
+  }
+
+  .al-flow-node--image {
+    border: 1.5px dashed #cbd5e1;
+    background: #f8fafc;
+  }
+
+  .al-flow-node--upload {
+    border: 1.5px dashed #93c5fd;
+    background: #eff6ff;
+  }
+
+  .al-flow-node--analyze {
+    border: none;
+    background: transparent;
+  }
+
+  .al-flow-node--results {
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    min-width: 52px;
+    padding: 0.375rem 0.5rem;
+    gap: 0.2rem;
+  }
+
+  .al-flow-node--question {
+    border: 1.5px solid #e2e8f0;
+    background: #fafafa;
+    max-width: 110px;
+  }
+
+  .al-flow-node--copy {
+    border: none;
+    background: transparent;
+  }
+
+  .al-flow-node-top {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+  }
+
+  .al-flow-node-zone {
+    font-size: 0.625rem;
+    color: #93c5fd;
+    font-weight: 500;
+  }
+
+  .al-flow-node-btn {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: #16a34a;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .al-flow-node-btn--copy {
+    background: #475569;
+  }
+
+  .al-flow-node-line {
+    display: block;
+    height: 4px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 2px;
+  }
+
+  .al-flow-node-line--short {
+    width: 60%;
+  }
+
+  .al-flow-node-input {
+    font-size: 0.6rem;
+    color: #64748b;
+    font-style: italic;
+    text-align: center;
+    line-height: 1.3;
+  }
+
   /* ── Try Me ────────────────────────────────── */
   .al-try-me {
     margin: 1.25rem 0 0.75rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
   }
 
   .al-try-me-btn {
@@ -279,7 +415,7 @@ const sections = [
     align-items: baseline;
     justify-content: center;
     gap: 0.75rem;
-    width: 100%;
+    flex: 1;
     padding: 1rem 2rem;
     background: #16a34a;
     border-radius: 10px;
@@ -305,6 +441,31 @@ const sections = [
     font-weight: 500;
     color: #bbf7d0;
     letter-spacing: 0.01em;
+  }
+
+  .al-start-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 1rem 2rem;
+    background: transparent;
+    border: 2px solid #16a34a;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .al-start-btn:hover {
+    background: #f0fdf4;
+    transform: translateY(-1px);
+  }
+
+  .al-start-label {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #16a34a;
+    letter-spacing: -0.01em;
   }
 
   .al-section-rule {

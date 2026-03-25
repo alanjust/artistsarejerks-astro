@@ -1,0 +1,167 @@
+---
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout
+  title="Where do you want to start?"
+  description="Pick the path that fits. Each one surfaces the tools most useful for where you are."
+>
+  <div class="hg-page">
+
+    <div class="start-wrap">
+
+      <div class="start-header">
+        <h1 class="start-title">What are you here to do?</h1>
+        <p class="start-intro">Pick the one that fits. Each path surfaces the tools most useful for where you are.</p>
+      </div>
+
+      <div class="start-cards">
+
+        <a href="/hidden-grammar/for/artist" class="start-card start-card--artist">
+          <span class="start-card-label">Working artist</span>
+          <p class="start-card-body">You're mid-process, or you just finished something, and you want to know what it's actually doing — not what it means, but what it's doing. Where the eye goes. What's holding and what's sliding past.</p>
+          <p class="start-card-body">That's a different question than most feedback gives you. Art Lab is built around it.</p>
+          <span class="start-card-cta">Show me the studio tools →</span>
+        </a>
+
+        <a href="/hidden-grammar/for/curious" class="start-card start-card--curious">
+          <span class="start-card-label">Just curious</span>
+          <p class="start-card-body">You don't need a reason. You saw something—in a museum, online, somewhere—and it did something to you, and you want to know what.</p>
+          <p class="start-card-body">Or you made something just for the pleasure of it, and you're curious what it's actually doing.</p>
+          <p class="start-card-body">No agenda required. Start here and see what comes back.</p>
+          <span class="start-card-cta">Browse the tools →</span>
+        </a>
+
+        <a href="/hidden-grammar/for/educator" class="start-card start-card--edu">
+          <span class="start-card-label">Educator, docent, presenter</span>
+          <p class="start-card-body">You're standing in front of a work — or you will be, next Thursday, with a group of people who didn't necessarily choose to be there. You need something concrete to point at. Not interpretation. Not art-speak. Something you can actually say.</p>
+          <p class="start-card-body">There are tools here built specifically for that.</p>
+          <span class="start-card-cta">Show me the teaching tools →</span>
+        </a>
+
+      </div>
+
+      <div class="start-footer">
+        <a href="/hidden-grammar" class="start-back">← Back to Art Lab</a>
+      </div>
+
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .start-wrap {
+    max-width: 860px;
+    padding: 2.5rem 0;
+  }
+
+  .start-header {
+    margin-bottom: 2rem;
+  }
+
+  .start-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .start-intro {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .start-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .start-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1.25rem 1.375rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: #ffffff;
+  }
+
+  .start-card:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .start-card--artist  { border-left: 3px solid #7c3aed; }
+  .start-card--curious { border-left: 3px solid #d97706; }
+  .start-card--edu     { border-left: 3px solid #059669; }
+
+  .start-card-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.625rem;
+  }
+
+  .start-card--artist  .start-card-label { color: #6d28d9; }
+  .start-card--curious .start-card-label { color: #b45309; }
+  .start-card--edu     .start-card-label { color: #047857; }
+
+  .start-card-body {
+    font-size: 0.9375rem;
+    color: #475569;
+    line-height: 1.7;
+    margin: 0 0 0.5rem;
+  }
+
+  .start-card-body:last-of-type {
+    margin-bottom: 0.875rem;
+  }
+
+  .start-card-cta {
+    font-size: 0.875rem;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+
+  .start-card--artist  .start-card-cta { color: #6d28d9; }
+  .start-card--curious .start-card-cta { color: #b45309; }
+  .start-card--edu     .start-card-cta { color: #047857; }
+
+  .start-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .start-back {
+    font-size: 0.875rem;
+    color: #64748b;
+    text-decoration: none;
+  }
+
+  .start-back:hover {
+    color: #334155;
+  }
+
+  @media (max-width: 768px) {
+    .start-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 540px) {
+    .start-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
