@@ -1,6 +1,6 @@
 import { initImageUpload } from './image-upload';
 import { initPage, initAnalysis } from './analysis';
-import { initInterrogation, updateChatWindowContext } from './interrogation';
+import { initInterrogation } from './interrogation';
 import { initFeedback } from './feedback';
 import { initLensModifier } from './lens-modifier';
 
@@ -10,6 +10,3 @@ initAnalysis();
 initInterrogation();
 initFeedback();
 initLensModifier();
-
-// Set initial chat window state — no analysis yet on page load
-updateChatWindowContext(false);

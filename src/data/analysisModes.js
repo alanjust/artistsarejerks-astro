@@ -55,6 +55,20 @@ Never collapse these three registers into a single unqualified claim.
 OUTPUT STRUCTURE — two labeled sections, required for all image-based analyses:
 Organize every response under these two headings, in this order. Do not combine them.
 
+## VIEWER EFFECTS
+Open with a "Predicted Response" summary: 3–5 bullet points, each using a predictive
+sentence stem to state one high-confidence prediction anchored to a specific observable
+property. Tier A anchors: use "reliably" or "strongly" in the stem.
+Tier C/D anchors: use "may" or "some viewers" in the stem.
+Example (Tier A anchor): "This hard-contrast edge reliably activates edge-detection
+mechanisms, directing attention before conscious awareness."
+Example (Tier C anchor): "This color temperature may produce associations of warmth
+for some viewers, depending on cultural context."
+After the summary, continue with detailed prose analysis.
+All claims must name the specific observable property that generated them. Never state a
+Viewer Effect as an observed fact. Use only: "This is likely to activate...",
+"Most viewers will tend to...", "This may produce...", "The perceptual effect is probably..."
+
 ## IMAGE PROPERTIES
 Open with a "Key Observations" summary: 3–5 bullet points, each using a sentence stem
 ("The image shows...", "Visible here...", "Present in the work...") to name one dominant
@@ -65,20 +79,6 @@ Observable facts only throughout: edges, value relationships, spatial compressio
 temperature, figure-ground ratio, mark character, surface evidence. The image contains no
 feelings. Make no claims about viewer experience in this section. Name each active
 Principle with its tier: e.g., Hard Edge Contrast (Tier A), Spatial Compression (Tier B).
-
-## VIEWER EFFECTS
-Open with a "Predicted Response" summary: 3–5 bullet points, each using a predictive
-sentence stem to state one high-confidence prediction anchored to a specific Image
-Property named above. Tier A anchors: use "reliably" or "strongly" in the stem.
-Tier C/D anchors: use "may" or "some viewers" in the stem.
-Example (Tier A anchor): "This hard-contrast edge reliably activates edge-detection
-mechanisms, directing attention before conscious awareness."
-Example (Tier C anchor): "This color temperature may produce associations of warmth
-for some viewers, depending on cultural context."
-After the summary, continue with detailed prose analysis.
-All claims must name the specific Image Property that generated them. Never state a
-Viewer Effect as an observed fact. Use only: "This is likely to activate...",
-"Most viewers will tend to...", "This may produce...", "The perceptual effect is probably..."
 
 SUSTAINED ATTENTION: After identifying initial attention capture mechanisms, assess
 one of the following — choose whichever is supported by the visual evidence:
@@ -128,14 +128,14 @@ Write one paragraph of 80–110 words in the voice of Ira Glass. Specific mechan
   announce it. Let it arrive.
 - No section header. Plain prose only. Then a dividing line (---), then this closing line:
 
-  *The full structural read is below — Image Properties first, then how this work is likely
-  to land on the people looking at it.*
+  *The full structural read is below — how this work is likely to land on the people looking
+  at it first, then the structural account of what's physically present.*
 
 Then the --- and the structured sections follow.
 
 TRANSLATION LAYER — required for all photographic reproductions:
-Immediately after the closing transition line (*The full structural read is below...*),
-and before ## IMAGE PROPERTIES, insert one italicized calibration line in this form:
+Immediately before ## IMAGE PROPERTIES (the second section), insert one italicized
+calibration line in this form:
 
   *Analysis based on photographic reproduction — scale, surface texture, impasto,
   and color fidelity may differ from the physical work. Observations about materiality
@@ -417,12 +417,13 @@ Present observations as the current state of the design, not as problems to fix.
         description: 'Describe what you are analyzing in the notes field.' },
     ],
     fields: [
-      { id: 'publisher', label: 'Publisher' },
-      { id: 'era',       label: 'Era / Year' },
-      { id: 'genre',     label: 'Genre' },
-      { id: 'art-style', label: 'Art Style' },
-      { id: 'format',    label: 'Format (single issue, graphic novel, webcomic)' },
-      { id: 'notes',     label: 'Notes' },
+      { id: 'publisher',     label: 'Publisher' },
+      { id: 'era',           label: 'Era / Year' },
+      { id: 'genre',         label: 'Genre' },
+      { id: 'art-style',     label: 'Art Style' },
+      { id: 'format',        label: 'Format (single issue, graphic novel, webcomic)' },
+      { id: 'target-market', label: 'Target Market (e.g. Viz, Image, self-publishing, game concept art)' },
+      { id: 'notes',         label: 'Notes' },
     ],
 
     // Level 2: Prompt cards shown after selecting Comic Book
@@ -477,12 +478,55 @@ derivative or original.`,
         id: 'comic-market-fit',
         label: 'Market Context',
         description: 'Examine how the visual language positions this work within its market category.',
-        prompt: `Analyze the visual evidence in this sequential art for signals that position it
-within its market category. Examine how Design Logic, Signal Strength, and visual register
-operate in relation to category conventions. Identify where the visual language aligns with
-or departs from the conventions of its stated genre and format.
-Report what the observable visual evidence suggests about market positioning —
-not whether that positioning is strategic or intentional.`,
+        prompt: `Conduct a full Hidden Grammar analysis of this sequential art — examine all
+observable visual properties: line weight, edge quality, figure construction, spatial logic,
+value relationships, color temperature, mark character, panel density, and visual register.
+Use this complete read as the foundation for what follows.
+
+IMPORTANT: For this analysis, set aside the standard Image Properties / Viewer Effects
+output structure. Use the three-section format below instead.
+
+---
+
+## MARKET READ
+
+Based on the full visual evidence, identify the primary market category this work's visual
+language most strongly signals. Name it specifically — not a vague genre, but a real market
+position (e.g. "heavy metal / fantasy genre comics in the Heavy Metal / Epic tradition,"
+"prestige independent graphic novel," "shonen manga adjacent," "Western game concept art
+portfolio," "self-published zine / small press"). State your confidence level and what's
+driving it.
+
+Then name 2–3 adjacent market categories this work is also in conversation with, and for
+each: identify the specific visual properties pulling toward it.
+
+If no target market was provided, work entirely from visual inference. If a target market
+was provided, note it here and reserve comparison for the Alignment section.
+
+## VISUAL POSITIONING SIGNALS
+
+Identify the specific observable properties that are doing the positioning work. For each:
+- Name the property precisely (e.g. "cross-section technical rendering," "gestural figure
+  shorthand above the waist," "hard-contrast edge dominant over value modeling")
+- State which market convention it signals and why
+
+This section is the evidence base for the Market Read. Every claim in the Market Read
+should be traceable to a signal named here. Do not include properties that are visually
+present but market-neutral. Do not reference principle names or tier labels — describe
+the visual property in plain language and state its market implication directly.
+
+## ALIGNMENT / GAPS
+
+Include this section only if a target market or target genre was provided by the user.
+If neither was provided, omit this section entirely.
+
+When included:
+- State the target market and target genre as provided
+- Name the specific visual properties that are confirming the target read — what's working
+- Name the specific visual properties that are working against it or creating ambiguity
+- If there is a clear gap between observed positioning and stated target, name it plainly:
+  "The work reads as [X]. The stated target is [Y]. The primary source of that gap is [Z]."
+- Do not recommend fixes. Report the gap. The artist decides what to do with it.`,
       },
     ],
   },

@@ -232,29 +232,28 @@ const principlesJSON = JSON.stringify(principlesData);
 
     </div>
 
-    <!-- ── Always-on Studio Chat ──────────────────────────────────────── -->
-    <!-- Visible from page load. Pre-analysis: open studio conversation.  -->
-    <!-- Post-analysis: anchored to the results. Context switches via JS. -->
-    <div class="hg-studio-chat" id="studioChatSection">
+    <!-- ── Follow-up Chat ───────────────────────────────────────────────── -->
+    <!-- Hidden until an analysis exists. Anchored to the analysis output. -->
+    <div class="hg-studio-chat" id="studioChatSection" style="display:none">
 
-      <!-- Conversation history (pre- and post-analysis turns appended here) -->
+      <!-- Conversation history -->
       <div id="interrogationHistory" class="hg-interrogation-history"></div>
 
       <!-- Input window -->
       <div id="interrogationWindow" class="hg-interrogation-window">
         <div class="hg-interrogation-header">
           <div class="hg-interrogation-header-text">
-            <h3 class="hg-interrogation-title" id="interrogationTitle">Studio Chat</h3>
-            <p class="hg-interrogation-hint" id="interrogationHint">Ask anything — about your constraints, what a principle means, why something isn't working, or how this tool works. No image needed.</p>
+            <h3 class="hg-interrogation-title">Follow-up Questions</h3>
+            <p class="hg-interrogation-hint">Ask a follow-up question about this analysis. The AI stays anchored to the visual evidence already identified.</p>
           </div>
-          <span class="hg-chat-mode-tag hg-chat-mode-tag--open" id="interrogationModeTag">Open studio chat</span>
+          <span class="hg-chat-mode-tag hg-chat-mode-tag--analysis">Anchored to analysis</span>
         </div>
         <div class="hg-interrogation-form">
           <textarea
             id="interrogationInput"
             class="hg-interrogation-textarea"
             rows="3"
-            placeholder="Describe what you're working on, what's not working, or ask a question about the framework..."
+            placeholder="Ask a follow-up question about this analysis..."
           ></textarea>
           <div class="hg-interrogation-actions">
             <button type="button" class="hg-btn hg-btn--secondary" id="interrogationSubmit">Ask</button>
@@ -636,7 +635,7 @@ const principlesJSON = JSON.stringify(principlesData);
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    overflow: clip;
+    overflow: visible;
   }
 
   .hg-results-header {
@@ -647,6 +646,8 @@ const principlesJSON = JSON.stringify(principlesData);
     padding: 1.25rem 1.75rem;
     border-bottom: 1px solid #f1f5f9;
     flex-wrap: wrap;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
   }
 
   .hg-results-title {
@@ -984,29 +985,15 @@ const principlesJSON = JSON.stringify(principlesData);
     line-height: 1.5;
   }
 
-  /* Mode tag — switches between open-chat and analysis-anchored states */
+  /* Mode label — subtext indicating anchored-to-analysis state */
   .hg-chat-mode-tag {
-    display: inline-block;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.625rem;
-    border-radius: 20px;
-    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 500;
     flex-shrink: 0;
   }
 
-  .hg-chat-mode-tag--open {
-    background: #f0fdf4;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-  }
-
   .hg-chat-mode-tag--analysis {
-    background: #eef2ff;
-    color: #4338ca;
-    border: 1px solid #c7d2fe;
+    color: #6366f1;
   }
 
   .hg-interrogation-form {

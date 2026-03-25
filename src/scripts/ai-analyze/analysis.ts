@@ -1,7 +1,7 @@
 import { state } from './state';
 import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
 import { showLensModifier, resetLensModifier } from './lens-modifier';
-import { updateChatWindowContext, clearChatHistory } from './interrogation';
+import { showChatSection, hideChatSection } from './interrogation';
 
 // Types matching analysisModes.js structure
 interface SubMode {
@@ -281,8 +281,8 @@ export function initAnalysis() {
       showFeedbackWidget();
       showLensModifier();
 
-      // Switch chat window into post-analysis mode
-      updateChatWindowContext(true);
+      // Show follow-up chat section
+      showChatSection();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -329,18 +329,9 @@ export function initAnalysis() {
     resetFeedbackWidget();
     resetLensModifier();
 
-    // Clear chat history and reset chat window to open mode
-    clearChatHistory();
-    updateChatWindowContext(false);
-
-    // Clear interrogation history
-    const history = document.getElementById('interrogationHistory');
-    if (history) history.innerHTML = '';
+    // Hide follow-up chat and reset its contents
+    hideChatSection();
     state.outputs = [];
-
-    // Reset textarea
-    const interrogationInput = document.getElementById('interrogationInput') as HTMLTextAreaElement | null;
-    if (interrogationInput) interrogationInput.value = '';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });

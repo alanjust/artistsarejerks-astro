@@ -1,40 +1,21 @@
 import { state } from './state';
 import { wireCopyButton } from './analysis';
 
-// ── Conversation history for pre-analysis chat mode ────────────────────────
-// Maintains the multi-turn context so the AI remembers what was said.
-// Cleared when the user starts a fresh analysis.
-type ChatMessage = { role: 'user' | 'assistant'; content: string };
-let chatHistory: ChatMessage[] = [];
-
-export function clearChatHistory() {
-  chatHistory = [];
+// ── Show / hide the follow-up chat section ─────────────────────────────────
+export function showChatSection() {
+  const el = document.getElementById('studioChatSection');
+  if (el) el.style.display = '';
 }
 
-// ── Update the chat window UI based on whether an analysis exists ──────────
-export function updateChatWindowContext(hasAnalysis: boolean) {
-  const titleEl = document.getElementById('interrogationTitle');
-  const hintEl = document.getElementById('interrogationHint');
-  const textareaEl = document.getElementById('interrogationInput') as HTMLTextAreaElement | null;
-  const modeTagEl = document.getElementById('interrogationModeTag');
+export function hideChatSection() {
+  const el = document.getElementById('studioChatSection');
+  if (el) el.style.display = 'none';
 
-  if (hasAnalysis) {
-    if (titleEl) titleEl.textContent = 'Follow-up Questions';
-    if (hintEl) hintEl.textContent = 'Ask a follow-up question about this analysis. The AI stays anchored to the visual evidence already identified.';
-    if (textareaEl) textareaEl.placeholder = 'Ask a follow-up question about this analysis...';
-    if (modeTagEl) {
-      modeTagEl.textContent = 'Anchored to analysis';
-      modeTagEl.className = 'hg-chat-mode-tag hg-chat-mode-tag--analysis';
-    }
-  } else {
-    if (titleEl) titleEl.textContent = 'Studio Chat';
-    if (hintEl) hintEl.textContent = 'Ask anything — about your constraints, what a principle means, why something isn\'t working, or how this tool works. No image needed.';
-    if (textareaEl) textareaEl.placeholder = 'Describe what you\'re working on, what\'s not working, or ask a question about the framework...';
-    if (modeTagEl) {
-      modeTagEl.textContent = 'Open studio chat';
-      modeTagEl.className = 'hg-chat-mode-tag hg-chat-mode-tag--open';
-    }
-  }
+  // Clear history display and textarea
+  const history = document.getElementById('interrogationHistory');
+  if (history) history.innerHTML = '';
+  const textarea = document.getElementById('interrogationInput') as HTMLTextAreaElement | null;
+  if (textarea) textarea.value = '';
 }
 
 // ── Main interrogation initializer ────────────────────────────────────────
@@ -60,45 +41,22 @@ export function initInterrogation() {
     const question = textarea!.value.trim();
     if (!question) return;
 
-    const hasAnalysis = state.outputs.length > 0;
+    const priorAnalysis = state.outputs[0]?.raw;
+    if (!priorAnalysis) return;
 
     submitBtn!.disabled = true;
     textarea!.value = '';
     if (loadingEl) loadingEl.style.display = 'flex';
 
     try {
-      let requestBody: Record<string, any>;
-
-      if (hasAnalysis) {
-        // ── POST-ANALYSIS: anchored interrogation ───────────────────────────
-        // Uses the first output (main analysis) as context.
-        const priorAnalysis = state.outputs[0].raw;
-        requestBody = {
-          interrogationMode: true,
-          priorAnalysis,
-          userQuestion: question,
-        };
-      } else {
-        // ── PRE-ANALYSIS: open studio chat ─────────────────────────────────
-        // Collects any constraint fields that have been filled in.
-        const fields: Record<string, string> = {};
-        document.querySelectorAll('#dynamicFields [name], #fallbackFieldsSection [name]').forEach(el => {
-          const input = el as HTMLInputElement | HTMLTextAreaElement;
-          if (input.value.trim()) fields[input.name] = input.value.trim();
-        });
-
-        requestBody = {
-          chatMode: true,
-          userQuestion: question,
-          conversationHistory: chatHistory,
-          ...(Object.keys(fields).length > 0 ? { fields } : {}),
-        };
-      }
-
       const response = await fetch('/api/analyze-artwork', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          interrogationMode: true,
+          priorAnalysis,
+          userQuestion: question,
+        }),
       });
 
       const result = await response.json();
@@ -109,18 +67,12 @@ export function initInterrogation() {
         return;
       }
 
-      // Update history for chat mode (multi-turn context)
-      if (!hasAnalysis) {
-        chatHistory.push({ role: 'user', content: question });
-        chatHistory.push({ role: 'assistant', content: result.raw || '' });
-      }
-
       // Store output for copy
       const outputIndex = state.outputs.length;
       state.outputs.push({ raw: result.raw || '', html: result.analysis });
 
       // Render the turn
-      appendInterrogationTurn(question, result.analysis, outputIndex, historyEl, hasAnalysis);
+      appendInterrogationTurn(question, result.analysis, outputIndex, historyEl);
 
     } catch (error) {
       console.error('Chat error:', error);
@@ -137,19 +89,17 @@ function appendInterrogationTurn(
   question: string,
   answerHTML: string,
   outputIndex: number,
-  container: HTMLElement | null,
-  isAnalysisTurn: boolean
+  container: HTMLElement | null
 ) {
   if (!container) return;
 
   const copyBtnId = `copyInterrogation_${outputIndex}`;
-  const turnClass = isAnalysisTurn ? 'hg-interrogation-turn' : 'hg-interrogation-turn hg-interrogation-turn--chat';
 
   const turn = document.createElement('div');
-  turn.className = turnClass;
+  turn.className = 'hg-interrogation-turn';
   turn.innerHTML = `
     <div class="hg-interrogation-question">
-      <p class="hg-interrogation-question-label">${isAnalysisTurn ? 'Your question' : 'You'}</p>
+      <p class="hg-interrogation-question-label">Your question</p>
       <p>${escapeHtml(question)}</p>
     </div>
     <div class="hg-interrogation-answer">
