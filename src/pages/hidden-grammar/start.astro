@@ -39,6 +39,13 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
           <span class="start-card-cta">Show me the teaching tools →</span>
         </a>
 
+        <a href="/hidden-grammar/modes/market-context" class="start-card start-card--market">
+          <span class="start-card-label">Market context</span>
+          <p class="start-card-body">You've been making work and you have a sense of where it belongs — but you're not sure the visual language is actually saying what you think it's saying. Or you're trying to break into a new market and can't tell if you're reading the room.</p>
+          <p class="start-card-body">This tool names what your work is signaling and where that puts it.</p>
+          <span class="start-card-cta">Read the market →</span>
+        </a>
+
       </div>
 
       <div class="start-caution">
@@ -87,7 +94,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 
   .start-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
@@ -111,6 +118,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   .start-card--artist  { border-left: 3px solid #7c3aed; }
   .start-card--curious { border-left: 3px solid #d97706; }
   .start-card--edu     { border-left: 3px solid #059669; }
+  .start-card--market  { border-left: 3px solid #0891b2; }
 
   .start-card-label {
     display: block;
@@ -124,6 +132,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   .start-card--artist  .start-card-label { color: #6d28d9; }
   .start-card--curious .start-card-label { color: #b45309; }
   .start-card--edu     .start-card-label { color: #047857; }
+  .start-card--market  .start-card-label { color: #0e7490; }
 
   .start-card-body {
     font-size: 0.9375rem;
@@ -145,6 +154,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   .start-card--artist  .start-card-cta { color: #6d28d9; }
   .start-card--curious .start-card-cta { color: #b45309; }
   .start-card--edu     .start-card-cta { color: #047857; }
+  .start-card--market  .start-card-cta { color: #0e7490; }
 
   .start-caution {
     margin-top: 2.5rem;
@@ -208,13 +218,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     color: #334155;
   }
 
-  @media (max-width: 768px) {
-    .start-cards {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 540px) {
+  @media (max-width: 640px) {
     .start-cards {
       grid-template-columns: 1fr;
     }
