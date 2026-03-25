@@ -454,13 +454,21 @@ Report the current state of the work without speculating about intended completi
         id: 'comic-audience',
         label: 'Audience Assessment',
         description: 'Identify visual cues that signal intended age range, genre, and readership.',
-        prompt: `Analyze the visual evidence in this sequential art for cues that signal
-intended audience. Examine line weight, figure proportion, facial expression range,
-panel density, color palette, typographic register, and visual complexity
-as observable audience signals. Map these to the perceptual and developmental
-mechanisms that make certain visual languages accessible to specific age ranges.
-Report what the visual evidence communicates about intended readership,
-not whether it reaches that readership.`,
+        prompt: `Analyze the visual evidence in this sequential art for cues that signal intended audience. Ignore the standard Image Properties and Viewer Effects structure. Use this output format instead:
+
+## Audience Read
+
+State the most likely intended readership in plain terms — age range, reading level, genre expectations. Be specific. "All ages" is not an answer unless the visual evidence genuinely supports it. Two to four sentences.
+
+## Visual Signals
+
+List the observable cues that support this read. For each signal, name what you see and what it communicates about readership. Use plain prose, not bullets. Cover: line weight and figure construction, facial expression range and emotional register, panel density and pacing, color palette and contrast handling, typographic register if visible, and visual complexity overall.
+
+## Edge Cases or Contradictions
+
+If any visual decisions pull in a different direction — signals that skew older or younger than the dominant read, genre-crossover cues, tonal inconsistencies — name them here. If there are none, omit this section.
+
+Report only what the visual evidence communicates about intended readership, not whether the work successfully reaches that readership.`,
       },
       {
         id: 'comic-style-classification',
