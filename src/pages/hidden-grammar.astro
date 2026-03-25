@@ -84,6 +84,12 @@ const sections = [
 
         <p class="al-intro-kicker">Tools for looking at art. Starting with what you can actually see.</p>
 
+        <!-- Workflow bridge -->
+        <div class="al-wf-bridge">
+          <span class="al-wf-bridge-label">huh?</span>
+          <p class="al-wf-bridge-body">Here's what happens when you hit Try Me. Drop in an image — yours or anyone else's — and the engine runs it through the framework. Click any step to see what it does.</p>
+        </div>
+
         <!-- Workflow infographic -->
         <WorkflowInfographic />
 
@@ -247,6 +253,28 @@ const sections = [
 
   .al-text-link:hover {
     text-decoration: underline;
+  }
+
+  /* ── Workflow bridge ────────────────────────── */
+  .al-wf-bridge {
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .al-wf-bridge-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.375rem;
+  }
+
+  .al-wf-bridge-body {
+    font-size: 0.9375rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
   }
 
   /* ── Try Me ────────────────────────────────── */
