@@ -41,6 +41,15 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 
       </div>
 
+      <div class="start-caution">
+        <h2 class="start-caution-title">One thing before you pick a tool</h2>
+        <p class="start-caution-body">Art Lab makes things legible that were previously invisible. That's useful. It can also, if you're not careful, turn creating into a performance review.</p>
+        <p class="start-caution-body">If you're here to see your choices more clearly—to tighten, strengthen, understand what's working—it's for you. But if creating is mostly about pleasure or flow or finding your way, be careful. Once you start measuring, it's hard to stop. The measuring can become the point.</p>
+        <p class="start-caution-body">Some artists will call this reductive. They're not wrong—any analysis reduces a work. The question is whether what remains after the reduction is useful to you.</p>
+        <a href="/hidden-grammar/analysis-worth" class="start-caution-link">Does analysis destroy an artwork? The full answer →</a>
+        <p class="start-caution-kicker">Know what you came for.</p>
+      </div>
+
       <div class="start-footer">
         <a href="/hidden-grammar" class="start-back">← Back to Art Lab</a>
       </div>
@@ -136,6 +145,52 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   .start-card--artist  .start-card-cta { color: #6d28d9; }
   .start-card--curious .start-card-cta { color: #b45309; }
   .start-card--edu     .start-card-cta { color: #047857; }
+
+  .start-caution {
+    margin-top: 2.5rem;
+    padding: 1.5rem 1.75rem;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 3px solid #f59e0b;
+    border-radius: 0 10px 10px 0;
+  }
+
+  .start-caution-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #92400e;
+    margin: 0 0 0.875rem;
+  }
+
+  .start-caution-body {
+    font-size: 0.9375rem;
+    color: #78350f;
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+  }
+
+  .start-caution-link {
+    color: #92400e;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    font-size: 0.9375rem;
+    text-decoration: none;
+  }
+
+  .start-caution-link:hover {
+    text-decoration: underline;
+  }
+
+  .start-caution-kicker {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-style: italic;
+    color: #92400e;
+    margin: 0;
+  }
 
   .start-footer {
     margin-top: 2rem;

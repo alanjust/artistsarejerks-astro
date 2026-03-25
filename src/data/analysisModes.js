@@ -947,5 +947,83 @@ FORMAT: Prose only. No headers. No bullets. 250–350 words.`,
     ],
   },
 
+
+  // ───────────────────────────────────────────
+  // MARKET CONTEXT (STANDALONE)
+  // Domain-agnostic market positioning analysis.
+  // Works for any medium: fine art, illustration,
+  // comics, sculpture, photography, ceramics, etc.
+  // ───────────────────────────────────────────
+  {
+    id: 'market-context',
+    label: 'Market Context',
+    description: 'Where does this work sit in the current market? Identify the visual signals that are doing the positioning — and whether they match where you want to land.',
+    subModes: [],
+    fields: [
+      { id: 'medium',        label: 'Medium (e.g. oil painting, watercolor, digital illustration, sculpture, photography)' },
+      { id: 'target-market', label: 'Target Market (e.g. commercial gallery, self-publishing, editorial, licensing, art fair)' },
+      { id: 'target-genre',  label: 'Target Genre or Category (optional — e.g. contemporary abstraction, botanical illustration, concept art)' },
+      { id: 'notes',         label: 'Notes' },
+    ],
+    prompts: [
+      {
+        id: 'market-context-read',
+        label: 'Market Position Read',
+        description: 'Where does this work sit in the current market? What visual signals are doing the positioning?',
+        prompt: `Conduct a full Hidden Grammar analysis of this work — examine all
+observable visual properties: line quality, edge character, value relationships,
+color temperature, spatial logic, mark character, surface evidence, figure-ground,
+compositional structure, and visual register. Use this complete read as the
+foundation for what follows.
+
+IMPORTANT: For this analysis, set aside the standard Image Properties / Viewer Effects
+output structure. Use the three-section format below instead.
+
+---
+
+## MARKET READ
+
+Based on the full visual evidence, identify the primary market category this work's visual
+language most strongly signals. Name it specifically — not a vague genre, but a real market
+position (e.g. "mid-career contemporary painting in the secondary market," "editorial
+illustration for longform print," "fine art photography in the gallery market," "craft-fair
+adjacent ceramics," "concept art portfolio targeting AAA games"). State your confidence
+level and what's driving it.
+
+Then name 2–3 adjacent market categories this work is also in conversation with, and for
+each: identify the specific visual properties pulling toward it.
+
+If no target market was provided, work entirely from visual inference. If a target market
+was provided, note it here and reserve comparison for the Alignment section.
+
+## VISUAL POSITIONING SIGNALS
+
+Identify the specific observable properties that are doing the positioning work. For each:
+- Name the property precisely (e.g. "dry brush texture in the mid-tones," "shallow depth
+  of field with subject isolation," "flat graphic shadow shapes," "visible impasto in the
+  light passages")
+- State which market convention it signals and why
+
+This section is the evidence base for the Market Read. Every claim in the Market Read
+should be traceable to a signal named here. Do not include properties that are visually
+present but market-neutral. Describe each property in plain language and state its market
+implication directly — no principle names, no tier labels.
+
+## ALIGNMENT / GAPS
+
+Include this section only if a target market or target genre was provided by the user.
+If neither was provided, omit this section entirely.
+
+When included:
+- State the target market and target genre as provided
+- Name the specific visual properties that are confirming the target read — what's working
+- Name the specific visual properties that are working against it or creating ambiguity
+- If there is a clear gap between observed positioning and stated target, name it plainly:
+  "The work reads as [X]. The stated target is [Y]. The primary source of that gap is [Z]."
+- Do not recommend fixes. Report the gap. The artist decides what to do with it.`,
+      },
+    ],
+  },
+
 ];
 
