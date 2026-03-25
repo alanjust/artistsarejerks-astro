@@ -80,6 +80,17 @@
     <text class="step-num" x="628" y="106" text-anchor="middle">07</text>
   </svg>
 
+  <!-- Mobile pills nav (hidden on desktop) -->
+  <div class="wf-pills" id="wf-pills" role="tablist" aria-label="Workflow steps">
+    <button class="wf-pill" role="tab" data-step="0" aria-label="Step 1: Your image">01</button>
+    <button class="wf-pill" role="tab" data-step="1" aria-label="Step 2: Upload it">02</button>
+    <button class="wf-pill" role="tab" data-step="2" aria-label="Step 3: Analyze">03</button>
+    <button class="wf-pill" role="tab" data-step="3" aria-label="Step 4: Analysis">04</button>
+    <button class="wf-pill" role="tab" data-step="4" aria-label="Step 5: Why?">05</button>
+    <button class="wf-pill" role="tab" data-step="5" aria-label="Step 6: More">06</button>
+    <button class="wf-pill" role="tab" data-step="6" aria-label="Step 7: Copy">07</button>
+  </div>
+
   <!-- Detail panel -->
   <div class="wf-panel" id="wf-panel">
     <div class="wf-badge" id="wf-badge">01</div>
@@ -255,6 +266,74 @@
     line-height: 1.65;
     color: var(--color-text-secondary);
   }
+
+  /* ── Mobile pills ────────────────────────────────────────── */
+  .wf-pills {
+    display: none;
+  }
+
+  .wf-pill {
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border-secondary, #cbd5e1);
+    background: var(--color-background-primary, #ffffff);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary, #64748b);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .wf-pill.is-active {
+    background: var(--color-text-primary, #0f172a);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .wf-pill.is-active.is-green {
+    background: #16a34a;
+  }
+
+  .wf-pill.is-active.is-blue {
+    background: var(--color-background-info, #eff6ff);
+    color: var(--color-text-info, #2563eb);
+    border-color: var(--color-border-info, #93c5fd);
+  }
+
+  @media (max-width: 640px) {
+    .wf-svg {
+      display: none;
+    }
+
+    .wf-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 0 10px;
+      /* fade right edge to hint at overflow */
+      -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .wf-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Spacer to keep last pill partially visible */
+    .wf-pills::after {
+      content: '';
+      flex: 0 0 24px;
+    }
+  }
 </style>
 
 <script>
@@ -282,24 +361,36 @@
     current = i;
     const d = steps[i];
 
+    // Update detail panel
     const badge = document.getElementById("wf-badge");
     if (badge) {
       badge.textContent = d.num;
       badge.className = "wf-badge" + (d.badge ? " " + d.badge : "");
     }
-
     const titleEl = document.getElementById("wf-title");
     const descEl  = document.getElementById("wf-desc");
     if (titleEl) titleEl.textContent = d.title;
     if (descEl)  descEl.textContent  = d.desc;
 
+    // Update SVG nodes (desktop)
     for (let j = 0; j < 7; j++) {
       const node = document.getElementById("n" + j);
       if (node) node.style.opacity = j === i ? "1" : "0.4";
     }
+
+    // Update pills (mobile)
+    document.querySelectorAll<HTMLElement>(".wf-pill").forEach((pill, j) => {
+      pill.classList.toggle("is-active", j === i);
+      if (j === i) {
+        pill.classList.toggle("is-green", d.badge === "is-green");
+        pill.classList.toggle("is-blue",  d.badge === "is-blue");
+      } else {
+        pill.classList.remove("is-green", "is-blue");
+      }
+    });
   }
 
-  // Wire up click and keyboard handlers
+  // Wire up SVG node click and keyboard handlers (desktop)
   for (let i = 0; i < 7; i++) {
     const node = document.getElementById("n" + i);
     if (!node) continue;
@@ -309,6 +400,11 @@
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setStep(idx); }
     });
   }
+
+  // Wire up pill tap handlers (mobile)
+  document.querySelectorAll<HTMLElement>(".wf-pill").forEach((pill, i) => {
+    pill.addEventListener("click", () => setStep(i));
+  });
 
   // Start on step 0
   setTimeout(() => setStep(0), 80);
