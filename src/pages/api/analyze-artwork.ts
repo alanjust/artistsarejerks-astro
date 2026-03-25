@@ -46,6 +46,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       interrogationMode,
       explorationMode,
       chatMode,
+      lensMode,
       priorAnalysis,
       userQuestion,
       conversationHistory,
@@ -125,6 +126,64 @@ FORMAT: Number each angle (1, 2, 3). Plain prose per angle. No bullet sub-points
 
       return new Response(
         JSON.stringify({ success: true, analysis: responseHTML, raw: responseText }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ── LENS MODE ───────────────────────────────────────────────────────────
+    // Post-analysis: applies a critical/philosophical lens to the image.
+    // Has direct image access. Does NOT run basePrompt — lens output only.
+    if (lensMode === true) {
+      if (!image || !promptText || !priorAnalysis) {
+        return new Response(
+          JSON.stringify({ error: 'Lens mode requires image, promptText, and priorAnalysis' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const lensSystemPrompt = `You are applying a specific analytical lens to a visual work. A full Hidden Grammar analysis has already been completed. Your task is to produce only the lens output — not a summary of the prior analysis, not a repetition of Image Properties or Viewer Effects.
+
+Use the prior analysis as grounding context: reference specific observations where they are relevant to the lens, but do not reproduce them. Look directly at the image. The lens defines your output structure and scope entirely.
+
+Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`;
+
+      const lensImageData = image.split(',')[1];
+      const lensMediaType = image.split(';')[0].split(':')[1];
+
+      const lensMessage = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2500,
+        system: lensSystemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: lensMediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                  data: lensImageData,
+                },
+              },
+              {
+                type: 'text',
+                text: `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\n${promptText}`,
+              },
+            ],
+          },
+        ],
+      });
+
+      const lensText = lensMessage.content
+        .filter(block => block.type === 'text')
+        .map(block => ('text' in block ? block.text : ''))
+        .join('\n\n');
+
+      const lensHTML = await marked(lensText, { async: true });
+
+      return new Response(
+        JSON.stringify({ success: true, analysis: lensHTML, raw: lensText }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }

@@ -101,6 +101,7 @@ export function initLensModifier() {
     if (loadingEl) loadingEl.style.display = 'flex';
 
     try {
+      const priorAnalysis = state.outputs[0]?.raw || '';
       const response = await fetch('/api/analyze-artwork', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -108,7 +109,8 @@ export function initLensModifier() {
           image: state.uploadedImageData,
           fields: state.fields,
           promptText,
-          interrogationMode: false,
+          lensMode: true,
+          priorAnalysis,
         }),
       });
 
