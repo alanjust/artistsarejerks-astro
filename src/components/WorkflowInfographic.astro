@@ -95,6 +95,8 @@
         <span class="wf-card-num">01</span>
       </button>
 
+      <span class="wf-card-sep" aria-hidden="true">→</span>
+
       <!-- 02: Blue rect — UPLOAD IT -->
       <button class="wf-card" id="wc1" aria-label="Step 2: Upload it">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
@@ -105,6 +107,8 @@
         <span class="wf-card-num">02</span>
       </button>
 
+      <span class="wf-card-sep" aria-hidden="true">→</span>
+
       <!-- 03: Green pill — Analyze -->
       <button class="wf-card" id="wc2" aria-label="Step 3: Analyze">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
@@ -113,6 +117,8 @@
         </svg>
         <span class="wf-card-num">03</span>
       </button>
+
+      <span class="wf-card-sep" aria-hidden="true">→</span>
 
       <!-- 04: Dashed rect — ANALYSIS -->
       <button class="wf-card" id="wc3" aria-label="Step 4: Analysis">
@@ -124,6 +130,8 @@
         <span class="wf-card-num">04</span>
       </button>
 
+      <span class="wf-card-sep" aria-hidden="true">→</span>
+
       <!-- 05: Ellipse — why does the eye go there? -->
       <button class="wf-card" id="wc4" aria-label="Step 5: Why does the eye go there?">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
@@ -134,6 +142,8 @@
         <span class="wf-card-num">05</span>
       </button>
 
+      <span class="wf-card-sep" aria-hidden="true">→</span>
+
       <!-- 06: Dashed rect — MORE -->
       <button class="wf-card" id="wc5" aria-label="Step 6: More">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
@@ -143,6 +153,8 @@
         </svg>
         <span class="wf-card-num">06</span>
       </button>
+
+      <span class="wf-card-sep" aria-hidden="true">→</span>
 
       <!-- 07: Dark pill — Copy -->
       <button class="wf-card" id="wc6" aria-label="Step 7: Copy">
@@ -359,6 +371,19 @@
 
     .wf-cards::-webkit-scrollbar {
       display: none;
+    }
+
+    .wf-wrap {
+      margin-bottom: 1rem;
+    }
+
+    .wf-card-sep {
+      flex: 0 0 auto;
+      align-self: center;
+      font-size: 10px;
+      color: var(--color-text-tertiary, #94a3b8);
+      line-height: 1;
+      pointer-events: none;
     }
 
     .wf-cards-hint {
