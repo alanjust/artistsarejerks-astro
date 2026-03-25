@@ -82,6 +82,7 @@
 
   <!-- Mobile card nav (hidden on desktop) -->
   <div class="wf-cards-wrap">
+    <p class="wf-cards-hint">Swipe to explore →</p>
     <div class="wf-cards" id="wf-cards">
 
       <!-- 01: Diamond — YOUR IMAGE -->
@@ -153,7 +154,6 @@
       </button>
 
     </div>
-    <p class="wf-cards-hint">Swipe to explore →</p>
   </div>
 
   <!-- Detail panel -->
@@ -361,18 +361,26 @@
       display: none;
     }
 
+    .wf-cards-hint {
+      font-size: 11px;
+      color: var(--color-text-tertiary, #94a3b8);
+      letter-spacing: 0.04em;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
     .wf-card {
       flex: 0 0 calc(50% - 5px);
       scroll-snap-align: start;
       background: var(--color-background-primary, #ffffff);
       border: 1px solid var(--color-border-primary, #e2e8f0);
-      border-radius: 12px;
-      padding: 16px 12px 10px;
+      border-radius: 10px;
+      padding: 10px 8px 8px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       opacity: 0.35;
       transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -385,6 +393,7 @@
 
     .wf-card-svg {
       width: 100%;
+      max-height: 54px;
       height: auto;
       overflow: visible;
     }
@@ -394,14 +403,6 @@
       font-size: 10px;
       letter-spacing: 0.1em;
       color: var(--color-text-tertiary, #94a3b8);
-    }
-
-    .wf-cards-hint {
-      font-size: 11px;
-      color: var(--color-text-tertiary, #94a3b8);
-      letter-spacing: 0.04em;
-      margin: 6px 0 0;
-      text-align: right;
     }
   }
 </style>
