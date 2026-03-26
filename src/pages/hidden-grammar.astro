@@ -90,11 +90,11 @@ const sections = [
           <p class="al-wf-bridge-body">Here's what happens when you hit Try Me. Drop in an image — yours or anyone else's — and the engine runs it through the framework. Click any step to see what it does.</p>
         </div>
 
-        <!-- Workflow infographic label (desktop/tablet only) -->
-        <p class="al-wf-label">Interactive Illustration</p>
-
-        <!-- Workflow infographic -->
-        <WorkflowInfographic />
+        <!-- Workflow infographic: bordered container -->
+        <div class="al-wf-container">
+          <p class="al-wf-label">Interactive Illustration</p>
+          <WorkflowInfographic />
+        </div>
 
         <div class="al-try-me">
           <a href="/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read" class="al-try-me-btn">
@@ -258,20 +258,38 @@ const sections = [
     text-decoration: underline;
   }
 
-  /* ── Workflow label (desktop/tablet) ────────── */
+  /* ── Workflow container + label ─────────────── */
+  .al-wf-container {
+    border: 1px solid #16a34a;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem 1rem;
+    margin: 1rem 0;
+  }
+
+  /* Pull wf-wrap bottom margin inside the container */
+  .al-wf-container :global(.wf-wrap) {
+    margin-bottom: 0;
+  }
+
   .al-wf-label {
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #16a34a;
-    margin: 1rem 0 0.125rem;
+    margin: 0 0 0.25rem;
     text-align: center;
   }
 
   @media (max-width: 640px) {
     .al-wf-label {
       display: none;
+    }
+
+    .al-wf-container {
+      border: none;
+      padding: 0;
+      margin: 0.5rem 0;
     }
   }
 
