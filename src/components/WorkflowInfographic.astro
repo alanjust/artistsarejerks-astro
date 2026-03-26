@@ -8,39 +8,39 @@
 <div class="wf-wrap">
   <svg class="wf-svg" viewBox="0 0 680 122" aria-label="Art Lab workflow diagram" role="img">
     <defs>
-      <marker id="wfa" viewBox="0 0 10 10" refX="8" refY="5"
+      <marker id="wfa" viewBox="0 0 10 10" refX="7" refY="5"
         markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke"
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#64748b"
           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
     </defs>
 
     <!-- Edges: solid = user-initiated, dashed = interpretive territory -->
-    <line x1="68"  y1="65" x2="90"  y2="65" class="edge-solid" marker-end="url(#wfa)"/>
-    <line x1="174" y1="65" x2="196" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
-    <line x1="256" y1="65" x2="278" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
-    <line x1="362" y1="65" x2="384" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
-    <line x1="474" y1="65" x2="496" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
-    <line x1="576" y1="65" x2="598" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="68"  y1="65" x2="83"  y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="174" y1="65" x2="189" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="256" y1="65" x2="271" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="362" y1="65" x2="377" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
+    <line x1="474" y1="65" x2="489" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
+    <line x1="576" y1="65" x2="591" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
 
     <!-- 01 YOUR IMAGE — diamond, passive input -->
     <g class="wf-node" id="n0" role="button" tabindex="0" aria-label="Step 1: Your image">
       <polygon points="44,41 68,65 44,89 20,65" class="shape-passive"/>
-      <text class="label-mono" x="44" y="60" text-anchor="middle" dominant-baseline="central">YOUR</text>
-      <text class="label-mono" x="44" y="71" text-anchor="middle" dominant-baseline="central">IMAGE</text>
+      <text class="label-mono" x="44" y="65" text-anchor="middle" dominant-baseline="central">IMAGE</text>
     </g>
 
     <!-- 02 UPLOAD IT — blue-tinted rect -->
     <g class="wf-node" id="n1" role="button" tabindex="0" aria-label="Step 2: Upload it">
       <rect x="90" y="43" width="84" height="44" rx="8" class="shape-upload"/>
-      <text class="label-mono label-blue" x="132" y="59" text-anchor="middle" dominant-baseline="central" font-weight="500">UPLOAD IT</text>
-      <text class="label-mono label-blue" x="132" y="74" text-anchor="middle" dominant-baseline="central">↑ drop here</text>
+      <text class="label-mono label-blue" x="132" y="59" text-anchor="middle" dominant-baseline="central" font-weight="500">UPLOAD THE</text>
+      <text class="label-mono label-blue" x="132" y="74" text-anchor="middle" dominant-baseline="central">IMAGE</text>
     </g>
 
     <!-- 03 Analyze — green pill, primary action -->
     <g class="wf-node" id="n2" role="button" tabindex="0" aria-label="Step 3: Analyze">
-      <rect x="196" y="48" width="60" height="34" rx="17" class="shape-analyze"/>
-      <text class="label-action" x="226" y="65" text-anchor="middle" dominant-baseline="central">Analyze</text>
+      <rect x="196" y="48" width="60" height="34" rx="8" class="shape-analyze"/>
+      <text class="label-action label-action--sm" x="226" y="60" text-anchor="middle">Analyze</text>
+      <text class="label-action label-action--sm" x="226" y="73" text-anchor="middle">Image</text>
     </g>
 
     <!-- 04 ANALYSIS — passive rect, dashed -->
@@ -66,8 +66,9 @@
 
     <!-- 07 Copy — dark pill, final action -->
     <g class="wf-node" id="n6" role="button" tabindex="0" aria-label="Step 7: Copy">
-      <rect x="598" y="48" width="60" height="34" rx="17" class="shape-copy"/>
-      <text class="label-action" x="628" y="65" text-anchor="middle" dominant-baseline="central">Copy</text>
+      <rect x="598" y="48" width="60" height="34" rx="8" class="shape-copy"/>
+      <text class="label-action label-action--sm" x="628" y="60" text-anchor="middle">Copy</text>
+      <text class="label-action label-action--sm" x="628" y="73" text-anchor="middle">for Later</text>
     </g>
 
     <!-- Step numbers -->
@@ -82,15 +83,13 @@
 
   <!-- Mobile card nav (hidden on desktop) -->
   <div class="wf-cards-wrap">
-    <p class="wf-cards-hint">Swipe to explore →</p>
     <div class="wf-cards" id="wf-cards">
 
       <!-- 01: Diamond — YOUR IMAGE -->
       <button class="wf-card" id="wc0" aria-label="Step 1: Your image">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
           <polygon points="44,4 84,28 44,52 4,28" class="shape-passive"/>
-          <text class="label-mono" x="44" y="24" text-anchor="middle">YOUR</text>
-          <text class="label-mono" x="44" y="36" text-anchor="middle">IMAGE</text>
+          <text class="label-mono" x="44" y="30" text-anchor="middle">IMAGE</text>
         </svg>
         <span class="wf-card-num">01</span>
       </button>
@@ -101,8 +100,8 @@
       <button class="wf-card" id="wc1" aria-label="Step 2: Upload it">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
           <rect x="4" y="8" width="80" height="40" rx="8" class="shape-upload"/>
-          <text class="label-mono label-blue" x="44" y="24" text-anchor="middle" font-weight="500">UPLOAD IT</text>
-          <text class="label-mono label-blue" x="44" y="37" text-anchor="middle">↑ drop here</text>
+          <text class="label-mono label-blue" x="44" y="24" text-anchor="middle" font-weight="500">UPLOAD THE</text>
+          <text class="label-mono label-blue" x="44" y="37" text-anchor="middle">IMAGE</text>
         </svg>
         <span class="wf-card-num">02</span>
       </button>
@@ -112,8 +111,9 @@
       <!-- 03: Green pill — Analyze -->
       <button class="wf-card" id="wc2" aria-label="Step 3: Analyze">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
-          <rect x="14" y="11" width="60" height="34" rx="17" class="shape-analyze"/>
-          <text class="label-action" x="44" y="28" text-anchor="middle" dominant-baseline="central">Analyze</text>
+          <rect x="14" y="11" width="60" height="34" rx="8" class="shape-analyze"/>
+          <text class="label-action label-action--sm" x="44" y="24" text-anchor="middle">Analyze</text>
+          <text class="label-action label-action--sm" x="44" y="36" text-anchor="middle">Image</text>
         </svg>
         <span class="wf-card-num">03</span>
       </button>
@@ -159,8 +159,9 @@
       <!-- 07: Dark pill — Copy -->
       <button class="wf-card" id="wc6" aria-label="Step 7: Copy">
         <svg class="wf-card-svg" viewBox="0 0 88 56" aria-hidden="true">
-          <rect x="14" y="11" width="60" height="34" rx="17" class="shape-copy"/>
-          <text class="label-action" x="44" y="28" text-anchor="middle" dominant-baseline="central">Copy</text>
+          <rect x="14" y="11" width="60" height="34" rx="8" class="shape-copy"/>
+          <text class="label-action label-action--sm" x="44" y="24" text-anchor="middle">Copy</text>
+          <text class="label-action label-action--sm" x="44" y="36" text-anchor="middle">for Later</text>
         </svg>
         <span class="wf-card-num">07</span>
       </button>
@@ -272,6 +273,10 @@
     font-weight: 500;
     letter-spacing: 0.04em;
     fill: #ffffff;
+  }
+
+  .label-action--sm {
+    font-size: 8.5px;
   }
 
   .step-num {
@@ -386,14 +391,6 @@
       pointer-events: none;
     }
 
-    .wf-cards-hint {
-      font-size: 11px;
-      color: var(--color-text-tertiary, #94a3b8);
-      letter-spacing: 0.04em;
-      margin: 0 0 8px;
-      text-align: center;
-    }
-
     .wf-card {
       flex: 0 0 calc(50% - 5px);
       scroll-snap-align: start;
@@ -434,11 +431,11 @@
 
 <script>
   const steps = [
-    { num: "01", badge: "",       title: "Your image",
+    { num: "01", badge: "",       title: "Image",
       desc: "Start with any artwork — painting, photograph, installation, or print. The tool reads what you can see. No art history background required, no context needed beyond the image itself." },
-    { num: "02", badge: "is-blue", title: "Upload it",
+    { num: "02", badge: "is-blue", title: "Upload the image",
       desc: "Drag your image into the drop zone, or click to browse. JPEG, PNG, and WebP all work. No account, no login. Your image stays in the session and is never stored." },
-    { num: "03", badge: "is-green", title: "Analyze",
+    { num: "03", badge: "is-green", title: "Analyze Image",
       desc: "The engine runs your image through the Hidden Grammar framework — 54 principles of visual form organized by perceptual robustness. Observable facts come first. Interpretation follows with evidence." },
     { num: "04", badge: "",       title: "Analysis",
       desc: "Results arrive in seconds. Observable claims are kept strictly separate from interpretive ones. Every principle cited is named. The language stays plain — jargon only when it earns its place." },
@@ -446,7 +443,7 @@
       desc: "The analysis answers the core question: what visual forces are at work, and why does the nervous system respond the way it does? Formal decisions that once felt intuitive become legible." },
     { num: "06", badge: "",       title: "More",
       desc: "Not satisfied? Run it again with a different lens — Hostile Witness, Formal, Material, Temporal, and more. Each lens surfaces a different layer of what the image is doing and why." },
-    { num: "07", badge: "is-dark", title: "Copy",
+    { num: "07", badge: "is-dark", title: "Copy for Later",
       desc: "Take the text. Use it in an artist statement, exhibition label, studio notes, or as a starting point for a conversation. The analysis is yours — not a verdict, a tool." },
   ];
 
