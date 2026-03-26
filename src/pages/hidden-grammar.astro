@@ -82,17 +82,17 @@ const sections = [
       <div class="al-intro">
         <h1 class="al-intro-title">Art Lab</h1>
 
-        <p class="al-intro-kicker">Tools for looking at art. Starting with what you can actually see.</p>
+        <p class="al-intro-kicker">Tools for looking at art.</p>
 
         <!-- Workflow bridge -->
         <div class="al-wf-bridge">
-          <span class="al-wf-bridge-label">huh?</span>
-          <p class="al-wf-bridge-body">Here's what happens when you hit Try Me. Drop in an image — yours or anyone else's — and the engine runs it through the framework. Click any step to see what it does.</p>
+          <span class="al-wf-bridge-label">"huh?"</span>
+          <p class="al-wf-bridge-body">Here's what happens when you hit the <strong><em>Try Me</em></strong> green button below <span class="al-wf-bridge-cta">"<strong>HOW THIS WORKS:</strong> Interactive Illustration"</span></p>
         </div>
 
         <!-- Workflow infographic: bordered container -->
         <div class="al-wf-container">
-          <p class="al-wf-label">Interactive Illustration</p>
+          <p class="al-wf-label"><strong>HOW THIS WORKS</strong><span class="al-wf-label-light">: INTERACTIVE ILLUSTRATION</span></p>
           <WorkflowInfographic />
         </div>
 
@@ -106,7 +106,7 @@ const sections = [
           </a>
         </div>
 
-        <p class="al-map-note">You're uploading a photo. The physical work of the original—its scale, surface, and material weight—doesn't come through. The analysis is real, but it's working from a reduced signal. A map, not the territory.</p>
+        <p class="al-map-note"><strong>Digital Image Upload Considerations:</strong> <em class="al-map-note-body">Remember, you are uploading a digital image, not the actual artwork. The analysis is real, but some details will be lost.</em></p>
 
         <div class="al-section-rule"></div>
 
@@ -223,7 +223,7 @@ const sections = [
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.5rem;
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
@@ -235,7 +235,9 @@ const sections = [
     letter-spacing: 0.04em;
     color: #b45309;
     line-height: 1.6;
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
   }
 
   .al-intro-body {
@@ -272,13 +274,17 @@ const sections = [
   }
 
   .al-wf-label {
-    font-size: 0.6875rem;
+    font-size: 0.875rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #16a34a;
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.1rem;
     text-align: center;
+  }
+
+  .al-wf-label-light {
+    font-weight: 300;
   }
 
   @media (max-width: 640px) {
@@ -289,12 +295,12 @@ const sections = [
 
   /* ── Workflow bridge ────────────────────────── */
   .al-wf-bridge {
-    margin: 1.5rem 0 0.5rem;
+    margin: 0.5rem 0 0.5rem;
   }
 
   .al-wf-bridge-label {
     display: block;
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -307,6 +313,14 @@ const sections = [
     color: #64748b;
     line-height: 1.6;
     margin: 0;
+  }
+
+  .al-wf-bridge-body strong {
+    color: #16a34a;
+  }
+
+  .al-wf-bridge-cta {
+    color: #16a34a;
   }
 
   /* ── Try Me ────────────────────────────────── */
@@ -390,6 +404,11 @@ const sections = [
     color: #16a34a;
     line-height: 1.6;
     margin: 0 0 2rem;
+  }
+
+  .al-map-note-body {
+    font-weight: 300;
+    font-style: italic;
   }
 
   /* ── Persona cards ─────────────────────────── */
