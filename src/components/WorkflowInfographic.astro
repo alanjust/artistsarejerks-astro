@@ -83,7 +83,9 @@
 
   <!-- Mobile card nav (hidden on desktop) -->
   <div class="wf-cards-wrap">
-    <div class="wf-cards" id="wf-cards">
+    <div class="wf-scroll-zone">
+      <button class="wf-nav-btn" id="wf-prev" aria-label="Previous step">&#8249;</button>
+      <div class="wf-cards" id="wf-cards">
 
       <!-- 01: Diamond — YOUR IMAGE -->
       <button class="wf-card" id="wc0" aria-label="Step 1: Your image">
@@ -166,6 +168,8 @@
         <span class="wf-card-num">07</span>
       </button>
 
+      </div>
+      <button class="wf-nav-btn" id="wf-next" aria-label="Next step">&#8250;</button>
     </div>
   </div>
 
@@ -197,14 +201,27 @@
   /* ── Node interaction ────────────────────────────────────── */
   .wf-node {
     cursor: pointer;
-    transition: opacity 0.18s ease;
-    opacity: 0.45;
+    transition: opacity 0.18s ease, filter 0.15s ease;
+    opacity: 0.6;
+  }
+
+  /* Selected: hairline blue glow */
+  .wf-node.is-active {
+    filter: drop-shadow(0 0 0.5px rgba(147, 197, 253, 0.75));
+  }
+
+  /* Hover on unselected: slightly more intense */
+  .wf-node:not(.is-active):hover {
+    filter: drop-shadow(0 0 2px rgba(96, 165, 250, 1));
+  }
+
+  /* Active border fades when hovering a different node */
+  .wf-svg:has(.wf-node:not(.is-active):hover) .wf-node.is-active {
+    filter: none;
   }
 
   .wf-node:focus-visible {
-    outline: 2px solid var(--color-border-info, #93c5fd);
-    outline-offset: 4px;
-    border-radius: 4px;
+    outline: none;
   }
 
   /* ── Edge types ──────────────────────────────────────────── */
@@ -365,11 +382,12 @@
 
     .wf-cards {
       display: flex;
+      width: 100%;
       gap: 10px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      padding: 4px 0 4px;
+      padding: 4px 0;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -383,13 +401,43 @@
     }
 
     .wf-card-sep {
-      flex: 0 0 auto;
-      align-self: center;
-      font-size: 10px;
-      color: var(--color-text-tertiary, #94a3b8);
+      display: none;
+    }
+
+    .wf-scroll-zone {
+      position: relative;
+      width: 100%;
+    }
+
+    .wf-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+      color: #475569;
+      font-size: 18px;
       line-height: 1;
+      padding: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .wf-nav-btn:disabled {
+      opacity: 0;
       pointer-events: none;
     }
+
+    #wf-prev { left: 4px; }
+    #wf-next { right: calc(50%); }
 
     .wf-card {
       flex: 0 0 calc(50% - 5px);
@@ -403,7 +451,7 @@
       flex-direction: column;
       align-items: center;
       gap: 5px;
-      opacity: 0.35;
+      opacity: 0.6;
       transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -465,16 +513,33 @@
     if (titleEl) titleEl.textContent = d.title;
     if (descEl)  descEl.textContent  = d.desc;
 
-    // Update SVG nodes (desktop)
+    // Update SVG nodes (desktop/tablet)
     for (let j = 0; j < 7; j++) {
       const node = document.getElementById("n" + j);
-      if (node) node.style.opacity = j === i ? "1" : "0.4";
+      if (!node) continue;
+      node.classList.toggle("is-active", j === i);
+      node.style.opacity = j === i ? "1" : "0.6";
     }
 
     // Update cards (mobile)
     document.querySelectorAll<HTMLElement>(".wf-card").forEach((card, j) => {
       card.classList.toggle("is-active", j === i);
     });
+
+    // Update arrow visibility
+    const prevBtn = document.getElementById("wf-prev") as HTMLButtonElement | null;
+    const nextBtn = document.getElementById("wf-next") as HTMLButtonElement | null;
+    if (prevBtn) prevBtn.disabled = i <= 0;
+    if (nextBtn) nextBtn.disabled = i >= 6;
+  }
+
+  function scrollToCard(i: number) {
+    const cards = document.querySelectorAll<HTMLElement>(".wf-card");
+    const card = cards[i];
+    const scrollEl = document.getElementById("wf-cards");
+    if (!card || !scrollEl) return;
+    scrollEl.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
+    setStep(i);
   }
 
   // Wire up SVG node click and keyboard handlers (desktop)
@@ -496,6 +561,12 @@
     });
   });
 
+  // Arrow button nav (mobile)
+  const prevBtn = document.getElementById("wf-prev") as HTMLButtonElement | null;
+  const nextBtn = document.getElementById("wf-next") as HTMLButtonElement | null;
+  if (prevBtn) prevBtn.addEventListener("click", () => { if (current > 0) scrollToCard(current - 1); });
+  if (nextBtn) nextBtn.addEventListener("click", () => { if (current < 6) scrollToCard(current + 1); });
+
   // Detect active card from scroll position (mobile)
   const cardsEl = document.getElementById("wf-cards");
   if (cardsEl) {
@@ -515,6 +586,6 @@
     });
   }
 
-  // Start on step 0
+  // Start on step 0 — pulse begins on node 1 (Upload the Image)
   setTimeout(() => setStep(0), 80);
 </script>
