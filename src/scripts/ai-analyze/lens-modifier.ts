@@ -1,4 +1,5 @@
 import { state } from './state';
+import { stripTiers, linkPrincipleNames } from './analysis';
 
 interface LensEntry {
   id: string;
@@ -180,7 +181,7 @@ function appendLensTurn(
       <span class="hg-lens-turn-thinker">${lens.thinker}</span>
     </div>
     <div class="hg-interrogation-answer">
-      <div class="hg-interrogation-answer-content">${answerHTML}</div>
+      <div class="hg-interrogation-answer-content">${stripTiers(answerHTML)}</div>
       <div class="hg-copy-row">
         <button class="hg-btn hg-btn--copy" id="${copyBtnId}">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -194,6 +195,8 @@ function appendLensTurn(
   `;
 
   container.appendChild(turn);
+  const answerContent = turn.querySelector('.hg-interrogation-answer-content') as HTMLElement | null;
+  if (answerContent) linkPrincipleNames(answerContent);
   turn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   // Wire copy button

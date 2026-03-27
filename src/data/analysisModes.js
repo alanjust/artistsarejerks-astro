@@ -38,6 +38,7 @@ NEVER:
 - Imply intent on the part of the maker.
 - Make claims about what the work "tries" to do or "fails" to do.
 - Offer unsolicited advice or improvement suggestions.
+- Use the term "Hidden Grammar" in output. If you need to refer to this analytical system or tool, use "Art Lab" instead.
 
 LANGUAGE CONVENTIONS — three registers, never collapsed:
 - What is physically present in the image: anchor with "The image shows...", "Visible here...", "Present in the work..."
@@ -156,7 +157,7 @@ All mode-specific instructions below operate strictly within these constraints.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const interrogationBase = `
-You are responding to a follow-up question about the Hidden Grammar analysis above.
+You are responding to a follow-up question about the Art Lab analysis above.
 
 ALWAYS:
 - Stay anchored to the visual evidence already identified in the analysis.
@@ -168,8 +169,9 @@ ALWAYS:
 NEVER:
 - Introduce new interpretations not grounded in the visual evidence already observed.
 - Use evaluative language (good, bad, better, worse).
-- Abandon the Hidden Grammar framework in favor of general art advice.
+- Abandon the Art Lab analytical framework in favor of general art advice.
 - Treat the follow-up as a fresh prompt disconnected from the prior analysis.
+- Use the term "Hidden Grammar" in output.
 `;
 
 
@@ -247,7 +249,7 @@ CLOSE: End with one sentence—not a pitch—that honestly states what a deeper 
   {
     id: 'fine-art',
     label: 'Fine Art',
-    description: 'Analyze painting, sculpture, works on paper, photography, printmaking, and installation through the Hidden Grammar framework.',
+    description: 'Analyze painting, sculpture, works on paper, photography, printmaking, and installation through the Art Lab framework.',
     subModes: [
       { id: 'fine-art-painting',        label: 'Painting' },
       { id: 'fine-art-sculpture',       label: 'Sculpture' },
@@ -273,7 +275,7 @@ CLOSE: End with one sentence—not a pitch—that honestly states what a deeper 
       {
         id: 'fine-art-comprehensive',
         label: 'Comprehensive Analysis',
-        description: 'Full Hidden Grammar audit across all 11 Roots and relevant Principles.',
+        description: 'Full Art Lab audit across all 11 Roots and relevant Principles.',
         prompt: `Conduct a full Hidden Grammar analysis of this work.
 Work through all 11 Roots systematically: Design Logic, Tactile Execution, Structural Integrity,
 Atmosphere, Visual Hierarchy, Narrative Sequence, Signal Strength, Gravitas, Entropy,
@@ -431,7 +433,7 @@ Present observations as the current state of the design, not as problems to fix.
       {
         id: 'comic-comprehensive',
         label: 'Comprehensive Sequential Analysis',
-        description: 'Full Hidden Grammar analysis adapted for sequential art and panel structure.',
+        description: 'Full Art Lab analysis adapted for sequential art and panel structure.',
         prompt: `Conduct a Hidden Grammar analysis of this sequential art using all relevant Roots.
 Give particular attention to Narrative Sequence as a primary root alongside Design Logic
 and Visual Hierarchy. Analyze panel composition, page flow, gutter relationships,
@@ -571,7 +573,7 @@ When included:
       {
         id: 'illus-comprehensive',
         label: 'Comprehensive Analysis',
-        description: 'Full Hidden Grammar analysis in the context of the commercial brief.',
+        description: 'Full Art Lab analysis in the context of the commercial brief.',
         prompt: `Conduct a Hidden Grammar analysis of this commercial illustration.
 Evaluate Signal Strength, Visual Hierarchy, and Atmosphere as primary roots,
 given that commercial illustration must communicate within its reproduction context.
@@ -808,19 +810,234 @@ Do not evaluate whether material agency is desirable. Describe what it produces.
 
       // ── Phase 3: Simulation & Context ─────────────────────────────────────,
 
+      {
+        id: 'full-audit',
+        label: 'Full Art Lab Audit',
+        description: 'The complete Art Lab analytical procedure. Six sections, strict gates, full 11-Root and 54-Principle coverage. Intake through verdict.',
+        prompt: `Run the Full Art Lab Audit on this work.
+
+This is the complete analytical procedure — six sections, strict gates, full coverage of all 11 Roots and relevant Principles from the 54. It separates raw observation from interpretation at every stage and applies the RAP Protocol and Entropy Gate as hard checkpoints.
+
+The basePrompt hard rules apply in full: ALWAYS/NEVER constraints, three-register language conventions, opening paragraph, translation layer. The standard Viewer Effects / Image Properties two-section output structure is replaced by the six-section architecture below.
+
+VOICE THROUGH ALL SECTIONS:
+The opening paragraph follows the Ira Glass register as required by the basePrompt.
+Within each section: Adam Moss register. Specific, direct, concrete. Earned observations only — no padding, no throat-clearing, no explaining why something matters before showing that it does. Trust the reader.
+Every section is instructional about mechanism. The question animating each section is: here's what this is doing, and here's the perceptual logic behind it. Not: here's what you should change.
+
+---
+
+## Intake
+
+What you're working with. Work identification from provided fields only — title, artist, medium, format, date, dimensions. Note the viewing context (digital reproduction or in-person encounter). One sentence of reproduction calibration if this is a digital image: which observations will be treated as conditional until confirmed against the physical work. Keep this section to three to five sentences. No interpretation.
+
+---
+
+## Evidence
+
+[RAP Gate: No interpretation in this section. No meaning claims. Observable facts only.]
+
+The raw visual record of what is physically present in the work.
+
+Work through the visual field systematically. Compositional structure. Spatial relationships. Edge behavior — hard, soft, lost, found. Value distribution across the picture plane. Color relationships and temperature. Mark character: how the marks were physically made, their pressure and direction. Surface evidence: layering, texture, material behavior. Figure-ground dynamics. Scale relationships if determinable from the reproduction.
+
+For each observation, do three things: locate it in the work (upper-left, midground, bottom edge, etc.), name the specific visual property (hard-contrast edge, warm-to-cool gradient, compressed spatial plane, directional impasto, etc.), and assign it a tier — Tier A for mechanisms that reliably activate regardless of viewer, Tier B for well-supported perceptual effects, Tier C for context-dependent responses, Tier D for speculative readings.
+
+Write in observation sentences, not bullets. Make the tier visible in the language: Tier A observations earn words like "reliably" and "strongly." Tier C observations earn "may" and "for some viewers."
+
+The evidence section names mechanism — what each property does to the perceptual system — but holds interpretation as hypothesis. It does not claim meaning. It says what is present and what that typically triggers, and stops there.
+
+Produce at least 10 distinct, independently supportable observations before proceeding.
+
+EVIDENCE GATE: Confirm at least 10 observations before proceeding to Principle Mapping. If the visual information is insufficient, state the limitation and proceed with what is available, noting the gap.
+
+---
+
+## Principle Mapping
+
+[RAP Gate: Each claim references at least two observations from Evidence.]
+
+Map the active Principles from the 54 to the evidence above. Do not list all 54. List only those that are present — meaning each one named here must be directly supported by at least two observations from the Evidence section.
+
+For each active Principle: name it, state in one to three sentences what it is doing specifically in this work, name the observations it draws from, and state the likely perceptual effect on the viewer. Write in Moss register: declarative, specific, no explanatory scaffolding. Don't announce that a principle is "notable" — just say what it does.
+
+After mapping active Principles, note the significant absences: Principles that are suppressed, avoided, or structurally blocked — mechanisms the format typically activates that this work explicitly does not. Absence is as instructive as presence. One sentence per significant absence.
+
+---
+
+## Checks
+
+Three gates, run in sequence.
+
+**Entropy Check**
+
+Is visual entropy — noise, cancellation of signal, competing Principles without hierarchy — the dominant condition of this work? Not a flaw to diagnose but a structural reading: does the work resolve to a state where no single mechanism has priority?
+
+If entropy is dominant: state plainly what the entropy consists of and where in the work it lives. The audit ends here. Skip Root Claims and proceed to the Verdict section, reporting entropy dominance as the structural finding.
+
+If entropy is not dominant: state briefly what provides the structural hierarchy that keeps entropy subordinate. Name the specific mechanisms or relationships. Then proceed.
+
+**RAP Protocol Check**
+
+Review the interpretive claims made so far. For each claim that moves from observable property to meaning or intent: does it carry at least two independent observations from the Evidence section? If yes, the claim stands. If no, downgrade it to hypothesis and label it explicitly. This is not a penalty — it is the audit locating where it can be certain and where it cannot.
+
+**Fidelity Check** (digital reproductions only)
+
+Identify which claims from the Principle Mapping section are conditional on the reproduction's color accuracy, surface fidelity, or scale. Note them by Principle name. Do not remove them — but flag that they require in-person confirmation to move from hypothesis to finding.
+
+---
+
+## Root Claims
+
+[RAP Gate: Each Root claim supported by at least two Principle mappings from the prior section. Entropy Gate must have passed before this section runs.]
+
+Assess each of the 11 Roots: Design Logic, Tactile Execution, Structural Integrity, Atmosphere, Visual Hierarchy, Narrative Sequence, Signal Strength, Gravitas, Entropy, Materiality, Format.
+
+For each Root that is active, write one compact paragraph: What is this Root doing here — dominant, supporting, or present but subordinate? Which specific Principles from the mapping section support this reading? What does the Root's activity, taken as a whole, produce for the viewer who spends time with this work?
+
+This is the instructional core of the audit. The Root paragraph doesn't summarize what was said in Principle Mapping — it synthesizes. Here is what this entire system, operating together, is generating. That is the thing an artist making this kind of work needs to understand.
+
+If a Root is absent: one sentence. Then move on.
+
+---
+
+## Competing Interpretations + Verdict
+
+**Primary reading:** The strongest interpretation of what this work is doing, built strictly from the Root claims above. Three to five sentences. Ira Glass register: don't announce the interpretation — let it arrive. Begin with the perceptual event, build forward, land on the claim.
+
+**Alternative readings:** Two interpretations that also fit the evidence but require a different analytical frame. One sentence each. These are not wrong readings — they are incomplete relative to the weight of evidence. Hold them without dismissing them.
+
+**Verdict:** One to three sentences. What the work is doing, for whom, and what the audit's overall structural picture shows. Not a quality judgment. Not a recommendation. A diagnosis — what the work is, structurally, as a viewing event.
+
+Close with one sentence in instructional register: what this structural picture means for an artist making work like this. Not what they should do. What perceptual fact they are working with — whether they know it or not.`,
+      },
+
+    ],
+  },
+
+
+  // ───────────────────────────────────────────
+  // CURATOR MODE
+  // Institutional writing tools — wall text, artist statements, gallery documentation.
+  // Requires a full Hidden Grammar analysis internally; surfaces none of the framework.
+  // ───────────────────────────────────────────
+  {
+    id: 'curator',
+    label: 'Curator Mode',
+    description: 'Generate institutional writing grounded in an Art Lab analysis. Wall text, artist statements, and gallery documentation — framework runs underneath, plain language comes out.',
+    subModes: [],
+    fields: [
+      { id: 'title',      label: 'Title' },
+      { id: 'artist',     label: 'Artist' },
+      { id: 'year',       label: 'Year' },
+      { id: 'medium',     label: 'Medium' },
+      { id: 'dimensions', label: 'Dimensions' },
+      { id: 'notes',      label: 'Artist Statement / Context (optional)' },
+    ],
+
+    prompts: [
+      {
+        id: 'curator-wall-text',
+        label: 'Exhibition Wall Text',
+        description: 'Museum-ready wall text, 120–150 words. Root logic runs underneath; no framework terms appear in the output. Ends with a question that sends viewers back to the work.',
+        prompt: `OUTPUT IS THE DOCUMENT. Do not write an opening paragraph, discovery narrative, analysis preamble, or structural framing. Do not include the "full structural read is below" line. Do not include the translation calibration note. Start immediately with the wall text. The output will be copied and used directly — no wrapper, no meta-commentary.
+
+Write exhibition wall text for this work.
+
+Before writing, run a Hidden Grammar analysis internally: identify the dominant Root(s) active in the work, and note any significant Root absence — a mechanism the format typically activates that this work suppresses. That finding becomes the structural pivot of the text. Do not name Roots, Principles, or any framework terminology in the output. The analysis is scaffolding; the text stands on its own.
+
+Structure the wall text in this exact sequence:
+
+PERCEPTUAL ENTRY (2–3 sentences): What happens to the viewer's eye upon first contact. Contrast, movement, density, spatial tension, color temperature, edge behavior — whatever the dominant mechanism is. Do not interpret meaning yet. Do not reference biography.
+
+STRUCTURAL MECHANICS (2–3 sentences): The formal decisions producing the perceptual effect. Plain language. No jargon. No neuro terminology unless it has been translated into plain English first. If the structural pivot is an absence — something this work conspicuously doesn't do — name that. Absence is as instructive as presence.
+
+MATERIAL GROUNDING (1–2 sentences): Medium, process, or construction decisions that materially support the structure. Keep this concrete and specific to what is visible.
+
+ARTIST LANGUAGE (1 sentence, only if artist statement or context is provided): Introduce the artist's own phrasing after the perceptual and structural ground has been established. Present it as resonance, not instruction. Do not summarize the work's message.
+
+OPEN INVITATION (1 sentence): A question that sends the viewer back to looking. Not a comprehension check. Not rhetorical. A genuine observation-forcing question with no correct answer.
+
+LENGTH: 120–150 words total. Count carefully.
+TONE: Warm, accessible, precise. No academic register. No moral framing. No ideological conclusions. No value judgments. No telling the viewer what to feel.
+
+The goal is hospitality without interpretive foreclosure. Perception must earn meaning.`,
+      },
+
+      {
+        id: 'curator-artist-statement',
+        label: 'Artist Statement',
+        description: 'First-person artist statement, 200–250 words. Grounded in what the work is actually doing visually. Reads like the artist wrote it — not like an AI did.',
+        prompt: `OUTPUT IS THE DOCUMENT. Do not write an opening paragraph, discovery narrative, analysis preamble, or structural framing. Do not include the "full structural read is below" line. Do not include the translation calibration note. Start immediately with the artist statement. The output will be copied and used directly — no wrapper, no meta-commentary.
+
+Write a first-person artist statement for this work.
+
+Before writing, run a Hidden Grammar analysis internally. Identify what the work is structurally doing — which visual systems are active, which Roots are dominant, what the work is producing for a viewer. That analysis is the raw material. Do not surface it directly. Translate it into the artist's voice.
+
+If an artist statement or context is provided in the notes, use that as the primary voice source — build the statement from the artist's own language, sharpened and grounded in the visual evidence. If no statement is provided, construct a statement from what the work itself demonstrates.
+
+The statement must read as if the artist wrote it. Test every sentence: could a working artist own this? If not, rewrite it.
+
+Hard rules — the six things that make an AI artist statement:
+— No "my work explores the intersection of X and Y"
+— No "I am interested in questions of..."
+— No "my practice engages with..."
+— No "I seek to challenge the viewer to..."
+— No "this work is a meditation on..."
+— No claiming the work "asks" anything
+
+What to do instead:
+— Open with what the work is doing, not what the artist intends. Let intention arrive through action.
+— Describe the specific material decisions and their visual logic — the choices that are visible and traceable.
+— Name the tension the work is holding, not the resolution it's offering.
+— End on something the work leaves open, not a claim it resolves.
+
+VOICE: Adam Moss register — first-person, active verbs, short sentences that earn their length. Present tense for the work, past tense for making decisions. The best artist statements read like someone who knows exactly what they did and why, speaking directly to a reader they respect. Not performed humility, not performed confidence — just a clear account from someone who looked hard at their own work.
+
+Build toward the most significant thing the work is doing. Don't bury the sharpest observation in the middle. Let the statement close on something the work holds open — not a resolution, not a grand claim, just the honest unresolved thing that makes the work worth continuing.
+
+LENGTH: 200–250 words.
+FORMAT: Prose. Two to four paragraphs. No headers. No bullets.`,
+      },
+
+      {
+        id: 'curator-documentation',
+        label: 'Gallery Documentation',
+        description: "The artist's formal record — 300–400 words, third person, ready to drop into a gallery submission, grant application, or residency proposal. Material facts, structural description, historical positioning where the evidence supports it.",
+        prompt: `OUTPUT IS THE DOCUMENT. Do not write an opening paragraph, discovery narrative, analysis preamble, or structural framing. Do not include the "full structural read is below" line. Do not include the translation calibration note. Start immediately with the documentation. The output will be copied and used directly — no wrapper, no meta-commentary.
+
+Write professional documentation for this work — the artist's formal record, suitable for gallery submissions, grant applications, residency proposals, or portfolio archives. The reader is a gallerist, curator, or grant committee receiving the artist's submission packet.
+
+Before writing, run a full Hidden Grammar analysis internally: identify the dominant Roots, active Principles, significant absences, and any art historical positioning that the visual evidence supports. This analysis is the source material. Do not name Roots or Principles by their framework terms in the output. Translate them into plain descriptive language.
+
+Structure the documentation in three sections:
+
+MATERIAL RECORD: Medium, support, technique, and any visible construction decisions. Third person, past tense for making. Report what is observable; note where reproduction limits what can be confirmed. Include dimensions and date if provided. Be specific about what is physically present — not what the work "tries" to do, but what it is made of and how it is made.
+
+STRUCTURAL ANALYSIS (the longest section): What the work is doing as a visual object. How attention is organized. What the dominant spatial system is. How figure-ground, edge behavior, value distribution, and color relationships are operating. What the work suppresses or avoids that the format typically activates — absences are as structurally significant as presences. Ground every claim in a specific observable property. If an artist statement is available, note where the stated intent aligns with the visual evidence and where it diverges — hold both without resolving them.
+
+HISTORICAL POSITIONING: Where the visual evidence positions this work within known visual lineages, traditions, or movements. Only claims the visual evidence directly supports — no speculative attribution. If the evidence is insufficient to make a positioning claim, say so plainly. One or two sentences maximum.
+
+VOICE: Adam Moss register throughout. Short declarative sentences that earn their length. Observations that do the work without explaining themselves — trust the reader to register significance. No throat-clearing, no hedging, no institutional flatness. The Material Record can be spare and factual; the Structural Analysis is where voice does the most work. Build that section toward its most significant finding and let it land last — earned compression at the close, not buried in the middle. The historical positioning, if present, is one or two confident sentences.
+
+What to avoid: passive constructions, vague category language ("dynamic composition," "striking use of color"), explaining that something is significant before demonstrating that it is. Let the specific observation carry its own weight.
+
+LENGTH: 300–400 words.
+FORMAT: Three labeled sections as above. Prose within each section.`,
+      },
     ],
   },
 
 
   // ───────────────────────────────────────────
   // PRESENTATION TOOLS
-  // Output-format modes — translate a work into a deliverable for an audience.
-  // Phase 2 (Studio Tools) + Phase 3 (Simulation & Context) modes from MODES_REGISTRY.
+  // Audience-facing tools — critique, museum tours, docent scripts.
+  // For educators, docents, and museum guides.
   // ───────────────────────────────────────────
   {
     id: 'presentation-tools',
     label: 'Presentation Tools',
-    description: 'Translate a work into a deliverable for a specific audience — educational critique, museum tour script, or docent monologue. The output format changes; the analytical foundation stays the same.',
+    description: 'For educators, docents, and museum guides. Structured scripts and critique frameworks that move an audience from first glance to genuine looking — grounded in what\'s visually present, not in received interpretation.',
     subModes: [],
     fields: [
       { id: 'title',      label: 'Title' },
@@ -950,6 +1167,200 @@ APPROACH:
 VOICE: Ira Glass register. You're talking to someone who made this and wants to make more. The useful answer is specific, not encouraging. Use "here's what's actually happening," "the thing that's doing the work is," "and here's where it gets interesting."
 
 FORMAT: Prose only. No headers. No bullets. 250–350 words.`,
+      },
+
+    ],
+  },
+
+
+  // ───────────────────────────────────────────
+  // CRITICS
+  // Primary analysis through a specific critic's voice.
+  // Each prompt runs HG analysis internally and translates
+  // observations into the critic's language — no framework
+  // terminology surfaces in the output.
+  // ───────────────────────────────────────────
+  {
+    id: 'critics',
+    label: 'What Would the Critics Say?',
+    description: 'An educational tool that explores how six distinct critical voices approach visual analysis. Each run is AI-generated simulation — not real criticism from the named critics. The Art Lab analysis runs underneath; what surfaces is the critic\'s register, their specific questions, their way of seeing.',
+    subModes: [],
+    fields: [
+      { id: 'artist',     label: 'Artist' },
+      { id: 'title',      label: 'Title' },
+      { id: 'year',       label: 'Year' },
+      { id: 'medium',     label: 'Medium' },
+      { id: 'notes',      label: 'Notes (optional)' },
+    ],
+
+    prompts: [
+
+      {
+        id: 'critics-saltz',
+        label: 'Jerry Saltz',
+        description: 'Radical subjectivity. High energy. Does this thing have heat or is it dead on arrival?',
+        prompt: `Write this analysis in the voice of Jerry Saltz.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — Jerry Saltz did not write this. This is an educational tool exploring how his critical approach might read the work. It does not represent his actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Note the dominant visual mechanisms: edges, spatial compression, weight distribution, tonal contrast, mark character, figure-ground dynamics, visual hierarchy. These are your raw material. Do not surface them as framework terms. Translate them into Saltz's language — his vocabulary is physical, visceral, blunt.
+
+VOICE: Jerry Saltz doesn't hedge. He writes about paintings the way other people write about feeling sick or being in love — with his body in the room. He says things like "this painting wants to be looked at" or "the whole left side is just dying." He names what he actually sees: specific marks, specific passages, specific failures or flashes. He's not performing authority — he's performing presence.
+
+What to do:
+- Open on the painting's energy level. What is it doing in the first second?
+- Find the passage that's most alive and name it specifically. Find the passage that's most dead and name that too.
+- Call out what the visual weight system is actually doing — not in framework terms, in plain physical terms. What does the eye do? Where does it get stuck?
+- Reference the spatial compression or release, the edge system, the tonal distribution — but through Saltz's lens: does it feel crowded, does it breathe, does it have somewhere to go?
+- He asks honest questions: "Why is this here?" "Is this painter painting from a place of fear?" "Does this work think it's more interesting than it is?"
+
+VERDICT: Land on Saltz's version of alive or dead. Not a grade — a gut read. One or two sentences that feel like someone saying something they can't take back.
+
+LENGTH: 320–420 words.`,
+      },
+
+      {
+        id: 'critics-roberta-smith',
+        label: 'Roberta Smith',
+        description: 'Generous, rigorous, deeply historical. Does this work earn its space on the wall?',
+        prompt: `Write this analysis in the voice of Roberta Smith.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — Roberta Smith did not write this. This is an educational tool exploring how her critical approach might read the work. It does not represent her actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Identify the dominant visual systems: the edge character, the spatial structure, the tonal logic, the material evidence, the compositional weight. Note which formal decisions feel deliberate and which feel unresolved. Note where the surface is working and where it's coasting. These observations are your input — translate them into Smith's language.
+
+VOICE: Roberta Smith writes with the confidence of someone who has looked at an enormous amount of art and still isn't bored. She's generous before she's hard. She identifies the lineage — what movements, what artists this work is in conversation with — and she holds the work to the standard of that lineage without being punitive. Her precision is formal and physical: she describes the object quality, the way something sits in space, the texture of the surface, the specific behavior of the medium. She uses phrases like "the work is at its best when" and "the artist is less certain about."
+
+What to do:
+- Identify the formal intelligence present in the work: what is the spatial structure doing? What is the edge system communicating? Where does the tonal logic succeed?
+- Place the work in conversation with the tradition it's drawing from — name the specific visual language and what it's inherited or arguing with.
+- Find the passage where the work is most confident and describe it with precision. Find the passage where confidence falters.
+- Describe the surface and material evidence as physical fact — the kind of object description Smith does where you feel like you're standing in front of it.
+- Reference what the visual weight system and compositional structure are actually doing in Smith's terms: the object quality, how it sits, what it commands.
+
+VERDICT: Does this work earn its space? Smith doesn't use that as a rhetorical question — she means it physically. An honest close on what this work delivers and what it still owes.
+
+LENGTH: 320–420 words.`,
+      },
+
+      {
+        id: 'critics-hickey',
+        label: 'Dave Hickey',
+        description: 'Beauty, pleasure, democratic appeal. Would a non-art person stop for this?',
+        prompt: `Write this analysis in the voice of Dave Hickey.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — Dave Hickey did not write this. This is an educational tool exploring how his critical approach might read the work. It does not represent his actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Identify what the work is doing to a viewer's visual system: the capture mechanisms, the spatial logic, the tonal pleasure (or its absence), the figure-ground clarity, the edge system. Note what is physically pleasurable about looking at it, and what is withholding. Note where it rewards a non-expert eye and where it requires institutional permission to appreciate. These observations are your raw material.
+
+VOICE: Dave Hickey is a contrarian in the specific sense that he takes pleasure seriously as a critical category. He thinks the art world's suspicion of pleasure is a power play, not an aesthetic position. He writes about beauty the way other critics write about ideas — with full conviction. He's not naïve: he knows the difference between cheap pleasure and the earned kind. His register is loose, essayistic, occasionally Southern, always opinionated. He says things like "this painting would stop a drunk in Las Vegas" as a compliment.
+
+What to do:
+- Open on what this work gives the eye. Not what it means — what it gives.
+- Apply what the visual hierarchy and capture mechanisms are doing in Hickey's terms: does it arrest attention? Does it reward looking? Is it pleasurable or is it withholding pleasure as a form of institutional gatekeeping?
+- Identify whether the work is "interesting ugly" (earned, generative) or "academic ugly" (defensively illegible).
+- Address the democratic test directly: what would someone who doesn't go to galleries see here? What would they feel before they had context?
+- Bring in the beauty/market question: is this work asking for permission to be liked, or does it already know it's good?
+
+VERDICT: Would a non-art person stop for this? Hickey's answer is never mealy-mouthed. Land on it.
+
+LENGTH: 320–420 words.`,
+      },
+
+      {
+        id: 'critics-greenberg',
+        label: 'Clement Greenberg',
+        description: 'Flatness, medium specificity, zero tolerance for illusion. The Formalist test.',
+        prompt: `Write this analysis in the voice of Clement Greenberg.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — Clement Greenberg did not write this. This is an educational tool exploring how his critical approach might read the work. It does not represent his actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Focus on: the spatial compression or depth illusion present, the figure-ground dynamics, the surface evidence and material behavior, the edge character, the tonal relationships and whether they create pictorial space. Note where the work asserts flatness and where it retreats into illusion, narrative, or theatrical gesture. These findings are your core evidence.
+
+VOICE: Clement Greenberg is not arguing — he is pronouncing. He writes as if the standards are settled and the question is only whether this work meets them. His register is formal, declarative, occasionally contemptuous. His key terms: flatness, medium specificity, pictorial space, optical. He does not care about what the work "means." He cares about what the medium is doing and whether it is honest about it. He attacks illusionism, narrative, and theatricality as corruptions of painting's essential nature. A painting is a flat surface covered in pigment — anything that pretends otherwise is a lie.
+
+What to do:
+- Assess flatness immediately: is this painting honest about being a flat surface, or is it creating pictorial depth that denies its material reality?
+- Apply what the spatial logic and figure-ground dynamics are doing in Greenberg's terms: is depth being created through value relationships? Through overlapping? Is that a formal achievement or a retreat into the literary?
+- Evaluate the edge system and mark quality for medium specificity: does the paint behave like paint, or is it subordinated to representation?
+- Note what the surface evidence reveals about the painter's relationship to the medium — is there evidence of optical painting, or decoration, or narrative intrusion?
+- Identify the work's relationship to the Modernist project: is it advancing the medium or regressing to pre-Modernist habits?
+
+VERDICT: Is this painting honest about being a flat surface covered in pigment, or is it lying? Greenberg's verdict is final.
+
+LENGTH: 300–400 words.`,
+      },
+
+      {
+        id: 'critics-krauss',
+        label: 'Rosalind Krauss',
+        description: 'The Expanded Field. Structuralist logic, indexical traces, no room for sentiment.',
+        prompt: `Write this analysis in the voice of Rosalind Krauss.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — Rosalind Krauss did not write this. This is an educational tool exploring how her critical approach might read the work. It does not represent her actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Identify the structural logic of the work: the compositional system, the spatial organization, the figure-ground relationships, the grid or anti-grid impulse, the relationship between marks and the support. Note whether the visual evidence is primarily indexical (a trace, a record of a physical act) or symbolic (a constructed sign). Identify what the work is excluding and what that exclusion reveals. These are your inputs.
+
+VOICE: Rosalind Krauss writes like someone who has already worked out the theory and is now checking whether the object confirms it. She is rigorous, impersonal, and unimpressed by biographical readings or institutional reputation. She uses structural analysis — she looks for the underlying logic, the matrix, the field the work operates within. Her tone is cool and authoritative. She uses terms like "indexical," "the grid," "the expanded field," "the mark as trace." She is interested in what the work does structurally, not what it makes you feel.
+
+What to do:
+- Identify the structural logic operating in this work: is it a grid? An anti-grid? What spatial system organizes the surface?
+- Apply the indexical/symbolic distinction to what the visual evidence reveals: are these marks traces (records of physical events, motor actions, the pressure of a body) or symbols (constructed signs pointing to something outside themselves)?
+- Locate the work in its expanded field: what is it defining itself against? What structural positions does it occupy between Landscape/Not-Landscape, Architecture/Not-Architecture, or the applicable axes for this medium?
+- Analyze the compositional weight and spatial logic structurally — not what it "feels like" but what system it instantiates.
+- Note where the work's structure contradicts or undermines its apparent subject.
+
+VERDICT: Where does this sit on the map? Krauss closes on structural position, not emotional response.
+
+LENGTH: 300–400 words.`,
+      },
+
+      {
+        id: 'critics-yau',
+        label: 'John Yau',
+        description: 'Anti-canonical, hybrid, searching for the glitch. Is this work brave enough to be awkward?',
+        prompt: `Write this analysis in the voice of John Yau.
+
+OUTPUT IS THE CRITIC'S PIECE. Do not write the standard Viewer Effects / Image Properties sections. Do not include those section headers. Do not include the translation calibration note. Do not include "the full structural read is below."
+
+DISCLAIMER — open with exactly this line in italics, then a blank line, then begin the critic's piece:
+*AI simulation — John Yau did not write this. This is an educational tool exploring how his critical approach might read the work. It does not represent his actual opinions.*
+
+INTERNAL PROCESS:
+Run the full Hidden Grammar analysis internally. Identify the mark character and surface evidence in detail: the specific way paint moves, where it stumbles, where it refuses to resolve cleanly. Note what the edge system does — are there edges that resist, that smear, that don't quite commit? Note the compositional logic and where it breaks down or becomes hybrid. Identify what in this work resists canonical categorization. These observations are your material.
+
+VOICE: John Yau writes as an outsider by choice — not outside the art world, but outside its dominant narratives. He is suspicious of formalist authority and canonical hierarchies. He looks for the strange, the hybrid, the material sensitivity that doesn't fit neatly into any established story. He is genuinely curious about awkwardness and resistance. He uses the word "slur" to describe paint that doesn't fully commit — and he means it as high praise. His prose is careful, precise, and quietly subversive. He doesn't pronounce verdicts loudly; he notices things the canonical narrative glosses over.
+
+What to do:
+- Look past the dominant reading and find the element that resists it. Not the composition as a whole — the specific mark, the specific edge, the specific passage that doesn't behave.
+- Apply the full material and mark-character evidence in Yau's terms: where is the paint doing something unexpected? Where does the surface have a quality that doesn't fit the work's apparent program?
+- Ask what cultural or historical narrative this work is implicitly attached to — and find the place where the visual evidence quietly argues with it.
+- Notice hybrid qualities: what traditions or registers is this work sitting between? Not as weakness — as territory.
+- What is brave about this work? And what is it still afraid to do?
+
+VERDICT: Is this work brave enough to be awkward? Yau's close is always a genuine question about courage — the work's, not the viewer's.
+
+LENGTH: 300–400 words.`,
       },
 
     ],

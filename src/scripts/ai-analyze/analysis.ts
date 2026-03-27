@@ -3,6 +3,14 @@ import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
 import { showLensModifier, resetLensModifier } from './lens-modifier';
 import { showChatSection, hideChatSection } from './interrogation';
 
+// ── Shared utilities (exported for use in interrogation.ts and lens-modifier.ts) ──
+
+export function stripTiers(html: string): string {
+  return html
+    .replace(/\bTier\s+[A-D]\s*[—–\-]\s*/g, '')
+    .replace(/\s*\(Tier\s+[A-D]\)/g, '');
+}
+
 // Types matching analysisModes.js structure
 interface SubMode {
   id: string;
@@ -235,13 +243,6 @@ export function initAnalysis() {
         return;
       }
 
-      // Strip AI-injected tier labels from all HTML sections:
-      // "Tier A — " (prefix before principle name) and "(Tier A)" (standalone parenthetical)
-      const stripTiers = (html: string) =>
-        html
-          .replace(/\bTier\s+[A-D]\s*[—–\-]\s*/g, '')
-          .replace(/\s*\(Tier\s+[A-D]\)/g, '');
-
       // Store output
       state.outputs = [{ raw: result.raw || '', html: result.analysis }];
       state.fields = fields;
@@ -264,9 +265,9 @@ export function initAnalysis() {
         thumbnail.style.display = 'block';
       }
 
-      // Inject view toggle if sections are present
+      // Inject view toggle if sections are present (pass already-stripped HTML)
       if (result.imageProperties && result.viewerEffects) {
-        injectViewToggle(result.imageProperties, result.viewerEffects);
+        injectViewToggle(state.imagePropertiesHTML, state.viewerEffectsHTML);
       }
 
       // Wire up main copy button
@@ -410,12 +411,14 @@ function injectViewToggle(ipHTML: string, veHTML: string) {
   ipDiv.className = 'hg-section-panel hg-section-panel--ip';
   ipDiv.style.display = 'none';
   ipDiv.innerHTML = `<div class="hg-section-eyebrow hg-section-eyebrow--ip">Image Properties — what is physically present</div>${ipHTML}`;
+  linkPrincipleNames(ipDiv);
 
   const veDiv = document.createElement('div');
   veDiv.id = 'sectionVE';
   veDiv.className = 'hg-section-panel hg-section-panel--ve';
   veDiv.style.display = 'none';
   veDiv.innerHTML = `<div class="hg-section-eyebrow hg-section-eyebrow--ve">Viewer Effects — predicted nervous system response</div>${veHTML}`;
+  linkPrincipleNames(veDiv);
 
   resultsContent.after(ipDiv);
   ipDiv.after(veDiv);
@@ -511,7 +514,8 @@ function injectExplorationPanel(priorAnalysis: string) {
 
       spinner.remove();
       document.querySelector('.hg-exploration-question')?.remove();
-      output.innerHTML = result.analysis;
+      output.innerHTML = stripTiers(result.analysis);
+      linkPrincipleNames(output);
       output.style.display = 'block';
 
       // Inject a copy button into each angle card
@@ -624,7 +628,7 @@ function getPrinciples(): Principle[] {
   }
 }
 
-function linkPrincipleNames(contentEl: HTMLElement) {
+export function linkPrincipleNames(contentEl: HTMLElement) {
   const principles = getPrinciples();
   if (!principles.length) return;
 

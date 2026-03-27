@@ -1,6 +1,5 @@
 ---
 import HiddenGrammarLayout from '../layouts/HiddenGrammarLayout.astro';
-import WorkflowInfographic from '../components/WorkflowInfographic.astro';
 
 const sections = [
   {
@@ -84,29 +83,34 @@ const sections = [
 
         <p class="al-intro-kicker">Tools for looking at art.</p>
 
-        <!-- Workflow bridge -->
-        <div class="al-wf-bridge">
-          <span class="al-wf-bridge-label">"huh?"</span>
-          <p class="al-wf-bridge-body">Here's what happens when you hit the <strong><em>Try Me</em></strong> green button below <span class="al-wf-bridge-cta">"<strong>HOW THIS WORKS:</strong> Interactive Illustration"</span></p>
-        </div>
-
-        <!-- Workflow infographic: bordered container -->
-        <div class="al-wf-container">
-          <p class="al-wf-label"><strong>HOW THIS WORKS</strong><span class="al-wf-label-light">: INTERACTIVE ILLUSTRATION</span></p>
-          <WorkflowInfographic />
-        </div>
-
         <div class="al-try-me">
           <a href="/hidden-grammar/ai-analyze?mode=first-look&prompt=first-look-read" class="al-try-me-btn">
             <span class="al-try-me-label">Try Me</span>
             <span class="al-try-me-sub">upload anything</span>
           </a>
-          <a href="/hidden-grammar/start" class="al-start-btn">
-            <span class="al-start-label">Start Analyzing</span>
-          </a>
         </div>
 
         <p class="al-map-note"><strong>Digital Image Upload Considerations:</strong> <em class="al-map-note-body">Remember, you are uploading a digital image, not the actual artwork. The analysis is real, but some details will be lost.</em></p>
+
+        <!-- Sample output excerpt -->
+        <div class="al-excerpt">
+          <div class="al-excerpt-label">
+            <span class="al-excerpt-tag">Example Output</span>
+            <span class="al-excerpt-meta">First Look—<em>The Starry Night</em>, Van Gogh, 1889</span>
+          </div>
+          <div class="al-excerpt-box">
+            <p class="al-excerpt-text">Your eye doesn't choose where to go first. Something in the upper right just <em>takes</em> it—that luminous yellow disk, ringed in concentric halos, radiating against the deepest blue in the composition. You didn't decide to look there. And here's the thing: that moment of capture, where high-saturation warm color punches out of a cool-dominant field, isn't aesthetic preference. It's a hardwired color opponent channel firing before conscious attention even assembles. Warm against cool, light against dark, circular against directional—the moon wins the bid automatically.</p>
+            <div class="al-excerpt-fade"></div>
+          </div>
+          <p class="al-excerpt-caption">This is what comes back.</p>
+        </div>
+
+        <div class="al-section-rule"></div>
+
+        <a href="/hidden-grammar/start" class="al-start-btn">
+          <span class="al-start-label">Start Analyzing</span>
+        </a>
+        <p class="al-start-sub">Picks a tool based on what you're trying to do—making, analyzing, teaching, or stress-testing.</p>
 
         <div class="al-section-rule"></div>
 
@@ -260,67 +264,64 @@ const sections = [
     text-decoration: underline;
   }
 
-  /* ── Workflow container + label ─────────────── */
-  .al-wf-container {
-    border: 1px solid #16a34a;
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem 1rem;
-    margin: 1rem 0;
+  /* ── Sample output excerpt ───────────────────── */
+  .al-excerpt {
+    margin: 1.25rem 0 0.75rem;
   }
 
-  /* Pull wf-wrap bottom margin inside the container */
-  .al-wf-container :global(.wf-wrap) {
-    margin-bottom: 0;
+  .al-excerpt-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    margin-bottom: 0.5rem;
   }
 
-  .al-wf-label {
-    font-size: 0.875rem;
+  .al-excerpt-tag {
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #16a34a;
-    margin: 0 0 0.1rem;
-    text-align: center;
+    color: #b45309;
   }
 
-  .al-wf-label-light {
-    font-weight: 300;
-  }
-
-  @media (max-width: 640px) {
-    .al-wf-container {
-      padding: 1rem;
-    }
-  }
-
-  /* ── Workflow bridge ────────────────────────── */
-  .al-wf-bridge {
-    margin: 0.5rem 0 0.5rem;
-  }
-
-  .al-wf-bridge-label {
-    display: block;
+  .al-excerpt-meta {
     font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #94a3b8;
-    margin-bottom: 0.375rem;
+    color: #b45309;
+    font-weight: 400;
   }
 
-  .al-wf-bridge-body {
+  .al-excerpt-box {
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    overflow: hidden;
+  }
+
+  .al-excerpt-text {
     font-size: 0.9375rem;
-    color: #64748b;
-    line-height: 1.6;
+    line-height: 1.8;
+    color: #334155;
     margin: 0;
+    font-style: italic;
   }
 
-  .al-wf-bridge-body strong {
-    color: #16a34a;
+  .al-excerpt-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3rem;
+    background: linear-gradient(to bottom, transparent, #f8fafc);
+    pointer-events: none;
   }
 
-  .al-wf-bridge-cta {
-    color: #16a34a;
+  .al-excerpt-caption {
+    font-size: 0.8125rem;
+    color: #b45309;
+    margin: 0.5rem 0 0;
+    font-style: italic;
   }
 
   /* ── Try Me ────────────────────────────────── */
@@ -334,7 +335,7 @@ const sections = [
   .al-try-me-btn {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     justify-content: center;
     gap: 0.75rem;
     flex: 1;
@@ -370,6 +371,7 @@ const sections = [
     align-items: center;
     justify-content: center;
     flex: 1;
+    margin-bottom: 1.5rem;
     padding: 1rem 2rem;
     background: transparent;
     border: 2px solid #16a34a;
@@ -390,6 +392,14 @@ const sections = [
     letter-spacing: -0.01em;
   }
 
+  .al-start-sub {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    text-align: center;
+    margin: 0.5rem 0 0;
+    line-height: 1.5;
+  }
+
   .al-section-rule {
     border: none;
     border-top: 1px solid #e2e8f0;
@@ -398,17 +408,15 @@ const sections = [
 
   /* ── Map note ──────────────────────────────── */
   .al-map-note {
-    font-size: 1.0rem;
-    font-weight: 500;
-    font-style: italic;
-    color: #16a34a;
-    line-height: 1.6;
-    margin: 0 0 2rem;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0.5rem 0 0.75rem;
   }
 
   .al-map-note-body {
-    font-weight: 300;
-    font-style: italic;
+    font-weight: 400;
   }
 
   /* ── Persona cards ─────────────────────────── */
@@ -687,6 +695,28 @@ const sections = [
       flex: 1 1 280px;
     }
 
+    /* Tablet: tighten vertical rhythm */
+    .al-intro-body {
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+
+    .al-section-rule {
+      margin: 1.5rem 0;
+    }
+
+    .al-try-me {
+      margin: 1rem 0 0.5rem;
+    }
+
+    .al-excerpt {
+      margin: 0.75rem 0 0.5rem;
+    }
+
+    .al-start-btn {
+      margin-bottom: 1rem;
+    }
+
     /* Tablet: 2-up persona cards */
     .al-persona-cards {
       grid-template-columns: repeat(2, 1fr);
@@ -695,20 +725,42 @@ const sections = [
 
   @media (max-width: 640px) {
     .al-intro-title {
-      margin-bottom: 0.625rem;
+      margin-bottom: 0.5rem;
     }
 
     .al-intro-kicker {
       line-height: 1.3;
-      margin-bottom: 0.875rem;
+      margin-bottom: 0.625rem;
+      padding-bottom: 0.625rem;
     }
 
     .al-intro-body {
-      margin-bottom: 0.5rem;
+      line-height: 1.65;
+      margin-bottom: 0.625rem;
     }
 
-    .al-wf-bridge {
-      margin-top: 0.75rem;
+    .al-section-rule {
+      margin: 1.25rem 0;
+    }
+
+    .al-try-me {
+      margin: 0.75rem 0 0.375rem;
+    }
+
+    .al-excerpt {
+      margin: 0.625rem 0 0.375rem;
+    }
+
+    .al-excerpt-box {
+      padding: 1rem 1.125rem;
+    }
+
+    .al-start-btn {
+      margin-bottom: 0.75rem;
+    }
+
+    .al-map-note {
+      margin: 0.375rem 0 0.5rem;
     }
 
     .al-sections-grid {

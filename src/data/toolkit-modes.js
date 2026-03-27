@@ -273,11 +273,26 @@ export const toolkitBuckets = [
         }
       },
       {
+        id: 'critics',
+        label: 'What Would the Critics Say?',
+        tagline: "Six voices. Saltz, Smith, Hickey, Greenberg, Krauss, Yau. An educational tool — AI simulation of how each critic's approach might read your work.",
+        status: 'live',
+        phase: 'Critical Perspectives',
+        link: '/hidden-grammar/modes/critics',
+        detail: {
+          what: "An educational tool that explores six distinct critical methodologies. Each run is AI-generated simulation — not real criticism from the named critics. The Art Lab analysis runs underneath; what surfaces is the critic's register, their specific questions, their way of seeing. Every output opens with a clear disclosure.",
+          when: ["You want to understand how different critical frameworks approach the same visual evidence", "You're curious where your work sits in the critical tradition", "You want to hear a specific analytical voice — Saltz's energy read, Smith's formal rigor, Hickey's pleasure test, Greenberg's medium honesty, Krauss's structural logic, Yau's search for the glitch"],
+          output: "One full critical piece per critic selected. 300–420 words. Reads like criticism — the HG analysis runs underneath and stays invisible. Each piece opens with an AI simulation disclosure.",
+          constraints: "AI simulation only — not real criticism. No framework terminology in output. No verdicts that use 'good' or 'bad.' The framework informs; the critic's approach speaks.",
+        }
+      },
+      {
         id: 'full-audit',
         label: 'Full Art Lab Audit',
         tagline: "The comprehensive scan. All six sections, strict gates, maximum rigor.",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'System Debug',
+        link: '/hidden-grammar/ai-analyze?mode=analysis-tools&prompt=full-audit',
         detail: {
           what: "Complete Art Lab audit using the full six-section template. Intake, evidence capture, principle mapping, checks, root claims, competing interpretations, verdict. Entropy gate and RAP gates strictly enforced.",
           when: ["Comprehensive formal documentation", "Maximum analytical rigor needed", "Research or professional contexts"],
@@ -297,6 +312,21 @@ export const toolkitBuckets = [
     label: "I'm talking about art to other people",
     description: "For educators, docents, museum guides, teachers, and anyone who needs to make art accessible to people who didn't ask to be here.",
     modes: [
+      {
+        id: 'curator',
+        label: 'Curator Mode',
+        tagline: "Wall text, artist statements, gallery documentation — Art Lab runs the analysis; plain language comes out.",
+        status: 'live',
+        phase: 'Simulation & Context',
+        link: '/hidden-grammar/modes/curator',
+        detail: {
+          what: "Generates institutional writing grounded in a full Art Lab analysis. Three outputs: exhibition wall text (120–150 words, five-section structure, ends with an open question), artist statement (200–250 words, first-person, reads like the artist wrote it), and gallery documentation (300–400 words, catalog-entry format, three sections).",
+          when: ["Exhibition labels and wall text", "Artist statements for public or professional contexts", "Acquisition records, catalog entries, gallery archives"],
+          output: "Your choice of wall text, artist statement, or gallery documentation. Framework analysis runs underneath and stays invisible — Root logic embedded, no jargon surfaced.",
+          constraints: "No Hebrew terms. No framework terminology in output. Plain English only. Historical positioning only where the visual evidence directly supports it.",
+        }
+      },
+
       {
         id: 'studio-foundations',
         label: 'Studio Foundations',
@@ -337,19 +367,6 @@ export const toolkitBuckets = [
           when: ["Exhibition tours with a key anchor work", "Public speaking preparation", "Written educational scripts"],
           output: "Six-section spoken script. Declarative, observational voice. Artist statement translated into perceptual mechanics, not summarized.",
           constraints: "Full RAP required. Do not summarize the artist statement — translate it.",
-        }
-      },
-      {
-        id: 'curator',
-        label: 'Curator Mode',
-        tagline: "Writes 150-word exhibition wall text using Root logic translated into plain English.",
-        status: 'coming-soon',
-        phase: 'Simulation & Context',
-        detail: {
-          what: "Writes exhibition label copy for a general audience. Uses Art Lab Root logic as the structural basis but translates every term into accessible language.",
-          when: ["Exhibition labels and wall text", "Artist statements for public contexts", "Gallery documentation"],
-          output: "150-word wall text. Root logic embedded, not visible. Absence of a key Root used as the structural focal point.",
-          constraints: "No Hebrew terms. No framework jargon. Plain English only.",
         }
       },
       {

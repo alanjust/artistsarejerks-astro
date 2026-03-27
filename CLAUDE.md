@@ -1,5 +1,12 @@
 # Artists Are Jerks - Astro Site
 
+## Typographic Rules — Always Enforced
+
+**Em dashes:** No spaces. Ever. Use `—` not ` — `.
+Correct: `word—word`, `this thing—not that thing`
+Wrong: `word — word`, `this thing — not that thing`
+This applies to all copy: UI text, prompts, descriptions, code comments, documentation.
+
 ## Critical: Always Review Documentation First
 
 **Before implementing any code, review:**
