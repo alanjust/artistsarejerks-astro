@@ -222,6 +222,9 @@ export function initAnalysis() {
     if (loadingState) loadingState.style.display = 'flex';
 
     try {
+      const devModelEl = document.getElementById('devModelSelector') as HTMLSelectElement | null;
+      const devModel = devModelEl?.value || undefined;
+
       const response = await fetch('/api/analyze-artwork', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -230,6 +233,7 @@ export function initAnalysis() {
           fields,
           promptText,
           interrogationMode: false,
+          ...(devModel && { model: devModel }),
         }),
       });
 

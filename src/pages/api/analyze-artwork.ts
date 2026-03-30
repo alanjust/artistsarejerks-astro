@@ -50,7 +50,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
       priorAnalysis,
       userQuestion,
       conversationHistory,
+      model: requestedModel,
     } = body;
+
+    const ALLOWED_MODELS = ['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'];
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'claude-sonnet-4-6';
 
     // ── EXPLORATION MODE ─────────────────────────────────────────────────────
     // Post-analysis: surfaces 2–3 experimental angles grounded in prior analysis.
@@ -78,7 +82,7 @@ VOICE: Direct and plain. No encouragement. No hedging. Write as if you are handi
 FORMAT: Number each angle (1, 2, 3). Plain prose per angle. No bullet sub-points. No section headers.`;
 
       const explorationMsg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model,
         max_tokens: 1200,
         system: explorationPrompt,
         messages: [{ role: 'user', content: `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nWhat angles for experimentation does this work make available from here?` }],
@@ -111,7 +115,7 @@ FORMAT: Number each angle (1, 2, 3). Plain prose per angle. No bullet sub-points
       const userMessage = `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nFOLLOW-UP QUESTION:\n${userQuestion}`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model,
         max_tokens: 2048,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
@@ -151,7 +155,7 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
       const lensMediaType = image.split(';')[0].split(':')[1];
 
       const lensMessage = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model,
         max_tokens: 2500,
         system: lensSystemPrompt,
         messages: [
@@ -226,7 +230,7 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
       const chatMessages = [...history, { role: 'user' as const, content: questionWithContext }];
 
       const chatMsg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model,
         max_tokens: 1024,
         system: chatSystemPrompt,
         messages: chatMessages,
@@ -266,7 +270,7 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
       }
 
       const txtMsg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model,
         max_tokens: 3000,
         system: txtSystemPrompt,
         messages: [{ role: 'user', content: txtFieldCtx + promptText }],
@@ -368,7 +372,7 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
     const userMessageText = fieldContext + (promptText || 'Conduct a Hidden Grammar analysis of this artwork.');
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model,
       max_tokens: 4096,
       system: systemPrompt,
       messages: [
