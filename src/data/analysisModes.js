@@ -1444,5 +1444,19 @@ When included:
     ],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // INTERNAL TOOLS
+  // internal: true — not in public navigation, not rendered by [mode].astro
+  // ─────────────────────────────────────────────────────────────────────────
+
+  {
+    id: 'framework-extension',
+    label: 'Framework Extension',
+    description: 'Internal tool for discovering gaps in the 54 Principles. Two-pass analysis: pure formalism first, principle mapping second.',
+    internal: true,
+    subModes: [],
+    prompts: [],
+  },
+
 ];
 

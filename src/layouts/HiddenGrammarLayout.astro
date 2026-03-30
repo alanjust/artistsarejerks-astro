@@ -10,6 +10,7 @@ const {
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
+const isDev = import.meta.env.DEV;
 
 const navLinks = [
   { href: '/hidden-grammar', label: 'Home', exact: true },
@@ -46,6 +47,14 @@ const navLinks = [
             </a>
           );
         })}
+        {isDev && (
+          <a
+            href="/hidden-grammar/dev"
+            class:list={['hg-nav-link', 'hg-nav-link--dev', { 'hg-nav-link--active': currentPath.startsWith('/hidden-grammar/dev') }]}
+          >
+            Dev
+          </a>
+        )}
         <a href="/" class="hg-nav-link hg-nav-link--back">← Main Site</a>
       </nav>
     </div>
@@ -183,6 +192,28 @@ const navLinks = [
   .hg-nav-link--back:hover {
     color: #64748b;
     background: none;
+  }
+
+  .hg-nav-link--dev {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    padding: 0.3125rem 0.625rem;
+  }
+
+  .hg-nav-link--dev:hover {
+    background: #fde68a;
+    color: #78350f;
+  }
+
+  .hg-nav-link--dev.hg-nav-link--active {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
   }
 
   /* ── Main ─────────────────────────────────── */

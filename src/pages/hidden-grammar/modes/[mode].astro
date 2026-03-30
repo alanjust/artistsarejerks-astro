@@ -3,10 +3,12 @@ import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { analysisModes } from '../../../data/analysisModes.js';
 
 export function getStaticPaths() {
-  return analysisModes.map(mode => ({
-    params: { mode: mode.id },
-    props: { mode },
-  }));
+  return analysisModes
+    .filter((mode: any) => !mode.internal)
+    .map((mode: any) => ({
+      params: { mode: mode.id },
+      props: { mode },
+    }));
 }
 
 const { mode } = Astro.props;
@@ -46,7 +48,7 @@ const { mode } = Astro.props;
         <h2 class="hg-section-label">Sub-mode <span class="hg-optional">(optional)</span></h2>
         <p class="hg-section-hint">Selecting a sub-mode adds specificity to your analysis. Click a prompt card below to continue.</p>
         <div class="hg-submodes" id="subModeContainer">
-          {mode.subModes.map(sub => (
+          {mode.subModes.map((sub: any) => (
             <button
               type="button"
               class="hg-submode-btn"
@@ -64,7 +66,7 @@ const { mode } = Astro.props;
     <section class="hg-prompts-section" aria-label="Prompt selection">
       <h2 class="hg-section-label">Choose a prompt</h2>
       <div class="hg-grid hg-grid--prompts" id="promptsGrid">
-        {mode.prompts.map(prompt => (
+        {mode.prompts.map((prompt: any) => (
           <button
             type="button"
             class="hg-card hg-prompt-card"
