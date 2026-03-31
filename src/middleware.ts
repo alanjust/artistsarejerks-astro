@@ -9,7 +9,7 @@ async function passwordHash(password: string): Promise<string> {
     .slice(0, 48);
 }
 
-export const onRequest = defineMiddleware(async ({ url, cookies, request, locals, redirect }, next) => {
+export const onRequest = defineMiddleware(async ({ url, cookies, locals, redirect }, next) => {
   const { pathname } = url;
 
   // Only gate the /hidden-grammar/* tree
@@ -17,17 +17,6 @@ export const onRequest = defineMiddleware(async ({ url, cookies, request, locals
 
   // Skip auth in local dev — wrangler proxy doesn't forward Set-Cookie to the browser
   if (import.meta.env.DEV) return next();
-
-  // Temporary debug route — remove after diagnosis
-  if (pathname.includes('debug-mw')) {
-    const rawCookieHeader = request.headers.get('cookie') || '(none)';
-    const astroCookie = cookies.get('hg_auth')?.value || '(not found)';
-    const cfReqCookie = (locals as any).runtime?.request?.headers?.get('cookie') || '(no cf request)';
-    const pw = (locals as any).runtime?.env?.HG_PASSWORD || process.env.HG_PASSWORD;
-    return new Response(JSON.stringify({ rawCookieHeader, astroCookie, cfReqCookie, passwordSet: !!pw }, null, 2), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
 
   // Never gate the login page or auth endpoint themselves
   if (pathname === '/hidden-grammar/login' || pathname.startsWith('/api/hg-auth')) return next();
