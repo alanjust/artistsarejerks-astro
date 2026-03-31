@@ -31,11 +31,17 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const secure = import.meta.env.DEV ? '' : '; Secure';
   const cookieHeader = `hg_auth=${hash}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secure}`;
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      'Location': from,
-      'Set-Cookie': cookieHeader,
-    },
-  });
+  // Use meta-refresh instead of 302 redirect so the browser stores the
+  // Set-Cookie header before navigating (Cloudflare follows 302s server-side).
+  const safeFrom = from.startsWith('/') ? from : '/hidden-grammar';
+  return new Response(
+    `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${safeFrom}"></head><body></body></html>`,
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+        'Set-Cookie': cookieHeader,
+      },
+    }
+  );
 };
