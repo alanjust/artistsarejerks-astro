@@ -19,11 +19,12 @@ export const onRequest = defineMiddleware(async ({ url, cookies, request, locals
   if (import.meta.env.DEV) return next();
 
   // Temporary debug route — remove after diagnosis
-  if (pathname === '/hidden-grammar/debug-mw') {
+  if (pathname.includes('debug-mw')) {
     const rawCookieHeader = request.headers.get('cookie') || '(none)';
-    const astroCookie = cookies.get('hg_auth')?.value || '(not found via cookies.get)';
+    const astroCookie = cookies.get('hg_auth')?.value || '(not found)';
+    const cfReqCookie = (locals as any).runtime?.request?.headers?.get('cookie') || '(no cf request)';
     const pw = (locals as any).runtime?.env?.HG_PASSWORD || process.env.HG_PASSWORD;
-    return new Response(JSON.stringify({ rawCookieHeader, astroCookie, passwordSet: !!pw }, null, 2), {
+    return new Response(JSON.stringify({ rawCookieHeader, astroCookie, cfReqCookie, passwordSet: !!pw }, null, 2), {
       headers: { 'Content-Type': 'application/json' },
     });
   }
