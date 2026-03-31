@@ -3,6 +3,25 @@ import { showFeedbackWidget, resetFeedbackWidget } from './feedback';
 import { showLensModifier, resetLensModifier } from './lens-modifier';
 import { showChatSection, hideChatSection } from './interrogation';
 
+// ── Resize image to thumbnail dimensions for clipboard (prevents Obsidian crash) ──
+function resizeForClipboard(dataUrl: string, maxDim = 280, quality = 0.7): Promise<string> {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 // ── Shared utilities (exported for use in interrogation.ts and lens-modifier.ts) ──
 
 export function stripTiers(html: string): string {
@@ -287,9 +306,10 @@ export function initAnalysis() {
         if (copyPoetryBtn && poetryContent) {
           copyPoetryBtn.onclick = async () => {
             const poemText = poetryContent.textContent || '';
-            const imgSrc = state.uploadedImageData || '';
-            const htmlPayload = imgSrc
-              ? `<img src="${imgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
+            const rawImgSrc = state.uploadedImageData || '';
+            const smallImgSrc = rawImgSrc ? await resizeForClipboard(rawImgSrc) : '';
+            const htmlPayload = smallImgSrc
+              ? `<img src="${smallImgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
               : `<pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`;
             try {
               await navigator.clipboard.write([
