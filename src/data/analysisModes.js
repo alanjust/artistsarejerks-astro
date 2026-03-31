@@ -1467,6 +1467,44 @@ When included:
     ],
   },
 
+  {
+    id: 'haiku-read',
+    label: 'Haiku Read',
+    description: 'The work distilled to three lines. 5-7-5. One cut.',
+    subModes: [],
+    fields: [
+      { id: 'title', label: 'Title' },
+      { id: 'artist', label: 'Artist' },
+    ],
+    prompts: [
+      {
+        id: 'haiku',
+        label: 'Haiku Read',
+        description: 'Upload a work. Get three lines back.',
+        prompt: 'Read this work.',
+      },
+    ],
+  },
+
+  {
+    id: 'sonnet-read',
+    label: 'Sonnet Read',
+    description: 'The work read as a Shakespearean sonnet. Fourteen lines. One argument with a volta.',
+    subModes: [],
+    fields: [
+      { id: 'title', label: 'Title' },
+      { id: 'artist', label: 'Artist' },
+    ],
+    prompts: [
+      {
+        id: 'sonnet',
+        label: 'Sonnet Read',
+        description: 'Upload a work. Get an argument back.',
+        prompt: 'Read this work.',
+      },
+    ],
+  },
+
   // ─────────────────────────────────────────────────────────────────────────
   // INTERNAL TOOLS
   // internal: true — not in public navigation, not rendered by [mode].astro

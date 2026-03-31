@@ -152,15 +152,15 @@ const principlesJSON = JSON.stringify(principlesData);
       <p class="hg-loading-sub" id="loadingSub">the Art Analyzer is examining the visual grammar</p>
     </div>
 
-    <!-- Slam Results Panel -->
-    <div id="slamResultsPanel" class="hg-slam-panel" style="display: none;">
-      <div class="hg-slam-nav">
-        <button class="hg-btn hg-btn--ghost" id="backToFormSlam">← New Read</button>
+    <!-- Poetry Results Panel (slam / haiku / sonnet) -->
+    <div id="poetryResultsPanel" class="hg-poetry-panel" style="display: none;">
+      <div class="hg-poetry-nav">
+        <button class="hg-btn hg-btn--ghost" id="backToFormPoetry">← New Read</button>
       </div>
-      <img id="slamThumbnail" class="hg-slam-thumbnail" alt="Analyzed artwork" style="display:none">
-      <div id="slamContent" class="hg-slam-content"></div>
-      <div class="hg-slam-actions">
-        <button class="hg-btn hg-btn--copy" id="copySlamOutput">
+      <img id="poetryThumbnail" class="hg-poetry-thumbnail" alt="Analyzed artwork" style="display:none">
+      <div id="poetryContent" class="hg-poetry-content"></div>
+      <div class="hg-poetry-actions">
+        <button class="hg-btn hg-btn--copy" id="copyPoetryOutput">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -1766,18 +1766,18 @@ const principlesJSON = JSON.stringify(principlesData);
 
   .hg-ps-link:hover { text-decoration: underline; }
 
-  /* ── Slam Results Panel ───────────────────────── */
-  .hg-slam-panel {
+  /* ── Poetry Results Panel (slam / haiku / sonnet) ─ */
+  .hg-poetry-panel {
     max-width: 600px;
     margin: 0 auto;
     padding: 2rem 0 4rem;
   }
 
-  .hg-slam-nav {
+  .hg-poetry-nav {
     margin-bottom: 3rem;
   }
 
-  .hg-slam-thumbnail {
+  .hg-poetry-thumbnail {
     max-height: 140px;
     width: auto;
     max-width: 100%;
@@ -1788,7 +1788,7 @@ const principlesJSON = JSON.stringify(principlesData);
     display: block;
   }
 
-  .hg-slam-content {
+  .hg-poetry-content {
     font-size: 1.1875rem;
     line-height: 2;
     color: #1e293b;
@@ -1796,7 +1796,7 @@ const principlesJSON = JSON.stringify(principlesData);
     letter-spacing: 0.01em;
   }
 
-  .hg-slam-actions {
+  .hg-poetry-actions {
     margin-top: 2.5rem;
   }
 </style>

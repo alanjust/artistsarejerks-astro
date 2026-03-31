@@ -51,7 +51,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       userQuestion,
       conversationHistory,
       model: requestedModel,
-      slamMode,
+      poetryForm,
     } = body;
 
     const ALLOWED_MODELS = ['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'];
@@ -193,17 +193,18 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
       );
     }
 
-    // ── SLAM MODE ───────────────────────────────────────────────────────────
-    // Returns a slam poem reading of the image. No framework injection.
-    if (slamMode === true) {
+    // ── POETRY MODE ───────────────────────────────────────────────────────────
+    // poetryForm: 'slam' | 'haiku' | 'sonnet' — no framework injection, focused prompts.
+    if (poetryForm) {
       if (!image) {
         return new Response(
-          JSON.stringify({ error: 'Slam mode requires an image' }),
+          JSON.stringify({ error: 'Poetry mode requires an image' }),
           { status: 400, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
-      const slamSystemPrompt = `You are reading a visual work as a slam poet.
+      const poetryPrompts: Record<string, string> = {
+        slam: `You are reading a visual work as a slam poet.
 
 Look at this image. Read it the way a body reads a room — what's charged, what's cold, where the tension pools, what it wants and won't say out loud.
 
@@ -218,23 +219,63 @@ Rules:
 - Between 14 and 28 lines.
 - No title. No section headers. No labels. Plain text only. No markdown.
 
-Read what's actually in this image. Not what art is supposed to do. What this specific thing does.`;
+Read what's actually in this image. Not what art is supposed to do. What this specific thing does.`,
 
-      const slamImageData = image.split(',')[1];
-      const slamMediaType = image.split(';')[0].split(':')[1];
+        haiku: `You are reading a visual work as a haiku poet.
 
-      let slamUserText = 'Read this work.';
+Look at this image. A haiku does not describe — it cuts. One observation. One shift. The space between them is the poem.
+
+Write one haiku. Three lines. 5 syllables / 7 syllables / 5 syllables. Count every syllable. This is not approximate.
+
+Rules:
+- Root the first two lines in something specifically visible — a color, a texture, an edge, a spatial relationship.
+- The third line turns. Not a conclusion. A shift in scale, time, or implication that opens rather than closes.
+- No rhyme. No forced elevation. Plain words, exact weight.
+- No title. No label. No syllable counts in parentheses. Plain text only. No markdown.
+
+Three lines. Count them.`,
+
+        sonnet: `You are reading a visual work as a sonnet poet.
+
+Look at this image. A sonnet makes an argument. It develops a position across 14 lines and turns on itself. The volta is not a decoration — it is what the poem discovers.
+
+Write one sonnet in the English (Shakespearean) form: three quatrains and a closing couplet. Rhyme scheme: ABAB CDCD EFEF GG.
+
+Rules:
+- The first quatrain establishes what the work presents: what is visible, what structural tension is in motion.
+- The second quatrain develops a complication — something that resists or contradicts the first reading.
+- The third quatrain deepens or reframes the complication, moving toward the turn.
+- The couplet lands the discovery — not a summary, but what the poem could not see until it arrived.
+- Approximate iambic pentameter. Let it breathe; do not force the meter at the expense of truth.
+- Grounded in what is actually visible in this image. Not generic art language.
+- No title. No labels. No markdown. Plain text only.
+
+Fourteen lines. One argument. The volta earns its turn.`,
+      };
+
+      const systemPrompt = poetryPrompts[poetryForm];
+      if (!systemPrompt) {
+        return new Response(
+          JSON.stringify({ error: `Unknown poetry form: ${poetryForm}` }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const poetryImageData = image.split(',')[1];
+      const poetryMediaType = image.split(';')[0].split(':')[1];
+
+      let poetryUserText = 'Read this work.';
       if (fields && typeof fields === 'object') {
         const parts = Object.entries(fields as Record<string, string>)
           .filter(([, v]) => v && String(v).trim())
           .map(([k, v]) => `${k}: ${v}`);
-        if (parts.length > 0) slamUserText = `${parts.join(' / ')}\n\n${slamUserText}`;
+        if (parts.length > 0) poetryUserText = `${parts.join(' / ')}\n\n${poetryUserText}`;
       }
 
-      const slamMessage = await anthropic.messages.create({
+      const poetryMessage = await anthropic.messages.create({
         model,
-        max_tokens: 1024,
-        system: slamSystemPrompt,
+        max_tokens: poetryForm === 'haiku' ? 256 : 1024,
+        system: systemPrompt,
         messages: [
           {
             role: 'user',
@@ -243,23 +284,23 @@ Read what's actually in this image. Not what art is supposed to do. What this sp
                 type: 'image',
                 source: {
                   type: 'base64',
-                  media_type: slamMediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
-                  data: slamImageData,
+                  media_type: poetryMediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                  data: poetryImageData,
                 },
               },
-              { type: 'text', text: slamUserText },
+              { type: 'text', text: poetryUserText },
             ],
           },
         ],
       });
 
-      const slamText = slamMessage.content
+      const poetryText = poetryMessage.content
         .filter(block => block.type === 'text')
         .map(block => ('text' in block ? block.text : ''))
         .join('\n');
 
       return new Response(
-        JSON.stringify({ success: true, slamMode: true, raw: slamText }),
+        JSON.stringify({ success: true, poetryMode: true, raw: poetryText }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }

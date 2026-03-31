@@ -201,20 +201,20 @@ export function initAnalysis() {
   const analyzeBtn = document.getElementById('analyzeBtn') as HTMLButtonElement | null;
   const loadingState = document.getElementById('loadingState');
   const resultsPanel = document.getElementById('resultsPanel');
-  const slamResultsPanel = document.getElementById('slamResultsPanel');
+  const poetryResultsPanel = document.getElementById('poetryResultsPanel');
   const analysisForm = document.getElementById('analysisForm');
   const resultsContent = document.getElementById('resultsContent');
   const backToForm = document.getElementById('backToForm');
-  const backToFormSlam = document.getElementById('backToFormSlam');
+  const backToFormPoetry = document.getElementById('backToFormPoetry');
 
-  // ── Back button for slam panel ────────────────────────────────────────────
-  backToFormSlam?.addEventListener('click', () => {
+  // ── Back button for poetry panel ──────────────────────────────────────────
+  backToFormPoetry?.addEventListener('click', () => {
     if (analysisForm) analysisForm.style.display = 'block';
-    if (slamResultsPanel) slamResultsPanel.style.display = 'none';
-    const slamContent = document.getElementById('slamContent');
-    if (slamContent) slamContent.textContent = '';
-    const slamThumbnail = document.getElementById('slamThumbnail') as HTMLImageElement | null;
-    if (slamThumbnail) { slamThumbnail.src = ''; slamThumbnail.style.display = 'none'; }
+    if (poetryResultsPanel) poetryResultsPanel.style.display = 'none';
+    const poetryContent = document.getElementById('poetryContent');
+    if (poetryContent) poetryContent.textContent = '';
+    const poetryThumbnail = document.getElementById('poetryThumbnail') as HTMLImageElement | null;
+    if (poetryThumbnail) { poetryThumbnail.src = ''; poetryThumbnail.style.display = 'none'; }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
@@ -224,7 +224,8 @@ export function initAnalysis() {
       return;
     }
 
-    const isSlam = state.modeId === 'slam-read';
+    const poetryFormMap: Record<string, string> = { 'slam-read': 'slam', 'haiku-read': 'haiku', 'sonnet-read': 'sonnet' };
+    const poetryForm = poetryFormMap[state.modeId] || null;
     const fields = collectFields();
     const additionalContext = (document.getElementById('additionalContext') as HTMLTextAreaElement | null)?.value.trim() || '';
     const promptText = state.promptText
@@ -236,7 +237,7 @@ export function initAnalysis() {
     if (loadingState) loadingState.style.display = 'flex';
     const loadingTextEl = document.getElementById('loadingText');
     const loadingSubEl = document.getElementById('loadingSub');
-    if (isSlam) {
+    if (poetryForm) {
       if (loadingTextEl) loadingTextEl.textContent = 'Reading the work...';
       if (loadingSubEl) loadingSubEl.textContent = '';
     }
@@ -253,7 +254,7 @@ export function initAnalysis() {
           fields,
           promptText,
           interrogationMode: false,
-          ...(isSlam && { slamMode: true }),
+          ...(poetryForm && { poetryForm }),
           ...(devModel && { model: devModel }),
         }),
       });
@@ -270,22 +271,22 @@ export function initAnalysis() {
 
       if (loadingState) loadingState.style.display = 'none';
 
-      // ── Slam output ──────────────────────────────────────────────────────
-      if (result.slamMode) {
-        const slamContent = document.getElementById('slamContent');
-        const slamThumbnail = document.getElementById('slamThumbnail') as HTMLImageElement | null;
-        const copySlamBtn = document.getElementById('copySlamOutput') as HTMLButtonElement | null;
+      // ── Poetry output (slam / haiku / sonnet) ────────────────────────────
+      if (result.poetryMode) {
+        const poetryContent = document.getElementById('poetryContent');
+        const poetryThumbnail = document.getElementById('poetryThumbnail') as HTMLImageElement | null;
+        const copyPoetryBtn = document.getElementById('copyPoetryOutput') as HTMLButtonElement | null;
 
-        if (slamContent) slamContent.textContent = result.raw || '';
+        if (poetryContent) poetryContent.textContent = result.raw || '';
 
-        if (slamThumbnail && state.uploadedImageData) {
-          slamThumbnail.src = state.uploadedImageData;
-          slamThumbnail.style.display = 'block';
+        if (poetryThumbnail && state.uploadedImageData) {
+          poetryThumbnail.src = state.uploadedImageData;
+          poetryThumbnail.style.display = 'block';
         }
 
-        if (copySlamBtn && slamContent) {
-          copySlamBtn.onclick = async () => {
-            const poemText = slamContent.textContent || '';
+        if (copyPoetryBtn && poetryContent) {
+          copyPoetryBtn.onclick = async () => {
+            const poemText = poetryContent.textContent || '';
             const imgSrc = state.uploadedImageData || '';
             const htmlPayload = imgSrc
               ? `<img src="${imgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
@@ -300,12 +301,12 @@ export function initAnalysis() {
             } catch {
               await navigator.clipboard.writeText(poemText);
             }
-            copySlamBtn.textContent = 'Copied';
-            setTimeout(() => { copySlamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
+            copyPoetryBtn.textContent = 'Copied';
+            setTimeout(() => { copyPoetryBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
           };
         }
 
-        if (slamResultsPanel) slamResultsPanel.style.display = 'block';
+        if (poetryResultsPanel) poetryResultsPanel.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
