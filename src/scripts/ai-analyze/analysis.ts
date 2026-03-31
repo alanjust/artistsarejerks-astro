@@ -285,7 +285,21 @@ export function initAnalysis() {
 
         if (copySlamBtn && slamContent) {
           copySlamBtn.onclick = async () => {
-            await navigator.clipboard.writeText(slamContent.textContent || '');
+            const poemText = slamContent.textContent || '';
+            const imgSrc = state.uploadedImageData || '';
+            const htmlPayload = imgSrc
+              ? `<img src="${imgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
+              : `<pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`;
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'text/html': new Blob([htmlPayload], { type: 'text/html' }),
+                  'text/plain': new Blob([poemText], { type: 'text/plain' }),
+                }),
+              ]);
+            } catch {
+              await navigator.clipboard.writeText(poemText);
+            }
             copySlamBtn.textContent = 'Copied';
             setTimeout(() => { copySlamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
           };
