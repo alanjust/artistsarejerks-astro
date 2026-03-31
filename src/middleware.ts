@@ -26,11 +26,16 @@ export const onRequest = defineMiddleware(async ({ url, cookies, locals, redirec
   // No password configured — allow through (local dev fallback)
   if (!password) return next();
 
-  const cookie = cookies.get('hg_auth');
+  const rawCookieHeader = request.headers.get('cookie') || '';
+  const cookieValue = rawCookieHeader.split(';')
+    .map(c => c.trim())
+    .find(c => c.startsWith('hg_auth='))
+    ?.slice('hg_auth='.length) || '';
+
   const expected = await passwordHash(password);
 
-  if (!cookie || cookie.value !== expected) {
-    const reason = cookie && cookie.value !== expected ? 'expired' : '';
+  if (!cookieValue || cookieValue !== expected) {
+    const reason = cookieValue && cookieValue !== expected ? 'expired' : '';
     const from = encodeURIComponent(pathname + url.search);
     const loginUrl = `/hidden-grammar/login?from=${from}${reason ? '&reason=' + reason : ''}`;
     return redirect(loginUrl, 302);
