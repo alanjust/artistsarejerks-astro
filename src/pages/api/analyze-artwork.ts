@@ -206,6 +206,8 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
       const poetryPrompts: Record<string, string> = {
         slam: `You are reading a visual work as a slam poet.
 
+Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you perform it.
+
 Look at this image. Read it the way a body reads a room — what's charged, what's cold, where the tension pools, what it wants and won't say out loud.
 
 Write one slam piece. Not a description. Not an analysis. A performance.
@@ -223,6 +225,8 @@ Read what's actually in this image. Not what art is supposed to do. What this sp
 
         haiku: `You are reading a visual work as a haiku poet.
 
+Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you cut it.
+
 Look at this image. A haiku does not describe — it cuts. One observation. One shift. The space between them is the poem.
 
 Write one haiku. Three lines. 5 syllables / 7 syllables / 5 syllables. Count every syllable. This is not approximate.
@@ -236,6 +240,8 @@ Rules:
 Three lines. Count them.`,
 
         sonnet: `You are reading a visual work as a sonnet poet.
+
+Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you argue it.
 
 Look at this image. A sonnet makes an argument. It develops a position across 14 lines and turns on itself. The volta is not a decoration — it is what the poem discovers.
 
