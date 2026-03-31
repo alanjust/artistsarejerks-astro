@@ -9,7 +9,7 @@ async function passwordHash(password: string): Promise<string> {
     .slice(0, 48);
 }
 
-export const onRequest = defineMiddleware(async ({ url, request, locals, redirect }, next) => {
+export const onRequest = defineMiddleware(async ({ url, cookies, request, locals, redirect }, next) => {
   const { pathname } = url;
 
   // Only gate the /hidden-grammar/* tree
@@ -21,8 +21,9 @@ export const onRequest = defineMiddleware(async ({ url, request, locals, redirec
   // Temporary debug route — remove after diagnosis
   if (pathname === '/hidden-grammar/debug-mw') {
     const rawCookieHeader = request.headers.get('cookie') || '(none)';
-    const password = (locals as any).runtime?.env?.HG_PASSWORD || process.env.HG_PASSWORD;
-    return new Response(JSON.stringify({ rawCookieHeader, passwordSet: !!password }, null, 2), {
+    const astroCookie = cookies.get('hg_auth')?.value || '(not found via cookies.get)';
+    const pw = (locals as any).runtime?.env?.HG_PASSWORD || process.env.HG_PASSWORD;
+    return new Response(JSON.stringify({ rawCookieHeader, astroCookie, passwordSet: !!pw }, null, 2), {
       headers: { 'Content-Type': 'application/json' },
     });
   }
@@ -35,16 +36,11 @@ export const onRequest = defineMiddleware(async ({ url, request, locals, redirec
   // No password configured — allow through (local dev fallback)
   if (!password) return next();
 
-  const rawCookieHeader = request.headers.get('cookie') || '';
-  const cookieValue = rawCookieHeader.split(';')
-    .map((c: string) => c.trim())
-    .find((c: string) => c.startsWith('hg_auth='))
-    ?.slice('hg_auth='.length) || '';
-
+  const cookie = cookies.get('hg_auth');
   const expected = await passwordHash(password);
 
-  if (!cookieValue || cookieValue !== expected) {
-    const reason = cookieValue && cookieValue !== expected ? 'expired' : '';
+  if (!cookie || cookie.value !== expected) {
+    const reason = cookie && cookie.value !== expected ? 'expired' : '';
     const from = encodeURIComponent(pathname + url.search);
     const loginUrl = `/hidden-grammar/login?from=${from}${reason ? '&reason=' + reason : ''}`;
     return redirect(loginUrl, 302);
