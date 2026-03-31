@@ -1,0 +1,161 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+
+const from = Astro.url.searchParams.get('from') || '/hidden-grammar';
+const reason = Astro.url.searchParams.get('reason') || '';
+const error = Astro.url.searchParams.get('error') || '';
+---
+
+<HiddenGrammarLayout title="Access Required" description="Art Lab is password protected.">
+  <div class="hg-page login-page">
+
+    <div class="login-card">
+      <h1 class="login-title">Art Lab</h1>
+
+      {reason === 'expired' ? (
+        <p class="login-notice login-notice--expired">
+          The password has changed. Email me at <a href="mailto:alan@artistsarejerks.com">alan@artistsarejerks.com</a> to request access.
+        </p>
+      ) : error === 'wrong' ? (
+        <p class="login-notice login-notice--error">
+          Incorrect password. If you believe your access has expired, email <a href="mailto:alan@artistsarejerks.com">alan@artistsarejerks.com</a>.
+        </p>
+      ) : (
+        <p class="login-desc">
+          Art Lab is available by invitation. If you'd like access, email <a href="mailto:alan@artistsarejerks.com">alan@artistsarejerks.com</a>.
+        </p>
+      )}
+
+      <form method="POST" action="/api/hg-auth" class="login-form">
+        <input type="hidden" name="from" value={from} />
+        <div class="login-field">
+          <label class="login-label" for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="login-input"
+            autocomplete="current-password"
+            autofocus
+            required
+          />
+        </div>
+        <button type="submit" class="login-btn">Enter</button>
+      </form>
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2.5rem;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 1.25rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .login-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .login-notice {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+
+  .login-notice--expired {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .login-notice--error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .login-notice a,
+  .login-desc a {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .login-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    letter-spacing: 0.02em;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1e293b;
+    background: #f8fafc;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .login-input:focus {
+    border-color: #6366f1;
+    background: #ffffff;
+  }
+
+  .login-btn {
+    padding: 0.6875rem 1.25rem;
+    background: #6366f1;
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .login-btn:hover {
+    background: #4f46e5;
+  }
+</style>
