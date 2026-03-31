@@ -264,7 +264,7 @@ Fourteen lines. One argument. The volta earns its turn.`,
       const poetryImageData = image.split(',')[1];
       const poetryMediaType = image.split(';')[0].split(':')[1];
 
-      let poetryUserText = 'Read this work.';
+      let poetryUserText = promptText || 'Read this work.';
       if (fields && typeof fields === 'object') {
         const parts = Object.entries(fields as Record<string, string>)
           .filter(([, v]) => v && String(v).trim())
