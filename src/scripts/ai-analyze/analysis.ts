@@ -213,6 +213,8 @@ export function initAnalysis() {
     if (slamResultsPanel) slamResultsPanel.style.display = 'none';
     const slamContent = document.getElementById('slamContent');
     if (slamContent) slamContent.textContent = '';
+    const slamThumbnail = document.getElementById('slamThumbnail') as HTMLImageElement | null;
+    if (slamThumbnail) { slamThumbnail.src = ''; slamThumbnail.style.display = 'none'; }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
@@ -271,7 +273,24 @@ export function initAnalysis() {
       // ── Slam output ──────────────────────────────────────────────────────
       if (result.slamMode) {
         const slamContent = document.getElementById('slamContent');
+        const slamThumbnail = document.getElementById('slamThumbnail') as HTMLImageElement | null;
+        const copySlamBtn = document.getElementById('copySlamOutput') as HTMLButtonElement | null;
+
         if (slamContent) slamContent.textContent = result.raw || '';
+
+        if (slamThumbnail && state.uploadedImageData) {
+          slamThumbnail.src = state.uploadedImageData;
+          slamThumbnail.style.display = 'block';
+        }
+
+        if (copySlamBtn && slamContent) {
+          copySlamBtn.onclick = async () => {
+            await navigator.clipboard.writeText(slamContent.textContent || '');
+            copySlamBtn.textContent = 'Copied';
+            setTimeout(() => { copySlamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
+          };
+        }
+
         if (slamResultsPanel) slamResultsPanel.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
