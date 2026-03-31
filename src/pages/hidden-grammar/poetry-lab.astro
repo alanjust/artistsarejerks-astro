@@ -1,0 +1,174 @@
+---
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+
+const forms = [
+  {
+    id: 'slam-read',
+    title: 'Slam Read',
+    description: 'No structure. No hedging. The work gets read the way a body reads a room — what\'s charged, what\'s cold, where the tension pools. A performance, not an analysis.',
+    lines: '14–28 lines',
+    cta: 'Read as Slam →',
+  },
+  {
+    id: 'haiku-read',
+    title: 'Haiku Read',
+    description: 'The work distilled to three lines. 5-7-5. One observation, one cut, one turn — the space between them is the poem.',
+    lines: '3 lines',
+    cta: 'Read as Haiku →',
+  },
+  {
+    id: 'sonnet-read',
+    title: 'Sonnet Read',
+    description: 'The work read as a Shakespearean sonnet. Three quatrains build an argument; the couplet lands what the poem couldn\'t see until it arrived.',
+    lines: '14 lines',
+    cta: 'Read as Sonnet →',
+  },
+];
+---
+
+<HiddenGrammarLayout
+  title="Poetry Lab"
+  description="A visual work read as verse. Slam, haiku, or sonnet — three forms, three kinds of attention, one image."
+>
+  <div class="hg-page poetry-lab-page">
+
+    <nav class="hg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/hidden-grammar">Art Lab</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <span>Poetry Lab</span>
+    </nav>
+
+    <header class="pl-header">
+      <p class="pl-eyebrow">Experimental</p>
+      <h1>Poetry Lab</h1>
+      <p class="pl-subtitle">Same image. Three forms. Three entirely different kinds of attention.</p>
+    </header>
+
+    <div class="pl-grid">
+      {forms.map(form => (
+        <a href={`/hidden-grammar/modes/${form.id}`} class="pl-card">
+          <div class="pl-card-top">
+            <h2 class="pl-card-title">{form.title}</h2>
+            <span class="pl-lines-badge">{form.lines}</span>
+          </div>
+          <p class="pl-card-desc">{form.description}</p>
+          <div class="pl-card-footer">
+            <span class="pl-card-cta">{form.cta}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .poetry-lab-page {
+    max-width: 800px;
+  }
+
+  .pl-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .pl-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .pl-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.625rem 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .pl-subtitle {
+    font-size: 1.0625rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .pl-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pl-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .pl-card:hover {
+    border-color: #a5b4fc;
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
+  }
+
+  .pl-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .pl-card-title {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .pl-lines-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6366f1;
+    background: #eef2ff;
+    border-radius: 6px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pl-card-desc {
+    font-size: 0.9375rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .pl-card-footer {
+    margin-top: 0.25rem;
+  }
+
+  .pl-card-cta {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6366f1;
+  }
+
+  @media (max-width: 640px) {
+    .pl-card {
+      padding: 1.25rem;
+    }
+  }
+</style>
