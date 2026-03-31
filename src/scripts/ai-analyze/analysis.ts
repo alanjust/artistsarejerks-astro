@@ -303,11 +303,15 @@ export function initAnalysis() {
           poetryThumbnail.style.display = 'block';
         }
 
+        // Pre-compute resized image now (outside click handler) so the
+        // clipboard.write() call fires synchronously within the user gesture.
+        const smallImgSrc = state.uploadedImageData
+          ? await resizeForClipboard(state.uploadedImageData)
+          : '';
+
         if (copyPoetryBtn && poetryContent) {
           copyPoetryBtn.onclick = async () => {
             const poemText = poetryContent.textContent || '';
-            const rawImgSrc = state.uploadedImageData || '';
-            const smallImgSrc = rawImgSrc ? await resizeForClipboard(rawImgSrc) : '';
             const htmlPayload = smallImgSrc
               ? `<img src="${smallImgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
               : `<pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`;
