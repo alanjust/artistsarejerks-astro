@@ -15,6 +15,9 @@ export const onRequest = defineMiddleware(async ({ url, cookies, locals, redirec
   // Only gate the /hidden-grammar/* tree
   if (!pathname.startsWith('/hidden-grammar')) return next();
 
+  // Skip auth in local dev — wrangler proxy doesn't forward Set-Cookie to the browser
+  if (import.meta.env.DEV) return next();
+
   // Never gate the login page or auth endpoint themselves
   if (pathname === '/hidden-grammar/login' || pathname.startsWith('/api/hg-auth')) return next();
 

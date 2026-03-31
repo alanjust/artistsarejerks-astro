@@ -11,7 +11,7 @@ async function passwordHash(password: string): Promise<string> {
     .slice(0, 48);
 }
 
-export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => {
+export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const form = await request.formData();
   const submitted = form.get('password')?.toString().trim() || '';
   const from = form.get('from')?.toString() || '/hidden-grammar';
@@ -28,13 +28,14 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
 
   const hash = await passwordHash(password);
 
-  cookies.set('hg_auth', hash, {
-    path: '/',
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
+  const secure = import.meta.env.DEV ? '' : '; Secure';
+  const cookieHeader = `hg_auth=${hash}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secure}`;
 
-  return redirect(from, 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      'Location': from,
+      'Set-Cookie': cookieHeader,
+    },
+  });
 };
