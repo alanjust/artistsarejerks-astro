@@ -9,7 +9,7 @@ async function passwordHash(password: string): Promise<string> {
     .slice(0, 48);
 }
 
-export const onRequest = defineMiddleware(async ({ url, cookies, locals, redirect }, next) => {
+export const onRequest = defineMiddleware(async ({ url, request, locals, redirect }, next) => {
   const { pathname } = url;
 
   // Only gate the /hidden-grammar/* tree
@@ -28,8 +28,8 @@ export const onRequest = defineMiddleware(async ({ url, cookies, locals, redirec
 
   const rawCookieHeader = request.headers.get('cookie') || '';
   const cookieValue = rawCookieHeader.split(';')
-    .map(c => c.trim())
-    .find(c => c.startsWith('hg_auth='))
+    .map((c: string) => c.trim())
+    .find((c: string) => c.startsWith('hg_auth='))
     ?.slice('hg_auth='.length) || '';
 
   const expected = await passwordHash(password);
