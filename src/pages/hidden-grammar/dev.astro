@@ -1,0 +1,297 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+
+// This page is only linked from the nav in dev mode.
+// It is not in public navigation and should not be promoted to production use.
+
+const groups = [
+  {
+    heading: 'Research Tools',
+    tools: [
+      {
+        href: '/hidden-grammar/framework-extension',
+        label: 'Research',
+        title: 'Framework Extension',
+        desc: 'Two-pass analysis tool for discovering gaps in the 54 Principles. Pass 1 is pure formalism. Pass 2 maps to existing principles and drafts candidates for gaps.',
+        status: 'Active',
+      },
+    ],
+  },
+  {
+    heading: 'Framework Reference — Linked from Home',
+    tools: [
+      {
+        href: '/hidden-grammar/framework',
+        label: 'Reference',
+        title: 'Art Lab Framework',
+        desc: 'Full overview of the structural system — 11 Roots, 54 Principles, 4 Poles, and how they connect.',
+        status: 'Live',
+      },
+      {
+        href: '/hidden-grammar/roots',
+        label: 'Reference',
+        title: 'The 11 Roots',
+        desc: 'Full reference for the 11 Roots (Drivers). Uses BaseLayout — renders with AAJ nav, not Art Lab nav. Probably needs to be switched.',
+        status: 'Live — wrong layout',
+      },
+      {
+        href: '/hidden-grammar/principles',
+        label: 'Reference',
+        title: '54 Principles',
+        desc: 'Complete inventory of perceptual and compositional mechanisms by tier. Links internally to Signal Profile.',
+        status: 'Live',
+      },
+      {
+        href: '/hidden-grammar/lenses',
+        label: 'Reference',
+        title: 'Interrogation Lenses',
+        desc: 'Full lenses browser with categories. Same image, different critical or philosophical frame.',
+        status: 'Live',
+      },
+
+    ],
+  },
+  {
+    heading: 'Broken Links — Home Page Points Here, No Page Exists',
+    tools: [
+      {
+        href: '/hidden-grammar/reference',
+        label: 'Missing page',
+        title: 'Reference',
+        desc: 'The Art Lab home page has a card linking to /hidden-grammar/reference. No page file exists. Will 404.',
+        status: '404',
+      },
+    ],
+  },
+
+  {
+    heading: 'Editorial — Unlinked Essays',
+    tools: [
+      {
+        href: '/hidden-grammar/why',
+        label: 'Essay',
+        title: 'Why I Built This',
+        desc: 'Origin story. The coast story. Why visual problems need a different kind of language. Linked from home reading list.',
+        status: 'Live',
+      },
+      {
+        href: '/hidden-grammar/keeping-score',
+        label: 'Essay',
+        title: 'A Different Way to Keep Score',
+        desc: 'Art Lab as an alternative to art world metrics. Linked from home reading list.',
+        status: 'Live',
+      },
+      {
+        href: '/hidden-grammar/grammar',
+        label: 'Essay',
+        title: 'The Grammar of Visual Art',
+        desc: 'How the 54 Principles map to the structural logic of language — and where the analogy breaks. Linked from home reading list.',
+        status: 'Live',
+      },
+      {
+        href: '/hidden-grammar/signal-profile',
+        label: 'Essay',
+        title: 'How Do I Use What My Eyes Now Know?',
+        desc: 'Neuroscience of the first 100–150ms of looking. Zeki, Chatterjee. Linked from Principles page but not from nav or home.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/score',
+        label: 'Essay',
+        title: 'The Score That Actually Matters',
+        desc: 'Hobbes and C. Thi Nguyen on value capture — how the art world\'s scoring system reshapes what artists want.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/not-alone',
+        label: 'Essay',
+        title: 'You Were Not Alone',
+        desc: 'Personal essay on using AI as studio interviewer rather than generator.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/analysis-worth',
+        label: 'Essay',
+        title: 'Does Analysis Destroy an Artwork?',
+        desc: 'The worry that analysis reduces art to parts and kills mystery — and where the logic slips.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/what-is-art-analysis',
+        label: 'Essay',
+        title: 'What Is Art Analysis?',
+        desc: 'Comparison of Feldman, Panofsky, VTS, and Art Lab — what each framework chooses to look at and what that choice costs.',
+        status: 'Orphaned',
+      },
+    ],
+  },
+  {
+    heading: 'Audience Entry Points — Orphaned',
+    tools: [
+      {
+        href: '/hidden-grammar/for/artist',
+        label: 'Landing page',
+        title: 'For Working Artists',
+        desc: 'Pulls live making and analyzing tools from toolkit-modes.js. No link to it from anywhere.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/for/educator',
+        label: 'Landing page',
+        title: 'For Educators & Docents',
+        desc: 'Pulls talking tools from toolkit-modes.js. No link to it from anywhere.',
+        status: 'Orphaned',
+      },
+      {
+        href: '/hidden-grammar/for/curious',
+        label: 'Landing page',
+        title: 'Just Curious',
+        desc: 'Pulls prompts from the just-curious mode. No link to it from anywhere.',
+        status: 'Orphaned',
+      },
+    ],
+  },
+];
+---
+
+<HiddenGrammarLayout
+  title="Developer Tools"
+  description="Internal tools for developing and extending the Art Lab."
+>
+  <div class="hg-page dev-page">
+
+    <div class="dev-header">
+      <p class="dev-eyebrow">Internal — not public-facing</p>
+      <h1>Developer Tools</h1>
+      <p class="dev-desc">Tools under active development or in research. None of these appear in public navigation. Add new tools here as you build them.</p>
+    </div>
+
+    {groups.map(group => (
+      <section class="dev-group">
+        <h2 class="dev-group-heading">{group.heading}</h2>
+        <div class="hg-grid dev-grid">
+          {group.tools.map(tool => (
+            <a href={tool.href} class="hg-card dev-card">
+              <div class="dev-card-meta">
+                <span class="dev-card-label">{tool.label}</span>
+                <span class="dev-card-status" data-status={tool.status}>{tool.status}</span>
+              </div>
+              <h3 class="hg-card-title">{tool.title}</h3>
+              <p class="hg-card-desc">{tool.desc}</p>
+              <p class="hg-card-arrow">Open →</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .dev-page {
+    max-width: 900px;
+  }
+
+  .dev-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #fde68a;
+  }
+
+  .dev-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #92400e;
+    margin: 0 0 0.4rem 0;
+  }
+
+  .dev-header h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.625rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .dev-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    max-width: 580px;
+    line-height: 1.6;
+  }
+
+  .dev-group {
+    margin-bottom: 2.5rem;
+  }
+
+  .dev-group-heading {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 1rem 0;
+  }
+
+  .dev-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+
+  .dev-card {
+    border-color: #fde68a;
+  }
+
+  .dev-card:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+  }
+
+  .dev-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .dev-card-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #92400e;
+  }
+
+  .dev-card-status {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 100px;
+    border: 1px solid #fde68a;
+    white-space: nowrap;
+  }
+
+  .dev-card-status[data-status="404"] {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+
+  .dev-card-status[data-status="Orphaned"] {
+    background: #f8fafc;
+    color: #64748b;
+    border-color: #e2e8f0;
+  }
+
+  .dev-card-status[data-status="Live"] {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+  }
+</style>

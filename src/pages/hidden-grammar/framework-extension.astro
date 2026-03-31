@@ -1,0 +1,881 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout
+  title="Framework Extension — Internal"
+  description="Two-pass analysis tool for discovering gaps in the Hidden Grammar principles."
+>
+  <div class="hg-page fe-page">
+
+    <div class="fe-header">
+      <p class="fe-eyebrow">Internal Tool</p>
+      <h1>Framework Extension</h1>
+      <p class="fe-desc">Upload an image. Pass 1 runs without framework framing. Pass 2 maps observations to the 54 Principles and drafts candidate entries for gaps.</p>
+    </div>
+
+    <!-- Upload -->
+    <section class="fe-upload-section">
+      <div class="fe-upload-area" id="uploadArea">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        <p class="fe-upload-hint">JPG, PNG, WebP</p>
+        <input type="file" id="imageInput" accept="image/*" hidden>
+      </div>
+
+      <div id="previewContainer" class="fe-preview-container" style="display:none">
+        <img id="imagePreview" alt="Uploaded image">
+        <button type="button" id="removeImage" class="fe-btn fe-btn--ghost">Remove</button>
+      </div>
+
+      <div id="runRow" style="display:none; margin-top: 1.25rem;">
+        <button type="button" id="runBtn" class="fe-btn fe-btn--primary">Run Analysis</button>
+      </div>
+    </section>
+
+    <!-- Status -->
+    <div id="statusBar" class="fe-status" style="display:none">
+      <div class="fe-status-dot"></div>
+      <span id="statusText">Running Pass 1…</span>
+    </div>
+
+    <!-- ── OUTPUT ─────────────────────────────────────────────────────────── -->
+    <div id="output" style="display:none">
+
+      <!-- Lens toggle -->
+      <div class="fe-lens-bar">
+        <span class="fe-lens-label">Lens</span>
+        <div class="fe-lens-btns" role="group" aria-label="Select framing lens">
+          <button type="button" class="fe-lens-btn active" data-lens="critic">Art Critic</button>
+          <button type="button" class="fe-lens-btn" data-lens="finished">Finished Work</button>
+          <button type="button" class="fe-lens-btn" data-lens="wip">Work in Progress</button>
+        </div>
+      </div>
+
+      <!-- Lead finding -->
+      <div class="fe-lead" id="leadFinding"></div>
+
+      <!-- Candidate cards -->
+      <section id="candidatesSection">
+        <h2 class="fe-section-label">Candidate Principles</h2>
+        <div id="candidatesList" class="fe-candidates-list"></div>
+        <p id="noCandidates" class="fe-empty-note" style="display:none">All observations mapped to existing principles. No gaps found.</p>
+      </section>
+
+      <!-- Formal summary -->
+      <div class="fe-summary-block" id="summaryBlock">
+        <p class="fe-section-label">Formal Summary — <span id="summaryLensName">Art Critic</span></p>
+        <div id="formalSummary" class="fe-summary-text"></div>
+      </div>
+
+      <!-- Full mapped analysis -->
+      <details class="fe-mapped-details" id="mappedDetails">
+        <summary class="fe-mapped-summary">
+          <span>Observations matched to existing principles</span>
+          <span class="fe-mapped-count" id="mappedCount"></span>
+          <span class="fe-toggle-arrow">›</span>
+        </summary>
+        <div id="mappedList" class="fe-mapped-list"></div>
+      </details>
+
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .fe-page {
+    max-width: 780px;
+  }
+
+  /* ── Header ── */
+  .fe-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .fe-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    margin: 0 0 0.4rem 0;
+  }
+
+  .fe-header h1 {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.625rem 0;
+  }
+
+  .fe-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Upload ── */
+  .fe-upload-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .fe-upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    color: #64748b;
+  }
+
+  .fe-upload-area:hover,
+  .fe-upload-area.drag-over {
+    border-color: #4f46e5;
+    background: #f5f3ff;
+  }
+
+  .fe-upload-area svg {
+    margin-bottom: 0.75rem;
+    color: #94a3b8;
+    display: block;
+    margin-inline: auto;
+  }
+
+  .fe-upload-area p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9375rem;
+  }
+
+  .fe-upload-hint {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+  }
+
+  .fe-preview-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .fe-preview-container img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    object-fit: contain;
+  }
+
+  /* ── Buttons ── */
+  .fe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5625rem 1.125rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .fe-btn--primary {
+    background: #4f46e5;
+    color: #fff;
+  }
+  .fe-btn--primary:hover { background: #4338ca; }
+  .fe-btn--primary:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+  .fe-btn--ghost {
+    background: transparent;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+  }
+  .fe-btn--ghost:hover { border-color: #94a3b8; color: #334155; }
+
+  .fe-btn--save {
+    background: transparent;
+    color: #166534;
+    border: 1.5px solid #bbf7d0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+  }
+  .fe-btn--save:hover { background: #f0fdf4; }
+  .fe-btn--save.saved {
+    color: #166534;
+    border-color: #86efac;
+    background: #f0fdf4;
+    cursor: default;
+  }
+  .fe-btn--save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ── Status ── */
+  .fe-status {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #1d4ed8;
+    margin-bottom: 1.5rem;
+  }
+
+  .fe-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── Lens bar ── */
+  .fe-lens-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+    padding: 0.875rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+  }
+
+  .fe-lens-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .fe-lens-btns {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  .fe-lens-btn {
+    padding: 0.375rem 0.875rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .fe-lens-btn:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+  }
+
+  .fe-lens-btn.active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #fff;
+  }
+
+  /* ── Lead finding ── */
+  .fe-lead {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.55;
+    margin-bottom: 2rem;
+    padding: 1.125rem 1.25rem;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ── Section label ── */
+  .fe-section-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 1rem 0;
+    display: block;
+  }
+
+  .fe-empty-note {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  /* ── Candidate cards ── */
+  #candidatesSection {
+    margin-bottom: 2rem;
+  }
+
+  .fe-candidates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* Card internals are created dynamically via innerHTML — must be :global to bypass Astro scoping */
+  :global(.fe-card) {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  :global(.fe-card-body) {
+    padding: 1.375rem 1.5rem 1rem;
+  }
+
+  :global(.fe-card-name) {
+    font-size: 1.1875rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.3;
+  }
+
+  :global(.fe-card-subtitle) {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    font-style: italic;
+  }
+
+  :global(.fe-card-fields) {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 1rem;
+  }
+
+  :global(.fe-field) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 0;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  :global(.fe-field:first-child) {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  :global(.fe-field-key) {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-style: italic;
+    color: #334155;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  :global(.fe-field-val) {
+    font-size: 0.9375rem;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+
+  :global(.fe-field-val.needs-research) {
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  /* Expand toggle */
+  :global(.fe-expand-toggle) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 0.75rem;
+    transition: color 0.15s;
+  }
+
+  :global(.fe-expand-toggle:hover) { color: #334155; }
+
+  :global(.fe-expand-arrow) {
+    display: inline-block;
+    font-size: 0.625rem;
+    transition: transform 0.15s;
+  }
+
+  :global(.fe-expand-toggle.open .fe-expand-arrow) {
+    transform: rotate(90deg);
+  }
+
+  :global(.fe-draft-full) {
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    padding: 1rem 1.5rem;
+  }
+
+  :global(.fe-draft-pre) {
+    font-size: 0.8125rem;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    color: #475569;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Card footer */
+  :global(.fe-card-footer) {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  :global(.fe-save-msg) {
+    font-size: 0.8125rem;
+    color: #166534;
+  }
+
+  :global(.fe-mapped-item) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: start;
+    font-size: 0.875rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  :global(.fe-mapped-item:last-child) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  :global(.fe-mapped-obs) {
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  :global(.fe-mapped-chip) {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4f46e5;
+    background: #eef2ff;
+    padding: 0.1875rem 0.5625rem;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Formal summary ── */
+  .fe-summary-block {
+    margin-bottom: 2rem;
+    padding: 1.375rem 1.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+  }
+
+  .fe-summary-text {
+    font-size: 0.9375rem;
+    color: #334155;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ── Mapped details ── */
+  .fe-mapped-details {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .fe-mapped-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1.125rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    list-style: none;
+    background: #f8fafc;
+  }
+
+  .fe-mapped-summary::-webkit-details-marker { display: none; }
+
+  .fe-mapped-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    background: #e2e8f0;
+    color: #64748b;
+    border-radius: 100px;
+  }
+
+  .fe-toggle-arrow {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: #94a3b8;
+    transition: transform 0.15s;
+  }
+
+  details[open] .fe-toggle-arrow {
+    transform: rotate(90deg);
+  }
+
+  .fe-mapped-list {
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+
+  @media (max-width: 600px) {
+    .fe-lens-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  // ── State ─────────────────────────────────────────────────────────────────
+  let uploadedImage: string | null = null;
+  let currentLens: 'critic' | 'finished' | 'wip' = 'critic';
+  let analysisData: {
+    pass1: string;
+    leadFinding: string;
+    mapped: any[];
+    unmapped: any[];
+    summaries: { critic: string; finished: string; wip: string };
+  } | null = null;
+
+  // ── Upload ────────────────────────────────────────────────────────────────
+  const uploadArea = document.getElementById('uploadArea') as HTMLElement;
+  const imageInput = document.getElementById('imageInput') as HTMLInputElement;
+  const previewContainer = document.getElementById('previewContainer') as HTMLElement;
+  const imagePreview = document.getElementById('imagePreview') as HTMLImageElement;
+  const removeImageBtn = document.getElementById('removeImage') as HTMLButtonElement;
+  const runRow = document.getElementById('runRow') as HTMLElement;
+  const runBtn = document.getElementById('runBtn') as HTMLButtonElement;
+
+  uploadArea.addEventListener('click', () => imageInput.click());
+
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+  });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const file = e.dataTransfer?.files[0];
+    if (file) loadFile(file);
+  });
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+    if (file) loadFile(file);
+  });
+
+  removeImageBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    imagePreview.src = '';
+    previewContainer.style.display = 'none';
+    uploadArea.style.display = '';
+    runRow.style.display = 'none';
+    imageInput.value = '';
+  });
+
+  function loadFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImage = e.target?.result as string;
+      imagePreview.src = uploadedImage;
+      uploadArea.style.display = 'none';
+      previewContainer.style.display = 'flex';
+      runRow.style.display = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Run analysis ──────────────────────────────────────────────────────────
+  const statusBar = document.getElementById('statusBar') as HTMLElement;
+  const statusText = document.getElementById('statusText') as HTMLElement;
+  const output = document.getElementById('output') as HTMLElement;
+
+  runBtn.addEventListener('click', runAnalysis);
+
+  async function runAnalysis() {
+    if (!uploadedImage) return;
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+    output.style.display = 'none';
+    statusBar.style.display = 'flex';
+    statusText.textContent = 'Pass 1 — formalist observations…';
+
+    try {
+      const res = await fetch('/api/framework-extension', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: uploadedImage }),
+      });
+
+      statusText.textContent = 'Pass 2 — mapping to principles…';
+
+      const data = await res.json();
+
+      if (!data.success) {
+        statusBar.style.display = 'none';
+        alert(`Analysis failed: ${data.error || 'Unknown error'}`);
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+        return;
+      }
+
+      analysisData = data;
+      statusBar.style.display = 'none';
+      renderOutput(data);
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Again';
+
+    } catch (err) {
+      statusBar.style.display = 'none';
+      alert(`Network error: ${err}`);
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Analysis';
+    }
+  }
+
+  // ── Lens toggle ───────────────────────────────────────────────────────────
+  const lensNames: Record<string, string> = {
+    critic: 'Art Critic',
+    finished: 'Finished Work',
+    wip: 'Work in Progress',
+  };
+
+  document.querySelectorAll('.fe-lens-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lens = (btn as HTMLElement).dataset.lens as 'critic' | 'finished' | 'wip';
+      currentLens = lens;
+      document.querySelectorAll('.fe-lens-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (analysisData) {
+        updateSummary(analysisData.summaries);
+        document.getElementById('summaryBlock')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  function updateSummary(summaries: { critic: string; finished: string; wip: string }) {
+    const el = document.getElementById('formalSummary') as HTMLElement;
+    const label = document.getElementById('summaryLensName') as HTMLElement;
+    el.textContent = summaries[currentLens] || '';
+    label.textContent = lensNames[currentLens] || '';
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function renderOutput(data: typeof analysisData) {
+    if (!data) return;
+
+    // Lead finding
+    const leadEl = document.getElementById('leadFinding') as HTMLElement;
+    leadEl.textContent = data.leadFinding || '';
+
+    // Candidates
+    const list = document.getElementById('candidatesList') as HTMLElement;
+    const noMsg = document.getElementById('noCandidates') as HTMLElement;
+    list.innerHTML = '';
+
+    if (data.unmapped.length === 0) {
+      noMsg.style.display = '';
+    } else {
+      noMsg.style.display = 'none';
+      data.unmapped.forEach((item: any, idx: number) => {
+        list.appendChild(buildCandidateCard(item, idx));
+      });
+    }
+
+    // Formal summary
+    updateSummary(data.summaries);
+
+    // Mapped list
+    const mappedList = document.getElementById('mappedList') as HTMLElement;
+    const mappedCount = document.getElementById('mappedCount') as HTMLElement;
+    mappedList.innerHTML = '';
+    mappedCount.textContent = String(data.mapped.length);
+
+    data.mapped.forEach((item: any) => {
+      const el = document.createElement('div');
+      el.className = 'fe-mapped-item';
+      el.innerHTML = `
+        <span class="fe-mapped-obs">${esc(item.observation)}</span>
+        <span class="fe-mapped-chip">${esc(item.principleName)}</span>
+      `;
+      mappedList.appendChild(el);
+    });
+
+    output.style.display = '';
+    output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function buildCandidateCard(item: any, idx: number): HTMLElement {
+    const d = item.draft || {};
+    const combineWith = Array.isArray(d.combineWith) && d.combineWith.length > 0
+      ? d.combineWith.join(', ')
+      : '—';
+    const neuralFactIsNR = !d.neuralFact || d.neuralFact === 'needs research';
+
+    const displayFields: [string, string, boolean][] = [
+      ['What the eye is doing.', d.neuralFact || 'needs research', neuralFactIsNR],
+      ['What this gives you as an artist.', d.studioTool || '', false],
+      ['How to use it.', d.howToUse || '', false],
+      ['Related principles.', combineWith, combineWith === '—'],
+    ];
+
+    const fieldsHtml = displayFields.map(([key, val, muted]) => `
+      <div class="fe-field">
+        <span class="fe-field-key">${esc(key)}</span>
+        <span class="fe-field-val${muted ? ' needs-research' : ''}">${esc(val)}</span>
+      </div>
+    `).join('');
+
+    // Full draft for expand view (omit tier/claimType from display)
+    const fullDraft = {
+      name: d.name,
+      subtitle: d.subtitle,
+      neuralFact: d.neuralFact,
+      studioTool: d.studioTool,
+      howToUse: d.howToUse,
+      combineWith: d.combineWith,
+      tier: '',
+      claimType: '',
+    };
+
+    const card = document.createElement('div');
+    card.className = 'fe-card';
+    card.innerHTML = `
+      <div class="fe-card-body">
+        <h3 class="fe-card-name">${esc(d.name || 'Unnamed Candidate')}</h3>
+        <p class="fe-card-subtitle">${esc(d.subtitle || '')}</p>
+        <div class="fe-card-fields">${fieldsHtml}</div>
+        <button type="button" class="fe-expand-toggle" data-idx="${idx}">
+          <span class="fe-expand-arrow">›</span>
+          Show full draft entry
+        </button>
+      </div>
+      <div class="fe-draft-full" id="draftFull${idx}" style="display:none">
+        <pre class="fe-draft-pre">${esc(JSON.stringify(fullDraft, null, 2))}</pre>
+      </div>
+      <div class="fe-card-footer">
+        <button type="button" class="fe-btn fe-btn--save" data-idx="${idx}">Save as Candidate</button>
+        <span class="fe-save-msg" id="saveMsg${idx}" style="display:none"></span>
+      </div>
+    `;
+
+    // Expand toggle
+    const expandBtn = card.querySelector(`.fe-expand-toggle[data-idx="${idx}"]`) as HTMLButtonElement;
+    const draftFull = card.querySelector(`#draftFull${idx}`) as HTMLElement;
+    expandBtn.addEventListener('click', () => {
+      const isOpen = draftFull.style.display !== 'none';
+      draftFull.style.display = isOpen ? 'none' : 'block';
+      expandBtn.classList.toggle('open', !isOpen);
+      const label = expandBtn.lastChild as Text | null;
+      if (label) label.textContent = isOpen ? ' Show full draft entry' : ' Hide full draft entry';
+    });
+
+    // Save button
+    const saveBtn = card.querySelector(`.fe-btn--save[data-idx="${idx}"]`) as HTMLButtonElement;
+    saveBtn.addEventListener('click', () => saveCandidate(item, idx));
+
+    return card;
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  async function saveCandidate(item: any, idx: number) {
+    const btn = document.querySelector(`.fe-btn--save[data-idx="${idx}"]`) as HTMLButtonElement;
+    const msg = document.getElementById(`saveMsg${idx}`) as HTMLElement;
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/save-candidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate: item.draft, observation: item.observation }),
+      });
+
+      const data = await res.json();
+      msg.style.display = '';
+
+      if (data.success) {
+        btn.textContent = 'Saved';
+        btn.classList.add('saved');
+        msg.style.color = '#166534';
+        msg.textContent = `Saved. ${data.count} candidate${data.count === 1 ? '' : 's'} total.`;
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Save as Candidate';
+        msg.style.color = '#dc2626';
+        msg.textContent = data.error || 'Save failed.';
+      }
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Save as Candidate';
+      msg.style.display = '';
+      msg.style.color = '#dc2626';
+      msg.textContent = `Error: ${err}`;
+    }
+  }
+
+  // ── Escape HTML ───────────────────────────────────────────────────────────
+  function esc(str: string): string {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
