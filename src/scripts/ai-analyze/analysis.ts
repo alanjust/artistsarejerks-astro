@@ -201,9 +201,20 @@ export function initAnalysis() {
   const analyzeBtn = document.getElementById('analyzeBtn') as HTMLButtonElement | null;
   const loadingState = document.getElementById('loadingState');
   const resultsPanel = document.getElementById('resultsPanel');
+  const slamResultsPanel = document.getElementById('slamResultsPanel');
   const analysisForm = document.getElementById('analysisForm');
   const resultsContent = document.getElementById('resultsContent');
   const backToForm = document.getElementById('backToForm');
+  const backToFormSlam = document.getElementById('backToFormSlam');
+
+  // ── Back button for slam panel ────────────────────────────────────────────
+  backToFormSlam?.addEventListener('click', () => {
+    if (analysisForm) analysisForm.style.display = 'block';
+    if (slamResultsPanel) slamResultsPanel.style.display = 'none';
+    const slamContent = document.getElementById('slamContent');
+    if (slamContent) slamContent.textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   analyzeBtn?.addEventListener('click', async () => {
     if (!state.uploadedImageData) {
@@ -211,15 +222,22 @@ export function initAnalysis() {
       return;
     }
 
+    const isSlam = state.modeId === 'slam-read';
     const fields = collectFields();
     const additionalContext = (document.getElementById('additionalContext') as HTMLTextAreaElement | null)?.value.trim() || '';
     const promptText = state.promptText
       ? (additionalContext ? `${state.promptText}\n\nAdditional context from the user: ${additionalContext}` : state.promptText)
       : additionalContext;
 
-    // Show loading
+    // Show loading (with mode-specific text)
     if (analysisForm) analysisForm.style.display = 'none';
     if (loadingState) loadingState.style.display = 'flex';
+    const loadingTextEl = document.getElementById('loadingText');
+    const loadingSubEl = document.getElementById('loadingSub');
+    if (isSlam) {
+      if (loadingTextEl) loadingTextEl.textContent = 'Reading the work...';
+      if (loadingSubEl) loadingSubEl.textContent = '';
+    }
 
     try {
       const devModelEl = document.getElementById('devModelSelector') as HTMLSelectElement | null;
@@ -233,6 +251,7 @@ export function initAnalysis() {
           fields,
           promptText,
           interrogationMode: false,
+          ...(isSlam && { slamMode: true }),
           ...(devModel && { model: devModel }),
         }),
       });
@@ -247,19 +266,28 @@ export function initAnalysis() {
         return;
       }
 
-      // Store output
+      if (loadingState) loadingState.style.display = 'none';
+
+      // ── Slam output ──────────────────────────────────────────────────────
+      if (result.slamMode) {
+        const slamContent = document.getElementById('slamContent');
+        if (slamContent) slamContent.textContent = result.raw || '';
+        if (slamResultsPanel) slamResultsPanel.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // ── Standard output ──────────────────────────────────────────────────
       state.outputs = [{ raw: result.raw || '', html: result.analysis }];
       state.fields = fields;
       state.imagePropertiesHTML = stripTiers(result.imageProperties || '');
       state.viewerEffectsHTML = stripTiers(result.viewerEffects || '');
 
-      // Display
       if (resultsContent) {
         resultsContent.innerHTML = stripTiers(result.analysis);
         buildSidebar(resultsContent);
         linkPrincipleNames(resultsContent);
       }
-      if (loadingState) loadingState.style.display = 'none';
       if (resultsPanel) resultsPanel.style.display = 'block';
 
       // Show uploaded image thumbnail
@@ -302,6 +330,10 @@ export function initAnalysis() {
   backToForm?.addEventListener('click', () => {
     if (analysisForm) analysisForm.style.display = 'block';
     if (resultsPanel) resultsPanel.style.display = 'none';
+    const loadingTextEl = document.getElementById('loadingText');
+    const loadingSubEl = document.getElementById('loadingSub');
+    if (loadingTextEl) loadingTextEl.textContent = 'Analyzing artwork...';
+    if (loadingSubEl) loadingSubEl.textContent = 'the Art Analyzer is examining the visual grammar';
 
     // Reset thumbnail
     const thumbnail = document.getElementById('resultThumbnail') as HTMLImageElement | null;

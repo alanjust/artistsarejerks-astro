@@ -51,6 +51,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       userQuestion,
       conversationHistory,
       model: requestedModel,
+      slamMode,
     } = body;
 
     const ALLOWED_MODELS = ['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'];
@@ -188,6 +189,77 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
 
       return new Response(
         JSON.stringify({ success: true, analysis: lensHTML, raw: lensText }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ── SLAM MODE ───────────────────────────────────────────────────────────
+    // Returns a slam poem reading of the image. No framework injection.
+    if (slamMode === true) {
+      if (!image) {
+        return new Response(
+          JSON.stringify({ error: 'Slam mode requires an image' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const slamSystemPrompt = `You are reading a visual work as a slam poet.
+
+Look at this image. Read it the way a body reads a room — what's charged, what's cold, where the tension pools, what it wants and won't say out loud.
+
+Write one slam piece. Not a description. Not an analysis. A performance.
+
+Rules:
+- No hedging. No "perhaps," "might," "seems to," "one could argue."
+- Address shifts freely — the work, the viewer, the maker, whoever the heat pulls you toward. Let it vary.
+- Build. Accumulate. Land. The last line earns its weight.
+- Concrete and visceral. Name what you actually see.
+- Rhythm is structural. Lines break where breath breaks.
+- Between 14 and 28 lines.
+- No title. No section headers. No labels. Plain text only. No markdown.
+
+Read what's actually in this image. Not what art is supposed to do. What this specific thing does.`;
+
+      const slamImageData = image.split(',')[1];
+      const slamMediaType = image.split(';')[0].split(':')[1];
+
+      let slamUserText = 'Read this work.';
+      if (fields && typeof fields === 'object') {
+        const parts = Object.entries(fields as Record<string, string>)
+          .filter(([, v]) => v && String(v).trim())
+          .map(([k, v]) => `${k}: ${v}`);
+        if (parts.length > 0) slamUserText = `${parts.join(' / ')}\n\n${slamUserText}`;
+      }
+
+      const slamMessage = await anthropic.messages.create({
+        model,
+        max_tokens: 1024,
+        system: slamSystemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: slamMediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                  data: slamImageData,
+                },
+              },
+              { type: 'text', text: slamUserText },
+            ],
+          },
+        ],
+      });
+
+      const slamText = slamMessage.content
+        .filter(block => block.type === 'text')
+        .map(block => ('text' in block ? block.text : ''))
+        .join('\n');
+
+      return new Response(
+        JSON.stringify({ success: true, slamMode: true, raw: slamText }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }

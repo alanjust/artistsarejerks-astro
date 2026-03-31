@@ -148,8 +148,16 @@ const principlesJSON = JSON.stringify(principlesData);
     <!-- Loading State -->
     <div id="loadingState" class="hg-loading" style="display: none;">
       <div class="hg-loading-spinner"></div>
-      <p class="hg-loading-text">Analyzing artwork...</p>
-      <p class="hg-loading-sub">the Art Analyzer is examining the visual grammar</p>
+      <p class="hg-loading-text" id="loadingText">Analyzing artwork...</p>
+      <p class="hg-loading-sub" id="loadingSub">the Art Analyzer is examining the visual grammar</p>
+    </div>
+
+    <!-- Slam Results Panel -->
+    <div id="slamResultsPanel" class="hg-slam-panel" style="display: none;">
+      <div class="hg-slam-nav">
+        <button class="hg-btn hg-btn--ghost" id="backToFormSlam">← New Read</button>
+      </div>
+      <div id="slamContent" class="hg-slam-content"></div>
     </div>
 
     <!-- Results Panel -->
@@ -1747,4 +1755,23 @@ const principlesJSON = JSON.stringify(principlesData);
   }
 
   .hg-ps-link:hover { text-decoration: underline; }
+
+  /* ── Slam Results Panel ───────────────────────── */
+  .hg-slam-panel {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+  }
+
+  .hg-slam-nav {
+    margin-bottom: 3rem;
+  }
+
+  .hg-slam-content {
+    font-size: 1.1875rem;
+    line-height: 2;
+    color: #1e293b;
+    white-space: pre-line;
+    letter-spacing: 0.01em;
+  }
 </style>

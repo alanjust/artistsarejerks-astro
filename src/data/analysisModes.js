@@ -1445,6 +1445,29 @@ When included:
   },
 
   // ─────────────────────────────────────────────────────────────────────────
+  // SLAM READ
+  // ─────────────────────────────────────────────────────────────────────────
+
+  {
+    id: 'slam-read',
+    label: 'Slam Read',
+    description: 'The work gets read as slam poetry. No structure. No hedging. What the work does to a body.',
+    subModes: [],
+    fields: [
+      { id: 'title', label: 'Title' },
+      { id: 'artist', label: 'Artist' },
+    ],
+    prompts: [
+      {
+        id: 'slam',
+        label: 'Slam Read',
+        description: 'Upload a work. Get a performance back.',
+        prompt: 'Read this work.',
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
   // INTERNAL TOOLS
   // internal: true — not in public navigation, not rendered by [mode].astro
   // ─────────────────────────────────────────────────────────────────────────
