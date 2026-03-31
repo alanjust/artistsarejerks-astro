@@ -18,6 +18,15 @@ export const onRequest = defineMiddleware(async ({ url, request, locals, redirec
   // Skip auth in local dev — wrangler proxy doesn't forward Set-Cookie to the browser
   if (import.meta.env.DEV) return next();
 
+  // Temporary debug route — remove after diagnosis
+  if (pathname === '/hidden-grammar/debug-mw') {
+    const rawCookieHeader = request.headers.get('cookie') || '(none)';
+    const password = (locals as any).runtime?.env?.HG_PASSWORD || process.env.HG_PASSWORD;
+    return new Response(JSON.stringify({ rawCookieHeader, passwordSet: !!password }, null, 2), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   // Never gate the login page or auth endpoint themselves
   if (pathname === '/hidden-grammar/login' || pathname.startsWith('/api/hg-auth')) return next();
 
