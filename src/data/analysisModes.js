@@ -283,7 +283,19 @@ Work through all 11 Roots systematically: Design Logic, Tactile Execution, Struc
 Atmosphere, Visual Hierarchy, Narrative Sequence, Signal Strength, Gravitas, Entropy,
 Materiality, and Format. For each Root, identify which of the 54 Principles are active.
 Map observations to perceptual and neural mechanisms. Do not interpret until the Evidence Gate
-is passed. Present findings as structured observations, not conclusions.`,
+is passed. Present findings as structured observations, not conclusions.
+
+Before the root-by-root sections, declare three tiers:
+- Dominant Roots (2–3 maximum): strongest evidence, multiple active Principles
+- Supporting Roots (2–3): active but not primary
+- Silent Roots: minimal evidence or absent
+
+Then write each Root at the appropriate depth:
+- Dominant: 3–4 sentences maximum, naming specific Principles and their perceptual effect
+- Supporting: 1–2 sentences
+- Silent: one sentence only, noting absence or minimal presence
+
+All 11 Roots must appear. No Root section may exceed 4 sentences regardless of activity level.`,
       },
       {
         id: 'fine-art-wip',

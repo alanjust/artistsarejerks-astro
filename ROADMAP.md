@@ -109,6 +109,110 @@ Wire the 6 DOCUMENTED modes into `analysisModes.js` as a new domain card. Source
 
 ---
 
+### Theme 5: Accounts, access control, and cost sustainability
+
+The current shared-password system has no individual accountability. One bad actor forces a password reset that punishes every legitimate user. Alan pays all token costs with no visibility into who is running what or how much. This doesn't survive growth.
+
+**Why fifth:** The tool works. The framework works. The risk now is operational—an uncontrolled API bill and no mechanism to scale access responsibly. This theme builds the infrastructure that makes Art Lab sustainable as the audience grows.
+
+**The problem in plain terms:**
+The shared password gives Alan no way to revoke one user without affecting everyone. He has no usage data. There is no path to charging users or having them cover their own token costs. This gets addressed before the public launch.
+
+---
+
+#### Three-tier access model
+
+**Tier 1 — Try Me (already exists, stays public)**
+The green "Try Me" button on the Art Lab home page, wired to `first-look` mode. No account required. No storage. Alan pays the small token cost. This is the taste. It doesn't change.
+
+**Tier 2 — Standard (Phase 1 build target)**
+Account required. Full Toolkit access—all modes, all prompts. No storage. Analysis appears on screen; user copies it themselves via the existing copy button. Alan pays tokens during beta. Moves to user-pays when billing is introduced.
+
+**Tier 3 — Premium (Phase 2 build target)**
+Account required. Full Toolkit access plus stored analyses, retrievable across sessions. Future home of contrast/compare tools when that project is ready. Paid tier.
+
+---
+
+#### Beta phase
+
+Invitation-only. Alan sends invites by hand. Invitees get Standard or Premium access at Alan's discretion. Goal: validate the account system works without breaking the existing experience, and observe usage patterns before opening to the public. Feedback stays informal—text, email, in-person. No formal collection mechanism needed.
+
+When beta ends: open registration turns on. Anyone can create a Standard account. Premium requires upgrade.
+
+---
+
+#### Admin visibility (minimum viable)
+
+Alan needs to see: who has an account, when they last logged in, how many analyses they've run. A simple D1 query or basic dashboard is enough for beta. A proper admin UI is Phase 2.
+
+---
+
+#### Monetization options (decision required before Phase 2 ships)
+
+The account infrastructure supports all three. The decision doesn't block Phase 1.
+
+**Option A — Credit packs.** Users buy a block of analyses (e.g., 20 for $10). Each analysis deducts one credit. Hard cap. Simple to understand. Easy to implement with Stripe. Good for occasional users.
+
+**Option B — Subscription tiers.** Monthly fee for access. e.g., Standard free or low cost, Premium $20/mo. Recurring revenue. Mirrors how Claude, Midjourney, and similar tools work. Requires Stripe + subscription management.
+
+**Option C — BYOK (Bring Your Own Key).** User connects their own Anthropic (or other LLM) API key in account settings. Their key is used for their analyses. Alan pays nothing for their usage. Requires secure key storage encrypted at rest. Good for power users who already have API access.
+
+Recommended starting point: BYOK for technical beta users; credit packs for general public launch. Subscriptions as a third option once usage patterns are clear.
+
+---
+
+#### Build sequence
+
+**Phase 1 — Auth gate (replaces shared password)**
+- Clerk (`@clerk/astro`) for per-user accounts, invitation-only mode during beta
+- Replace `middleware.ts` password check with Clerk auth
+- `sign-in` and `sign-up` pages under `/hidden-grammar/`
+- Keep "Try Me" fully public; gate "Start Analyzing" behind auth
+- Basic usage logging to D1 (user ID, analysis count, timestamp)
+
+*External requirements: Clerk account + app, Cloudflare KV namespace for sessions, D1 database.*
+
+*Done when: Alan can invite one person, that person creates an account and accesses the Toolkit, and Alan can see they've logged in and run analyses—without that affecting any other user.*
+
+**Phase 2 — Admin visibility + Standard/Premium split**
+- Simple admin dashboard (users + usage, read-only)
+- Storage API: save analyses to D1 per user (Premium only)
+- Analysis history page for Premium users
+- Account settings page
+
+**Phase 3 — Billing**
+- Stripe integration
+- Credit pack purchasing and/or subscription setup
+- BYOK key input in account settings
+- Usage metering tied to billing tier
+
+---
+
+#### What this explicitly does not include
+
+- Comparison/contrast tools — separate future project
+- Formal feedback collection during beta
+- Social features (sharing, public profiles)
+- Any changes to existing modes, prompts, or the Hidden Grammar framework
+
+---
+
+## Analysis Output Architecture — Future Consideration
+
+### Split output for Comprehensive Analysis (Option D)
+
+Currently the Fine Art Comprehensive Analysis generates VIEWER EFFECTS, IMAGE PROPERTIES, and all 11 Root sections in a single model call. This pushes against output token limits — the basePrompt overhead plus a rich analysis exhausts available tokens before all Roots are covered.
+
+**The right long-term architecture:** split the Comprehensive Analysis into two sequential calls with separate output panels:
+- **Call 1:** Opening paragraph + VIEWER EFFECTS (predicted response, prose, sustained attention, confirmation/violation axis)
+- **Call 2:** IMAGE PROPERTIES + full 11-Root breakdown (with its own dedicated token budget)
+
+This would allow full depth on both halves without either truncating. The UI would need to support a two-panel or sequential output display, and the API endpoint would need to handle the two-call sequence.
+
+**Current workaround:** The tiered root format (Dominant / Supporting / Silent with hard sentence caps) manages the token constraint within the single-call architecture. Revisit this when the account system and output UI are being rebuilt for Phase 2.
+
+---
+
 ## What This Roadmap Is Not
 
 Not a sprint plan. Not a commitment to dates. Not a complete feature list.
