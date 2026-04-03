@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "hg-server": {
+      "command": "node",
+      "args": ["/Users/alanjust/artistsarejerks-astro/mcp/hg-server.js"]
+    }
+  }
+}
