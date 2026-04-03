@@ -3,16 +3,9 @@ export const prerender = false;
 import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
 import { analysisModes } from '../../../data/analysisModes.js';
 
-export function getStaticPaths() {
-  return analysisModes
-    .filter((mode: any) => !mode.internal)
-    .map((mode: any) => ({
-      params: { mode: mode.id },
-      props: { mode },
-    }));
-}
-
-const { mode } = Astro.props;
+const { mode: modeId } = Astro.params;
+const mode = analysisModes.find((m: any) => m.id === modeId);
+if (!mode) return Astro.redirect('/hidden-grammar');
 ---
 
 <HiddenGrammarLayout
