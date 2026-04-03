@@ -59,11 +59,11 @@ Organize every response under these two headings, in this order. Do not combine 
 ## VIEWER EFFECTS
 Open with a "Predicted Response" summary: 3–5 bullet points, each using a predictive
 sentence stem to state one high-confidence prediction anchored to a specific observable
-property. Tier A anchors: use "reliably" or "strongly" in the stem.
-Tier C/D anchors: use "may" or "some viewers" in the stem.
-Example (Tier A anchor): "This hard-contrast edge reliably activates edge-detection
+property. Strong-signal anchors: use "reliably" or "strongly" in the stem.
+Conditional anchors: use "may" or "some viewers" in the stem.
+Example (strong-signal anchor): "This hard-contrast edge reliably activates edge-detection
 mechanisms, directing attention before conscious awareness."
-Example (Tier C anchor): "This color temperature may produce associations of warmth
+Example (conditional anchor): "This color temperature may produce associations of warmth
 for some viewers, depending on cultural context."
 After the summary, continue with detailed prose analysis.
 All claims must name the specific observable property that generated them. Never state a
@@ -73,13 +73,13 @@ Viewer Effect as an observed fact. Use only: "This is likely to activate...",
 ## IMAGE PROPERTIES
 Open with a "Key Observations" summary: 3–5 bullet points, each using a sentence stem
 ("The image shows...", "Visible here...", "Present in the work...") to name one dominant
-observable property and its tier. No interpretation allowed in the summary bullets.
-Example: "The image shows a hard-contrast edge along the upper-left axis (Tier A)."
+observable property and its confidence level. No interpretation allowed in the summary bullets.
+Example: "The image shows a hard-contrast edge along the upper-left axis (strong)."
 After the summary, continue with detailed prose analysis.
 Observable facts only throughout: edges, value relationships, spatial compression, color
 temperature, figure-ground ratio, mark character, surface evidence. The image contains no
 feelings. Make no claims about viewer experience in this section. Name each active
-Principle with its tier: e.g., Hard Edge Contrast (Tier A), Spatial Compression (Tier B).
+Principle with its confidence level: e.g., Hard Edge Contrast (strong), Spatial Compression (moderate).
 
 SUSTAINED ATTENTION: After identifying initial attention capture mechanisms, assess
 one of the following — choose whichever is supported by the visual evidence:
@@ -102,9 +102,9 @@ For each major Viewer Effect identified, state explicitly:
 - At what scale: full violation (illegibility risk), productive violation (attention
   held, response generated), or confirmation (fluency, recognition)
 
-Tier A mechanisms confirming prediction: note "this reinforces the established visual
-contract." Tier A mechanisms violating prediction: note the specific nature of the
-violation and its likely perceptual consequence. Tier C/D mechanisms: qualify with
+Strong-signal mechanisms confirming prediction: note "this reinforces the established visual
+contract." Strong-signal mechanisms violating prediction: note the specific nature of the
+violation and its likely perceptual consequence. Conditional mechanisms: qualify with
 "for viewers familiar with [context]."
 
 Do not frame violations as problems or confirmations as successes. Both are neutral
@@ -277,6 +277,8 @@ CLOSE: End with one sentence—not a pitch—that honestly states what a deeper 
         label: 'Comprehensive Analysis',
         description: 'Full Art Lab audit across all 11 Roots and relevant Principles.',
         prompt: `Conduct a full Hidden Grammar analysis of this work.
+Before beginning the root-by-root breakdown, open that section with this exact text:
+"A painting isn't doing one thing—it's doing several things at once, some loudly, some barely at all. The 11 Roots are the framework's way of looking at each one separately: how space is built, how material behaves, how weight and atmosphere and hierarchy operate. Some Roots will be active and working hard. Others may be nearly quiet. That variation is part of the read, not a gap in it."
 Work through all 11 Roots systematically: Design Logic, Tactile Execution, Structural Integrity,
 Atmosphere, Visual Hierarchy, Narrative Sequence, Signal Strength, Gravitas, Entropy,
 Materiality, and Format. For each Root, identify which of the 54 Principles are active.
@@ -435,6 +437,8 @@ Present observations as the current state of the design, not as problems to fix.
         label: 'Comprehensive Sequential Analysis',
         description: 'Full Art Lab analysis adapted for sequential art and panel structure.',
         prompt: `Conduct a Hidden Grammar analysis of this sequential art using all relevant Roots.
+Before beginning the root-by-root breakdown, open that section with this exact text:
+"A work isn't doing one thing—it's doing several things at once, some loudly, some barely at all. The 11 Roots are the framework's way of looking at each one separately: how space is built, how material behaves, how weight and atmosphere and hierarchy operate. Some Roots will be active and working hard. Others may be nearly quiet. That variation is part of the read, not a gap in it."
 Give particular attention to Narrative Sequence as a primary root alongside Design Logic
 and Visual Hierarchy. Analyze panel composition, page flow, gutter relationships,
 and how visual grammar serves sequential storytelling.
@@ -522,7 +526,7 @@ Identify the specific observable properties that are doing the positioning work.
 
 This section is the evidence base for the Market Read. Every claim in the Market Read
 should be traceable to a signal named here. Do not include properties that are visually
-present but market-neutral. Do not reference principle names or tier labels — describe
+present but market-neutral. Do not reference principle names or confidence labels — describe
 the visual property in plain language and state its market implication directly.
 
 ## ALIGNMENT / GAPS
@@ -667,6 +671,8 @@ not whether it is appealing or original.`,
 Based on the materials, substrate, dimensions, medium interactions, and stated constraints provided,
 systematically map what the 54 Principles make available, partially accessible, or blocked.
 
+Before beginning the root-by-root breakdown, open that section with this exact text:
+"A work isn't doing one thing—it's doing several things at once, some loudly, some barely at all. The 11 Roots are the framework's way of looking at each one separately: how space is built, how material behaves, how weight and atmosphere and hierarchy operate. Some Roots will be active and working hard. Others may be nearly quiet. That variation is part of the read, not a gap in it."
 ORGANIZE your output by the 11 Roots. For each Root, identify:
 - Which Principles are fully accessible given these constraints
 - Which are partially constrained (accessible with workarounds or substitutions)
@@ -841,9 +847,9 @@ The raw visual record of what is physically present in the work.
 
 Work through the visual field systematically. Compositional structure. Spatial relationships. Edge behavior — hard, soft, lost, found. Value distribution across the picture plane. Color relationships and temperature. Mark character: how the marks were physically made, their pressure and direction. Surface evidence: layering, texture, material behavior. Figure-ground dynamics. Scale relationships if determinable from the reproduction.
 
-For each observation, do three things: locate it in the work (upper-left, midground, bottom edge, etc.), name the specific visual property (hard-contrast edge, warm-to-cool gradient, compressed spatial plane, directional impasto, etc.), and assign it a tier — Tier A for mechanisms that reliably activate regardless of viewer, Tier B for well-supported perceptual effects, Tier C for context-dependent responses, Tier D for speculative readings.
+For each observation, do three things: locate it in the work (upper-left, midground, bottom edge, etc.), name the specific visual property (hard-contrast edge, warm-to-cool gradient, compressed spatial plane, directional impasto, etc.), and assign it a confidence level — strong for mechanisms that reliably activate regardless of viewer, moderate for well-supported perceptual effects, conditional for context-dependent responses or speculative readings.
 
-Write in observation sentences, not bullets. Make the tier visible in the language: Tier A observations earn words like "reliably" and "strongly." Tier C observations earn "may" and "for some viewers."
+Write in observation sentences, not bullets. Make the confidence level visible in the language: strong observations earn words like "reliably" and "strongly." Conditional observations earn "may" and "for some viewers."
 
 The evidence section names mechanism — what each property does to the perceptual system — but holds interpretation as hypothesis. It does not claim meaning. It says what is present and what that typically triggers, and stops there.
 
@@ -891,6 +897,8 @@ Identify which claims from the Principle Mapping section are conditional on the 
 
 [RAP Gate: Each Root claim supported by at least two Principle mappings from the prior section. Entropy Gate must have passed before this section runs.]
 
+Before assessing the individual Roots, open the section with this exact text:
+"A work isn't doing one thing—it's doing several things at once, some loudly, some barely at all. The 11 Roots are the framework's way of looking at each one separately: how space is built, how material behaves, how weight and atmosphere and hierarchy operate. Some Roots will be active and working hard. Others may be nearly quiet. That variation is part of the read, not a gap in it."
 Assess each of the 11 Roots: Design Logic, Tactile Execution, Structural Integrity, Atmosphere, Visual Hierarchy, Narrative Sequence, Signal Strength, Gravitas, Entropy, Materiality, Format.
 
 For each Root that is active, write one compact paragraph: What is this Root doing here — dominant, supporting, or present but subordinate? Which specific Principles from the mapping section support this reading? What does the Root's activity, taken as a whole, produce for the viewer who spends time with this work?
@@ -1426,7 +1434,7 @@ Identify the specific observable properties that are doing the positioning work.
 This section is the evidence base for the Market Read. Every claim in the Market Read
 should be traceable to a signal named here. Do not include properties that are visually
 present but market-neutral. Describe each property in plain language and state its market
-implication directly — no principle names, no tier labels.
+implication directly — no principle names, no confidence labels.
 
 ## ALIGNMENT / GAPS
 
