@@ -139,6 +139,25 @@ export const toolkitBuckets = [
           constraints: null,
         }
       },
+      {
+        id: 'ai-generation',
+        label: 'AI Generation Feedback',
+        tagline: "Something feels off but you can't name it. This tells you what's collapsing — and what to fix in your next prompt.",
+        status: 'live',
+        phase: 'Studio Tools',
+        link: '/hidden-grammar/modes/ai-generation',
+        detail: {
+          what: "Diagnostic mode for AI-generated images. Identifies what the image is doing perceptually, what mechanisms are misfiring or absent, and translates the findings into specific, copyable prompt language for the next generation attempt. Two prompts: Generation Diagnostic (what's working, what's collapsing, next prompt language) and Compare to Reference (gap analysis against a named artist, genre, or target style).",
+          when: [
+            "You generated something and it's close but not right",
+            "You can't name what's off — you just know something is",
+            "You have a reference style in mind and the output keeps missing it",
+            "You want perceptual precision in your prompts, not stylistic guessing",
+          ],
+          output: "What's Working (2–3 active mechanisms to preserve). What's Collapsing (2–3 broken or absent mechanisms with perceptual consequences). Next Prompt Language (3–5 copyable prompt fragments targeting specific mechanisms).",
+          constraints: "Diagnostic language about intent and failure is active in this mode. Standard base prompt prohibitions on advice and improvement suggestions are suspended. All other framework rules remain in effect.",
+        }
+      },
     ]
   },
 
