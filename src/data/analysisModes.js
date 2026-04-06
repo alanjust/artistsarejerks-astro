@@ -1538,7 +1538,7 @@ When included:
     subModes: [],
     fields: [
       { id: 'generator', label: 'Generator used (Midjourney, DALL-E, etc.)' },
-      { id: 'prompt',    label: 'Prompt you used (optional but helpful)' },
+      { id: 'generator-prompt', label: 'Generator prompt you used (optional but helpful)' },
       { id: 'target',    label: 'Reference or target style (optional)' },
       { id: 'notes',     label: 'What feels wrong, if you can describe it' },
     ],

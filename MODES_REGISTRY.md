@@ -1,5 +1,5 @@
 # Hidden Grammar — Modes Registry
-<!-- Last updated: 2026-02-23 -->
+<!-- Last updated: 2026-04-05 -->
 <!-- Source of truth for all analysis modes across the Hidden Grammar system. -->
 <!-- STATUS KEY: LIVE | DOCUMENTED | STUB | GAP -->
 <!--   LIVE       = In analysisModes.js, fully functional in the AI tool -->
@@ -26,6 +26,7 @@
 | ID | Label | Status | Prompts (Level 2) | Notes |
 |----|-------|--------|-------------------|-------|
 | `fine-art` | Fine Art | **LIVE** | Comprehensive, WIP, Materiality & Surface, Spatial Structure, Historical Positioning | 5 prompts |
+| `ai-generation` | AI Generation Feedback | **LIVE** | Generation Diagnostic, Compare to Reference | For AI-generated images; diagnostic + next-prompt output; base prompt advice rules suspended |
 | `cpg` | Consumer Packaged Goods | **LIVE** | Shelf Performance, Brand Differentiation, Demographic Alignment, Design in Progress | 4 prompts |
 | `comic-book` | Comic Book & Sequential Art | **LIVE** | Comprehensive, WIP, Audience Assessment, Style Classification, Market Context | 5 prompts |
 | `commercial-illustration` | Commercial Illustration | **LIVE** | Comprehensive, WIP, Communication Clarity, Audience Signals, Character Design | 5 prompts |
