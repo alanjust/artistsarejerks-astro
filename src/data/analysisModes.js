@@ -77,9 +77,12 @@ observable property and its confidence level. No interpretation allowed in the s
 Example: "The image shows a hard-contrast edge along the upper-left axis (strong)."
 After the summary, continue with detailed prose analysis.
 Observable facts only throughout: edges, value relationships, spatial compression, color
-temperature, figure-ground ratio, mark character, surface evidence. The image contains no
-feelings. Make no claims about viewer experience in this section. Name each active
-Principle with its confidence level: e.g., Hard Edge Contrast (strong), Spatial Compression (moderate).
+temperature, figure-ground ratio, mark character, surface evidence. Every observation must
+name its location in the image (e.g., "along the upper-left axis," "in the lower-right
+quadrant," "across the central horizontal band"). A claim without a location is incomplete.
+The image contains no feelings. Make no claims about viewer experience in this section.
+Name each active Principle with its confidence level: e.g., Hard Edge Contrast (strong),
+Spatial Compression (moderate).
 
 SUSTAINED ATTENTION: After identifying initial attention capture mechanisms, assess
 one of the following — choose whichever is supported by the visual evidence:
