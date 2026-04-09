@@ -140,6 +140,25 @@ export const toolkitBuckets = [
         }
       },
       {
+        id: 'what-if',
+        label: 'What If?',
+        tagline: "Holds the formal evidence open instead of resolving it. Turns unresolved tensions into questions for studio experimentation.",
+        status: 'live',
+        phase: 'Studio Tools',
+        link: '/hidden-grammar/modes/what-if',
+        detail: {
+          what: "Consonantal analysis — named after the Hebrew writing principle where meaning stays open until the reader completes it. Finds 2–3 formal observations in the work where the visual evidence is genuinely ambiguous, names the competing principle readings without resolving them, and turns each unresolved tension into an experimental question. No verdicts. No instructions. Live wires only.",
+          when: [
+            "You're experimental and want to deepen the work rather than receive a verdict",
+            "You're stuck and want the uncertainty itself to become productive",
+            "You're an art student exploring theoretical frameworks through your own work",
+            "You want to understand what the unresolved tensions in your work could become",
+          ],
+          output: "OPENING: Compressed formal read, spatially located, no principle names. UNRESOLVED TENSIONS: 2–3 ambiguous observations with competing principle readings held open. WHAT IF?: 3–4 experimental questions that follow from the tensions. Nothing more.",
+          constraints: "No verdicts. No improvement suggestions. Principle names used but explicitly held as competing possibilities, not conclusions.",
+        }
+      },
+      {
         id: 'ai-generation',
         label: 'AI Generation Feedback',
         tagline: "Something feels off but you can't name it. This tells you what's collapsing — and what to fix in your next prompt.",
