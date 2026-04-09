@@ -52,7 +52,7 @@
 |----|-------|--------|---------------|-------|
 | `strategic` | Strategic Mode | **STUB** | hg-modes.json | Standard critique, connects to Master Project Bible |
 | `physics` | Physics Mode | **LIVE** | hg-modes.json | Gravity / Entropy / Material / Capacity checks |
-| `historian` | Historian Mode | **STUB** | hg-modes.json, prompt_console v3.3 | Academic breakdown, canon positioning |
+| `historian` | Historian Mode | **LIVE** | analysisModes.js | Consonantal structure: FORMAL READ / PRINCIPLE MAPPING / HISTORICAL RESONANCES / OPEN HISTORICAL QUESTIONS |
 | `friction` | Friction Audit | **STUB** | hg-modes.json, prompt_console v3.3 | Twombly vs. Kinkade test, friction density 0–10 |
 
 ### Phase 2 — Studio Tools

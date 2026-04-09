@@ -259,13 +259,14 @@ export const toolkitBuckets = [
         id: 'historian',
         label: 'Historian Mode',
         tagline: "Academic breakdown. Where does this sit in the lineage of art history?",
-        status: 'coming-soon',
+        status: 'live',
         phase: 'Core Analysis',
+        link: '/hidden-grammar/modes/historian',
         detail: {
-          what: "Full analytical breakdown for finished works. Maps visual mechanics, identifies absences, synthesizes tensions, and locates the work within art historical context.",
-          when: ["Master studies", "Art history analysis", "Canon positioning"],
-          output: "Action classification. Principle mapping to Roots. Absence analysis. Historical lineage placement.",
-          constraints: "Full RAP required.",
+          what: "Art historical analysis built consonantally: formal read first, principle mapping second, competing historical lineages held open, and honest open questions rather than a placement verdict.",
+          when: ["Master studies", "Art history analysis", "Canon positioning", "Works where received critical consensus needs testing against visual evidence"],
+          output: "FORMAL READ / PRINCIPLE MAPPING / HISTORICAL RESONANCES / OPEN HISTORICAL QUESTIONS",
+          constraints: "Full RAP required. Historical positioning held as competing resonances, not a single lineage verdict.",
         }
       },
       {
