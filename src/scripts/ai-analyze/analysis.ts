@@ -698,19 +698,20 @@ function buildSidebar(contentEl: HTMLElement) {
 
   let isFixed = false;
   const HEADER = 64;
+  const sidebarEl = sidebar;
 
   function updateSticky() {
-    if (sidebar.style.display === 'none') return;
-    const layoutRect = (sidebar.parentElement as HTMLElement).getBoundingClientRect();
+    if (!sidebarEl || sidebarEl.style.display === 'none') return;
+    const layoutRect = (sidebarEl.parentElement as HTMLElement).getBoundingClientRect();
 
     if (!isFixed && layoutRect.top <= HEADER) {
-      const w = sidebar.offsetWidth;
+      const w = sidebarEl.offsetWidth;
       placeholder.style.cssText = `display:block;flex-shrink:0;width:${w}px;min-width:${w}px;border-right:1px solid #f1f5f9;`;
-      sidebar.style.cssText = `display:block;position:fixed;top:${HEADER}px;width:${w}px;padding:1.5rem 0.875rem 1.5rem 1.25rem;background:#fff;z-index:10;overflow-y:auto;max-height:calc(100vh - ${HEADER}px);`;
+      sidebarEl.style.cssText = `display:block;position:fixed;top:${HEADER}px;width:${w}px;padding:1.5rem 0.875rem 1.5rem 1.25rem;background:#fff;z-index:10;overflow-y:auto;max-height:calc(100vh - ${HEADER}px);`;
       isFixed = true;
     } else if (isFixed && layoutRect.top > HEADER) {
       placeholder.style.cssText = 'display:none;flex-shrink:0;';
-      sidebar.style.cssText = 'display:block;';
+      sidebarEl.style.cssText = 'display:block;';
       isFixed = false;
     }
   }
