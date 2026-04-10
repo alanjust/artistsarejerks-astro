@@ -654,6 +654,12 @@ function buildSidebar(contentEl: HTMLElement) {
 
   sidebarList.innerHTML = '';
 
+  // Propagate Astro's scoped attribute to dynamically created elements so
+  // scoped CSS selectors (e.g. .hg-sidebar-link[data-astro-cid-xxx]) match
+  // in production builds. Without this, dynamically created <a> elements
+  // get no scope attribute and inherit unstyled browser defaults.
+  const scopeAttr = sidebar.getAttributeNames().find(a => a.startsWith('data-astro-cid'));
+
   headings.forEach((h2, i) => {
     // Assign anchor ID
     const id = `hg-section-${i}`;
@@ -672,18 +678,26 @@ function buildSidebar(contentEl: HTMLElement) {
     a.href = `#${id}`;
     a.className = 'hg-sidebar-link';
     a.textContent = h2.textContent || `Section ${i + 1}`;
+    if (scopeAttr) {
+      li.setAttribute(scopeAttr, '');
+      a.setAttribute(scopeAttr, '');
+    }
     li.appendChild(a);
     sidebarList.appendChild(li);
   });
 
   sidebar.style.display = 'block';
 
-  // Force sticky positioning via inline style to survive production CSS cascade
-  // (webcore integration and cssCodeSplit can override scoped sticky in Safari)
-  sidebar.style.setProperty('position', '-webkit-sticky', '');
-  sidebar.style.setProperty('position', 'sticky', 'important');
-  sidebar.style.setProperty('top', '64px', 'important');
-  sidebar.style.setProperty('align-self', 'flex-start', 'important');
+  // Inject a <style> tag for sticky positioning so both -webkit-sticky and
+  // sticky are applied with high specificity. Using setProperty() for both
+  // on the same property causes the second to overwrite the first, stripping
+  // -webkit-sticky which Safari requires.
+  if (!document.getElementById('hg-sidebar-sticky-style')) {
+    const style = document.createElement('style');
+    style.id = 'hg-sidebar-sticky-style';
+    style.textContent = '#resultsSidebar { position: -webkit-sticky !important; position: sticky !important; top: 64px !important; align-self: flex-start !important; }';
+    document.head.appendChild(style);
+  }
 
   // Highlight active section on scroll
   const observer = new IntersectionObserver(
