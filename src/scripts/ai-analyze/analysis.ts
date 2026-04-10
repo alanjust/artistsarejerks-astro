@@ -688,16 +688,35 @@ function buildSidebar(contentEl: HTMLElement) {
 
   sidebar.style.display = 'block';
 
-  // Inject a <style> tag for sticky positioning so both -webkit-sticky and
-  // sticky are applied with high specificity. Using setProperty() for both
-  // on the same property causes the second to overwrite the first, stripping
-  // -webkit-sticky which Safari requires.
-  if (!document.getElementById('hg-sidebar-sticky-style')) {
-    const style = document.createElement('style');
-    style.id = 'hg-sidebar-sticky-style';
-    style.textContent = '#resultsSidebar { position: -webkit-sticky !important; position: sticky !important; top: 64px !important; align-self: flex-start !important; }';
-    document.head.appendChild(style);
+  // JS-managed sticky — CSS position:sticky is unreliable in production
+  // (cssCodeSplit:false + Cloudflare SSR breaks the containing block context).
+  // We read the sidebar's natural top offset once, then use a scroll listener
+  // to pin it with position:fixed. A placeholder div holds the layout space.
+  const placeholder = document.createElement('div');
+  placeholder.style.cssText = 'display:none;flex-shrink:0;';
+  sidebar.parentNode!.insertBefore(placeholder, sidebar);
+
+  let isFixed = false;
+  const HEADER = 64;
+
+  function updateSticky() {
+    if (sidebar.style.display === 'none') return;
+    const layoutRect = (sidebar.parentElement as HTMLElement).getBoundingClientRect();
+
+    if (!isFixed && layoutRect.top <= HEADER) {
+      const w = sidebar.offsetWidth;
+      placeholder.style.cssText = `display:block;flex-shrink:0;width:${w}px;min-width:${w}px;border-right:1px solid #f1f5f9;`;
+      sidebar.style.cssText = `display:block;position:fixed;top:${HEADER}px;width:${w}px;padding:1.5rem 0.875rem 1.5rem 1.25rem;background:#fff;z-index:10;overflow-y:auto;max-height:calc(100vh - ${HEADER}px);`;
+      isFixed = true;
+    } else if (isFixed && layoutRect.top > HEADER) {
+      placeholder.style.cssText = 'display:none;flex-shrink:0;';
+      sidebar.style.cssText = 'display:block;';
+      isFixed = false;
+    }
   }
+
+  window.addEventListener('scroll', updateSticky, { passive: true });
+  window.addEventListener('resize', updateSticky, { passive: true });
 
   // Highlight active section on scroll
   const observer = new IntersectionObserver(
