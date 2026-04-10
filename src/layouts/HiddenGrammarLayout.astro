@@ -90,6 +90,27 @@ const navLinks = [
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Reset AAJ base.css styles that bleed into HG pages in production.
+     With cssCodeSplit:false, base.css is bundled globally and applies to
+     all pages. These resets use body.hg-app ancestor specificity (0,1,X)
+     to beat base.css element selectors (0,0,X) regardless of bundle order. */
+  body.hg-app h1,
+  body.hg-app h2,
+  body.hg-app h3,
+  body.hg-app h4,
+  body.hg-app h5,
+  body.hg-app h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  body.hg-app ul,
+  body.hg-app ol {
+    list-style-position: outside;
+  }
+
   body.hg-app {
     margin: 0;
     padding: 0;
