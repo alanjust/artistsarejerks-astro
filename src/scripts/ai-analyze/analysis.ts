@@ -678,6 +678,13 @@ function buildSidebar(contentEl: HTMLElement) {
 
   sidebar.style.display = 'block';
 
+  // Force sticky positioning via inline style to survive production CSS cascade
+  // (webcore integration and cssCodeSplit can override scoped sticky in Safari)
+  sidebar.style.setProperty('position', '-webkit-sticky', '');
+  sidebar.style.setProperty('position', 'sticky', 'important');
+  sidebar.style.setProperty('top', '64px', 'important');
+  sidebar.style.setProperty('align-self', 'flex-start', 'important');
+
   // Highlight active section on scroll
   const observer = new IntersectionObserver(
     (entries) => {
