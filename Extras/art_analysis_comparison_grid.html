@@ -1,0 +1,183 @@
+
+<style>
+  * { box-sizing: border-box; }
+  .wrap { padding: 0.5rem 0 2rem; font-size: 14px; }
+  h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 20px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--color-border-secondary); vertical-align: bottom; }
+  thead th:first-child { width: 160px; }
+  thead th:not(:first-child) { width: calc((100% - 160px) / 4); }
+
+  .col-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .col-year { font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); display: block; margin-top: 2px; }
+
+  tr { border-bottom: 0.5px solid var(--color-border-tertiary); }
+  tr:last-child { border-bottom: none; }
+  td { padding: 10px 10px; vertical-align: top; font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+  td:first-child { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); padding-right: 12px; }
+
+  .yes { color: #0F6E56; font-weight: 500; }
+  .no { color: #993C1D; font-weight: 500; }
+  .partial { color: #854F0B; font-weight: 500; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; margin: 1px 0; white-space: nowrap; }
+  .pill-blue { background: #E6F1FB; color: #0C447C; }
+  .pill-teal { background: #E1F5EE; color: #085041; }
+  .pill-coral { background: #FAECE7; color: #712B13; }
+  .pill-purple { background: #EEEDFE; color: #3C3489; }
+
+  @media (prefers-color-scheme: dark) {
+    .yes { color: #5DCAA5; }
+    .no { color: #F0997B; }
+    .partial { color: #EF9F27; }
+    .pill-blue { background: #0C447C; color: #B5D4F4; }
+    .pill-teal { background: #085041; color: #9FE1CB; }
+    .pill-coral { background: #712B13; color: #F5C4B3; }
+    .pill-purple { background: #3C3489; color: #CECBF6; }
+  }
+
+  .divider td { padding: 6px 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.05em; color: var(--color-text-tertiary); text-transform: uppercase; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+
+  .note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 16px; line-height: 1.5; }
+</style>
+<div class="wrap">
+  <h2>Art analysis frameworks — comparison grid</h2>
+  <p class="subtitle">Four models across nine dimensions. Art Lab is the rightmost column.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th><span class="col-label">Feldman</span><span class="col-year">1970, art education</span></th>
+        <th><span class="col-label">Panofsky</span><span class="col-year">1939, art history</span></th>
+        <th><span class="col-label">VTS</span><span class="col-year">1990s, museum ed.</span></th>
+        <th><span class="col-label">Art Lab</span><span class="col-year">Hidden Grammar framework</span></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr class="divider"><td colspan="5">Structure</td></tr>
+
+      <tr>
+        <td>Primary purpose</td>
+        <td>Teach students to critique systematically</td>
+        <td>Recover meaning from historical images</td>
+        <td>Build visual literacy through group discussion</td>
+        <td>Map perceptual mechanisms operating in the work</td>
+      </tr>
+
+      <tr>
+        <td>Steps / sequence</td>
+        <td>
+          <span class="pill pill-blue">1 Describe</span>
+          <span class="pill pill-blue">2 Analyze</span>
+          <span class="pill pill-blue">3 Interpret</span>
+          <span class="pill pill-blue">4 Judge</span>
+        </td>
+        <td>
+          <span class="pill pill-teal">1 Pre-iconographic</span>
+          <span class="pill pill-teal">2 Iconographic</span>
+          <span class="pill pill-teal">3 Iconological</span>
+        </td>
+        <td>3 facilitated questions, looped. No fixed endpoint.</td>
+        <td>
+          <span class="pill pill-purple">Observable</span>
+          <span class="pill pill-purple">Perceptual effect</span>
+          <span class="pill pill-purple">Interpretive claim</span>
+          — kept formally separate, never merged
+        </td>
+      </tr>
+
+      <tr>
+        <td>Output type</td>
+        <td>Written or oral critique</td>
+        <td>Scholarly interpretation</td>
+        <td>Facilitated group discussion; no document</td>
+        <td>Structured written analysis anchored to visual evidence</td>
+      </tr>
+
+      <tr class="divider"><td colspan="5">Evidence and language</td></tr>
+
+      <tr>
+        <td>Observation-first requirement</td>
+        <td><span class="partial">Partial</span> — steps 1–2 are nominally objective, but no formal gate prevents early interpretation</td>
+        <td><span class="yes">Yes</span> — level 1 must precede levels 2 and 3</td>
+        <td><span class="yes">Yes</span> — "What do you see that makes you say that?" enforces evidence before inference</td>
+        <td><span class="yes">Structural</span> — RAP Protocol: no interpretation without at least two independent visual observations</td>
+      </tr>
+
+      <tr>
+        <td>Language registers distinguished</td>
+        <td><span class="no">No</span> — objective and subjective phases alternate but share vocabulary</td>
+        <td><span class="partial">Partially</span> — three levels are conceptually distinct but use overlapping language</td>
+        <td><span class="no">No</span> — open-ended questions don't enforce language type</td>
+        <td><span class="yes">Yes, formally</span> — three anchoring phrases ("The image shows…", "This activates…", "One reading is…") prevent register collapse</td>
+      </tr>
+
+      <tr>
+        <td>Perceptual / neural mechanisms named</td>
+        <td><span class="no">No</span> — uses elements and principles of design (line, balance, rhythm)</td>
+        <td><span class="no">No</span> — operates on iconographic and cultural categories</td>
+        <td><span class="no">No</span> — deliberately avoids expert vocabulary</td>
+        <td><span class="yes">Yes</span> — 54 principles and 11 Roots drawn from neuroaesthetics and perceptual psychology (peak shift, contour bias, figure-ground, visual weight, etc.)</td>
+      </tr>
+
+      <tr class="divider"><td colspan="5">Evaluation and intent</td></tr>
+
+      <tr>
+        <td>Includes evaluation / judgment</td>
+        <td><span class="yes">Yes, required</span> — step 4 asks explicitly whether the work "succeeds or fails"</td>
+        <td><span class="partial">Implicitly</span> — iconological reading implies cultural significance, which carries evaluative weight</td>
+        <td><span class="no">No</span> — deliberately withheld; all interpretations treated as equally valid</td>
+        <td><span class="no">Structurally prohibited</span> — words like good, bad, successful, effective are banned; no quality judgment of any kind</td>
+      </tr>
+
+      <tr>
+        <td>Artist intent addressed</td>
+        <td><span class="yes">Yes</span> — interpretation step asks "what is the artist trying to communicate?"</td>
+        <td><span class="yes">Yes</span> — iconological level recovers "unconsciously qualified" worldview of the artist</td>
+        <td><span class="partial">Sometimes</span> — learner-led; intent may arise but is not required</td>
+        <td><span class="no">Prohibited</span> — no claims about what the work "tries" to do or "fails" to do</td>
+      </tr>
+
+      <tr class="divider"><td colspan="5">Scope and access</td></tr>
+
+      <tr>
+        <td>Cultural / historical knowledge required</td>
+        <td><span class="partial">Some</span> — interpretation assumes cultural context; works best with representational art</td>
+        <td><span class="yes">Yes, substantially</span> — levels 2 and 3 require iconographic competency and historical context</td>
+        <td><span class="no">No</span> — designed for naive viewers; no prior knowledge assumed</td>
+        <td><span class="no">No</span> — full analysis runs from perceptual observation alone; cultural knowledge can be added but is not required</td>
+      </tr>
+
+      <tr>
+        <td>Works on abstract / non-objective art</td>
+        <td><span class="partial">Partially</span> — formal elements apply, but interpretation and judgment become difficult without subject matter</td>
+        <td><span class="no">Poorly</span> — iconographic method was built for representational, historically-situated images</td>
+        <td><span class="yes">Yes</span> — open-ended questions apply to any image</td>
+        <td><span class="yes">Yes</span> — perceptual mechanisms operate regardless of subject matter or representational content</td>
+      </tr>
+
+      <tr>
+        <td>Primary audience</td>
+        <td>Students; art educators</td>
+        <td>Art historians; scholars</td>
+        <td>Museum visitors; K–12 students</td>
+        <td>Working artists; art-curious; educators</td>
+      </tr>
+
+      <tr>
+        <td>Designed for solo or group use</td>
+        <td>Both</td>
+        <td>Solo (scholarly)</td>
+        <td>Group — the discussion IS the method</td>
+        <td>Solo — AI-mediated; interrogation window allows dialogue</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <p class="note">Sources: Feldman (1970), Panofsky (1939/1972), Housen &amp; Yenawine / VTS (1990s–present), Art Lab / Hidden Grammar framework and basePrompt as documented in analysisModes.js.</p>
+</div>

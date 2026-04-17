@@ -1,0 +1,315 @@
+---
+// WorkflowInfographic.astro
+// Interactive workflow infographic for the Art Lab home page.
+// Drop at the top of hidden-grammar.astro, inside the main content area.
+// No props needed.
+---
+
+<div class="wf-wrap">
+  <svg class="wf-svg" viewBox="0 0 680 122" aria-label="Art Lab workflow diagram" role="img">
+    <defs>
+      <marker id="wfa" viewBox="0 0 10 10" refX="8" refY="5"
+        markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke"
+          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- Edges: solid = user-initiated, dashed = interpretive territory -->
+    <line x1="68"  y1="65" x2="90"  y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="174" y1="65" x2="196" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="256" y1="65" x2="278" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+    <line x1="362" y1="65" x2="384" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
+    <line x1="474" y1="65" x2="496" y2="65" class="edge-dashed" marker-end="url(#wfa)"/>
+    <line x1="576" y1="65" x2="598" y2="65" class="edge-solid" marker-end="url(#wfa)"/>
+
+    <!-- 01 YOUR IMAGE — diamond, passive input -->
+    <g class="wf-node" id="n0" role="button" tabindex="0" aria-label="Step 1: Your image">
+      <polygon points="44,41 68,65 44,89 20,65" class="shape-passive"/>
+      <text class="label-mono" x="44" y="60" text-anchor="middle" dominant-baseline="central">YOUR</text>
+      <text class="label-mono" x="44" y="71" text-anchor="middle" dominant-baseline="central">IMAGE</text>
+    </g>
+
+    <!-- 02 UPLOAD IT — blue-tinted rect -->
+    <g class="wf-node" id="n1" role="button" tabindex="0" aria-label="Step 2: Upload it">
+      <rect x="90" y="43" width="84" height="44" rx="8" class="shape-upload"/>
+      <text class="label-mono label-blue" x="132" y="59" text-anchor="middle" dominant-baseline="central" font-weight="500">UPLOAD IT</text>
+      <text class="label-mono label-blue" x="132" y="74" text-anchor="middle" dominant-baseline="central">↑ drop here</text>
+    </g>
+
+    <!-- 03 Analyze — green pill, primary action -->
+    <g class="wf-node" id="n2" role="button" tabindex="0" aria-label="Step 3: Analyze">
+      <rect x="196" y="48" width="60" height="34" rx="17" class="shape-analyze"/>
+      <text class="label-action" x="226" y="65" text-anchor="middle" dominant-baseline="central">Analyze</text>
+    </g>
+
+    <!-- 04 ANALYSIS — passive rect, dashed -->
+    <g class="wf-node" id="n3" role="button" tabindex="0" aria-label="Step 4: Analysis">
+      <rect x="278" y="43" width="84" height="44" rx="8" class="shape-passive"/>
+      <text class="label-mono" x="320" y="59" text-anchor="middle" dominant-baseline="central">ANALYSIS</text>
+      <text class="label-dim" x="320" y="74" text-anchor="middle" dominant-baseline="central">— — —</text>
+    </g>
+
+    <!-- 05 Why? — ellipse, italic serif -->
+    <g class="wf-node" id="n4" role="button" tabindex="0" aria-label="Step 5: Why does the eye go there?">
+      <ellipse cx="429" cy="65" rx="45" ry="24" class="shape-passive"/>
+      <text class="label-italic" x="429" y="59" text-anchor="middle" dominant-baseline="central">why does the</text>
+      <text class="label-italic" x="429" y="73" text-anchor="middle" dominant-baseline="central">eye go there?</text>
+    </g>
+
+    <!-- 06 MORE — passive rect, loop icon -->
+    <g class="wf-node" id="n5" role="button" tabindex="0" aria-label="Step 6: More">
+      <rect x="496" y="43" width="80" height="44" rx="8" class="shape-passive"/>
+      <text class="label-mono" x="536" y="57" text-anchor="middle" dominant-baseline="central">MORE</text>
+      <text class="label-loop" x="536" y="74" text-anchor="middle" dominant-baseline="central">↻</text>
+    </g>
+
+    <!-- 07 Copy — dark pill, final action -->
+    <g class="wf-node" id="n6" role="button" tabindex="0" aria-label="Step 7: Copy">
+      <rect x="598" y="48" width="60" height="34" rx="17" class="shape-copy"/>
+      <text class="label-action" x="628" y="65" text-anchor="middle" dominant-baseline="central">Copy</text>
+    </g>
+
+    <!-- Step numbers -->
+    <text class="step-num" x="44"  y="106" text-anchor="middle">01</text>
+    <text class="step-num" x="132" y="106" text-anchor="middle">02</text>
+    <text class="step-num" x="226" y="106" text-anchor="middle">03</text>
+    <text class="step-num" x="320" y="106" text-anchor="middle">04</text>
+    <text class="step-num" x="429" y="106" text-anchor="middle">05</text>
+    <text class="step-num" x="536" y="106" text-anchor="middle">06</text>
+    <text class="step-num" x="628" y="106" text-anchor="middle">07</text>
+  </svg>
+
+  <!-- Detail panel -->
+  <div class="wf-panel" id="wf-panel">
+    <div class="wf-badge" id="wf-badge">01</div>
+    <div class="wf-text">
+      <p class="wf-title" id="wf-title">Your image</p>
+      <p class="wf-desc"  id="wf-desc">Click any step to see what happens there.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ── Container ───────────────────────────────────────────── */
+  .wf-wrap {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto 3rem;
+  }
+
+  .wf-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* ── Node interaction ────────────────────────────────────── */
+  .wf-node {
+    cursor: pointer;
+    transition: opacity 0.18s ease;
+    opacity: 0.45;
+  }
+
+  .wf-node:focus-visible {
+    outline: 2px solid var(--color-border-info, #93c5fd);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* ── Edge types ──────────────────────────────────────────── */
+  .edge-solid {
+    stroke: var(--color-text-secondary);
+    stroke-width: 1.5;
+  }
+
+  .edge-dashed {
+    stroke: var(--color-border-secondary);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+  }
+
+  /* ── Shape fills ─────────────────────────────────────────── */
+  .shape-passive {
+    fill: var(--color-background-secondary);
+    stroke: var(--color-border-primary);
+    stroke-width: 1;
+    stroke-dasharray: 5 3;
+  }
+
+  .shape-upload {
+    fill: var(--color-background-info);
+    stroke: var(--color-border-info);
+    stroke-width: 1;
+    stroke-dasharray: 5 3;
+  }
+
+  .shape-analyze { fill: #16a34a; }
+
+  .shape-copy { fill: var(--color-text-primary); }
+
+  /* ── Text in SVG ─────────────────────────────────────────── */
+  .label-mono {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 8.5px;
+    letter-spacing: 0.06em;
+    fill: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  .label-blue { fill: var(--color-text-info); }
+
+  .label-italic {
+    font-family: var(--font-serif, Georgia, serif);
+    font-style: italic;
+    font-size: 8.5px;
+    fill: var(--color-text-primary);
+  }
+
+  .label-dim {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 8px;
+    fill: var(--color-text-tertiary);
+  }
+
+  .label-loop {
+    font-size: 13px;
+    fill: var(--color-text-tertiary);
+  }
+
+  .label-action {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    fill: #ffffff;
+  }
+
+  .step-num {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    fill: var(--color-text-tertiary);
+  }
+
+  /* ── Detail panel ────────────────────────────────────────── */
+  .wf-panel {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 14px;
+    padding: 16px 20px;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg, 12px);
+    background: var(--color-background-secondary);
+  }
+
+  .wf-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    color: var(--color-text-secondary);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .wf-badge.is-green {
+    background: #16a34a;
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .wf-badge.is-dark {
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border-color: transparent;
+  }
+
+  .wf-badge.is-blue {
+    background: var(--color-background-info);
+    color: var(--color-text-info);
+    border-color: var(--color-border-info);
+  }
+
+  .wf-title {
+    margin: 0 0 5px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .wf-desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+</style>
+
+<script>
+  const steps = [
+    { num: "01", badge: "",       title: "Your image",
+      desc: "Start with any artwork — painting, photograph, installation, or print. The tool reads what you can see. No art history background required, no context needed beyond the image itself." },
+    { num: "02", badge: "is-blue", title: "Upload it",
+      desc: "Drag your image into the drop zone, or click to browse. JPEG, PNG, and WebP all work. No account, no login. Your image stays in the session and is never stored." },
+    { num: "03", badge: "is-green", title: "Analyze",
+      desc: "The engine runs your image through the Hidden Grammar framework — 54 principles of visual form organized by perceptual robustness. Observable facts come first. Interpretation follows with evidence." },
+    { num: "04", badge: "",       title: "Analysis",
+      desc: "Results arrive in seconds. Observable claims are kept strictly separate from interpretive ones. Every principle cited is named. The language stays plain — jargon only when it earns its place." },
+    { num: "05", badge: "",       title: "Why does the eye go there?",
+      desc: "The analysis answers the core question: what visual forces are at work, and why does the nervous system respond the way it does? Formal decisions that once felt intuitive become legible." },
+    { num: "06", badge: "",       title: "More",
+      desc: "Not satisfied? Run it again with a different lens — Hostile Witness, Formal, Material, Temporal, and more. Each lens surfaces a different layer of what the image is doing and why." },
+    { num: "07", badge: "is-dark", title: "Copy",
+      desc: "Take the text. Use it in an artist statement, exhibition label, studio notes, or as a starting point for a conversation. The analysis is yours — not a verdict, a tool." },
+  ];
+
+  let current = -1;
+
+  function setStep(i: number) {
+    if (current === i) return;
+    current = i;
+    const d = steps[i];
+
+    const badge = document.getElementById("wf-badge");
+    if (badge) {
+      badge.textContent = d.num;
+      badge.className = "wf-badge" + (d.badge ? " " + d.badge : "");
+    }
+
+    const titleEl = document.getElementById("wf-title");
+    const descEl  = document.getElementById("wf-desc");
+    if (titleEl) titleEl.textContent = d.title;
+    if (descEl)  descEl.textContent  = d.desc;
+
+    for (let j = 0; j < 7; j++) {
+      const node = document.getElementById("n" + j);
+      if (node) node.style.opacity = j === i ? "1" : "0.4";
+    }
+  }
+
+  // Wire up click and keyboard handlers
+  for (let i = 0; i < 7; i++) {
+    const node = document.getElementById("n" + i);
+    if (!node) continue;
+    const idx = i;
+    node.addEventListener("click", () => setStep(idx));
+    node.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setStep(idx); }
+    });
+  }
+
+  // Start on step 0
+  setTimeout(() => setStep(0), 80);
+</script>

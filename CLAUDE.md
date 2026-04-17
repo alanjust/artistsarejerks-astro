@@ -135,6 +135,15 @@ The Toolkit is a new navigation layer in Zone A. It organizes all modes by visit
 
 **Toolkit CTA routing:** Live mode detail pages route to `/hidden-grammar/modes/[id]` (the prompt picker), where mode+prompt params are set before navigating to the analyzer. Resolved — `link` overrides removed from fine-art, cpg, comic-book, and commercial-illustration in `toolkit-modes.js`.
 
+## Writing Constraints
+
+@docs/banned-words.md
+
+Every word in the banned list above is off-limits in all writing 
+output—code comments, documentation, commit messages, user-facing 
+copy, and generated prose. If a banned word is the most accurate 
+choice, find a plainer one.
+
 ---
 
 ## Current Work Scope
