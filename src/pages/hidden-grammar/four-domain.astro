@@ -1,0 +1,493 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout
+  title="Four-Domain Analysis — Internal"
+  description="Two-pass analysis across perceptual, material, cultural, and conceptual registers."
+>
+  <div class="hg-page fd-page">
+
+    <div class="fd-header">
+      <p class="fd-eyebrow">Internal Tool</p>
+      <h1>Four-Domain Analysis</h1>
+      <p class="fd-desc">Upload an image. Pass 1 runs pure visual observation. Pass 2 reads across all four registers — perceptual, material, cultural, conceptual — plus noise diagnostics and synthesis.</p>
+    </div>
+
+    <!-- Upload -->
+    <section class="fd-upload-section">
+      <div class="fd-upload-area" id="uploadArea">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        <p class="fd-upload-hint">JPG, PNG, WebP</p>
+        <input type="file" id="imageInput" accept="image/*" hidden>
+      </div>
+
+      <div id="previewContainer" class="fd-preview-container" style="display:none">
+        <img id="imagePreview" alt="Uploaded image">
+        <button type="button" id="removeImage" class="fd-btn fd-btn--ghost">Remove</button>
+      </div>
+    </section>
+
+    <!-- Audience context -->
+    <div class="fd-audience-row" id="audienceRow" style="display:none">
+      <label for="audienceInput" class="fd-audience-label">Audience context <span class="fd-optional">(optional)</span></label>
+      <input
+        type="text"
+        id="audienceInput"
+        class="fd-audience-input"
+        placeholder="e.g. commercial illustrator, fine art painter, student critique…"
+      >
+    </div>
+
+    <!-- Run -->
+    <div id="runRow" style="display:none; margin-top: 1.25rem;">
+      <button type="button" id="runBtn" class="fd-btn fd-btn--primary">Run Analysis</button>
+    </div>
+
+    <!-- Status -->
+    <div id="statusBar" class="fd-status" style="display:none">
+      <div class="fd-status-dot"></div>
+      <span id="statusText">Pass 1 — formal observation…</span>
+    </div>
+
+    <!-- Output -->
+    <div id="output" style="display:none">
+      <div class="fd-output-header">
+        <span class="fd-output-label">Analysis</span>
+        <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy</button>
+      </div>
+      <div id="analysisText" class="fd-analysis"></div>
+
+      <details class="fd-pass1-details">
+        <summary class="fd-pass1-summary">
+          <span>Pass 1 — formal observations</span>
+          <span class="fd-toggle-arrow">›</span>
+        </summary>
+        <div id="pass1Text" class="fd-pass1-body"></div>
+      </details>
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .fd-page {
+    max-width: 780px;
+  }
+
+  /* ── Header ── */
+  .fd-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .fd-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    margin: 0 0 0.4rem 0;
+  }
+
+  .fd-header h1 {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.625rem 0;
+  }
+
+  .fd-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Upload ── */
+  .fd-upload-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .fd-upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    color: #64748b;
+  }
+
+  .fd-upload-area:hover,
+  .fd-upload-area.drag-over {
+    border-color: #4f46e5;
+    background: #f5f3ff;
+  }
+
+  .fd-upload-area svg {
+    margin-bottom: 0.75rem;
+    color: #94a3b8;
+    display: block;
+    margin-inline: auto;
+  }
+
+  .fd-upload-area p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9375rem;
+  }
+
+  .fd-upload-hint {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+  }
+
+  .fd-preview-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .fd-preview-container img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    object-fit: contain;
+  }
+
+  /* ── Audience ── */
+  .fd-audience-row {
+    margin-bottom: 0;
+  }
+
+  .fd-audience-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.375rem;
+  }
+
+  .fd-optional {
+    font-weight: 400;
+    color: #94a3b8;
+  }
+
+  .fd-audience-input {
+    width: 100%;
+    padding: 0.5625rem 0.875rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #ffffff;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .fd-audience-input:focus {
+    border-color: #4f46e5;
+  }
+
+  .fd-audience-input::placeholder {
+    color: #94a3b8;
+  }
+
+  /* ── Buttons ── */
+  .fd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5625rem 1.125rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .fd-btn--primary {
+    background: #4f46e5;
+    color: #fff;
+  }
+  .fd-btn--primary:hover { background: #4338ca; }
+  .fd-btn--primary:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+  .fd-btn--ghost {
+    background: transparent;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+  }
+  .fd-btn--ghost:hover { border-color: #94a3b8; color: #334155; }
+
+  .fd-btn--sm {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* ── Status ── */
+  .fd-status {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #1d4ed8;
+    margin-top: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .fd-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── Output ── */
+  .fd-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .fd-output-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .fd-analysis {
+    font-size: 0.9375rem;
+    color: #1e293b;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  :global(.fd-analysis h2) {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 2rem 0 0.625rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  :global(.fd-analysis h2:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  :global(.fd-analysis p) {
+    margin: 0 0 0.875rem;
+  }
+
+  :global(.fd-analysis p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.fd-analysis strong) {
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  :global(.fd-analysis hr) {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 1.5rem 0;
+  }
+
+  /* ── Pass 1 details ── */
+  .fd-pass1-details {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .fd-pass1-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.125rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    list-style: none;
+    background: #f8fafc;
+  }
+
+  .fd-pass1-summary::-webkit-details-marker { display: none; }
+
+  .fd-toggle-arrow {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    transition: transform 0.15s;
+  }
+
+  details[open] .fd-toggle-arrow {
+    transform: rotate(90deg);
+  }
+
+  .fd-pass1-body {
+    padding: 1rem 1.125rem;
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+</style>
+
+<script>
+  import { marked } from 'marked';
+
+  let uploadedImage: string | null = null;
+
+  const uploadArea    = document.getElementById('uploadArea') as HTMLElement;
+  const imageInput    = document.getElementById('imageInput') as HTMLInputElement;
+  const previewCont   = document.getElementById('previewContainer') as HTMLElement;
+  const imagePreview  = document.getElementById('imagePreview') as HTMLImageElement;
+  const removeBtn     = document.getElementById('removeImage') as HTMLButtonElement;
+  const audienceRow   = document.getElementById('audienceRow') as HTMLElement;
+  const audienceInput = document.getElementById('audienceInput') as HTMLInputElement;
+  const runRow        = document.getElementById('runRow') as HTMLElement;
+  const runBtn        = document.getElementById('runBtn') as HTMLButtonElement;
+  const statusBar     = document.getElementById('statusBar') as HTMLElement;
+  const statusText    = document.getElementById('statusText') as HTMLElement;
+  const output        = document.getElementById('output') as HTMLElement;
+  const analysisText  = document.getElementById('analysisText') as HTMLElement;
+  const pass1Text     = document.getElementById('pass1Text') as HTMLElement;
+  const copyBtn       = document.getElementById('copyBtn') as HTMLButtonElement;
+
+  // ── Upload ────────────────────────────────────────────────────────────────
+  uploadArea.addEventListener('click', () => imageInput.click());
+
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+  });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const file = e.dataTransfer?.files[0];
+    if (file) loadFile(file);
+  });
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+    if (file) loadFile(file);
+  });
+
+  removeBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    imagePreview.src = '';
+    previewCont.style.display = 'none';
+    uploadArea.style.display = '';
+    audienceRow.style.display = 'none';
+    runRow.style.display = 'none';
+    imageInput.value = '';
+  });
+
+  function loadFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImage = e.target?.result as string;
+      imagePreview.src = uploadedImage;
+      uploadArea.style.display = 'none';
+      previewCont.style.display = 'flex';
+      audienceRow.style.display = '';
+      runRow.style.display = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Run ───────────────────────────────────────────────────────────────────
+  runBtn.addEventListener('click', runAnalysis);
+
+  async function runAnalysis() {
+    if (!uploadedImage) return;
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+    output.style.display = 'none';
+    statusBar.style.display = 'flex';
+    statusText.textContent = 'Pass 1 — formal observation…';
+
+    try {
+      const res = await fetch('/api/four-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: uploadedImage,
+          audience: audienceInput.value.trim() || undefined,
+        }),
+      });
+
+      statusText.textContent = 'Pass 2 — four domain readings…';
+
+      const data = await res.json();
+      statusBar.style.display = 'none';
+
+      if (!data.success) {
+        alert(`Analysis failed: ${data.error || 'Unknown error'}`);
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+        return;
+      }
+
+      analysisText.innerHTML = await marked(data.analysis || '');
+      pass1Text.textContent = data.pass1 || '';
+      output.style.display = '';
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Again';
+
+    } catch (err) {
+      statusBar.style.display = 'none';
+      alert(`Network error: ${err}`);
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Analysis';
+    }
+  }
+
+  // ── Copy ──────────────────────────────────────────────────────────────────
+  copyBtn.addEventListener('click', async () => {
+    const text = analysisText.innerText;
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = 'Copied';
+    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+  });
+</script>
