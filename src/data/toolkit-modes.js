@@ -19,6 +19,25 @@
 export const toolkitBuckets = [
 
   // ──────────────────────────────────────────
+  // BUCKET 0: FOUR-DOMAIN
+  // ──────────────────────────────────────────
+  {
+    id: 'four-domain',
+    label: 'I want a complete read',
+    description: 'A full two-pass analysis across all four registers — perceptual, material, cultural, and conceptual — plus noise diagnostics and synthesis. Works on any image.',
+    modes: [
+      {
+        id: 'four-domain',
+        label: 'Four-Domain Analysis',
+        tagline: 'Two passes. Four registers. Perceptual, material, cultural, conceptual — each read independently, then synthesized.',
+        status: 'live',
+        phase: 'Full Analysis',
+        link: '/hidden-grammar/four-domain',
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────
   // BUCKET 1: MAKING
   // ──────────────────────────────────────────
   {
