@@ -662,6 +662,7 @@ const principleNames: string[] = (principlesData.principles as any[])
   }
 
   let uploadedImage: string | null = null;
+  let resizedImageForCopy: string | null = null;
 
   const uploadArea    = document.getElementById('uploadArea') as HTMLElement;
   const imageInput    = document.getElementById('imageInput') as HTMLInputElement;
@@ -749,6 +750,7 @@ const principleNames: string[] = (principlesData.principles as any[])
     imageInput.value = '';
     resultThumbnail.style.display = 'none';
     resultThumbnail.src = '';
+    resizedImageForCopy = null;
   });
 
   function loadFile(file: File) {
@@ -822,6 +824,7 @@ const principleNames: string[] = (principlesData.principles as any[])
       if (uploadedImage) {
         resultThumbnail.src = uploadedImage;
         resultThumbnail.style.display = 'block';
+        resizeForClipboard(uploadedImage).then(r => { resizedImageForCopy = r; });
       }
       output.style.display = '';
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -873,15 +876,15 @@ const principleNames: string[] = (principlesData.principles as any[])
 
   copyBtn.addEventListener('click', async () => {
     const html = analysisText.innerHTML;
+    if (!html.trim()) return;
+
     const plain = htmlToPlainText(html);
+    const imgTag = resizedImageForCopy
+      ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
+      : '';
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${html}`;
 
     try {
-      const thumbSrc = uploadedImage ? await resizeForClipboard(uploadedImage) : null;
-      const imgTag = thumbSrc
-        ? `<img src="${thumbSrc}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
-        : '';
-      const htmlPayload = `<meta charset="utf-8">${imgTag}${html}`;
-
       await navigator.clipboard.write([
         new ClipboardItem({
           'text/html': new Blob([htmlPayload], { type: 'text/html' }),
@@ -889,7 +892,11 @@ const principleNames: string[] = (principlesData.principles as any[])
         }),
       ]);
     } catch {
-      await navigator.clipboard.writeText(plain);
+      try {
+        await navigator.clipboard.writeText(plain);
+      } catch {
+        return;
+      }
     }
 
     copyBtn.textContent = '✓ Copied';
