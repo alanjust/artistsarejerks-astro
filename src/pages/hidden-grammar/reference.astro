@@ -130,35 +130,6 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
       </div>
     </section>
 
-    <!-- Master Project Bible -->
-    <section class="ref-section ref-section--forthcoming">
-      <div class="ref-section-header">
-        <span class="ref-section-tag">Framework</span>
-        <h2 class="ref-section-title">Master Project Bible</h2>
-        <p class="ref-section-desc">The full Hidden Grammar framework documentation — 11 Roots, 54 Principles, 4 Poles, and the structural logic connecting them. This section will consolidate the complete specification in one place.</p>
-      </div>
-      <div class="ref-forthcoming-links">
-        <p class="ref-forthcoming-note">The framework is currently documented across several pages:</p>
-        <div class="ref-link-list">
-          <a href="/hidden-grammar/framework" class="ref-link-card">
-            <span class="ref-link-title">Art Lab Framework</span>
-            <span class="ref-link-desc">Structural overview — 11 Roots, 54 Principles, 4 Poles</span>
-            <span class="ref-link-arrow">→</span>
-          </a>
-          <a href="/hidden-grammar/principles" class="ref-link-card">
-            <span class="ref-link-title">54 Principles</span>
-            <span class="ref-link-desc">Complete inventory by tier with mechanism descriptions</span>
-            <span class="ref-link-arrow">→</span>
-          </a>
-          <a href="/hidden-grammar/lenses" class="ref-link-card">
-            <span class="ref-link-title">Interrogation Lenses</span>
-            <span class="ref-link-desc">24 critical and philosophical frameworks as analytical overlays</span>
-            <span class="ref-link-arrow">→</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
   </div>
 </HiddenGrammarLayout>
 
@@ -384,70 +355,10 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     line-height: 1.55;
   }
 
-  /* ── Forthcoming / Master Project Bible ─────── */
-  .ref-section--forthcoming .ref-section-title {
-    color: #64748b;
-  }
-
-  .ref-forthcoming-note {
-    font-size: 0.875rem;
-    color: #94a3b8;
-    margin: 0 0 0.875rem;
-  }
-
-  .ref-link-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-
-  .ref-link-card {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    text-decoration: none;
-    background: #ffffff;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .ref-link-card:hover {
-    border-color: #94a3b8;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-
-  .ref-link-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #0f172a;
-  }
-
-  .ref-link-desc {
-    font-size: 0.8125rem;
-    color: #94a3b8;
-    line-height: 1.4;
-  }
-
-  .ref-link-arrow {
-    font-size: 0.875rem;
-    color: #4f46e5;
-  }
-
   /* ── Responsive ─────────────────────────────── */
   @media (max-width: 768px) {
     .ref-standards-grid {
       grid-template-columns: 1fr;
-    }
-
-    .ref-link-card {
-      grid-template-columns: 1fr auto;
-    }
-
-    .ref-link-desc {
-      display: none;
     }
   }
 
