@@ -36,13 +36,15 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 
     <!-- Audience context -->
     <div class="fd-audience-row" id="audienceRow" style="display:none">
-      <label for="audienceInput" class="fd-audience-label">Audience context <span class="fd-optional">(optional)</span></label>
-      <input
-        type="text"
-        id="audienceInput"
-        class="fd-audience-input"
-        placeholder="e.g. commercial illustrator, fine art painter, student critique…"
-      >
+      <label for="audienceSelect" class="fd-audience-label">Audience context <span class="fd-optional">(optional)</span></label>
+      <select id="audienceSelect" name="audience" class="fd-audience-input">
+        <option value="">Select your context (optional)</option>
+        <option value="artist, work in progress">Artist — work in progress</option>
+        <option value="artist, pre-show review">Artist — preparing for a show</option>
+        <option value="curator or museum preparator">Curator / museum preparator</option>
+        <option value="art critic or educator">Art critic / educator</option>
+        <option value="art history instructor">Art history instructor</option>
+      </select>
     </div>
 
     <!-- Run -->
@@ -193,14 +195,12 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     background: #ffffff;
     transition: border-color 0.15s;
     outline: none;
+    cursor: pointer;
+    appearance: auto;
   }
 
   .fd-audience-input:focus {
     border-color: #4f46e5;
-  }
-
-  .fd-audience-input::placeholder {
-    color: #94a3b8;
   }
 
   /* ── Buttons ── */
@@ -380,7 +380,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   const imagePreview  = document.getElementById('imagePreview') as HTMLImageElement;
   const removeBtn     = document.getElementById('removeImage') as HTMLButtonElement;
   const audienceRow   = document.getElementById('audienceRow') as HTMLElement;
-  const audienceInput = document.getElementById('audienceInput') as HTMLInputElement;
+  const audienceInput = document.getElementById('audienceSelect') as HTMLSelectElement;
   const runRow        = document.getElementById('runRow') as HTMLElement;
   const runBtn        = document.getElementById('runBtn') as HTMLButtonElement;
   const statusBar     = document.getElementById('statusBar') as HTMLElement;

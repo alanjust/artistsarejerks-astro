@@ -78,6 +78,39 @@ One closing sentence. Not a quality verdict. A direction.
 
 Write directly. Specific. No hedging. Short sentences where a short sentence is enough.`;
 
+function getAudienceFraming(audience: string): string {
+  const a = audience?.toLowerCase() || '';
+
+  if (a.includes('progress') || a.includes('wip') || a.includes('making')) {
+    return `AUDIENCE FRAMING — ARTIST, WORK IN PROGRESS:
+The Material/Formal and Perceptual registers are most live for this person. Frame noise findings as decisions still available — not verdicts on what's broken. The work is open. What can still change? What's worth reconsidering before going further? Keep the Conceptual and Cultural registers thorough but frame them as context, not urgency.`;
+  }
+
+  if (a.includes('show') || a.includes('gallery') || a.includes('exhibit') || a.includes('pre-show')) {
+    return `AUDIENCE FRAMING — ARTIST, PRE-SHOW REVIEW:
+The Cultural register is primary here. The work is done — the question is whether it's legible to the institution and audience the show is aimed at. Frame noise findings around what might misfire in that specific context. If findings suggest the work may read differently than intended within the show's thesis, say so directly. Note: if this is one of several works, flag any signals that might create coherence problems across the body of work.`;
+  }
+
+  if (a.includes('curator') || a.includes('preparator') || a.includes('museum')) {
+    return `AUDIENCE FRAMING — CURATOR OR MUSEUM PREPARATOR:
+The Cultural register is the primary instrument. The Conceptual register matters for building or testing a curatorial argument. Frame noise findings around what might weaken an exhibit's through-line or confuse the institutional thesis. This person is making decisions about placement and grouping — findings should be actionable at that level.`;
+  }
+
+  if (a.includes('critic') || a.includes('educator') || a.includes('teacher') || a.includes('student')) {
+    return `AUDIENCE FRAMING — ART CRITIC OR EDUCATOR:
+All four registers carry equal weight. The noise detector here is pedagogical — its job is to show how domain failures are distinct from each other, so they can be named and taught separately. Don't collapse findings into a single verdict. The goal is to model the analytical distinction between perceptual failure, material dishonesty, cultural illegibility, and conceptual contradiction — because most criticism conflates them.`;
+  }
+
+  if (a.includes('history') || a.includes('instructor') || a.includes('canon') || a.includes('historical')) {
+    return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR:
+The Conceptual/Historical register is primary. The Cultural register explains the work's reception and canon position. The noise detector has a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help an instructor explain why a work matters in the canon even when students might initially find it visually unrewarding.`;
+  }
+
+  return audience
+    ? `AUDIENCE CONTEXT: ${audience}\nShape the synthesis and noise findings to be actionable for this specific context.`
+    : '';
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
@@ -117,9 +150,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       .join('\n\n');
 
     // PASS 2 — four domain readings
-    const audienceNote = audience
-      ? `\n\nAUDIENCE CONTEXT: ${audience}\n`
-      : '';
+    const audienceFraming = getAudienceFraming(audience || '');
 
     const pass2Msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -129,7 +160,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageData } },
-          { type: 'text', text: audienceNote + PASS2_PROMPT(pass1Text) },
+          { type: 'text', text: (audienceFraming ? audienceFraming + '\n\n---\n\n' : '') + PASS2_PROMPT(pass1Text) },
         ],
       }],
     });
