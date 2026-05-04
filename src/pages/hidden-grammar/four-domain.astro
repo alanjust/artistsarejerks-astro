@@ -756,12 +756,71 @@ const principleNames: string[] = (principlesData.principles as any[])
   function loadFile(file: File) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      uploadedImage = e.target?.result as string;
-      imagePreview.src = uploadedImage;
-      uploadArea.style.display = 'none';
-      previewCont.style.display = 'flex';
-      audienceRow.style.display = '';
-      runRow.style.display = '';
+      if (!e.target?.result) return;
+      const result = e.target.result as string;
+
+      const img = new Image();
+      img.onload = () => {
+        const currentSize = result.length * 0.75;
+        const maxSize = 4 * 1024 * 1024;
+
+        let finalResult = result;
+        let wasResized = false;
+
+        if (currentSize > maxSize || img.width > 2048 || img.height > 2048) {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            alert('Canvas not supported. Please try a different browser.');
+            return;
+          }
+
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 2048;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) { height = (height / width) * maxDim; width = maxDim; }
+            else { width = (width / height) * maxDim; height = maxDim; }
+          }
+
+          canvas.width = Math.round(width);
+          canvas.height = Math.round(height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          let quality = 0.9;
+          let compressed = canvas.toDataURL('image/jpeg', quality);
+          while (compressed.length * 0.75 > maxSize && quality > 0.3) {
+            quality -= 0.1;
+            compressed = canvas.toDataURL('image/jpeg', quality);
+          }
+
+          finalResult = compressed;
+          wasResized = true;
+        }
+
+        if (finalResult.length * 0.75 > 5 * 1024 * 1024) {
+          alert('Image is still too large after compression. Please use a smaller image or reduce its resolution.');
+          return;
+        }
+
+        uploadedImage = finalResult;
+        imagePreview.src = finalResult;
+        uploadArea.style.display = 'none';
+        previewCont.style.display = 'flex';
+        audienceRow.style.display = '';
+        runRow.style.display = '';
+
+        if (wasResized) {
+          const note = document.createElement('div');
+          note.textContent = '✓ Image automatically optimized for analysis';
+          note.style.cssText = 'position:fixed;top:20px;right:20px;background:#4f46e5;color:white;padding:12px 20px;border-radius:8px;z-index:10000;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+          document.body.appendChild(note);
+          setTimeout(() => note.remove(), 3000);
+        }
+      };
+
+      img.onerror = () => { alert('Failed to load image. Please try a different file.'); };
+      img.src = result;
     };
     reader.readAsDataURL(file);
   }
