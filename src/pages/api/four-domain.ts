@@ -111,6 +111,33 @@ The Conceptual/Historical register is primary. The Cultural register explains th
     : '';
 }
 
+function buildArtworkContext(fields: Record<string, string>): string {
+  const labels: Record<string, string> = {
+    artist:     'Artist',
+    title:      'Title',
+    year:       'Date',
+    medium:     'Medium',
+    substrate:  'Support / Substrate',
+    dimensions: 'Dimensions',
+    genre:      'Type',
+    series:     'Series',
+    movement:   'Movement / Style',
+    collection: 'Collection',
+    exhibition: 'Exhibition context',
+    edition:    'Edition',
+    condition:  'Condition',
+    notes:      'Notes',
+  };
+
+  const lines = Object.entries(fields)
+    .filter(([, v]) => v && v.trim())
+    .map(([k, v]) => `${labels[k] || k}: ${v}`);
+
+  return lines.length > 0
+    ? `ARTWORK DOCUMENTATION:\n${lines.join('\n')}\n`
+    : '';
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
@@ -118,7 +145,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const anthropic = new Anthropic({ apiKey });
     const body = await request.json();
-    const { image, audience } = body;
+    const { image, audience, fields = {} } = body;
 
     if (!image) {
       return new Response(JSON.stringify({ error: 'No image provided' }), {
@@ -150,7 +177,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       .join('\n\n');
 
     // PASS 2 — four domain readings
+    const artworkContext = buildArtworkContext(fields);
     const audienceFraming = getAudienceFraming(audience || '');
+
+    const contextBlock = [artworkContext, audienceFraming]
+      .filter(Boolean)
+      .join('\n');
+
+    const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text);
 
     const pass2Msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -160,7 +194,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageData } },
-          { type: 'text', text: (audienceFraming ? audienceFraming + '\n\n---\n\n' : '') + PASS2_PROMPT(pass1Text) },
+          { type: 'text', text: pass2UserText },
         ],
       }],
     });

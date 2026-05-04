@@ -34,6 +34,81 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
       </div>
     </section>
 
+    <!-- Artwork information -->
+    <div class="fd-fields">
+      <h3 class="fd-fields-label">Artwork information <span class="fd-optional">(optional)</span></h3>
+
+      <div class="fd-field-row">
+        <label for="fieldArtist">Artist</label>
+        <input type="text" id="fieldArtist" name="artist" placeholder="Artist or maker name">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldTitle">Title</label>
+        <input type="text" id="fieldTitle" name="title" placeholder="Title of work">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldYear">Date / Year</label>
+        <input type="text" id="fieldYear" name="year" placeholder="e.g. 1923, circa 1940, 1882–1884">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldMedium">Medium</label>
+        <input type="text" id="fieldMedium" name="medium" placeholder="e.g. oil, acrylic, watercolor, charcoal">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldSubstrate">Support / Substrate</label>
+        <input type="text" id="fieldSubstrate" name="substrate" placeholder="e.g. canvas, panel, paper, linen">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldDimensions">Dimensions</label>
+        <input type="text" id="fieldDimensions" name="dimensions" placeholder="e.g. 24 × 36 in / 61 × 91 cm">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldGenre">Type</label>
+        <input type="text" id="fieldGenre" name="genre" placeholder="e.g. painting, drawing, print, sculpture, photograph">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldSeries">Series</label>
+        <input type="text" id="fieldSeries" name="series" placeholder="Series title if part of a larger body of work">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldMovement">Movement / Style</label>
+        <input type="text" id="fieldMovement" name="movement" placeholder="e.g. Abstract Expressionism, De Stijl">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldCollection">Collection / Location</label>
+        <input type="text" id="fieldCollection" name="collection" placeholder="e.g. MoMA, private collection, artist's studio">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldExhibition">Exhibition context</label>
+        <input type="text" id="fieldExhibition" name="exhibition" placeholder="e.g. upcoming solo show at Schneider Museum">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldEdition">Edition</label>
+        <input type="text" id="fieldEdition" name="edition" placeholder="e.g. 3/10 (for prints and multiples)">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldCondition">Condition</label>
+        <input type="text" id="fieldCondition" name="condition" placeholder="e.g. excellent, conserved, minor surface wear">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldNotes">Notes</label>
+        <textarea id="fieldNotes" name="notes" placeholder="Anything else relevant — intent, context, questions you want addressed"></textarea>
+      </div>
+    </div>
+
     <!-- Audience context -->
     <div class="fd-audience-row" id="audienceRow" style="display:none">
       <label for="audienceSelect" class="fd-audience-label">Audience context <span class="fd-optional">(optional)</span></label>
@@ -111,6 +186,82 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     color: #64748b;
     margin: 0;
     line-height: 1.6;
+  }
+
+  /* ── Artwork fields ── */
+  .fd-fields {
+    margin-bottom: 2rem;
+    padding: 1.375rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+
+  .fd-fields-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 1.125rem;
+  }
+
+  .fd-field-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .fd-field-row:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .fd-field-row label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .fd-field-row input,
+  .fd-field-row textarea {
+    width: 100%;
+    padding: 0.4375rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #ffffff;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .fd-field-row input:focus,
+  .fd-field-row textarea:focus {
+    border-color: #4f46e5;
+  }
+
+  .fd-field-row input::placeholder,
+  .fd-field-row textarea::placeholder {
+    color: #94a3b8;
+  }
+
+  .fd-field-row textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 560px) {
+    .fd-field-row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
   }
 
   /* ── Upload ── */
@@ -446,12 +597,30 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     statusText.textContent = 'Pass 1 — formal observation…';
 
     try {
+      const fields = {
+        artist:     (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim(),
+        title:      (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim(),
+        year:       (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim(),
+        medium:     (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim(),
+        substrate:  (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim(),
+        dimensions: (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim(),
+        genre:      (document.getElementById('fieldGenre')      as HTMLInputElement)?.value.trim(),
+        series:     (document.getElementById('fieldSeries')     as HTMLInputElement)?.value.trim(),
+        movement:   (document.getElementById('fieldMovement')   as HTMLInputElement)?.value.trim(),
+        collection: (document.getElementById('fieldCollection') as HTMLInputElement)?.value.trim(),
+        exhibition: (document.getElementById('fieldExhibition') as HTMLInputElement)?.value.trim(),
+        edition:    (document.getElementById('fieldEdition')    as HTMLInputElement)?.value.trim(),
+        condition:  (document.getElementById('fieldCondition')  as HTMLInputElement)?.value.trim(),
+        notes:      (document.getElementById('fieldNotes')      as HTMLTextAreaElement)?.value.trim(),
+      };
+
       const res = await fetch('/api/four-domain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: uploadedImage,
           audience: audienceInput.value.trim() || undefined,
+          fields,
         }),
       });
 
