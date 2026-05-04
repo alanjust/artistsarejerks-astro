@@ -85,11 +85,7 @@ The Pattern/Textile Redirect and Domain Override from the Noise Audit fold into 
 
 **"Noise Audit"** — now understood as too small. Accurate for the perceptual diagnostic alone.
 
-**Name for the four-domain foundational prompt:** TBD. Needs to signal scope without being clinical. Options to consider:
-- "Full Register Analysis"
-- "Signal Map"
-- "The Complete Read"
-- Something that fits the Art Lab / Hidden Grammar vocabulary
+**Name for the four-domain foundational prompt:** **The 4 Domains**
 
 ---
 
