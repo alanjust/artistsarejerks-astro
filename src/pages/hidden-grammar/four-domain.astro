@@ -1,6 +1,11 @@
 ---
 export const prerender = false;
 import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+import principlesData from '../../data/hg-principles.json';
+
+const principleNames: string[] = (principlesData.principles as any[])
+  .map((p) => p.name as string)
+  .sort((a, b) => b.length - a.length);
 ---
 
 <HiddenGrammarLayout
@@ -476,6 +481,18 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
     margin: 1.5rem 0;
   }
 
+  :global(.fd-principle-link) {
+    color: #4f46e5;
+    text-decoration: underline;
+    text-decoration-color: #c7d2fe;
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.15s;
+  }
+
+  :global(.fd-principle-link:hover) {
+    text-decoration-color: #4f46e5;
+  }
+
   /* ── Pass 1 details ── */
   .fd-pass1-details {
     border: 1px solid #e2e8f0;
@@ -520,8 +537,50 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
   }
 </style>
 
+<script define:vars={{ principleNames }}>
+  window.__PRINCIPLE_NAMES__ = principleNames;
+</script>
+
 <script>
   import { marked } from 'marked';
+
+  const PRINCIPLE_NAMES: string[] = (window as any).__PRINCIPLE_NAMES__ || [];
+
+  function linkPrinciples(container: HTMLElement) {
+    if (!PRINCIPLE_NAMES.length) return;
+
+    const escaped = PRINCIPLE_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
+
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    let node: Node | null;
+    while ((node = walker.nextNode())) textNodes.push(node as Text);
+
+    for (const textNode of textNodes) {
+      if (textNode.parentElement?.closest('a')) continue;
+      const text = textNode.textContent || '';
+      if (!pattern.test(text)) { pattern.lastIndex = 0; continue; }
+      pattern.lastIndex = 0;
+
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let m: RegExpExecArray | null;
+
+      while ((m = pattern.exec(text)) !== null) {
+        if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const a = document.createElement('a');
+        a.href = '/hidden-grammar/principles';
+        a.className = 'fd-principle-link';
+        a.textContent = m[0];
+        frag.appendChild(a);
+        last = m.index + m[0].length;
+      }
+
+      if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      textNode.parentNode?.replaceChild(frag, textNode);
+    }
+  }
 
   let uploadedImage: string | null = null;
 
@@ -637,6 +696,7 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
       }
 
       analysisText.innerHTML = await marked(data.analysis || '');
+      linkPrinciples(analysisText);
       pass1Text.textContent = data.pass1 || '';
       output.style.display = '';
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
