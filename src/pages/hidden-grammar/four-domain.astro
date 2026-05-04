@@ -151,6 +151,7 @@ const principleNames: string[] = (principlesData.principles as any[])
         <span class="fd-output-label">Analysis</span>
         <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy</button>
       </div>
+      <img id="resultThumbnail" class="fd-result-thumbnail" alt="Analyzed artwork" style="display:none">
       <div id="analysisText" class="fd-analysis"></div>
 
       <details class="fd-pass1-details">
@@ -468,6 +469,35 @@ const principleNames: string[] = (principlesData.principles as any[])
     color: #94a3b8;
   }
 
+  .fd-result-thumbnail {
+    float: right;
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin: 0 0 1rem 1.5rem;
+    cursor: zoom-in;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fd-result-thumbnail:hover {
+    transform: scale(2.5);
+    transform-origin: top right;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border-color: #cbd5e1;
+    z-index: 10;
+  }
+
+  @media (max-width: 640px) {
+    .fd-result-thumbnail {
+      float: none;
+      width: 80px;
+      margin: 0 0 1rem 0;
+    }
+  }
+
   .fd-analysis {
     font-size: 0.9375rem;
     color: #1e293b;
@@ -628,8 +658,9 @@ const principleNames: string[] = (principlesData.principles as any[])
   const output        = document.getElementById('output') as HTMLElement;
   const analysisText  = document.getElementById('analysisText') as HTMLElement;
   const pass1Text     = document.getElementById('pass1Text') as HTMLElement;
-  const copyBtn       = document.getElementById('copyBtn') as HTMLButtonElement;
-  const pasteBtn      = document.getElementById('fdPasteBtn') as HTMLButtonElement;
+  const copyBtn         = document.getElementById('copyBtn') as HTMLButtonElement;
+  const pasteBtn        = document.getElementById('fdPasteBtn') as HTMLButtonElement;
+  const resultThumbnail = document.getElementById('resultThumbnail') as HTMLImageElement;
 
   // ── Upload ────────────────────────────────────────────────────────────────
   uploadArea.addEventListener('click', () => imageInput.click());
@@ -697,6 +728,8 @@ const principleNames: string[] = (principlesData.principles as any[])
     audienceRow.style.display = 'none';
     runRow.style.display = 'none';
     imageInput.value = '';
+    resultThumbnail.style.display = 'none';
+    resultThumbnail.src = '';
   });
 
   function loadFile(file: File) {
@@ -767,6 +800,10 @@ const principleNames: string[] = (principlesData.principles as any[])
       analysisText.innerHTML = await marked(data.analysis || '');
       linkPrinciples(analysisText);
       pass1Text.textContent = data.pass1 || '';
+      if (uploadedImage) {
+        resultThumbnail.src = uploadedImage;
+        resultThumbnail.style.display = 'block';
+      }
       output.style.display = '';
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
