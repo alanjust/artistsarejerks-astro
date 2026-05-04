@@ -99,12 +99,14 @@ export function initImageUpload() {
         // Calculate current size (base64 to bytes approximation)
         const currentSize = result.length * 0.75;
         const maxSize = 4 * 1024 * 1024; // Target 4MB to stay well under 5MB API limit
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        const needsConversion = !supportedTypes.includes(file.type.toLowerCase());
 
         let finalResult = result;
         let wasResized = false;
 
-        // Check if resizing needed (either size or dimensions)
-        if (currentSize > maxSize || img.width > 2048 || img.height > 2048) {
+        // Check if resizing needed (size, dimensions, or unsupported format like TIFF)
+        if (needsConversion || currentSize > maxSize || img.width > 2048 || img.height > 2048) {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
 
