@@ -869,7 +869,25 @@ const principleNames: string[] = (principlesData.principles as any[])
 
       statusText.textContent = 'Pass 2 — four domain readings…';
 
-      const data = await res.json();
+      if (!res.ok && res.headers.get('content-type')?.includes('text/html')) {
+        statusBar.style.display = 'none';
+        alert(`Server error (${res.status}). The analysis may have timed out — please try again with a smaller image.`);
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+        return;
+      }
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        statusBar.style.display = 'none';
+        alert(`Server returned an unexpected response (status ${res.status}). The analysis may have timed out — please try again.`);
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+        return;
+      }
+
       statusBar.style.display = 'none';
 
       if (!data.success) {
