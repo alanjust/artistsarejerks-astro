@@ -873,7 +873,8 @@ const principleNames: string[] = (principlesData.principles as any[])
       statusBar.style.display = 'none';
 
       if (!data.success) {
-        alert(`Analysis failed: ${data.error || 'Unknown error'}`);
+        const detail = data.details ? `\n\n${data.details}` : '';
+        alert(`${data.error || 'Analysis failed'}${detail}`);
         runBtn.disabled = false;
         runBtn.textContent = 'Run Analysis';
         return;

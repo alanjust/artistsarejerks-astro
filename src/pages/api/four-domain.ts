@@ -176,8 +176,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const imageData = image.split(',')[1];
-    const mediaType = image.split(';')[0].split(':')[1] as
-      'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+    const mediaType = image.split(';')[0].split(':')[1];
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!supportedTypes.includes(mediaType)) {
+      return new Response(
+        JSON.stringify({ error: `Unsupported image format: ${mediaType}. Please convert to JPEG or PNG and try again.` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     // PASS 1 — pure formal observation
     const pass1Msg = await anthropic.messages.create({
@@ -187,7 +193,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       messages: [{
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageData } },
+          { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
           { type: 'text', text: PASS1_PROMPT },
         ],
       }],
@@ -215,7 +221,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       messages: [{
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageData } },
+          { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
           { type: 'text', text: pass2UserText },
         ],
       }],
