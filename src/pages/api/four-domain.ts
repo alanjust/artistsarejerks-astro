@@ -25,6 +25,17 @@ ${principleNames.join(', ')}
 
 Run all four registers. Do not collapse them into each other. A finding in one register is not evidence in another.
 
+OUTPUT FORMAT FOR EACH REGISTER:
+After the register heading, write a bullet-point summary before the full prose. Do the complete analytical work first, then distill it. The summary must:
+- Cover the key findings from that register (use as many bullets as the register warrants — no fixed count)
+- Include the noise findings within the same bullet list, each prefixed with "Noise:"
+- Be specific — no vague placeholders
+
+Then write the full detailed prose analysis.
+Then write the Noise sub-section in full prose as instructed.
+
+---
+
 REGISTER 1: PERCEPTUAL
 
 What does the eye do with this work in the first seconds of looking — before interpretation, before meaning?
