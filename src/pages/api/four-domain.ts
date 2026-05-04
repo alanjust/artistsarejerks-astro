@@ -1,14 +1,25 @@
 import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
+import principlesData from '../../data/hg-principles.json';
 
 export const prerender = false;
 
+const PRINCIPLE_NAMES: string[] = (principlesData.principles as any[])
+  .map((p: any) => p.name as string)
+  .sort((a, b) => b.length - a.length);
+
 const PASS1_PROMPT = `Describe only what you can directly observe in this image. Cover: what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye and what doesn't, how near and far space is handled. Be specific and granular. Report in the order the eye encounters things. No interpretation. No art historical references. No quality judgments.`;
 
-const PASS2_PROMPT = (pass1: string) => `You are analyzing a work of art across four independent registers. A formal observation pass has already been completed — use it as your evidence base, but look at the image directly too, especially for the material and cultural registers.
+const PASS2_PROMPT = (pass1: string, principleNames: string[]) => `You are analyzing a work of art across four independent registers. A formal observation pass has already been completed — use it as your evidence base, but look at the image directly too, especially for the material and cultural registers.
 
 FORMAL OBSERVATIONS FROM PASS 1:
 ${pass1}
+
+---
+
+FRAMEWORK TERMINOLOGY: When your analysis references a perceptual or compositional mechanism that corresponds to one of the following named Principles, use the exact name as written. Use these names naturally in prose — don't force them, but don't paraphrase them either:
+
+${principleNames.join(', ')}
 
 ---
 
@@ -184,7 +195,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       .filter(Boolean)
       .join('\n');
 
-    const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text);
+    const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
     const pass2Msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
