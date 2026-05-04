@@ -50,12 +50,12 @@ export function initImageUpload() {
     }
   });
 
-  // Paste button: works on mobile (iOS 16.4+) and desktop via Clipboard API
+  // Paste button — tries clipboard API (iOS 16.4+), falls back to file picker
   pasteBtn?.addEventListener('click', async (e) => {
-    e.stopPropagation(); // prevent triggering uploadArea click → file picker
+    e.stopPropagation();
 
     if (!navigator.clipboard?.read) {
-      alert('Paste is not supported in this browser. Try pressing Cmd+V (Mac) or Ctrl+V (Windows) while on this page.');
+      imageInput?.click();
       return;
     }
 
@@ -65,14 +65,15 @@ export function initImageUpload() {
         const imageType = item.types.find(t => t.startsWith('image/'));
         if (imageType) {
           const blob = await item.getType(imageType);
-          const file = new File([blob], 'pasted-image', { type: imageType });
-          handleImageUpload(file);
+          handleImageUpload(new File([blob], 'pasted-image', { type: imageType }));
           return;
         }
       }
-      alert('No image found in clipboard. Copy an image first, then tap Paste Image.');
-    } catch {
-      alert('Could not read clipboard. If prompted, allow clipboard access and try again.');
+      // No image in clipboard — open file picker as fallback
+      imageInput?.click();
+    } catch (err) {
+      console.error('[Paste] clipboard.read failed:', err);
+      imageInput?.click();
     }
   });
 

@@ -664,11 +664,11 @@ const principleNames: string[] = (principlesData.principles as any[])
     }
   });
 
-  // Paste button — works on mobile (iOS 16.4+) via Clipboard API
+  // Paste button — tries clipboard API (iOS 16.4+), falls back to file picker
   pasteBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
     if (!navigator.clipboard?.read) {
-      alert('Paste is not supported in this browser. Try pressing Cmd+V (Mac) or Ctrl+V (Windows) while on this page.');
+      imageInput.click();
       return;
     }
     try {
@@ -681,9 +681,11 @@ const principleNames: string[] = (principlesData.principles as any[])
           return;
         }
       }
-      alert('No image found in clipboard. Copy an image first, then tap Paste Image.');
-    } catch {
-      alert('Could not read clipboard. If prompted, allow clipboard access and try again.');
+      // No image in clipboard — open file picker as fallback
+      imageInput.click();
+    } catch (err) {
+      console.error('[Paste] clipboard.read failed:', err);
+      imageInput.click();
     }
   });
 
