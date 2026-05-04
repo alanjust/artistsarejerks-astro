@@ -149,10 +149,12 @@ const principleNames: string[] = (principlesData.principles as any[])
     <div id="output" style="display:none">
       <div class="fd-output-header">
         <span class="fd-output-label">Analysis</span>
-        <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy</button>
       </div>
       <img id="resultThumbnail" class="fd-result-thumbnail" alt="Analyzed artwork" style="display:none">
       <div id="analysisText" class="fd-analysis"></div>
+      <div class="fd-copy-row">
+        <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
+      </div>
 
       <details class="fd-pass1-details">
         <summary class="fd-pass1-summary">
@@ -530,6 +532,23 @@ const principleNames: string[] = (principlesData.principles as any[])
     margin-bottom: 0;
   }
 
+  :global(.fd-analysis ul),
+  :global(.fd-analysis ol) {
+    margin: 0 0 1.5rem;
+    padding-left: 1.25rem;
+  }
+
+  :global(.fd-analysis li) {
+    margin-bottom: 0.375rem;
+    line-height: 1.65;
+  }
+
+  .fd-copy-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+  }
+
   :global(.fd-analysis strong) {
     color: #0f172a;
     font-weight: 600;
@@ -819,10 +838,61 @@ const principleNames: string[] = (principlesData.principles as any[])
   }
 
   // ── Copy ──────────────────────────────────────────────────────────────────
+  function resizeForClipboard(dataUrl: string, maxDim = 280, quality = 0.7): Promise<string> {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function htmlToPlainText(html: string): string {
+    return html
+      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<h[1-6][^>]*>/gi, '\n')
+      .replace(/<\/h[1-6]>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   copyBtn.addEventListener('click', async () => {
-    const text = analysisText.innerText;
-    await navigator.clipboard.writeText(text);
-    copyBtn.textContent = 'Copied';
-    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+    const html = analysisText.innerHTML;
+    const plain = htmlToPlainText(html);
+
+    try {
+      const thumbSrc = uploadedImage ? await resizeForClipboard(uploadedImage) : null;
+      const imgTag = thumbSrc
+        ? `<img src="${thumbSrc}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
+        : '';
+      const htmlPayload = `<meta charset="utf-8">${imgTag}${html}`;
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([htmlPayload], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' }),
+        }),
+      ]);
+    } catch {
+      await navigator.clipboard.writeText(plain);
+    }
+
+    copyBtn.textContent = '✓ Copied';
+    setTimeout(() => { copyBtn.textContent = 'Copy Analysis'; }, 2500);
   });
 </script>
