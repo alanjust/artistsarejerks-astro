@@ -278,104 +278,143 @@ export function initAnalysis() {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error('API Error:', result);
-        alert(`Analysis failed: ${result.details || result.error}\n\nCheck console for details.`);
+      if (!response.ok || !response.body) {
+        const ct = response.headers.get('content-type') || '';
+        let errMsg = `Analysis failed (${response.status})`;
+        if (!ct.includes('text/html')) {
+          try {
+            const errData = await response.json();
+            errMsg = `Analysis failed: ${errData.details || errData.error}`;
+          } catch { /* keep default */ }
+        }
+        console.error('API Error:', errMsg);
+        alert(errMsg);
         if (loadingState) loadingState.style.display = 'none';
         if (analysisForm) analysisForm.style.display = 'block';
         return;
       }
 
-      if (loadingState) loadingState.style.display = 'none';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let completed = false;
 
-      // ── Poetry output (slam / haiku / sonnet) ────────────────────────────
-      if (result.poetryMode) {
-        const poetryContent = document.getElementById('poetryContent');
-        const poetryThumbnail = document.getElementById('poetryThumbnail') as HTMLImageElement | null;
-        const copyPoetryBtn = document.getElementById('copyPoetryOutput') as HTMLButtonElement | null;
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
 
-        if (poetryContent) poetryContent.textContent = result.raw || '';
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
 
-        if (poetryThumbnail && state.uploadedImageData) {
-          poetryThumbnail.src = state.uploadedImageData;
-          poetryThumbnail.style.display = 'block';
-        }
+          if (data.type === 'status') {
+            const loadingTextEl = document.getElementById('loadingText');
+            if (loadingTextEl) loadingTextEl.textContent = data.message;
+          } else if (data.type === 'error') {
+            completed = true;
+            console.error('API Error:', data);
+            alert(`Analysis failed: ${data.error}`);
+            if (loadingState) loadingState.style.display = 'none';
+            if (analysisForm) analysisForm.style.display = 'block';
+            break outer;
+          } else if (data.type === 'complete') {
+            completed = true;
+            if (loadingState) loadingState.style.display = 'none';
 
-        // Pre-compute resized image now (outside click handler) so the
-        // clipboard.write() call fires synchronously within the user gesture.
-        const smallImgSrc = state.uploadedImageData
-          ? await resizeForClipboard(state.uploadedImageData)
-          : '';
+            const result = data;
 
-        if (copyPoetryBtn && poetryContent) {
-          copyPoetryBtn.onclick = async () => {
-            const poemText = poetryContent.textContent || '';
-            const htmlPayload = smallImgSrc
-              ? `<img src="${smallImgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
-              : `<pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`;
-            try {
-              await navigator.clipboard.write([
-                new ClipboardItem({
-                  'text/html': new Blob([htmlPayload], { type: 'text/html' }),
-                  'text/plain': new Blob([poemText], { type: 'text/plain' }),
-                }),
-              ]);
-            } catch {
-              await navigator.clipboard.writeText(poemText);
+            // ── Poetry output (slam / haiku / sonnet) ──────────────────────
+            if (result.poetryMode) {
+              const poetryContent = document.getElementById('poetryContent');
+              const poetryThumbnail = document.getElementById('poetryThumbnail') as HTMLImageElement | null;
+              const copyPoetryBtn = document.getElementById('copyPoetryOutput') as HTMLButtonElement | null;
+
+              if (poetryContent) poetryContent.textContent = result.raw || '';
+
+              if (poetryThumbnail && state.uploadedImageData) {
+                poetryThumbnail.src = state.uploadedImageData;
+                poetryThumbnail.style.display = 'block';
+              }
+
+              // Pre-compute resized image (outside click handler) so clipboard.write()
+              // fires synchronously within the user gesture.
+              const smallImgSrc = state.uploadedImageData
+                ? await resizeForClipboard(state.uploadedImageData)
+                : '';
+
+              if (copyPoetryBtn && poetryContent) {
+                copyPoetryBtn.onclick = async () => {
+                  const poemText = poetryContent.textContent || '';
+                  const htmlPayload = smallImgSrc
+                    ? `<img src="${smallImgSrc}" style="max-height:140px;width:auto;border-radius:8px;display:block;margin-bottom:1.5em"><pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`
+                    : `<pre style="font-family:inherit;font-size:1rem;line-height:2;white-space:pre-wrap">${poemText}</pre>`;
+                  try {
+                    await navigator.clipboard.write([
+                      new ClipboardItem({
+                        'text/html': new Blob([htmlPayload], { type: 'text/html' }),
+                        'text/plain': new Blob([poemText], { type: 'text/plain' }),
+                      }),
+                    ]);
+                  } catch {
+                    await navigator.clipboard.writeText(poemText);
+                  }
+                  copyPoetryBtn.textContent = 'Copied';
+                  setTimeout(() => { copyPoetryBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
+                };
+              }
+
+              if (poetryResultsPanel) poetryResultsPanel.style.display = 'block';
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              break outer;
             }
-            copyPoetryBtn.textContent = 'Copied';
-            setTimeout(() => { copyPoetryBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy'; }, 2000);
-          };
+
+            // ── Standard output ──────────────────────────────────────────
+            state.outputs = [{ raw: result.raw || '', html: result.analysis }];
+            state.fields = fields;
+            state.imagePropertiesHTML = stripTiers(result.imageProperties || '');
+            state.viewerEffectsHTML = stripTiers(result.viewerEffects || '');
+
+            if (resultsContent) {
+              resultsContent.innerHTML = stripTiers(result.analysis);
+              buildSidebar(resultsContent);
+              linkPrincipleNames(resultsContent);
+            }
+            if (resultsPanel) resultsPanel.style.display = 'block';
+
+            const thumbnail = document.getElementById('resultThumbnail') as HTMLImageElement | null;
+            if (thumbnail && state.uploadedImageData) {
+              thumbnail.src = state.uploadedImageData;
+              thumbnail.style.display = 'block';
+            }
+
+            if (result.imageProperties && result.viewerEffects) {
+              injectViewToggle(state.imagePropertiesHTML, state.viewerEffectsHTML);
+            }
+
+            wireCopyButton('copyMainOutput', 0);
+
+            const isWip = state.promptId.includes('wip');
+            const isCO = state.modeId === 'constraints-opportunities';
+            if (isWip || isCO) injectExplorationPanel(result.raw || '');
+
+            showFeedbackWidget();
+            showLensModifier();
+            showChatSection();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            break outer;
+          }
         }
-
-        if (poetryResultsPanel) poetryResultsPanel.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
       }
 
-      // ── Standard output ──────────────────────────────────────────────────
-      state.outputs = [{ raw: result.raw || '', html: result.analysis }];
-      state.fields = fields;
-      state.imagePropertiesHTML = stripTiers(result.imageProperties || '');
-      state.viewerEffectsHTML = stripTiers(result.viewerEffects || '');
-
-      if (resultsContent) {
-        resultsContent.innerHTML = stripTiers(result.analysis);
-        buildSidebar(resultsContent);
-        linkPrincipleNames(resultsContent);
+      if (!completed) {
+        alert('Analysis incomplete — the connection was interrupted. Please try again.');
+        if (loadingState) loadingState.style.display = 'none';
+        if (analysisForm) analysisForm.style.display = 'block';
       }
-      if (resultsPanel) resultsPanel.style.display = 'block';
-
-      // Show uploaded image thumbnail
-      const thumbnail = document.getElementById('resultThumbnail') as HTMLImageElement | null;
-      if (thumbnail && state.uploadedImageData) {
-        thumbnail.src = state.uploadedImageData;
-        thumbnail.style.display = 'block';
-      }
-
-      // Inject view toggle if sections are present (pass already-stripped HTML)
-      if (result.imageProperties && result.viewerEffects) {
-        injectViewToggle(state.imagePropertiesHTML, state.viewerEffectsHTML);
-      }
-
-      // Wire up main copy button
-      wireCopyButton('copyMainOutput', 0);
-
-      // Show exploration panel for WIP and C&O modes
-      const isWip = state.promptId.includes('wip');
-      const isCO = state.modeId === 'constraints-opportunities';
-      if (isWip || isCO) injectExplorationPanel(result.raw || '');
-
-      // Show feedback widget and lens modifier
-      showFeedbackWidget();
-      showLensModifier();
-
-      // Show follow-up chat section
-      showChatSection();
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
       console.error('Analysis error:', error);
@@ -597,42 +636,80 @@ function injectExplorationPanel(priorAnalysis: string) {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok || !result.analysis) {
+      if (!response.ok || !response.body) {
         spinner.replaceWith(btn);
         btn.disabled = false;
         alert('Could not generate directions. Please try again.');
         return;
       }
 
-      spinner.remove();
-      document.querySelector('.hg-exploration-question')?.remove();
-      output.innerHTML = stripTiers(result.analysis);
-      linkPrincipleNames(output);
-      output.style.display = 'block';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let completed = false;
 
-      // Inject a copy button into each angle card
-      output.querySelectorAll('li').forEach((li, i) => {
-        const copyBtn = document.createElement('button');
-        copyBtn.type = 'button';
-        copyBtn.className = 'hg-angle-copy-btn';
-        copyBtn.textContent = 'Copy this angle';
-        copyBtn.addEventListener('click', async () => {
-          const text = li.innerText.replace('Copy this angle', '').trim();
-          try {
-            await navigator.clipboard.writeText(text);
-            copyBtn.textContent = 'Copied ✓';
-            setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
-          } catch {
-            copyBtn.textContent = 'Copy failed';
-            setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+          if (data.type === 'complete') {
+            completed = true;
+            if (!data.analysis) {
+              spinner.replaceWith(btn);
+              btn.disabled = false;
+              alert('Could not generate directions. Please try again.');
+              break outer;
+            }
+            spinner.remove();
+            document.querySelector('.hg-exploration-question')?.remove();
+            output.innerHTML = stripTiers(data.analysis);
+            linkPrincipleNames(output);
+            output.style.display = 'block';
+
+            output.querySelectorAll('li').forEach((li) => {
+              const copyBtn = document.createElement('button');
+              copyBtn.type = 'button';
+              copyBtn.className = 'hg-angle-copy-btn';
+              copyBtn.textContent = 'Copy this angle';
+              copyBtn.addEventListener('click', async () => {
+                const text = (li as HTMLElement).innerText.replace('Copy this angle', '').trim();
+                try {
+                  await navigator.clipboard.writeText(text);
+                  copyBtn.textContent = 'Copied ✓';
+                  setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
+                } catch {
+                  copyBtn.textContent = 'Copy failed';
+                  setTimeout(() => { copyBtn.textContent = 'Copy this angle'; }, 2000);
+                }
+              });
+              li.appendChild(copyBtn);
+            });
+
+            output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            break outer;
+          } else if (data.type === 'error') {
+            completed = true;
+            spinner.replaceWith(btn);
+            btn.disabled = false;
+            alert('Could not generate directions. Please try again.');
+            break outer;
           }
-        });
-        li.appendChild(copyBtn);
-      });
+        }
+      }
 
-      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!completed) {
+        spinner.replaceWith(btn);
+        btn.disabled = false;
+        alert('Could not generate directions. Please try again.');
+      }
 
     } catch {
       spinner.replaceWith(btn);

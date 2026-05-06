@@ -14,60 +14,91 @@ async function parseSections(raw: string): Promise<{ imagePropertiesHTML: string
   };
 }
 
-// Enable server-side rendering for this endpoint
 export const prerender = false;
 
-// Non-negotiable base prompts from analysisModes.js (server-side only — cannot be overridden by frontend)
 import { basePrompt, interrogationBase } from '../../data/analysisModes.js';
 
-// Hidden Grammar framework reference data (injected into system prompt for all analyses)
 import principlesData from '../../data/hg-principles.json';
 import rootsData from '../../data/hg-roots.json';
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  try {
-    // Access environment variables — Cloudflare runtime (.dev.vars locally, secrets in production)
-    // Falls back to process.env for Astro dev server (npm run dev)
-    const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+// Helper: return an SSE streaming Response
+function sseResponse(fn: (send: (obj: object) => void) => Promise<void>): Response {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (obj: object) =>
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
+      try {
+        await fn(send);
+      } catch (err) {
+        try {
+          send({ type: 'error', error: err instanceof Error ? err.message : String(err) });
+        } catch { /* controller may already be closed */ }
+      } finally {
+        try { controller.close(); } catch { /* already closed */ }
+      }
+    }
+  });
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    },
+  });
+}
 
-    if (!apiKey) {
-      throw new Error(
-        'ANTHROPIC_API_KEY is not set. Locally: add it to .dev.vars. In production: add it as a Cloudflare Pages secret.'
+export const POST: APIRoute = async ({ request, locals }) => {
+  const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+
+  if (!apiKey) {
+    return new Response(
+      JSON.stringify({ error: 'ANTHROPIC_API_KEY is not set. Locally: add it to .dev.vars. In production: add it as a Cloudflare Pages secret.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  const anthropic = new Anthropic({ apiKey });
+
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Invalid JSON in request body.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  const {
+    image,
+    fields,
+    promptText,
+    interrogationMode,
+    explorationMode,
+    chatMode,
+    lensMode,
+    priorAnalysis,
+    userQuestion,
+    conversationHistory,
+    model: requestedModel,
+    poetryForm,
+  } = body;
+
+  const ALLOWED_MODELS = ['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'];
+  const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'claude-sonnet-4-6';
+
+  // ── EXPLORATION MODE ─────────────────────────────────────────────────────
+  if (explorationMode === true) {
+    if (!priorAnalysis) {
+      return new Response(
+        JSON.stringify({ error: 'Exploration mode requires priorAnalysis' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const anthropic = new Anthropic({ apiKey });
-
-    const body = await request.json();
-    const {
-      image,
-      fields,
-      promptText,
-      interrogationMode,
-      explorationMode,
-      chatMode,
-      lensMode,
-      priorAnalysis,
-      userQuestion,
-      conversationHistory,
-      model: requestedModel,
-      poetryForm,
-    } = body;
-
-    const ALLOWED_MODELS = ['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'];
-    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'claude-sonnet-4-6';
-
-    // ── EXPLORATION MODE ─────────────────────────────────────────────────────
-    // Post-analysis: surfaces 2–3 experimental angles grounded in prior analysis.
-    if (explorationMode === true) {
-      if (!priorAnalysis) {
-        return new Response(
-          JSON.stringify({ error: 'Exploration mode requires priorAnalysis' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const explorationPrompt = `You are responding to a maker who has just received a Hidden Grammar analysis of their work in progress and wants to know where it could go from here.
+    const explorationPrompt = `You are responding to a maker who has just received a Hidden Grammar analysis of their work in progress and wants to know where it could go from here.
 
 Your task is to surface 2–3 distinct angles for experimentation — grounded entirely in the visual evidence already observed in the analysis above.
 
@@ -82,80 +113,88 @@ VOICE: Direct and plain. No encouragement. No hedging. Write as if you are handi
 
 FORMAT: Number each angle (1, 2, 3). Plain prose per angle. No bullet sub-points. No section headers.`;
 
-      const explorationMsg = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: 1200,
         system: explorationPrompt,
         messages: [{ role: 'user', content: `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nWhat angles for experimentation does this work make available from here?` }],
       });
 
-      const explorationText = explorationMsg.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const text = msg.content
         .filter((b: any) => b.type === 'text')
         .map((b: any) => ('text' in b ? b.text : ''))
         .join('\n\n');
 
-      const explorationHTML = await marked(explorationText, { async: true });
+      const html = await marked(text, { async: true });
+      send({ type: 'complete', success: true, analysis: html });
+    });
+  }
 
+  // ── INTERROGATION MODE ──────────────────────────────────────────────────
+  if (interrogationMode === true) {
+    if (!priorAnalysis || !userQuestion) {
       return new Response(
-        JSON.stringify({ success: true, analysis: explorationHTML }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Interrogation requires priorAnalysis and userQuestion' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // ── INTERROGATION MODE ──────────────────────────────────────────────────
-    // Post-analysis: anchored to a prior analysis output
-    if (interrogationMode === true) {
-      if (!priorAnalysis || !userQuestion) {
-        return new Response(
-          JSON.stringify({ error: 'Interrogation requires priorAnalysis and userQuestion' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
+    const systemPrompt = String(interrogationBase);
+    const userMessage = `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nFOLLOW-UP QUESTION:\n${userQuestion}`;
 
-      const systemPrompt = String(interrogationBase);
-      const userMessage = `PRIOR ANALYSIS:\n${priorAnalysis}\n\n---\n\nFOLLOW-UP QUESTION:\n${userQuestion}`;
-
-      const message = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: 2048,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
       });
 
-      const responseText = message.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const responseText = msg.content
         .filter(block => block.type === 'text')
         .map(block => ('text' in block ? block.text : ''))
         .join('\n\n');
 
       const responseHTML = await marked(responseText, { async: true });
+      send({ type: 'complete', success: true, analysis: responseHTML, raw: responseText });
+    });
+  }
 
+  // ── LENS MODE ───────────────────────────────────────────────────────────
+  if (lensMode === true) {
+    if (!image || !promptText || !priorAnalysis) {
       return new Response(
-        JSON.stringify({ success: true, analysis: responseHTML, raw: responseText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Lens mode requires image, promptText, and priorAnalysis' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // ── LENS MODE ───────────────────────────────────────────────────────────
-    // Post-analysis: applies a critical/philosophical lens to the image.
-    // Has direct image access. Does NOT run basePrompt — lens output only.
-    if (lensMode === true) {
-      if (!image || !promptText || !priorAnalysis) {
-        return new Response(
-          JSON.stringify({ error: 'Lens mode requires image, promptText, and priorAnalysis' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const lensSystemPrompt = `You are applying a specific analytical lens to a visual work. A full Hidden Grammar analysis has already been completed. Your task is to produce only the lens output — not a summary of the prior analysis, not a repetition of Image Properties or Viewer Effects.
+    const lensSystemPrompt = `You are applying a specific analytical lens to a visual work. A full Hidden Grammar analysis has already been completed. Your task is to produce only the lens output — not a summary of the prior analysis, not a repetition of Image Properties or Viewer Effects.
 
 Use the prior analysis as grounding context: reference specific observations where they are relevant to the lens, but do not reproduce them. Look directly at the image. The lens defines your output structure and scope entirely.
 
 Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`;
 
-      const lensImageData = image.split(',')[1];
-      const lensMediaType = image.split(';')[0].split(':')[1];
+    const lensImageData = image.split(',')[1];
+    const lensMediaType = image.split(';')[0].split(':')[1];
 
-      const lensMessage = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: 2500,
         system: lensSystemPrompt,
@@ -180,31 +219,34 @@ Write in plain prose. No evaluative language. No hedging. Stay inside the lens.`
         ],
       });
 
-      const lensText = lensMessage.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const lensText = msg.content
         .filter(block => block.type === 'text')
         .map(block => ('text' in block ? block.text : ''))
         .join('\n\n');
 
       const lensHTML = await marked(lensText, { async: true });
+      send({ type: 'complete', success: true, analysis: lensHTML, raw: lensText });
+    });
+  }
 
+  // ── POETRY MODE ───────────────────────────────────────────────────────────
+  if (poetryForm) {
+    if (!image) {
       return new Response(
-        JSON.stringify({ success: true, analysis: lensHTML, raw: lensText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Poetry mode requires an image' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // ── POETRY MODE ───────────────────────────────────────────────────────────
-    // poetryForm: 'slam' | 'haiku' | 'sonnet' — no framework injection, focused prompts.
-    if (poetryForm) {
-      if (!image) {
-        return new Response(
-          JSON.stringify({ error: 'Poetry mode requires an image' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const poetryPrompts: Record<string, string> = {
-        slam: `You are reading a visual work as a slam poet.
+    const poetryPrompts: Record<string, string> = {
+      slam: `You are reading a visual work as a slam poet.
 
 Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you perform it.
 
@@ -223,7 +265,7 @@ Rules:
 
 Read what's actually in this image. Not what art is supposed to do. What this specific thing does.`,
 
-        haiku: `You are reading a visual work as a haiku poet.
+      haiku: `You are reading a visual work as a haiku poet.
 
 Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you cut it.
 
@@ -239,7 +281,7 @@ Rules:
 
 Three lines. Count them.`,
 
-        sonnet: `You are reading a visual work as a sonnet poet.
+      sonnet: `You are reading a visual work as a sonnet poet.
 
 Before writing, look carefully at what is unambiguously present — figures, objects, forms, colors, relationships. Do not infer human figures or recognizable objects unless they are clearly visible. Get what's actually there before you argue it.
 
@@ -257,28 +299,29 @@ Rules:
 - No title. No labels. No markdown. Plain text only.
 
 Fourteen lines. One argument. The volta earns its turn.`,
-      };
+    };
 
-      const systemPrompt = poetryPrompts[poetryForm];
-      if (!systemPrompt) {
-        return new Response(
-          JSON.stringify({ error: `Unknown poetry form: ${poetryForm}` }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
+    const systemPrompt = poetryPrompts[poetryForm];
+    if (!systemPrompt) {
+      return new Response(
+        JSON.stringify({ error: `Unknown poetry form: ${poetryForm}` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
-      const poetryImageData = image.split(',')[1];
-      const poetryMediaType = image.split(';')[0].split(':')[1];
+    const poetryImageData = image.split(',')[1];
+    const poetryMediaType = image.split(';')[0].split(':')[1];
 
-      let poetryUserText = promptText || 'Read this work.';
-      if (fields && typeof fields === 'object') {
-        const parts = Object.entries(fields as Record<string, string>)
-          .filter(([, v]) => v && String(v).trim())
-          .map(([k, v]) => `${k}: ${v}`);
-        if (parts.length > 0) poetryUserText = `${parts.join(' / ')}\n\n${poetryUserText}`;
-      }
+    let poetryUserText = promptText || 'Read this work.';
+    if (fields && typeof fields === 'object') {
+      const parts = Object.entries(fields as Record<string, string>)
+        .filter(([, v]) => v && String(v).trim())
+        .map(([k, v]) => `${k}: ${v}`);
+      if (parts.length > 0) poetryUserText = `${parts.join(' / ')}\n\n${poetryUserText}`;
+    }
 
-      const poetryMessage = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: poetryForm === 'haiku' ? 256 : 1024,
         system: systemPrompt,
@@ -300,129 +343,137 @@ Fourteen lines. One argument. The volta earns its turn.`,
         ],
       });
 
-      const poetryText = poetryMessage.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const poetryText = msg.content
         .filter(block => block.type === 'text')
         .map(block => ('text' in block ? block.text : ''))
         .join('\n');
 
+      send({ type: 'complete', success: true, poetryMode: true, raw: poetryText });
+    });
+  }
+
+  // ── CHAT MODE ───────────────────────────────────────────────────────────
+  if (chatMode === true) {
+    if (!userQuestion) {
       return new Response(
-        JSON.stringify({ success: true, poetryMode: true, raw: poetryText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Chat mode requires userQuestion' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // ── CHAT MODE ───────────────────────────────────────────────────────────
-    // Pre-analysis or exploratory: no image required.
-    // Free-form studio consultation using Hidden Grammar as context.
-    // Supports multi-turn conversation history.
-    if (chatMode === true) {
-      if (!userQuestion) {
-        return new Response(
-          JSON.stringify({ error: 'Chat mode requires userQuestion' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
+    const frameworkCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}`).join('\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}`;
+
+    const chatSystemPrompt = `You are a studio consultant using the Hidden Grammar framework — a neuroaesthetic system built on 11 Roots and 54 Principles grounded in visual perception research.\n\nYou are available before, during, and after any formal analysis. Your role here is exploratory and conversational:\n- Help the maker think through constraints, materials, intent, and stuck places\n- Answer questions about what the Hidden Grammar framework means and how to use it\n- Discuss visual problems in plain terms, grounded in perceptual mechanisms\n- When asked what a tool does or means, explain it clearly\n\nTONE: Direct and practical. No encouragement for its own sake. No quality judgments.\nLANGUAGE: Plain English. Define any framework terms the first time you use them.\n\nWhen a maker describes constraints (substrate, medium, dimensions, stage, intent), identify:\n- What those constraints make available (not just what they limit)\n- Which principles are accessible given those constraints\n- What changes if intent is held vs. modified vs. released\n- What the current material state suggests on its own terms\n\nNever tell a maker their work is good or bad. Describe mechanisms, not verdicts.\n${frameworkCtx}`;
+
+    const history: Array<{ role: 'user' | 'assistant'; content: string }> = Array.isArray(conversationHistory)
+      ? conversationHistory
+      : [];
+
+    let questionWithContext = userQuestion;
+    if (fields && typeof fields === 'object' && Object.keys(fields).length > 0 && history.length === 0) {
+      const labelMap: Record<string, string> = {
+        dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
+        stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
+        'current-state': 'Current State',
+      };
+      const parts = Object.entries(fields)
+        .filter(([, v]) => v && String(v).trim())
+        .map(([k, v]) => `${labelMap[k] || k}: ${v}`);
+      if (parts.length > 0) {
+        questionWithContext = `WORK CONTEXT:\n${parts.join('\n')}\n\n${userQuestion}`;
       }
+    }
 
-      const frameworkCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}`).join('\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}`;
+    const chatMessages = [...history, { role: 'user' as const, content: questionWithContext }];
 
-      const chatSystemPrompt = `You are a studio consultant using the Hidden Grammar framework — a neuroaesthetic system built on 11 Roots and 54 Principles grounded in visual perception research.\n\nYou are available before, during, and after any formal analysis. Your role here is exploratory and conversational:\n- Help the maker think through constraints, materials, intent, and stuck places\n- Answer questions about what the Hidden Grammar framework means and how to use it\n- Discuss visual problems in plain terms, grounded in perceptual mechanisms\n- When asked what a tool does or means, explain it clearly\n\nTONE: Direct and practical. No encouragement for its own sake. No quality judgments.\nLANGUAGE: Plain English. Define any framework terms the first time you use them.\n\nWhen a maker describes constraints (substrate, medium, dimensions, stage, intent), identify:\n- What those constraints make available (not just what they limit)\n- Which principles are accessible given those constraints\n- What changes if intent is held vs. modified vs. released\n- What the current material state suggests on its own terms\n\nNever tell a maker their work is good or bad. Describe mechanisms, not verdicts.\n${frameworkCtx}`;
-
-      const history: Array<{ role: 'user' | 'assistant'; content: string }> = Array.isArray(conversationHistory)
-        ? conversationHistory
-        : [];
-
-      let questionWithContext = userQuestion;
-      if (fields && typeof fields === 'object' && Object.keys(fields).length > 0 && history.length === 0) {
-        const labelMap: Record<string, string> = {
-          dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
-          stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
-          'current-state': 'Current State',
-        };
-        const parts = Object.entries(fields)
-          .filter(([, v]) => v && String(v).trim())
-          .map(([k, v]) => `${labelMap[k] || k}: ${v}`);
-        if (parts.length > 0) {
-          questionWithContext = `WORK CONTEXT:\n${parts.join('\n')}\n\n${userQuestion}`;
-        }
-      }
-
-      const chatMessages = [...history, { role: 'user' as const, content: questionWithContext }];
-
-      const chatMsg = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: 1024,
         system: chatSystemPrompt,
         messages: chatMessages,
       });
 
-      const responseText = chatMsg.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const responseText = msg.content
         .filter((b: any) => b.type === 'text')
         .map((b: any) => ('text' in b ? b.text : ''))
         .join('\n\n');
 
       const responseHTML = await marked(responseText, { async: true });
+      send({ type: 'complete', success: true, analysis: responseHTML, raw: responseText });
+    });
+  }
 
-      return new Response(
-        JSON.stringify({ success: true, analysis: responseHTML, raw: responseText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
+  // ── TEXT-ONLY PATH ──────────────────────────────────────────────────────
+  if (!image && promptText) {
+    const txtFwCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}\nGoverns: ${r.governs}`).join('\n\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}\n\n---\n\n# UNIVERSAL OUTPUT CONSTRAINTS\n- NEVER use Hebrew consonant abbreviations — use English names only\n- NEVER reference principles by number — use descriptive names\n- Evidence-based reasoning: observations → mechanisms → effects → conclusions`;
+
+    const txtSystemPrompt = String(basePrompt) + txtFwCtx;
+
+    let txtFieldCtx = '';
+    if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
+      const lm: Record<string, string> = {
+        dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
+        stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
+        'current-state': 'Current State', notes: 'Notes',
+      };
+      const parts = Object.entries(fields)
+        .filter(([, v]) => v && String(v).trim())
+        .map(([k, v]) => `${lm[k] || k}: ${v}`);
+      if (parts.length > 0) txtFieldCtx = `WORK CONTEXT:\n${parts.join('\n')}\n\n`;
     }
 
-    // ── INITIAL ANALYSIS MODE ───────────────────────────────────────────────
-    // Text-only path: when a C&O or similar mode runs without an image
-    if (!image && promptText) {
-      const txtFwCtx = `\n## The 11 Roots\n${(rootsData as any).roots.map((r: any) => `**${r.name}** — ${r.subtitle}\nGoverns: ${r.governs}`).join('\n\n')}\n\n## The 54 Principles\n${(principlesData as any).principles.map((p: any) => `**${p.name}** — ${p.subtitle}`).join('\n')}\n\n---\n\n# UNIVERSAL OUTPUT CONSTRAINTS\n- NEVER use Hebrew consonant abbreviations — use English names only\n- NEVER reference principles by number — use descriptive names\n- Evidence-based reasoning: observations → mechanisms → effects → conclusions`;
-
-      const txtSystemPrompt = String(basePrompt) + txtFwCtx;
-
-      let txtFieldCtx = '';
-      if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
-        const lm: Record<string, string> = {
-          dimensions: 'Dimensions', substrate: 'Substrate', medium: 'Medium',
-          stage: 'Stage', intent: 'Intent', 'hard-constraints': 'Hard Constraints',
-          'current-state': 'Current State', notes: 'Notes',
-        };
-        const parts = Object.entries(fields)
-          .filter(([, v]) => v && String(v).trim())
-          .map(([k, v]) => `${lm[k] || k}: ${v}`);
-        if (parts.length > 0) txtFieldCtx = `WORK CONTEXT:\n${parts.join('\n')}\n\n`;
-      }
-
-      const txtMsg = await anthropic.messages.create({
+    return sseResponse(async (send) => {
+      const stream = anthropic.messages.stream({
         model,
         max_tokens: 3000,
         system: txtSystemPrompt,
         messages: [{ role: 'user', content: txtFieldCtx + promptText }],
       });
 
-      const txtText = txtMsg.content
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          send({ type: 'delta', text: event.delta.text });
+        }
+      }
+
+      const msg = await stream.finalMessage();
+      const txtText = msg.content
         .filter((b: any) => b.type === 'text')
         .map((b: any) => ('text' in b ? b.text : ''))
         .join('\n\n');
 
       const txtHTML = await marked(txtText, { async: true });
+      send({ type: 'complete', success: true, analysis: txtHTML, raw: txtText });
+    });
+  }
 
-      return new Response(
-        JSON.stringify({ success: true, analysis: txtHTML, raw: txtText }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+  if (!image) {
+    return new Response(
+      JSON.stringify({ error: 'No image provided' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 
-    if (!image) {
-      return new Response(
-        JSON.stringify({ error: 'No image provided' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+  // ── MAIN IMAGE ANALYSIS ─────────────────────────────────────────────────
+  const imageData = image.split(',')[1];
+  const mediaType = image.split(';')[0].split(':')[1];
 
-    // Extract base64 image data
-    const imageData = image.split(',')[1];
-    const mediaType = image.split(';')[0].split(':')[1];
-
-    // ── Build system prompt ─────────────────────────────────────────────────
-    // basePrompt from analysisModes.js is prepended first — cannot be overridden.
-    // Framework reference data follows.
-    const frameworkContext = `
+  const frameworkContext = `
 # HIDDEN GRAMMAR FRAMEWORK REFERENCE
 
 ## The 11 Roots
@@ -441,56 +492,48 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
 - Claims are testable hypotheses tied to visible evidence, not verdicts
 `;
 
-    const systemPrompt = String(basePrompt) + frameworkContext;
+  const systemPrompt = String(basePrompt) + frameworkContext;
 
-    // ── Build user message ──────────────────────────────────────────────────
-    // Field context as labeled plain text (per spec: "Artist: Van Gogh / Title: Starry Night")
-    let fieldContext = '';
-    if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
-      const labelMap: Record<string, string> = {
-        // Fine Art
-        artist: 'Artist',
-        title: 'Title',
-        period: 'Period / Year',
-        medium: 'Medium',
-        dimensions: 'Dimensions',
-        context: 'Collection / Exhibition Context',
-        notes: 'Notes',
-        // CPG
-        brand: 'Brand',
-        'product-category': 'Product Category',
-        demographic: 'Target Demographic',
-        'shelf-context': 'Shelf / Retail Context',
-        'competitive-set': 'Competitive Set',
-        // Comic
-        publisher: 'Publisher',
-        era: 'Era / Year',
-        genre: 'Genre',
-        'art-style': 'Art Style',
-        format: 'Format',
-        // Illustration
-        'client-industry': 'Client / Industry',
-        'intended-use': 'Intended Use',
-        audience: 'Audience',
-        reproduction: 'Reproduction Context',
-        // Fallback generics
-        year: 'Year',
-      };
+  let fieldContext = '';
+  if (fields && typeof fields === 'object' && Object.keys(fields).length > 0) {
+    const labelMap: Record<string, string> = {
+      artist: 'Artist',
+      title: 'Title',
+      period: 'Period / Year',
+      medium: 'Medium',
+      dimensions: 'Dimensions',
+      context: 'Collection / Exhibition Context',
+      notes: 'Notes',
+      brand: 'Brand',
+      'product-category': 'Product Category',
+      demographic: 'Target Demographic',
+      'shelf-context': 'Shelf / Retail Context',
+      'competitive-set': 'Competitive Set',
+      publisher: 'Publisher',
+      era: 'Era / Year',
+      genre: 'Genre',
+      'art-style': 'Art Style',
+      format: 'Format',
+      'client-industry': 'Client / Industry',
+      'intended-use': 'Intended Use',
+      audience: 'Audience',
+      reproduction: 'Reproduction Context',
+      year: 'Year',
+    };
 
-      const parts = Object.entries(fields)
-        .filter(([, v]) => v && String(v).trim())
-        .map(([k, v]) => `${labelMap[k] || k}: ${v}`);
+    const parts = Object.entries(fields)
+      .filter(([, v]) => v && String(v).trim())
+      .map(([k, v]) => `${labelMap[k] || k}: ${v}`);
 
-      if (parts.length > 0) {
-        fieldContext = `ARTWORK CONTEXT:\n${parts.join(' / ')}\n\n`;
-      }
+    if (parts.length > 0) {
+      fieldContext = `ARTWORK CONTEXT:\n${parts.join(' / ')}\n\n`;
     }
+  }
 
-    // promptText comes from the frontend (mode-specific prompt from analysisModes.js)
-    // basePrompt is already in the system prompt — cannot be overridden
-    const userMessageText = fieldContext + (promptText || 'Conduct a Hidden Grammar analysis of this artwork.');
+  const userMessageText = fieldContext + (promptText || 'Conduct a Hidden Grammar analysis of this artwork.');
 
-    const message = await anthropic.messages.create({
+  return sseResponse(async (send) => {
+    const stream = anthropic.messages.stream({
       model,
       max_tokens: 4096,
       system: systemPrompt,
@@ -515,7 +558,14 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
       ],
     });
 
-    const analysisText = message.content
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        send({ type: 'delta', text: event.delta.text });
+      }
+    }
+
+    const msg = await stream.finalMessage();
+    const analysisText = msg.content
       .filter(block => block.type === 'text')
       .map(block => ('text' in block ? block.text : ''))
       .join('\n\n');
@@ -523,24 +573,13 @@ ${principlesData.principles.map(p => `**${p.name}** — ${p.subtitle}`).join('\n
     const analysisHTML = await marked(analysisText, { async: true });
     const { imagePropertiesHTML, viewerEffectsHTML } = await parseSections(analysisText);
 
-    return new Response(
-      JSON.stringify({ success: true, analysis: analysisHTML, raw: analysisText, imageProperties: imagePropertiesHTML, viewerEffects: viewerEffectsHTML }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    console.error('Analysis error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : '';
-
-    return new Response(
-      JSON.stringify({
-        error: 'Failed to analyze artwork',
-        details: errorMessage,
-        stack: errorStack,
-        apiKeyPresent: !!(process.env.ANTHROPIC_API_KEY),
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+    send({
+      type: 'complete',
+      success: true,
+      analysis: analysisHTML,
+      raw: analysisText,
+      imageProperties: imagePropertiesHTML,
+      viewerEffects: viewerEffectsHTML,
+    });
+  });
 };

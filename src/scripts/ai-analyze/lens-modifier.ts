@@ -115,17 +115,38 @@ export function initLensModifier() {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        alert(`Lens analysis failed: ${result.details || result.error}`);
+      if (!response.ok || !response.body) {
+        alert(`Lens analysis failed (${response.status}). Please try again.`);
         return;
       }
 
-      const outputIndex = state.outputs.length;
-      state.outputs.push({ raw: result.raw || '', html: result.analysis });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      appendLensTurn(lens, result.analysis, outputIndex, historyEl);
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+          if (data.type === 'complete') {
+            const outputIndex = state.outputs.length;
+            state.outputs.push({ raw: data.raw || '', html: data.analysis });
+            appendLensTurn(lens, data.analysis, outputIndex, historyEl);
+            break outer;
+          } else if (data.type === 'error') {
+            alert(`Lens analysis failed: ${data.error}`);
+            break outer;
+          }
+        }
+      }
 
     } catch (error) {
       console.error('Lens modifier error:', error);

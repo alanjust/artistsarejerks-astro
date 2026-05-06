@@ -161,86 +161,127 @@ function buildArtworkContext(fields: Record<string, string>): string {
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
+  const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'ANTHROPIC_API_KEY is not set.' }), {
+      status: 500, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  let body: any;
   try {
-    const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set.');
-
-    const anthropic = new Anthropic({ apiKey });
-    const body = await request.json();
-    const { image, audience, fields = {} } = body;
-
-    if (!image) {
-      return new Response(JSON.stringify({ error: 'No image provided' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const imageData = image.split(',')[1];
-    const mediaType = image.split(';')[0].split(':')[1];
-    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!supportedTypes.includes(mediaType)) {
-      return new Response(
-        JSON.stringify({ error: `Unsupported image format: ${mediaType}. Please convert to JPEG or PNG and try again.` }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // PASS 1 — pure formal observation
-    const pass1Msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
-      system: 'You are a visual observer. Report only what is directly present. No interpretation, no art history, no quality judgments.',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
-          { type: 'text', text: PASS1_PROMPT },
-        ],
-      }],
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON in request body.' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
+  }
 
-    const pass1Text = pass1Msg.content
-      .filter((b: any) => b.type === 'text')
-      .map((b: any) => b.text)
-      .join('\n\n');
+  const { image, audience, fields = {} } = body;
 
-    // PASS 2 — four domain readings
-    const artworkContext = buildArtworkContext(fields);
-    const audienceFraming = getAudienceFraming(audience || '');
-
-    const contextBlock = [artworkContext, audienceFraming]
-      .filter(Boolean)
-      .join('\n');
-
-    const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
-
-    const pass2Msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
-      system: 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual registers simultaneously.',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
-          { type: 'text', text: pass2UserText },
-        ],
-      }],
+  if (!image) {
+    return new Response(JSON.stringify({ error: 'No image provided' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
+  }
 
-    const pass2Text = pass2Msg.content
-      .filter((b: any) => b.type === 'text')
-      .map((b: any) => b.text)
-      .join('\n\n');
-
+  const imageData = image.split(',')[1];
+  const mediaType = image.split(';')[0].split(':')[1];
+  const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!supportedTypes.includes(mediaType)) {
     return new Response(
-      JSON.stringify({ success: true, pass1: pass1Text, analysis: pass2Text }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ error: 'Analysis failed', details: error instanceof Error ? error.message : String(error) }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: `Unsupported image format: ${mediaType}. Please convert to JPEG or PNG and try again.` }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
+
+  const anthropic = new Anthropic({ apiKey });
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (obj: object) =>
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
+
+      try {
+        send({ type: 'status', message: 'Pass 1 — formal observation…' });
+
+        const pass1Stream = anthropic.messages.stream({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2048,
+          system: 'You are a visual observer. Report only what is directly present. No interpretation, no art history, no quality judgments.',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
+              { type: 'text', text: PASS1_PROMPT },
+            ],
+          }],
+        });
+
+        for await (const event of pass1Stream) {
+          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            send({ type: 'pass1_delta', text: event.delta.text });
+          }
+        }
+
+        const pass1Msg = await pass1Stream.finalMessage();
+        const pass1Text = pass1Msg.content
+          .filter((b: any) => b.type === 'text')
+          .map((b: any) => b.text)
+          .join('\n\n');
+
+        send({ type: 'pass1_complete', pass1: pass1Text });
+        send({ type: 'status', message: 'Pass 2 — four domain readings…' });
+
+        const artworkContext = buildArtworkContext(fields);
+        const audienceFraming = getAudienceFraming(audience || '');
+        const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
+        const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
+
+        const pass2Stream = anthropic.messages.stream({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 8000,
+          system: 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual registers simultaneously.',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
+              { type: 'text', text: pass2UserText },
+            ],
+          }],
+        });
+
+        for await (const event of pass2Stream) {
+          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            send({ type: 'delta', text: event.delta.text });
+          }
+        }
+
+        const pass2Msg = await pass2Stream.finalMessage();
+        const pass2Text = pass2Msg.content
+          .filter((b: any) => b.type === 'text')
+          .map((b: any) => b.text)
+          .join('\n\n');
+
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text });
+
+      } catch (err) {
+        try {
+          send({ type: 'error', error: err instanceof Error ? err.message : String(err) });
+        } catch { /* controller may already be closed */ }
+      } finally {
+        try { controller.close(); } catch { /* already closed */ }
+      }
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    },
+  });
 };

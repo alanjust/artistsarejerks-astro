@@ -59,20 +59,39 @@ export function initInterrogation() {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error('Chat error:', result);
-        alert(`Request failed: ${result.details || result.error}`);
+      if (!response.ok || !response.body) {
+        alert(`Request failed (${response.status}). Please try again.`);
         return;
       }
 
-      // Store output for copy
-      const outputIndex = state.outputs.length;
-      state.outputs.push({ raw: result.raw || '', html: result.analysis });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      // Render the turn
-      appendInterrogationTurn(question, result.analysis, outputIndex, historyEl);
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+          if (data.type === 'complete') {
+            const outputIndex = state.outputs.length;
+            state.outputs.push({ raw: data.raw || '', html: data.analysis });
+            appendInterrogationTurn(question, data.analysis, outputIndex, historyEl);
+            break outer;
+          } else if (data.type === 'error') {
+            console.error('Chat error:', data.error);
+            alert(`Request failed: ${data.error}`);
+            break outer;
+          }
+        }
+      }
 
     } catch (error) {
       console.error('Chat error:', error);

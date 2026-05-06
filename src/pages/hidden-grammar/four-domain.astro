@@ -837,27 +837,27 @@ const principleNames: string[] = (principlesData.principles as any[])
     runBtn.textContent = 'Running…';
     output.style.display = 'none';
     statusBar.style.display = 'flex';
-    statusText.textContent = 'Pass 1 — formal observation…';
+    statusText.textContent = 'Connecting…';
+
+    const fields = {
+      artist:     (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim(),
+      title:      (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim(),
+      year:       (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim(),
+      medium:     (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim(),
+      substrate:  (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim(),
+      dimensions: (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim(),
+      genre:      (document.getElementById('fieldGenre')      as HTMLInputElement)?.value.trim(),
+      series:     (document.getElementById('fieldSeries')     as HTMLInputElement)?.value.trim(),
+      movement:   (document.getElementById('fieldMovement')   as HTMLInputElement)?.value.trim(),
+      collection: (document.getElementById('fieldCollection') as HTMLInputElement)?.value.trim(),
+      exhibition: (document.getElementById('fieldExhibition') as HTMLInputElement)?.value.trim(),
+      edition:    (document.getElementById('fieldEdition')    as HTMLInputElement)?.value.trim(),
+      condition:  (document.getElementById('fieldCondition')  as HTMLInputElement)?.value.trim(),
+      notes:      (document.getElementById('fieldNotes')      as HTMLTextAreaElement)?.value.trim(),
+    };
 
     try {
-      const fields = {
-        artist:     (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim(),
-        title:      (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim(),
-        year:       (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim(),
-        medium:     (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim(),
-        substrate:  (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim(),
-        dimensions: (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim(),
-        genre:      (document.getElementById('fieldGenre')      as HTMLInputElement)?.value.trim(),
-        series:     (document.getElementById('fieldSeries')     as HTMLInputElement)?.value.trim(),
-        movement:   (document.getElementById('fieldMovement')   as HTMLInputElement)?.value.trim(),
-        collection: (document.getElementById('fieldCollection') as HTMLInputElement)?.value.trim(),
-        exhibition: (document.getElementById('fieldExhibition') as HTMLInputElement)?.value.trim(),
-        edition:    (document.getElementById('fieldEdition')    as HTMLInputElement)?.value.trim(),
-        condition:  (document.getElementById('fieldCondition')  as HTMLInputElement)?.value.trim(),
-        notes:      (document.getElementById('fieldNotes')      as HTMLTextAreaElement)?.value.trim(),
-      };
-
-      const res = await fetch('/api/four-domain', {
+      const response = await fetch('/api/four-domain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -867,50 +867,85 @@ const principleNames: string[] = (principlesData.principles as any[])
         }),
       });
 
-      statusText.textContent = 'Pass 2 — four domain readings…';
-
-      if (!res.ok && res.headers.get('content-type')?.includes('text/html')) {
+      if (!response.ok || !response.body) {
         statusBar.style.display = 'none';
-        alert(`Server error (${res.status}). The analysis may have timed out — please try again with a smaller image.`);
+        const ct = response.headers.get('content-type') || '';
+        if (ct.includes('text/html')) {
+          alert(`Server error (${response.status}). The analysis may have timed out — please try again with a smaller image.`);
+        } else {
+          try {
+            const errData = await response.json();
+            alert(`${errData.error || 'Analysis failed'}${errData.details ? '\n\n' + errData.details : ''}`);
+          } catch {
+            alert(`Server error (${response.status}). Please try again.`);
+          }
+        }
         runBtn.disabled = false;
         runBtn.textContent = 'Run Analysis';
         return;
       }
 
-      let data: any;
-      try {
-        data = await res.json();
-      } catch {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let completed = false;
+
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+          if (data.type === 'status') {
+            statusText.textContent = data.message;
+          } else if (data.type === 'complete') {
+            completed = true;
+            statusBar.style.display = 'none';
+
+            if (!data.success) {
+              const detail = data.details ? `\n\n${data.details}` : '';
+              alert(`${data.error || 'Analysis failed'}${detail}`);
+              runBtn.disabled = false;
+              runBtn.textContent = 'Run Analysis';
+              break outer;
+            }
+
+            analysisText.innerHTML = await marked(data.analysis || '');
+            linkPrinciples(analysisText);
+            pass1Text.textContent = data.pass1 || '';
+            if (uploadedImage) {
+              resultThumbnail.src = uploadedImage;
+              resultThumbnail.style.display = 'block';
+              resizeForClipboard(uploadedImage).then(r => { resizedImageForCopy = r; });
+            }
+            output.style.display = '';
+            output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run Again';
+            break outer;
+          } else if (data.type === 'error') {
+            completed = true;
+            statusBar.style.display = 'none';
+            alert(`Analysis failed: ${data.error}`);
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run Analysis';
+            break outer;
+          }
+        }
+      }
+
+      if (!completed) {
         statusBar.style.display = 'none';
-        alert(`Server returned an unexpected response (status ${res.status}). The analysis may have timed out — please try again.`);
+        alert('Analysis incomplete — the connection was interrupted. Please try again.');
         runBtn.disabled = false;
         runBtn.textContent = 'Run Analysis';
-        return;
       }
-
-      statusBar.style.display = 'none';
-
-      if (!data.success) {
-        const detail = data.details ? `\n\n${data.details}` : '';
-        alert(`${data.error || 'Analysis failed'}${detail}`);
-        runBtn.disabled = false;
-        runBtn.textContent = 'Run Analysis';
-        return;
-      }
-
-      analysisText.innerHTML = await marked(data.analysis || '');
-      linkPrinciples(analysisText);
-      pass1Text.textContent = data.pass1 || '';
-      if (uploadedImage) {
-        resultThumbnail.src = uploadedImage;
-        resultThumbnail.style.display = 'block';
-        resizeForClipboard(uploadedImage).then(r => { resizedImageForCopy = r; });
-      }
-      output.style.display = '';
-      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      runBtn.disabled = false;
-      runBtn.textContent = 'Run Again';
 
     } catch (err) {
       statusBar.style.display = 'none';
