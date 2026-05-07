@@ -1,0 +1,1046 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
+import principlesData from '../../../data/hg-principles.json';
+
+const principleNames: string[] = (principlesData.principles as any[])
+  .map((p) => p.name as string)
+  .sort((a, b) => b.length - a.length);
+---
+
+<HiddenGrammarLayout
+  title="Four-Domain Analysis — Internal"
+  description="Two-pass analysis across perceptual, material, cultural, and conceptual registers."
+>
+  <div class="hg-page fd-page">
+
+    <div class="fd-header">
+      <p class="fd-eyebrow">Dev Sandbox</p>
+      <h1>Four-Domain Analysis — Dev Sandbox</h1>
+      <p class="fd-desc">Experimental version — safe to break. Changes to prompts and output here don't affect the live tool at /hidden-grammar/four-domain.</p>
+    </div>
+
+    <div class="fd-sandbox-banner">
+      This is the dev sandbox. The live tool is at <a href="/hidden-grammar/four-domain">/hidden-grammar/four-domain</a>.
+    </div>
+
+    <!-- Upload -->
+    <section class="fd-upload-section">
+      <div class="fd-upload-area" id="uploadArea">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        <p class="fd-upload-hint">JPG, PNG, WebP</p>
+        <button type="button" id="fdPasteBtn" class="fd-paste-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+          Paste Image
+        </button>
+        <input type="file" id="imageInput" accept="image/*" hidden>
+      </div>
+
+      <div id="previewContainer" class="fd-preview-container" style="display:none">
+        <img id="imagePreview" alt="Uploaded image">
+        <button type="button" id="removeImage" class="fd-btn fd-btn--ghost">Remove</button>
+      </div>
+    </section>
+
+    <!-- Artwork information -->
+    <div class="fd-fields">
+      <h3 class="fd-fields-label">Artwork information <span class="fd-optional">(optional)</span></h3>
+
+      <div class="fd-field-row">
+        <label for="fieldArtist">Artist</label>
+        <input type="text" id="fieldArtist" name="artist" placeholder="Artist or maker name">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldTitle">Title</label>
+        <input type="text" id="fieldTitle" name="title" placeholder="Title of work">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldYear">Date / Year</label>
+        <input type="text" id="fieldYear" name="year" placeholder="e.g. 1923, circa 1940, 1882–1884">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldMedium">Medium</label>
+        <input type="text" id="fieldMedium" name="medium" placeholder="e.g. oil, acrylic, watercolor, charcoal">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldSubstrate">Support / Substrate</label>
+        <input type="text" id="fieldSubstrate" name="substrate" placeholder="e.g. canvas, panel, paper, linen">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldDimensions">Dimensions</label>
+        <input type="text" id="fieldDimensions" name="dimensions" placeholder="e.g. 24 × 36 in / 61 × 91 cm">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldGenre">Type</label>
+        <input type="text" id="fieldGenre" name="genre" placeholder="e.g. painting, drawing, print, sculpture, photograph">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldSeries">Series</label>
+        <input type="text" id="fieldSeries" name="series" placeholder="Series title if part of a larger body of work">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldMovement">Movement / Style</label>
+        <input type="text" id="fieldMovement" name="movement" placeholder="e.g. Abstract Expressionism, De Stijl">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldCollection">Collection / Location</label>
+        <input type="text" id="fieldCollection" name="collection" placeholder="e.g. MoMA, private collection, artist's studio">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldExhibition">Exhibition context</label>
+        <input type="text" id="fieldExhibition" name="exhibition" placeholder="e.g. upcoming solo show at Schneider Museum">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldEdition">Edition</label>
+        <input type="text" id="fieldEdition" name="edition" placeholder="e.g. 3/10 (for prints and multiples)">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldCondition">Condition</label>
+        <input type="text" id="fieldCondition" name="condition" placeholder="e.g. excellent, conserved, minor surface wear">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldNotes">Notes</label>
+        <textarea id="fieldNotes" name="notes" placeholder="Anything else relevant — intent, context, questions you want addressed"></textarea>
+      </div>
+    </div>
+
+    <!-- Audience context -->
+    <div class="fd-audience-row" id="audienceRow" style="display:none">
+      <label for="audienceSelect" class="fd-audience-label">Audience context <span class="fd-optional">(optional)</span></label>
+      <select id="audienceSelect" name="audience" class="fd-audience-input">
+        <option value="">Select your context (optional)</option>
+        <option value="artist, work in progress">Artist — work in progress</option>
+        <option value="artist, pre-show review">Artist — preparing for a show</option>
+        <option value="curator or museum preparator">Curator / museum preparator</option>
+        <option value="art critic or educator">Art critic / educator</option>
+        <option value="art history instructor">Art history instructor</option>
+      </select>
+    </div>
+
+    <!-- Run -->
+    <div id="runRow" style="display:none; margin-top: 1.25rem;">
+      <button type="button" id="runBtn" class="fd-btn fd-btn--primary">Run Analysis</button>
+    </div>
+
+    <!-- Status -->
+    <div id="statusBar" class="fd-status" style="display:none">
+      <div class="fd-status-dot"></div>
+      <span id="statusText">Pass 1 — formal observation…</span>
+    </div>
+
+    <!-- Output -->
+    <div id="output" style="display:none">
+      <div class="fd-output-header">
+        <span class="fd-output-label">Analysis</span>
+      </div>
+      <img id="resultThumbnail" class="fd-result-thumbnail" alt="Analyzed artwork" style="display:none">
+      <div id="analysisText" class="fd-analysis"></div>
+      <div class="fd-copy-row">
+        <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
+      </div>
+
+      <details class="fd-pass1-details">
+        <summary class="fd-pass1-summary">
+          <span>Pass 1 — formal observations</span>
+          <span class="fd-toggle-arrow">›</span>
+        </summary>
+        <div id="pass1Text" class="fd-pass1-body"></div>
+      </details>
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .fd-page {
+    max-width: 780px;
+  }
+
+  /* ── Header ── */
+  .fd-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .fd-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    margin: 0 0 0.4rem 0;
+  }
+
+  .fd-header h1 {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.625rem 0;
+  }
+
+  .fd-desc {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Sandbox banner ── */
+  .fd-sandbox-banner {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    color: #92400e;
+    margin-bottom: 1.5rem;
+  }
+
+  .fd-sandbox-banner a {
+    color: #92400e;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #f59e0b;
+  }
+
+  .fd-sandbox-banner a:hover {
+    text-decoration-color: #92400e;
+  }
+
+  /* ── Artwork fields ── */
+  .fd-fields {
+    margin-bottom: 2rem;
+    padding: 1.375rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+
+  .fd-fields-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 1.125rem;
+  }
+
+  .fd-field-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .fd-field-row:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .fd-field-row label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .fd-field-row input,
+  .fd-field-row textarea {
+    width: 100%;
+    padding: 0.4375rem 0.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #ffffff;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .fd-field-row input:focus,
+  .fd-field-row textarea:focus {
+    border-color: #4f46e5;
+  }
+
+  .fd-field-row input::placeholder,
+  .fd-field-row textarea::placeholder {
+    color: #94a3b8;
+  }
+
+  .fd-field-row textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 560px) {
+    .fd-field-row {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+
+  /* ── Upload ── */
+  .fd-upload-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .fd-upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    color: #64748b;
+  }
+
+  .fd-upload-area:hover,
+  .fd-upload-area.drag-over {
+    border-color: #4f46e5;
+    background: #f5f3ff;
+  }
+
+  .fd-upload-area svg {
+    margin-bottom: 0.75rem;
+    color: #94a3b8;
+    display: block;
+    margin-inline: auto;
+  }
+
+  .fd-upload-area p {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9375rem;
+  }
+
+  .fd-upload-hint {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+  }
+
+  .fd-paste-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.4rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    margin-top: 0.25rem;
+  }
+
+  .fd-paste-btn:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: #eef2ff;
+  }
+
+  .fd-preview-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .fd-preview-container img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    object-fit: contain;
+  }
+
+  /* ── Audience ── */
+  .fd-audience-row {
+    margin-bottom: 0;
+  }
+
+  .fd-audience-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.375rem;
+  }
+
+  .fd-optional {
+    font-weight: 400;
+    color: #94a3b8;
+  }
+
+  .fd-audience-input {
+    width: 100%;
+    padding: 0.5625rem 0.875rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #ffffff;
+    transition: border-color 0.15s;
+    outline: none;
+    cursor: pointer;
+    appearance: auto;
+  }
+
+  .fd-audience-input:focus {
+    border-color: #4f46e5;
+  }
+
+  /* ── Buttons ── */
+  .fd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5625rem 1.125rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .fd-btn--primary {
+    background: #4f46e5;
+    color: #fff;
+  }
+  .fd-btn--primary:hover { background: #4338ca; }
+  .fd-btn--primary:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+  .fd-btn--ghost {
+    background: transparent;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+  }
+  .fd-btn--ghost:hover { border-color: #94a3b8; color: #334155; }
+
+  .fd-btn--sm {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  /* ── Status ── */
+  .fd-status {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #1d4ed8;
+    margin-top: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .fd-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── Output ── */
+  .fd-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .fd-output-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .fd-result-thumbnail {
+    float: right;
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin: 0 0 1rem 1.5rem;
+    cursor: zoom-in;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fd-result-thumbnail:hover {
+    transform: scale(2.5);
+    transform-origin: top right;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border-color: #cbd5e1;
+    z-index: 10;
+  }
+
+  @media (max-width: 640px) {
+    .fd-result-thumbnail {
+      float: none;
+      width: 80px;
+      margin: 0 0 1rem 0;
+    }
+  }
+
+  .fd-analysis {
+    font-size: 0.9375rem;
+    color: #1e293b;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  :global(.fd-analysis h2) {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 2rem 0 0.625rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  :global(.fd-analysis h2:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  :global(.fd-analysis p) {
+    margin: 0 0 0.875rem;
+  }
+
+  :global(.fd-analysis p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.fd-analysis ul),
+  :global(.fd-analysis ol) {
+    margin: 0 0 1.5rem;
+    padding-left: 1.25rem;
+  }
+
+  :global(.fd-analysis li) {
+    margin-bottom: 0.375rem;
+    line-height: 1.65;
+  }
+
+  .fd-copy-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.fd-analysis strong) {
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  :global(.fd-analysis hr) {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 1.5rem 0;
+  }
+
+  :global(.fd-principle-link) {
+    color: #4f46e5;
+    text-decoration: underline;
+    text-decoration-color: #c7d2fe;
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.15s;
+  }
+
+  :global(.fd-principle-link:hover) {
+    text-decoration-color: #4f46e5;
+  }
+
+  /* ── Pass 1 details ── */
+  .fd-pass1-details {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .fd-pass1-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.125rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    list-style: none;
+    background: #f8fafc;
+  }
+
+  .fd-pass1-summary::-webkit-details-marker { display: none; }
+
+  .fd-toggle-arrow {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    transition: transform 0.15s;
+  }
+
+  details[open] .fd-toggle-arrow {
+    transform: rotate(90deg);
+  }
+
+  .fd-pass1-body {
+    padding: 1rem 1.125rem;
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+</style>
+
+<script define:vars={{ principleNames }}>
+  window.__PRINCIPLE_NAMES__ = principleNames;
+</script>
+
+<script>
+  import { marked } from 'marked';
+
+  const PRINCIPLE_NAMES: string[] = (window as any).__PRINCIPLE_NAMES__ || [];
+
+  function linkPrinciples(container: HTMLElement) {
+    if (!PRINCIPLE_NAMES.length) return;
+
+    const escaped = PRINCIPLE_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
+
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    let node: Node | null;
+    while ((node = walker.nextNode())) textNodes.push(node as Text);
+
+    for (const textNode of textNodes) {
+      if (textNode.parentElement?.closest('a')) continue;
+      const text = textNode.textContent || '';
+      if (!pattern.test(text)) { pattern.lastIndex = 0; continue; }
+      pattern.lastIndex = 0;
+
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let m: RegExpExecArray | null;
+
+      while ((m = pattern.exec(text)) !== null) {
+        if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const a = document.createElement('a');
+        a.href = '/hidden-grammar/principles';
+        a.className = 'fd-principle-link';
+        a.textContent = m[0];
+        frag.appendChild(a);
+        last = m.index + m[0].length;
+      }
+
+      if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      textNode.parentNode?.replaceChild(frag, textNode);
+    }
+  }
+
+  let uploadedImage: string | null = null;
+  let resizedImageForCopy: string | null = null;
+
+  const uploadArea    = document.getElementById('uploadArea') as HTMLElement;
+  const imageInput    = document.getElementById('imageInput') as HTMLInputElement;
+  const previewCont   = document.getElementById('previewContainer') as HTMLElement;
+  const imagePreview  = document.getElementById('imagePreview') as HTMLImageElement;
+  const removeBtn     = document.getElementById('removeImage') as HTMLButtonElement;
+  const audienceRow   = document.getElementById('audienceRow') as HTMLElement;
+  const audienceInput = document.getElementById('audienceSelect') as HTMLSelectElement;
+  const runRow        = document.getElementById('runRow') as HTMLElement;
+  const runBtn        = document.getElementById('runBtn') as HTMLButtonElement;
+  const statusBar     = document.getElementById('statusBar') as HTMLElement;
+  const statusText    = document.getElementById('statusText') as HTMLElement;
+  const output        = document.getElementById('output') as HTMLElement;
+  const analysisText  = document.getElementById('analysisText') as HTMLElement;
+  const pass1Text     = document.getElementById('pass1Text') as HTMLElement;
+  const copyBtn         = document.getElementById('copyBtn') as HTMLButtonElement;
+  const pasteBtn        = document.getElementById('fdPasteBtn') as HTMLButtonElement;
+  const resultThumbnail = document.getElementById('resultThumbnail') as HTMLImageElement;
+
+  // ── Upload ────────────────────────────────────────────────────────────────
+  uploadArea.addEventListener('click', () => imageInput.click());
+
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+  });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const file = e.dataTransfer?.files[0];
+    if (file) loadFile(file);
+  });
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+    if (file) loadFile(file);
+  });
+
+  // Cmd+V / Ctrl+V anywhere on the page
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) loadFile(file);
+        break;
+      }
+    }
+  });
+
+  // Paste button — tries clipboard API (iOS 16.4+), falls back to file picker
+  pasteBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!navigator.clipboard?.read) {
+      imageInput.click();
+      return;
+    }
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find(t => t.startsWith('image/'));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          loadFile(new File([blob], 'pasted-image', { type: imageType }));
+          return;
+        }
+      }
+      // No image in clipboard — open file picker as fallback
+      imageInput.click();
+    } catch (err) {
+      console.error('[Paste] clipboard.read failed:', err);
+      imageInput.click();
+    }
+  });
+
+  removeBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    imagePreview.src = '';
+    previewCont.style.display = 'none';
+    uploadArea.style.display = '';
+    audienceRow.style.display = 'none';
+    runRow.style.display = 'none';
+    imageInput.value = '';
+    resultThumbnail.style.display = 'none';
+    resultThumbnail.src = '';
+    resizedImageForCopy = null;
+  });
+
+  function loadFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (!e.target?.result) return;
+      const result = e.target.result as string;
+
+      const img = new Image();
+      img.onload = () => {
+        const currentSize = result.length * 0.75;
+        const maxSize = 4 * 1024 * 1024;
+        const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        const needsConversion = !supportedTypes.includes(file.type.toLowerCase());
+
+        let finalResult = result;
+        let wasResized = false;
+
+        if (needsConversion || currentSize > maxSize || img.width > 2048 || img.height > 2048) {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            alert('Canvas not supported. Please try a different browser.');
+            return;
+          }
+
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 2048;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) { height = (height / width) * maxDim; width = maxDim; }
+            else { width = (width / height) * maxDim; height = maxDim; }
+          }
+
+          canvas.width = Math.round(width);
+          canvas.height = Math.round(height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          let quality = 0.9;
+          let compressed = canvas.toDataURL('image/jpeg', quality);
+          while (compressed.length * 0.75 > maxSize && quality > 0.3) {
+            quality -= 0.1;
+            compressed = canvas.toDataURL('image/jpeg', quality);
+          }
+
+          finalResult = compressed;
+          wasResized = true;
+        }
+
+        if (finalResult.length * 0.75 > 5 * 1024 * 1024) {
+          alert('Image is still too large after compression. Please use a smaller image or reduce its resolution.');
+          return;
+        }
+
+        uploadedImage = finalResult;
+        imagePreview.src = finalResult;
+        uploadArea.style.display = 'none';
+        previewCont.style.display = 'flex';
+        audienceRow.style.display = '';
+        runRow.style.display = '';
+
+        if (wasResized) {
+          const note = document.createElement('div');
+          note.textContent = '✓ Image automatically optimized for analysis';
+          note.style.cssText = 'position:fixed;top:20px;right:20px;background:#4f46e5;color:white;padding:12px 20px;border-radius:8px;z-index:10000;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+          document.body.appendChild(note);
+          setTimeout(() => note.remove(), 3000);
+        }
+      };
+
+      img.onerror = () => { alert('Failed to load image. Please try a different file.'); };
+      img.src = result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Run ───────────────────────────────────────────────────────────────────
+  runBtn.addEventListener('click', runAnalysis);
+
+  async function runAnalysis() {
+    if (!uploadedImage) return;
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+    output.style.display = 'none';
+    statusBar.style.display = 'flex';
+    statusText.textContent = 'Connecting…';
+
+    const fields = {
+      artist:     (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim(),
+      title:      (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim(),
+      year:       (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim(),
+      medium:     (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim(),
+      substrate:  (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim(),
+      dimensions: (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim(),
+      genre:      (document.getElementById('fieldGenre')      as HTMLInputElement)?.value.trim(),
+      series:     (document.getElementById('fieldSeries')     as HTMLInputElement)?.value.trim(),
+      movement:   (document.getElementById('fieldMovement')   as HTMLInputElement)?.value.trim(),
+      collection: (document.getElementById('fieldCollection') as HTMLInputElement)?.value.trim(),
+      exhibition: (document.getElementById('fieldExhibition') as HTMLInputElement)?.value.trim(),
+      edition:    (document.getElementById('fieldEdition')    as HTMLInputElement)?.value.trim(),
+      condition:  (document.getElementById('fieldCondition')  as HTMLInputElement)?.value.trim(),
+      notes:      (document.getElementById('fieldNotes')      as HTMLTextAreaElement)?.value.trim(),
+    };
+
+    try {
+      const response = await fetch('/api/four-domain-dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: uploadedImage,
+          audience: audienceInput.value.trim() || undefined,
+          fields,
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        statusBar.style.display = 'none';
+        const ct = response.headers.get('content-type') || '';
+        if (ct.includes('text/html')) {
+          alert(`Server error (${response.status}). The analysis may have timed out — please try again with a smaller image.`);
+        } else {
+          try {
+            const errData = await response.json();
+            alert(`${errData.error || 'Analysis failed'}${errData.details ? '\n\n' + errData.details : ''}`);
+          } catch {
+            alert(`Server error (${response.status}). Please try again.`);
+          }
+        }
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let completed = false;
+
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue;
+          let data: any;
+          try { data = JSON.parse(part.slice(6)); } catch { continue; }
+
+          if (data.type === 'status') {
+            statusText.textContent = data.message;
+          } else if (data.type === 'complete') {
+            completed = true;
+            statusBar.style.display = 'none';
+
+            if (!data.success) {
+              const detail = data.details ? `\n\n${data.details}` : '';
+              alert(`${data.error || 'Analysis failed'}${detail}`);
+              runBtn.disabled = false;
+              runBtn.textContent = 'Run Analysis';
+              break outer;
+            }
+
+            analysisText.innerHTML = await marked(data.analysis || '');
+            linkPrinciples(analysisText);
+            pass1Text.textContent = data.pass1 || '';
+            if (uploadedImage) {
+              resultThumbnail.src = uploadedImage;
+              resultThumbnail.style.display = 'block';
+              resizeForClipboard(uploadedImage).then(r => { resizedImageForCopy = r; });
+            }
+            output.style.display = '';
+            output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run Again';
+            break outer;
+          } else if (data.type === 'error') {
+            completed = true;
+            statusBar.style.display = 'none';
+            alert(`Analysis failed: ${data.error}`);
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run Analysis';
+            break outer;
+          }
+        }
+      }
+
+      if (!completed) {
+        statusBar.style.display = 'none';
+        alert('Analysis incomplete — the connection was interrupted. Please try again.');
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Analysis';
+      }
+
+    } catch (err) {
+      statusBar.style.display = 'none';
+      alert(`Network error: ${err}`);
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Analysis';
+    }
+  }
+
+  // ── Copy ──────────────────────────────────────────────────────────────────
+  function resizeForClipboard(dataUrl: string, maxDim = 280, quality = 0.7): Promise<string> {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function htmlToPlainText(html: string): string {
+    return html
+      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<h[1-6][^>]*>/gi, '\n')
+      .replace(/<\/h[1-6]>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  copyBtn.addEventListener('click', async () => {
+    const html = analysisText.innerHTML;
+    if (!html.trim()) return;
+
+    const plain = htmlToPlainText(html);
+    const imgTag = resizedImageForCopy
+      ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
+      : '';
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${html}`;
+
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([htmlPayload], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' }),
+        }),
+      ]);
+    } catch {
+      try {
+        await navigator.clipboard.writeText(plain);
+      } catch {
+        return;
+      }
+    }
+
+    copyBtn.textContent = '✓ Copied';
+    setTimeout(() => { copyBtn.textContent = 'Copy Analysis'; }, 2500);
+  });
+</script>
