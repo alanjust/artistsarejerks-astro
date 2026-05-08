@@ -23,16 +23,29 @@ ${principleNames.join(', ')}
 
 ---
 
+PROCESS ORDER vs. OUTPUT ORDER:
+Complete your full analysis of all four registers before writing any output. Then present results in this order:
+1. SYNTHESIS — write this first
+2. PERCEPTUAL
+3. MATERIAL AND FORMAL
+4. CULTURAL
+5. CONCEPTUAL
+6. NOISE — CONSOLIDATED — write this last
+
 Run all four registers. Do not collapse them into each other. A finding in one register is not evidence in another.
 
 OUTPUT FORMAT FOR EACH REGISTER:
-After the register heading, write a bullet-point summary before the full prose. Do the complete analytical work first, then distill it. The summary must:
-- Cover the key findings from that register (use as many bullets as the register warrants — no fixed count)
-- Include the noise findings within the same bullet list, each prefixed with "Noise:"
-- Be specific — no vague placeholders
+Write full detailed prose only. No bullet summaries. No inline noise sub-sections — all noise findings go to the NOISE — CONSOLIDATED section at the end.
 
-Then write the full detailed prose analysis.
-Then write the Noise sub-section in full prose as instructed.
+---
+
+SYNTHESIS
+
+Which register is this work most alive in? Where does it earn the most — and where is it losing ground?
+
+If an audience context was provided, address directly what's actionable for that person.
+
+One closing sentence. Not a quality verdict. A direction.
 
 ---
 
@@ -44,9 +57,6 @@ Analyze: where attention goes first and why. What holds the eye and what lets it
 
 Plain language. Name specific visual features.
 
-NOISE — PERCEPTUAL:
-What is interfering with a clean read in this register? Name the specific visual conflict. If nothing is interfering, say so.
-
 ---
 
 REGISTER 2: MATERIAL AND FORMAL
@@ -54,9 +64,6 @@ REGISTER 2: MATERIAL AND FORMAL
 What is this work physically made of, and how is the making visible?
 
 Analyze: what medium, substrate, and process are present. Whether the surface is honest about how it was constructed. Whether the physical choices support or contradict what the work appears to be doing. What the material asks of the viewer up close versus at a distance.
-
-NOISE — MATERIAL:
-Where are the material or formal choices fighting the work's own logic?
 
 ---
 
@@ -70,9 +77,6 @@ Analyze: what cultural conversation this work is entering. What it signals about
 
 Illegibility here is not automatically failure. It may be deliberate transgression. Name which and say why.
 
-NOISE — CULTURAL:
-What is preventing this work from being read clearly within the cultural field it's aimed at?
-
 ---
 
 REGISTER 4: CONCEPTUAL
@@ -83,18 +87,21 @@ Draw on the full breadth of art theory, philosophy, and art history. No framewor
 
 Analyze: what intellectual or artistic tradition this work is responding to. What position it appears to be taking — and whether the visual and material choices support that position. Where thinness in the perceptual register might be the conceptual point. What historical precedents matter for reading this accurately.
 
-NOISE — CONCEPTUAL:
-Where does the work undercut its own argument?
-
 ---
 
-SYNTHESIS
+NOISE — CONSOLIDATED
 
-Which register is this work most alive in? Where is the noise intentional — serving a purpose in another register — versus accidental across all four?
+Four named sub-sections. Each names the specific conflict or interference. If nothing is interfering in a register, say so in one sentence.
 
-If an audience context was provided, address directly what's actionable for that person.
+PERCEPTUAL: What is interfering with a clean read? Name the specific visual conflict.
 
-One closing sentence. Not a quality verdict. A direction.
+MATERIAL: Where are the material or formal choices fighting the work's own logic?
+
+CULTURAL: What is preventing this work from being read clearly within the cultural field it's aimed at?
+
+CONCEPTUAL: Where does the work undercut its own argument?
+
+End with one sentence: which of these noise findings are intentional — serving a purpose in another register — versus accidental across all four.
 
 ---
 
