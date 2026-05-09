@@ -164,6 +164,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
       <div id="analysisText" class="fd-analysis"></div>
       <div class="fd-copy-row">
         <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
+        <button type="button" id="pdfBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Download PDF</button>
       </div>
 
       <details class="fd-pass1-details">
@@ -612,6 +613,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   .fd-copy-row {
     display: flex;
     justify-content: flex-end;
+    gap: 0.5rem;
     margin-bottom: 1.5rem;
   }
 
@@ -679,6 +681,42 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     line-height: 1.7;
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    #output, #output * { visibility: visible; }
+
+    #output {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 0;
+    }
+
+    .fd-output-header,
+    .fd-copy-row,
+    .fd-pass1-details { display: none !important; }
+
+    .fd-analysis {
+      font-size: 11pt;
+      line-height: 1.65;
+      color: #000;
+    }
+
+    :global(.fd-analysis h2) {
+      font-size: 9pt;
+      page-break-after: avoid;
+    }
+
+    p { orphans: 3; widows: 3; }
+
+    .fd-result-thumbnail {
+      float: right;
+      width: 110px;
+      margin: 0 0 1rem 1.5rem;
+    }
   }
 </style>
 
@@ -761,6 +799,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   const analysisText  = document.getElementById('analysisText') as HTMLElement;
   const pass1Text     = document.getElementById('pass1Text') as HTMLElement;
   const copyBtn         = document.getElementById('copyBtn') as HTMLButtonElement;
+  const pdfBtn          = document.getElementById('pdfBtn') as HTMLButtonElement;
   const pasteBtn        = document.getElementById('fdPasteBtn') as HTMLButtonElement;
   const resultThumbnail = document.getElementById('resultThumbnail') as HTMLImageElement;
 
@@ -1119,6 +1158,19 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
       .replace(/\n{3,}/g, '\n\n')
       .trim();
   }
+
+  pdfBtn.addEventListener('click', () => {
+    const artist = (document.getElementById('fieldArtist') as HTMLInputElement)?.value.trim();
+    const title  = (document.getElementById('fieldTitle')  as HTMLInputElement)?.value.trim();
+
+    const originalTitle = document.title;
+    const pdfName = [artist, title].filter(Boolean).join(' — ');
+    if (pdfName) document.title = pdfName;
+
+    window.print();
+
+    setTimeout(() => { document.title = originalTitle; }, 1500);
+  });
 
   copyBtn.addEventListener('click', async () => {
     const html = analysisText.innerHTML;
