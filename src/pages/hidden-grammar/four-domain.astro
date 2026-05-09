@@ -1108,7 +1108,11 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   }
 
   function htmlToPlainText(html: string): string {
+    const origin = window.location.origin;
     return html
+      // Convert links to Markdown before stripping tags
+      .replace(/<a\s[^>]*href="(\/[^"]*)"[^>]*>([^<]*)<\/a>/gi, (_, href, text) => `[${text}](${origin}${href})`)
+      .replace(/<a\s[^>]*href="(https?:\/\/[^"]*)"[^>]*>([^<]*)<\/a>/gi, (_, href, text) => `[${text}](${href})`)
       .replace(/<li[^>]*>/gi, '• ')
       .replace(/<\/li>/gi, '\n')
       .replace(/<h[1-6][^>]*>/gi, '\n')
@@ -1213,7 +1217,8 @@ ${headerHTML}
     const imgTag = resizedImageForCopy
       ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
       : '';
-    const htmlPayload = `<meta charset="utf-8">${imgTag}${html}`;
+    const absoluteHtml = html.replace(/\bhref="(\/)/g, `href="${window.location.origin}/`);
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${absoluteHtml}`;
 
     try {
       await navigator.clipboard.write([
