@@ -1161,6 +1161,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 <head>
 <meta charset="utf-8">
 <title>${pdfName || 'Analysis'}</title>
+<base href="${window.location.origin}">
 <style>
 @page { margin: 1in; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1173,7 +1174,7 @@ body { font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-hei
 h2 { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000; margin: 1.5rem 0 0.5rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-after: avoid; }
 h2:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
 p { margin-bottom: 0.7rem; orphans: 3; widows: 3; }
-a { color: inherit; text-decoration: none; }
+a { color: #4f46e5; text-decoration: underline; text-decoration-color: #c7d2fe; text-underline-offset: 2px; }
 strong { font-weight: 700; }
 hr { border: none; border-top: 1px solid #ccc; margin: 1rem 0; }
 ul, ol { margin: 0 0 0.7rem; padding-left: 1.25rem; }
