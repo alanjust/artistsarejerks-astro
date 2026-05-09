@@ -683,41 +683,6 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     word-break: break-word;
   }
 
-  @media print {
-    body * { visibility: hidden; }
-    #output, #output * { visibility: visible; }
-
-    #output {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 0;
-    }
-
-    .fd-output-header,
-    .fd-copy-row,
-    .fd-pass1-details { display: none !important; }
-
-    .fd-analysis {
-      font-size: 11pt;
-      line-height: 1.65;
-      color: #000;
-    }
-
-    :global(.fd-analysis h2) {
-      font-size: 9pt;
-      page-break-after: avoid;
-    }
-
-    p { orphans: 3; widows: 3; }
-
-    .fd-result-thumbnail {
-      float: right;
-      width: 110px;
-      margin: 0 0 1rem 1.5rem;
-    }
-  }
 </style>
 
 <script define:vars={{ principleNames, principleIdMap }}>
@@ -1160,16 +1125,83 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   }
 
   pdfBtn.addEventListener('click', () => {
-    const artist = (document.getElementById('fieldArtist') as HTMLInputElement)?.value.trim();
-    const title  = (document.getElementById('fieldTitle')  as HTMLInputElement)?.value.trim();
+    const artist     = (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim();
+    const title      = (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim();
+    const year       = (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim();
+    const medium     = (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim();
+    const substrate  = (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim();
+    const dimensions = (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim();
 
-    const originalTitle = document.title;
-    const pdfName = [artist, title].filter(Boolean).join(' — ');
-    if (pdfName) document.title = pdfName;
+    const pdfName    = [artist, title].filter(Boolean).join(' — ');
+    const mediumLine = medium && substrate ? `${medium} on ${substrate}` : medium || substrate;
 
-    window.print();
+    const metaEntries: Array<[string, string]> = [
+      ['Artist', artist],
+      ['Title',  title],
+      ['Date',   year],
+      ['Medium', mediumLine],
+      ['Size',   dimensions],
+    ].filter(([, v]) => v) as Array<[string, string]>;
 
-    setTimeout(() => { document.title = originalTitle; }, 1500);
+    const metaHTML = metaEntries
+      .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
+      .join('');
+
+    const thumbSrc = resultThumbnail.src;
+    const hasThumb = thumbSrc.startsWith('data:');
+
+    const headerHTML = (hasThumb || metaEntries.length > 0) ? `
+      <div class="doc-header">
+        ${hasThumb ? `<img class="doc-thumb" src="${thumbSrc}" alt="">` : ''}
+        ${metaEntries.length > 0 ? `<dl class="doc-meta">${metaHTML}</dl>` : ''}
+      </div>` : '';
+
+    const docHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>${pdfName || 'Analysis'}</title>
+<style>
+@page { margin: 1in; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.65; color: #000; }
+.doc-header { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1.5px solid #000; }
+.doc-thumb { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+.doc-meta { display: grid; grid-template-columns: auto 1fr; column-gap: 0.75rem; row-gap: 0.125rem; font-size: 9pt; font-family: Arial, Helvetica, sans-serif; align-content: start; }
+.doc-meta dt { font-weight: 700; color: #666; white-space: nowrap; }
+.doc-meta dd { color: #000; }
+h2 { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000; margin: 1.5rem 0 0.5rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-after: avoid; }
+h2:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+p { margin-bottom: 0.7rem; orphans: 3; widows: 3; }
+a { color: inherit; text-decoration: none; }
+strong { font-weight: 700; }
+hr { border: none; border-top: 1px solid #ccc; margin: 1rem 0; }
+ul, ol { margin: 0 0 0.7rem; padding-left: 1.25rem; }
+li { margin-bottom: 0.2rem; }
+</style>
+</head>
+<body>
+${headerHTML}
+<div>${analysisText.innerHTML}</div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) { alert('Pop-up blocked — please allow pop-ups for this site and try again.'); return; }
+    win.document.write(docHTML);
+    win.document.close();
+    win.focus();
+
+    const doPrint = () => {
+      win.print();
+      win.onafterprint = () => win.close();
+    };
+
+    if (win.document.readyState === 'complete') {
+      doPrint();
+    } else {
+      win.onload = doPrint;
+    }
   });
 
   copyBtn.addEventListener('click', async () => {
