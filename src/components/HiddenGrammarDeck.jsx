@@ -561,9 +561,27 @@ export default function Presentation() {
 
   return (
     <div style={{ fontFamily: '"DM Sans", sans-serif', background: C.bg, color: C.text, minHeight: "100vh" }}>
-      {/* Slide counter */}
-      <div style={{ position: "fixed", top: 18, right: 24, fontFamily: C.mono, fontSize: 10, color: C.muted, letterSpacing: "0.1em", zIndex: 10 }}>
-        {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")} — {SLIDE_LABELS[slide]}
+      {/* Top nav bar */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 48, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", background: "rgba(8,12,20,0.96)", borderBottom: `1px solid ${C.border}`, backdropFilter: "blur(8px)", zIndex: 20 }}>
+        <a
+          href="/hidden-grammar/toolkit"
+          style={{ fontFamily: C.mono, fontSize: 11, color: C.muted, textDecoration: "none", letterSpacing: "0.08em", transition: "color 0.15s ease" }}
+          onMouseEnter={e => e.currentTarget.style.color = C.accent}
+          onMouseLeave={e => e.currentTarget.style.color = C.muted}
+        >
+          ← TOOLKIT
+        </a>
+        <div style={{ fontFamily: C.mono, fontSize: 10, color: C.muted, letterSpacing: "0.1em" }}>
+          {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")} — {SLIDE_LABELS[slide]}
+        </div>
+        <a
+          href="/hidden-grammar"
+          style={{ fontFamily: C.mono, fontSize: 11, color: C.muted, textDecoration: "none", letterSpacing: "0.08em", transition: "color 0.15s ease" }}
+          onMouseEnter={e => e.currentTarget.style.color = C.accent}
+          onMouseLeave={e => e.currentTarget.style.color = C.muted}
+        >
+          ART LAB
+        </a>
       </div>
 
       {/* Current slide */}
