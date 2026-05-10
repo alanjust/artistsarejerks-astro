@@ -1,0 +1,190 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../../layouts/HiddenGrammarLayout.astro';
+---
+
+<HiddenGrammarLayout title="Hidden Grammar Deck — Art Lab">
+  <div class="deck-page">
+
+    <!-- ── BREADCRUMB ─────────────────────────────────────────── -->
+    <nav class="hg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/hidden-grammar">Art Lab</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <a href="/hidden-grammar/toolkit">Toolkit</a>
+      <span class="hg-breadcrumb-sep">›</span>
+      <span>Hidden Grammar Deck</span>
+    </nav>
+
+    <!-- ── HEADER ────────────────────────────────────────────── -->
+    <header class="deck-header">
+      <div class="deck-header-meta">
+        <span class="badge badge--demo">Demo</span>
+        <span class="deck-phase">· Framework Reference</span>
+      </div>
+      <h1 class="deck-title">Hidden Grammar Deck</h1>
+      <p class="deck-tagline">11 Roots. 54 Principles. Nine slides. A visual introduction to the framework behind every Art Lab tool.</p>
+    </header>
+
+    <!-- ── EMBED ─────────────────────────────────────────────── -->
+    <div class="deck-embed-wrap">
+      <iframe
+        src="https://claude.site/artifacts/882c82eb-3faf-4d6d-b7ae-1e265104a6ff/embed"
+        title="Hidden Grammar Deck"
+        width="100%"
+        height="600"
+        frameborder="0"
+        allow="clipboard-write"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <p class="deck-nav-hint">Navigate with arrow keys, spacebar, or click the dots at the bottom of the deck.</p>
+
+    <!-- ── ABOUT ─────────────────────────────────────────────── -->
+    <div class="deck-about">
+      <h2 class="deck-about-title">What this is</h2>
+      <p>The Hidden Grammar Deck is a standalone artifact that walks through the framework underlying Art Lab — the 11 Roots, the 54 Principles, and how they function as a shared vocabulary for talking about what's actually happening in a work of art.</p>
+      <p>The framing is this: the framework is a type system, not a prompt. Domain confusion is a type error. The RAP Protocol is a proof requirement. If you've analyzed a piece with Art Lab and gotten results that surprised you, this deck explains why the framework produces those results — and what it's actually checking for.</p>
+    </div>
+
+    <!-- ── BOTTOM NAV ─────────────────────────────────────────── -->
+    <div class="deck-bottom-nav">
+      <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--ghost">
+        ← All tools
+      </a>
+      <a href="/hidden-grammar/framework" class="hg-btn hg-btn--ghost">
+        Full framework reference →
+      </a>
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .deck-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Header ── */
+  .deck-header {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .deck-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .badge--demo {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+
+  .deck-phase {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .deck-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.6rem;
+    line-height: 1.2;
+  }
+
+  .deck-tagline {
+    font-size: 1.0625rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* ── Embed ── */
+  .deck-embed-wrap {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #e2e8f0;
+    background: #000;
+    margin-bottom: 0.875rem;
+  }
+
+  .deck-embed-wrap iframe {
+    display: block;
+    width: 100%;
+    height: 600px;
+  }
+
+  .deck-nav-hint {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin: 0 0 2.5rem;
+    text-align: center;
+  }
+
+  /* ── About ── */
+  .deck-about {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .deck-about-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 0 0 0.875rem;
+  }
+
+  .deck-about p {
+    font-size: 0.9375rem;
+    color: #334155;
+    line-height: 1.7;
+    margin: 0 0 0.875rem;
+    max-width: 680px;
+  }
+
+  .deck-about p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ── Bottom nav ── */
+  .deck-bottom-nav {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 640px) {
+    .deck-title { font-size: 1.625rem; }
+    .deck-embed-wrap iframe { height: 480px; }
+    .deck-bottom-nav { flex-direction: column; }
+  }
+</style>

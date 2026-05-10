@@ -209,6 +209,14 @@ export const toolkitBuckets = [
     description: "For finished work — yours or someone else's. Structured reads grounded in what's visually observable, not in what the art world has decided the work means.",
     modes: [
       {
+        id: 'hidden-grammar-deck',
+        label: 'Hidden Grammar Deck',
+        tagline: "A nine-slide visual introduction to the framework. 11 Roots, 54 Principles — what they are and why they work.",
+        status: 'live',
+        phase: 'Framework Reference',
+        link: '/hidden-grammar/toolkit/hidden-grammar-deck',
+      },
+      {
         id: 'fine-art',
         label: 'Fine Art',
         tagline: "Painting, sculpture, photography, installation — full Art Lab analysis.",
