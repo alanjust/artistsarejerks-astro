@@ -122,6 +122,10 @@ const navLinks = [
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    /* Override BaseLayout global: prevents overflow-x:hidden from creating a
+       scroll container that pins the footer to the viewport bottom. */
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   /* ── Header ───────────────────────────────── */
