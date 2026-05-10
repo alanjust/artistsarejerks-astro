@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build:deck": "esbuild src/components/HiddenGrammarDeck.jsx --bundle --outfile=public/deck/deck.js --format=iife --jsx=automatic",
+    "build": "npm run build:deck && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

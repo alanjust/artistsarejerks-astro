@@ -591,3 +591,7 @@ export default function Presentation() {
     </div>
   );
 }
+
+import { createRoot } from 'react-dom/client';
+const rootEl = document.getElementById('deck-root');
+if (rootEl) createRoot(rootEl).render(<Presentation />);

@@ -1,6 +1,5 @@
 ---
 export const prerender = true;
-import Presentation from '../../../components/HiddenGrammarDeck.jsx';
 ---
 
 <!DOCTYPE html>
@@ -15,6 +14,7 @@ import Presentation from '../../../components/HiddenGrammarDeck.jsx';
     </style>
   </head>
   <body>
-    <Presentation client:only="react" />
+    <div id="deck-root"></div>
+    <script is:inline src="/deck/deck.js"></script>
   </body>
 </html>
