@@ -73,6 +73,7 @@ const SLIDE_LABELS = [
   "Two-Pass Pipeline",
   "RAP Protocol",
   "The Ontology",
+  "The Bigger Picture",
   "What You Get",
 ];
 
@@ -471,7 +472,46 @@ function OntologySlide() {
   );
 }
 
-// ── Slide 9: Value ─────────────────────────────────────────────────────────────
+// ── Slide 9: Parallel Problem ──────────────────────────────────────────────────
+
+function ParallelProblemSlide() {
+  const col = { background: C.surf, border: `1px solid ${C.border}`, borderRadius: 12, padding: "24px 28px" };
+  return (
+    <Slide pre="The Bigger Picture" title="Two fields. One unsolved problem.">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+        <div style={{ ...col, borderColor: "#3a2a10" }}>
+          <Mono color={C.accent}>The art world — centuries old</Mono>
+          <p style={{ fontFamily: C.sans, fontSize: 15, color: C.text, lineHeight: 1.7, margin: "14px 0 16px" }}>
+            Authoritative language about visual work with no falsifiability requirement. Claims sound rigorous. They can't be checked.
+          </p>
+          <div style={{ fontFamily: C.sans, fontSize: 13, color: C.muted, lineHeight: 1.65, borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
+            Never felt as a problem because there were no downstream consequences to getting it wrong. The disorder is professionally functional.
+          </div>
+        </div>
+        <div style={{ ...col, borderColor: "#152a3a" }}>
+          <Mono color="#60a5fa">Frontier AI — right now</Mono>
+          <p style={{ fontFamily: C.sans, fontSize: 15, color: C.text, lineHeight: 1.7, margin: "14px 0 16px" }}>
+            Language models generate fluent, confident, ungrounded claims. Hallucination. No internal evidence requirement.
+          </p>
+          <div style={{ fontFamily: C.sans, fontSize: 13, color: C.muted, lineHeight: 1.65, borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
+            Felt urgently because the consequences are immediate and testable. Billions being spent on grounding, calibration, chain-of-thought.
+          </div>
+        </div>
+      </div>
+      <div style={{ background: "#0f1020", border: "1px solid #2a2060", borderRadius: 12, padding: "24px 32px" }}>
+        <Mono color="#c084fc" size={12}>Same structure. Different stakes. Different timeline.</Mono>
+        <p style={{ fontFamily: C.serif, fontSize: 22, color: C.text, lineHeight: 1.55, margin: "12px 0 0" }}>
+          Hidden Grammar applied an evidence requirement to visual analysis before anyone had a name for what that was.{" "}
+          <span style={{ color: C.muted, fontWeight: 400, fontSize: 18 }}>
+            Constitutional AI. Chain-of-thought. RAP Protocol. The vocabulary is different. The problem is identical.
+          </span>
+        </p>
+      </div>
+    </Slide>
+  );
+}
+
+// ── Slide 10: Value ────────────────────────────────────────────────────────────
 
 function ValueSlide() {
   return (
@@ -520,7 +560,7 @@ const navBtn = {
 export default function Presentation() {
   const [slide, setSlide] = useState(0);
   const [hov, setHov] = useState(null);
-  const TOTAL = 9;
+  const TOTAL = 10;
 
   const slides = [
     <TitleSlide />,
@@ -531,6 +571,7 @@ export default function Presentation() {
     <TwoPassSlide />,
     <RAPSlide />,
     <OntologySlide />,
+    <ParallelProblemSlide />,
     <ValueSlide />,
   ];
 
