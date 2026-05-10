@@ -88,7 +88,7 @@ function Mono({ children, color, size = 11 }) {
 
 function Slide({ children, pre, title, wide }) {
   return (
-    <div style={{ minHeight: "calc(100vh - 48px)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 64px 24px", maxWidth: wide ? 1200 : 1040, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+    <div style={{ minHeight: "calc(100vh - 52px)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "52px 64px 24px", maxWidth: wide ? 1200 : 1040, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
       {(pre || title) && (
         <div style={{ marginBottom: 36 }}>
           {pre && <Mono color={C.accent}>{pre}</Mono>}
@@ -104,7 +104,7 @@ function Slide({ children, pre, title, wide }) {
 
 function TitleSlide() {
   return (
-    <div style={{ minHeight: "calc(100vh - 48px)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 72px", maxWidth: 1040, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+    <div style={{ minHeight: "calc(100vh - 52px)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 72px", maxWidth: 1040, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
       <Mono color={C.accent} size={12}>Art Lab / Hidden Grammar</Mono>
       <h1 style={{ fontFamily: C.serif, fontSize: 80, fontWeight: 900, color: C.text, margin: "18px 0 0", lineHeight: 1.02 }}>
         A Schema<br />for Seeing
@@ -562,25 +562,26 @@ export default function Presentation() {
   return (
     <div style={{ fontFamily: '"DM Sans", sans-serif', background: C.bg, color: C.text, minHeight: "100vh" }}>
       {/* Top nav bar */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 48, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", background: "rgba(8,12,20,0.96)", borderBottom: `1px solid ${C.border}`, backdropFilter: "blur(8px)", zIndex: 20 }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", background: "#0b1018", borderBottom: `1px solid ${C.border}`, zIndex: 20 }}>
         <a
           href="/hidden-grammar/toolkit"
-          style={{ fontFamily: C.mono, fontSize: 11, color: C.muted, textDecoration: "none", letterSpacing: "0.08em", transition: "color 0.15s ease" }}
-          onMouseEnter={e => e.currentTarget.style.color = C.accent}
-          onMouseLeave={e => e.currentTarget.style.color = C.muted}
+          style={{ fontFamily: C.sans, fontSize: 13, fontWeight: 500, color: C.text, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: `1px solid ${C.border}`, transition: "border-color 0.15s, color 0.15s" }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.accent; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text; }}
         >
-          ← TOOLKIT
+          ← Toolkit
         </a>
-        <div style={{ fontFamily: C.mono, fontSize: 10, color: C.muted, letterSpacing: "0.1em" }}>
-          {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")} — {SLIDE_LABELS[slide]}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+          <span style={{ fontFamily: C.mono, fontSize: 9, color: C.muted, letterSpacing: "0.12em", textTransform: "uppercase" }}>Art Lab</span>
+          <span style={{ fontFamily: C.mono, fontSize: 9, color: C.muted, letterSpacing: "0.08em" }}>{String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")} — {SLIDE_LABELS[slide]}</span>
         </div>
         <a
           href="/hidden-grammar"
-          style={{ fontFamily: C.mono, fontSize: 11, color: C.muted, textDecoration: "none", letterSpacing: "0.08em", transition: "color 0.15s ease" }}
-          onMouseEnter={e => e.currentTarget.style.color = C.accent}
-          onMouseLeave={e => e.currentTarget.style.color = C.muted}
+          style={{ fontFamily: C.sans, fontSize: 13, fontWeight: 500, color: C.text, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: `1px solid ${C.border}`, transition: "border-color 0.15s, color 0.15s" }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.accent; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text; }}
         >
-          ART LAB
+          Art Lab Home
         </a>
       </div>
 
