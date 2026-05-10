@@ -6,7 +6,7 @@ const C = {
   surf: "#0f1520",
   border: "#1a2030",
   text: "#d8e0ee",
-  muted: "#4a5a72",
+  muted: "#8097b6",
   accent: "#f0a030",
   mono: '"DM Mono", monospace',
   serif: '"Playfair Display", serif',
