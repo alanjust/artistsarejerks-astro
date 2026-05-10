@@ -119,11 +119,13 @@ const navLinks = [
     line-height: 1.6;
     color: #1a1a2e;
     background: #f8f9fa;
+    height: auto;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    /* Override BaseLayout global: prevents overflow-x:hidden from creating a
-       scroll container that pins the footer to the viewport bottom. */
+    /* Override BaseLayout + deck page globals: deck page's html,body{height:100%}
+       lands in the shared bundle (cssCodeSplit:false) and pins body to viewport
+       height, causing the footer to float at viewport bottom on all HG pages. */
     overflow-x: clip;
     overflow-y: visible;
   }

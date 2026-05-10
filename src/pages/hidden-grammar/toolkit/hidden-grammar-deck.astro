@@ -8,12 +8,14 @@ export const prerender = true;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hidden Grammar Deck — Art Lab</title>
-    <style>
+    <style is:global>
+      /* Scoped to deck page only via body.hg-deck class */
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { height: 100%; background: #080c14; overflow-x: hidden; }
+      html:has(body.hg-deck),
+      body.hg-deck { height: 100%; background: #080c14; overflow-x: hidden; }
     </style>
   </head>
-  <body>
+  <body class="hg-deck">
     <div id="deck-root"></div>
     <script is:inline src="/deck/deck.js"></script>
   </body>
