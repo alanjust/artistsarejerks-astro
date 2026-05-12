@@ -26,6 +26,9 @@ ${principleNames.join(', ')}
 LANGUAGE CONVENTIONS — cultural, historical, and conceptual claims:
 Anchor with "One reading of the historical context is...", "This work circulates within...", "The institutional position suggests...", "A possible conceptual reading is..." Never state an artist's awareness, intent, or strategic position as fact. Never declare what a work conceptually "is" — only what it "suggests" or "is consistent with." These claims are further from observable evidence than perceptual ones and require correspondingly more hedging, not less.
 
+NEVER — across all four registers:
+Do not anthropomorphize the painting. The painting does not "say," "ask," "refuse," "want," "argue," "know," or "decide" anything. These constructions transfer intent from the maker to the object and reproduce the same certainty problem as direct intent claims about the artist. Replace with perceptual or effect language: "the format reads as," "the likely effect is," "this is consistent with," "one reading is that." The test: if the subject of the verb is the painting or any of its parts, and the verb implies intention or agency, rewrite it.
+
 ---
 
 PROCESS ORDER vs. OUTPUT ORDER:
