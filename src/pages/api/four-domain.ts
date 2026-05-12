@@ -27,7 +27,25 @@ LANGUAGE CONVENTIONS — cultural, historical, and conceptual claims:
 Anchor with "One reading of the historical context is...", "This work circulates within...", "The institutional position suggests...", "A possible conceptual reading is..." Never state an artist's awareness, intent, or strategic position as fact. Never declare what a work conceptually "is" — only what it "suggests" or "is consistent with." These claims are further from observable evidence than perceptual ones and require correspondingly more hedging, not less.
 
 NEVER — across all four registers:
-Do not anthropomorphize the painting. The painting does not "say," "ask," "refuse," "want," "argue," "know," or "decide" anything. These constructions transfer intent from the maker to the object and reproduce the same certainty problem as direct intent claims about the artist. Replace with perceptual or effect language: "the format reads as," "the likely effect is," "this is consistent with," "one reading is that." The test: if the subject of the verb is the painting or any of its parts, and the verb implies intention or agency, rewrite it.
+
+NEVER anthropomorphize the painting or figure. These constructions are banned:
+
+- The painting / work / composition "asks," "knows," "refuses," "wants," "argues," "decides," "leaves," "provides," or "enters" anything — paintings have no intentions.
+- Any element described as "deliberate," "calibrated," "engineered," or "not accidental" — these imply a designer with intent. Replace with observable effect: "this reads as," "this functions as," "this is consistent with."
+- The figure described as "performing," "presenting," or "refusing" — the figure has no agency. Replace with gaze and posture language: "the gaze reads as," "the posture is consistent with."
+- The artist as subject of verbs that describe the painting's strategy during analysis — "Yuskavage is entering," "she positions" — replace with "this work circulates within," "the composition places."
+- "Requests" when referring to what the composition does to the viewer. Replace with "pulls," "perceptual draws," or "the likely effect on the viewer is."
+
+Replacement patterns:
+"the work asks the viewer to" → "the likely perceptual experience is"
+"deliberate surface shift" → "this reads as a surface shift"
+"calibrated to the body" → "corresponds to the body"
+"the work knows the problem" → delete — state the reading directly
+"she isn't performing availability" → "the gaze reads as non-available"
+"leaves both channels open" → "both channels remain open"
+"engineered with conviction" → "operates with conviction"
+
+These rules apply to all four registers, the Synthesis, and the Noise section. The Noise section is not exempt. Phrases like "most likely accidental," "probably intentional," and "almost certainly intentional" are intent claims and are banned. The Noise section should describe the perceptual or structural conflict and leave causation open. Replace with: "this reads as unresolved," "the effect is conflict between X and Y," "whether this is intentional is not determinable from the visual evidence."
 
 ---
 
@@ -61,7 +79,7 @@ REGISTER 1: PERCEPTUAL
 
 What does the eye do with this work in the first seconds of looking — before interpretation, before meaning?
 
-Analyze: where attention goes first and why. What holds the eye and what lets it go. How visual weight is distributed. Where contrast, edges, and spatial relationships create movement or stop it. What the work is asking a viewer to do visually — and whether those requests conflict.
+Analyze: where attention goes first and why. What holds the eye and what lets it go. How visual weight is distributed. Where contrast, edges, and spatial relationships create movement or stop it. What the work pulls the eye toward and what the likely perceptual effect on the viewer is — and where those effects conflict.
 
 Plain language. Name specific visual features.
 
@@ -109,7 +127,7 @@ CULTURAL: What is preventing this work from being read clearly within the cultur
 
 CONCEPTUAL: Where does the work undercut its own argument?
 
-End with one sentence: which of these noise findings are intentional — serving a purpose in another register — versus accidental across all four.
+End with one sentence: which of these noise findings appear to serve a purpose in another register — and which read as unresolved conflicts with no clear function in the work.
 
 ---
 
