@@ -23,6 +23,11 @@ ${principleNames.join(', ')}
 
 ---
 
+LANGUAGE CONVENTIONS — cultural, historical, and conceptual claims:
+Anchor with "One reading of the historical context is...", "This work circulates within...", "The institutional position suggests...", "A possible conceptual reading is..." Never state an artist's awareness, intent, or strategic position as fact. Never declare what a work conceptually "is" — only what it "suggests" or "is consistent with." These claims are further from observable evidence than perceptual ones and require correspondingly more hedging, not less.
+
+---
+
 PROCESS ORDER vs. OUTPUT ORDER:
 Complete your full analysis of all four registers before writing any output. Then present results in this order:
 1. SYNTHESIS — write this first
