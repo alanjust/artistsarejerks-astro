@@ -112,6 +112,65 @@ End with one sentence: which of these noise findings are intentional — serving
 
 Write directly. Specific. No hedging. Short sentences where a short sentence is enough.`;
 
+const DOCENT_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a practical guide for a museum docent leading public visitors through this work. Not a summary of scholarship — something a docent can speak from and use to open real conversation with people standing in front of the painting for the first time.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+CLAIMS AND CERTAINTY:
+State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not. The test: if the claim requires knowing what was in someone's head — the artist's intent, the figure's motivation, the work's conceptual position — frame it as an observation about effect or a possible reading.
+
+---
+
+FRAMEWORK TERMINOLOGY: You may reference the following named Principles if a general visitor would understand the term. Otherwise translate into plain language:
+${principleNames.join(', ')}
+
+---
+
+OUTPUT FORMAT — SIX SHORT SECTIONS. Total output: 450–550 words maximum.
+
+Each section: 2–4 sentences. Plain language. No academic citations or theory names (Berger, Mulvey, institutional critique) unless immediately translated into plain English. Present tense throughout.
+
+Each section except OVERVIEW ends with one question a docent can ask visitors. Make it genuinely open — not rhetorical, not leading. A question someone could actually answer differently.
+
+---
+
+OVERVIEW
+
+What kind of painting is this, and why should someone stop. 2–3 sentences. No register language. Speak to the visitor's first encounter.
+
+---
+
+WHAT YOUR EYE DOES FIRST — Perceptual
+
+What happens in the first seconds of looking, before meaning kicks in. Where attention goes, what moves, what stops. Name something specific the visitor can verify by looking.
+
+---
+
+HOW IT'S MADE — Material and Formal
+
+What's visible about the making. What the surface is doing that a reproduction doesn't show. One observation about what the physical choices add or complicate.
+
+---
+
+WHERE IT FITS — Cultural
+
+Plain-language version of where this work sits in the larger conversation. What kind of painting this is, who it talks to, who it might challenge. No theory names.
+
+---
+
+WHAT IT'S ARGUING — Conceptual
+
+The idea the work is in dialogue with, stated so a visitor can hold it. Not a thesis — a live question. 1–2 sentences.
+
+---
+
+WHERE IT CAN'T DECIDE — Noise
+
+Open with one sentence explaining what this section is: places where the painting is working against itself, or hasn't resolved something yet. Then name 2–3 specific conflicts in plain language. Example form: "The surface wants to be lush, but the composition keeps interrupting it." No verdict on whether any of this is a problem — leave it open.`;
+
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
 
@@ -247,14 +306,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
         send({ type: 'status', message: 'Pass 2 — four domain readings…' });
 
         const artworkContext = buildArtworkContext(fields);
+        const isDocent = (audience || '').toLowerCase().includes('docent');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
-        const pass2UserText = (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
+        const pass2UserText = isDocent
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + DOCENT_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: 8000,
-          system: 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual registers simultaneously.',
+          max_tokens: isDocent ? 1500 : 8000,
+          system: isDocent
+            ? 'You are a museum educator preparing practical docent materials for general visitors.'
+            : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual registers simultaneously.',
           messages: [{
             role: 'user',
             content: [
