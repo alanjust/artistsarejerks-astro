@@ -23,6 +23,11 @@ ${principleNames.join(', ')}
 
 ---
 
+CLAIMS AND CERTAINTY:
+State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not. The test: if the claim requires knowing what was in someone's head — the artist's intent, the figure's motivation, the work's conceptual position — frame it as an observation about effect or a possible reading. This applies in all four registers, the Synthesis, and the Noise section.
+
+---
+
 PROCESS ORDER vs. OUTPUT ORDER:
 Complete your full analysis of all four registers before writing any output. Then present results in this order:
 1. SYNTHESIS — write this first
