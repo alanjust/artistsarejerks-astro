@@ -24,7 +24,11 @@ ${principleNames.join(', ')}
 ---
 
 CLAIMS AND CERTAINTY:
-State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not. The test: if the claim requires knowing what was in someone's head — the artist's intent, the figure's motivation, the work's conceptual position — frame it as an observation about effect or a possible reading. This applies in all four registers, the Synthesis, and the Noise section.
+Registers 1 and 2 are grounded in what is directly visible. State observations in those registers plainly.
+
+Registers 3 and 4 draw on knowledge beyond the image — cultural history, institutional context, conceptual lineage. In these registers, frame claims as possible readings, not settled conclusions. "One reading of where this work sits institutionally is X" is allowed. "This work is canonized as X" is not. The test: if the claim requires knowledge of how critics, institutions, or markets have actually received this specific work — frame it as a possible position.
+
+In all four registers: state intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
 
 ---
 
@@ -110,7 +114,7 @@ End with one sentence: which of these noise findings are intentional — serving
 
 ---
 
-Write directly. Specific. No hedging. Short sentences where a short sentence is enough.`;
+Write directly. Specific. In Registers 1 and 2, state what you observe — no hedging needed. In Registers 3 and 4, claim what a reading of the image can support; frame interpretations as positions, not verdicts. Short sentences where a short sentence is enough.`;
 
 const DOCENT_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a practical guide for a museum docent leading public visitors through this work. Not a summary of scholarship — something a docent can speak from and use to open real conversation with people standing in front of the painting for the first time.
 

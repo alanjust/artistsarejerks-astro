@@ -162,6 +162,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         <img id="resultThumbnail" class="fd-meta-thumbnail" alt="Analyzed artwork">
         <dl class="fd-meta-fields" id="metaFields"></dl>
       </div>
+      <p class="fd-epistemic-note">Registers 1 and 2 read what's in the image. Registers 3 and 4 read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p>
       <div id="analysisText" class="fd-analysis"></div>
       <div class="fd-copy-row">
         <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
@@ -567,6 +568,14 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
       width: 72px;
       height: 72px;
     }
+  }
+
+  .fd-epistemic-note {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+    font-style: italic;
   }
 
   .fd-analysis {
