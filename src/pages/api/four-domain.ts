@@ -116,7 +116,7 @@ End with one sentence: which of these noise findings are intentional — serving
 
 Write directly. Specific. In Registers 1 and 2, state what you observe — no hedging needed. In Registers 3 and 4, claim what a reading of the image can support; frame interpretations as positions, not verdicts. Short sentences where a short sentence is enough.`;
 
-const DOCENT_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a practical guide for a museum docent leading public visitors through this work. Not a summary of scholarship — something a docent can speak from and use to open real conversation with people standing in front of the painting for the first time.
+const DOCENT_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a docent guide for museum visitors. Your job is to give the docent three things: a surprise, a story, and an argument to start. Not a survey of the work — an experience of it. Write for a docent who wants to hold a room, not brief it.
 
 FORMAL OBSERVATIONS FROM PASS 1:
 ${pass1}
@@ -124,56 +124,50 @@ ${pass1}
 ---
 
 CLAIMS AND CERTAINTY:
-State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not. The test: if the claim requires knowing what was in someone's head — the artist's intent, the figure's motivation, the work's conceptual position — frame it as an observation about effect or a possible reading.
+State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
+
+For cultural and historical claims: include documented reception history, exhibition controversy, or critical scandal when you have specific confident knowledge of it — these are the most useful details a docent has. When you don't have confident specific knowledge, describe the cultural conversation generally. Do not invent specific incidents, dates, quotes, or venues. If a historical claim is plausible but not certain, flag it with "(verify before using)" immediately after the claim.
 
 ---
 
-FRAMEWORK TERMINOLOGY: You may reference the following named Principles if a general visitor would understand the term. Otherwise translate into plain language:
+FRAMEWORK TERMINOLOGY: Use the following named Principles to inform your analysis, but translate into plain language in the guide — visitors don't need the names:
 ${principleNames.join(', ')}
 
 ---
 
-OUTPUT FORMAT — SIX SHORT SECTIONS. Total output: 450–550 words maximum.
+OUTPUT FORMAT — THREE BEATS. Total: 400–500 words. Present tense. Short sentences. Write as prose a docent can speak from — each beat a natural pause in a conversation. No academic citations or theory labels.
 
-Each section: 2–4 sentences. Plain language. No academic citations or theory names (Berger, Mulvey, institutional critique) unless immediately translated into plain English. Present tense throughout.
+Use these three headers exactly:
 
-Each section except OVERVIEW ends with one question a docent can ask visitors. Make it genuinely open — not rhetorical, not leading. A question someone could actually answer differently.
-
----
-
-OVERVIEW
-
-What kind of painting is this, and why should someone stop. 2–3 sentences. No register language. Speak to the visitor's first encounter.
+## THE HOOK
+## THE STORY
+## THE LIVE QUESTION
 
 ---
 
-WHAT YOUR EYE DOES FIRST — Perceptual
+## THE HOOK
 
-What happens in the first seconds of looking, before meaning kicks in. Where attention goes, what moves, what stops. Name something specific the visitor can verify by looking.
+One thing about this work that a visitor wouldn't notice on their own — but once pointed out, can't be unseen. Perceptual and specific. An aha, not a summary.
 
----
-
-HOW IT'S MADE — Material and Formal
-
-What's visible about the making. What the surface is doing that a reproduction doesn't show. One observation about what the physical choices add or complicate.
+Open with a direct question the docent can put to the group before saying anything else. Then name what's actually happening and why it's surprising. 3–4 sentences.
 
 ---
 
-WHERE IT FITS — Cultural
+## THE STORY
 
-Plain-language version of where this work sits in the larger conversation. What kind of painting this is, who it talks to, who it might challenge. No theory names.
+The cultural life of this work: who made it, what moment it arrived in, who it was talking to, what argument it was making or entering. Narrative, not institutional positioning. No register names, no theory labels.
 
----
+If there are documented anecdotes — a rejection, a critical controversy, a specific exhibition scandal — include them. Visitors remember these. Flag anything uncertain with "(verify before using)."
 
-WHAT IT'S ARGUING — Conceptual
-
-The idea the work is in dialogue with, stated so a visitor can hold it. Not a thesis — a live question. 1–2 sentences.
+Close with one sentence on where the work sits now — how the conversation around it has or hasn't settled. 4–6 sentences total.
 
 ---
 
-WHERE IT CAN'T DECIDE — Noise
+## THE LIVE QUESTION
 
-Open with one sentence explaining what this section is: places where the painting is working against itself, or hasn't resolved something yet. Then name 2–3 specific conflicts in plain language. Example form: "The surface wants to be lush, but the composition keeps interrupting it." No verdict on whether any of this is a problem — leave it open.`;
+The tension the work hasn't resolved — something visitors tend to land on differently. Frame it as something the docent can put to the group directly. "Some people read this as X. Some read it as Y. What do you see?"
+
+2–3 sentences. Leave it open. No verdict.`;
 
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
