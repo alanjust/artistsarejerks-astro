@@ -1022,21 +1022,19 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
             analysisText.innerHTML = await marked(data.analysis || '');
             linkPrinciples(analysisText);
 
-            // Rename the first SYNTHESIS h2 to an audience-specific label when framing is active
-            if (selectedAudience) {
-              const overviewLabels: Record<string, string> = {
-                'artist, work in progress':       'Overview — For the Artist',
-                'curator or museum preparator':   'Overview — Curatorial',
-                'art critic or educator':         'Overview — Critical / Pedagogical',
-                'art history instructor':         'Overview — Historical',
-              };
-              const label = overviewLabels[selectedAudience];
-              if (label) {
-                const firstH2 = analysisText.querySelector('h2');
-                if (firstH2 && /synthesis/i.test(firstH2.textContent || '')) {
-                  firstH2.textContent = label;
-                }
-              }
+            // Always rename SYNTHESIS h2 to Overview + audience label
+            const overviewLabels: Record<string, string> = {
+              '':                               'Overview',
+              'artist, work in progress':       'Overview — For the Artist',
+              'curator or museum preparator':   'Overview — Curatorial',
+              'art critic or educator':         'Overview — Educator / Critic',
+              'art history instructor':         'Overview — Art Historian',
+              'docent / public audience':       'Overview — Docent Guide',
+            };
+            const overviewLabel = overviewLabels[selectedAudience] ?? 'Overview';
+            const firstH2 = analysisText.querySelector('h2');
+            if (firstH2 && /synthesis/i.test(firstH2.textContent || '')) {
+              firstH2.textContent = overviewLabel;
             }
 
             pass1Text.textContent = data.pass1 || '';
@@ -1224,12 +1222,26 @@ ${headerHTML}
     const html = analysisText.innerHTML;
     if (!html.trim()) return;
 
-    const plain = htmlToPlainText(html);
+    // Build artwork metadata header for pasted output
+    const artist     = (document.getElementById('fieldArtist')     as HTMLInputElement)?.value.trim();
+    const title      = (document.getElementById('fieldTitle')      as HTMLInputElement)?.value.trim();
+    const year       = (document.getElementById('fieldYear')       as HTMLInputElement)?.value.trim();
+    const medium     = (document.getElementById('fieldMedium')     as HTMLInputElement)?.value.trim();
+    const substrate  = (document.getElementById('fieldSubstrate')  as HTMLInputElement)?.value.trim();
+    const dimensions = (document.getElementById('fieldDimensions') as HTMLInputElement)?.value.trim();
+
+    const mediumLine = medium && substrate ? `${medium} on ${substrate}` : medium || substrate;
+    const subLine = [title && year ? `${title}, ${year}` : title || year, mediumLine, dimensions].filter(Boolean).join(' | ');
+
+    const metaHtml = artist || subLine ? `<div style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid #000;">${artist ? `<p style="font-size:1rem;font-weight:700;margin:0 0 0.25rem;font-family:Arial,sans-serif;">${artist}</p>` : ''}${subLine ? `<p style="font-size:0.875rem;color:#555;margin:0;font-family:Arial,sans-serif;">${subLine}</p>` : ''}</div>` : '';
+    const metaPlain = [artist, subLine].filter(Boolean).join('\n');
+
+    const plain = (metaPlain ? metaPlain + '\n\n' : '') + htmlToPlainText(html);
     const imgTag = resizedImageForCopy
       ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
       : '';
     const absoluteHtml = html.replace(/\bhref="(\/)/g, `href="${window.location.origin}/`);
-    const htmlPayload = `<meta charset="utf-8">${imgTag}${absoluteHtml}`;
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${metaHtml}${absoluteHtml}`;
 
     try {
       await navigator.clipboard.write([
