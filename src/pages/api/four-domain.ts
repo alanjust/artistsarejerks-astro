@@ -28,6 +28,8 @@ The perceptual and material domains are grounded in what is directly visible. St
 
 The cultural and conceptual domains draw on knowledge beyond the image — cultural history, institutional context, conceptual lineage. In these domains, frame claims as possible readings, not settled conclusions. "One reading of where this work sits institutionally is X" is allowed. "This work is canonized as X" is not. The test: if the claim requires knowledge of how critics, institutions, or markets have actually received this specific work — frame it as a possible position.
 
+When you make a cultural or conceptual claim, name the specific observable evidence in the image that motivates it. A claim with no observable anchor is not a possible reading — it is speculation.
+
 In all four domains: state intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
 
 ---
