@@ -137,6 +137,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         <button type="button" class="fd-aud-btn" data-value="art history instructor">Art Historian / Educator</button>
         <button type="button" class="fd-aud-btn" data-value="critic">Critic</button>
         <button type="button" class="fd-aud-btn" data-value="docent / public audience">Docent / Public Audience</button>
+        <button type="button" class="fd-aud-btn" data-value="tour guide">Tour Guide</button>
       </div>
     </div>
 
@@ -1033,6 +1034,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               'art history instructor':         'Overview — Art Historian / Educator',
               'critic':                         'Overview',
               'docent / public audience':       'Overview — Docent Guide',
+              'tour guide':                     'Overview',
             };
             const overviewLabel = overviewLabels[selectedAudience] ?? 'Overview';
             analysisText.innerHTML = analysisText.innerHTML.replace(

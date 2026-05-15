@@ -210,6 +210,70 @@ Close with a position. One or two sentences. Something you'd put your name on.
 
 Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. If it sounds like a wall label or a conference paper, rewrite it. If it sounds like someone who has stood in front of a lot of work and has something to say about this one specifically, it's right.`;
 
+const TOUR_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a complete tour stop guide for a museum docent leading a group. Your output has two parts: entry prompts that open the stop with directed looking, followed by a tour narrative the docent speaks from after the group has looked.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+CLAIMS AND CERTAINTY:
+State intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
+
+For cultural and historical claims: include documented reception history, exhibition controversy, or critical scandal when you have specific confident knowledge of it — these are the most useful details a docent has. When you don't have confident specific knowledge, describe the cultural conversation generally. Do not invent specific incidents, dates, quotes, or venues. If a historical claim is plausible but not certain, flag it with "(verify before using)" immediately after the claim.
+
+---
+
+FRAMEWORK TERMINOLOGY: Use the following named Principles to inform your analysis, but translate into plain language — visitors don't need the names:
+${principleNames.join(', ')}
+
+---
+
+OUTPUT FORMAT — TWO PARTS. Present tense. Short sentences. Write as prose a docent can speak from. No academic citations or theory labels.
+
+Use these four headers exactly:
+
+## LOOKING PROMPTS
+## THE HOOK
+## THE STORY
+## THE LIVE QUESTION
+
+---
+
+## LOOKING PROMPTS
+
+2–3 questions the docent reads to the group before saying anything about the work. Each question must be locatable — the group should be able to point to exactly where in the painting they're being sent. Ask only for sensory or formal observations: color, texture, edges, how the eye moves, what changes, what feels different. No interpretation. No art historical framing. No mention of artist, title, meaning, or intent.
+
+Phrasing is an invitation, not a test. A visitor with no art training should be able to answer every prompt. Write each prompt as a sentence the docent can read aloud directly to the group.
+
+Close with a single line labeled exactly "Start here:" — name the one formal relationship or element that, once noticed, changes how a viewer reads everything else in the work. Phrase it as a looking instruction, not a conclusion.
+
+---
+
+## THE HOOK
+
+One thing about this work a visitor wouldn't notice on their own — but once pointed out, can't be unseen. Perceptual and specific. An aha, not a summary.
+
+Open with a direct question the docent can put to the group. Then name what's actually happening and why it's surprising. 3–4 sentences.
+
+---
+
+## THE STORY
+
+The cultural life of this work: who made it, what moment it arrived in, who it was talking to, what argument it was making or entering. Narrative, not institutional positioning. No framework labels.
+
+If there are documented anecdotes — a rejection, a critical controversy, a specific exhibition scandal — include them. Visitors remember these. Flag anything uncertain with "(verify before using)."
+
+Close with one sentence on where the work sits now — how the conversation around it has or hasn't settled. 4–6 sentences total.
+
+---
+
+## THE LIVE QUESTION
+
+The tension the work hasn't resolved — something visitors tend to land on differently. Frame it as something the docent can put to the group directly. "Some people read this as X. Some read it as Y. What do you see?"
+
+2–3 sentences. Leave it open. No verdict.`;
+
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
 
@@ -330,27 +394,34 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? 'Pass 2 — docent guide…'
           : audienceForStatus.includes('critic')
           ? 'Pass 2 — criticism…'
+          : audienceForStatus.includes('tour')
+          ? 'Pass 2 — tour guide…'
           : 'Pass 2 — four domain readings…';
         send({ type: 'status', message: statusMsg });
 
         const artworkContext = buildArtworkContext(fields);
         const isDocent = (audience || '').toLowerCase().includes('docent');
         const isCritic = (audience || '').toLowerCase().includes('critic');
+        const isTour  = (audience || '').toLowerCase().includes('tour');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
         const pass2UserText = isDocent
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + DOCENT_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : isCritic
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + CRITIC_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : isTour
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + TOUR_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: isDocent ? 1500 : isCritic ? 1000 : 8000,
+          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
             : isCritic
             ? 'You are a working art critic writing a short review for an intelligent general reader. You have a point of view. You use it.'
+            : isTour
+            ? 'You are a museum educator preparing a complete tour stop guide — entry prompts for group looking, followed by a docent narrative a guide can speak from.'
             : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',
