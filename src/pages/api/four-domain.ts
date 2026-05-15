@@ -242,11 +242,13 @@ Use these four headers exactly:
 
 ## LOOKING PROMPTS
 
-2–3 questions the docent reads to the group before saying anything about the work. Each question must be locatable — the group should be able to point to exactly where in the painting they're being sent. Ask only for sensory or formal observations: color, texture, edges, how the eye moves, what changes, what feels different. No interpretation. No art historical framing. No mention of artist, title, meaning, or intent.
+Write exactly three prompts. Each prompt must send the viewer to a different specific area of the work. No two prompts may direct attention to the same location or the same formal quality. Together the three prompts should cover distinct sensory dimensions — for example: one about color or light, one about texture or surface, one about spatial relationships or where the eye moves. Choose the three that will most reward a group standing in front of the work.
+
+Each prompt must be locatable — the group should be able to point to exactly where in the painting they're being sent. Ask only for sensory or formal observations. No interpretation. No art historical framing. No mention of artist, title, meaning, or intent.
 
 Phrasing is an invitation, not a test. A visitor with no art training should be able to answer every prompt. Write each prompt as a sentence the docent can read aloud directly to the group.
 
-Close with a single line labeled exactly "Start here:" — name the one formal relationship or element that, once noticed, changes how a viewer reads everything else in the work. Phrase it as a looking instruction, not a conclusion.
+After the three prompts, add a single line labeled exactly "Start here:" — name the one formal relationship or element that, once noticed, changes how a viewer reads everything else in the work. Phrase it as a looking instruction, not a conclusion.
 
 ---
 
