@@ -66,7 +66,7 @@ What does the eye do with this work in the first seconds of looking — before i
 
 Analyze: where attention goes first and why. What holds the eye and what lets it go. How visual weight is distributed. Where contrast, edges, and spatial relationships create movement or stop it. What the work is asking a viewer to do visually — and whether those requests conflict.
 
-Plain language. Name specific visual features.
+Plain language. Name specific visual features. Say what the eye does, not what vision theoretically entails.
 
 ---
 
@@ -75,6 +75,8 @@ MATERIAL AND FORMAL
 What is this work physically made of, and how is the making visible?
 
 Analyze: what medium, substrate, and process are present. Whether the surface is honest about how it was constructed. Whether the physical choices support or contradict what the work appears to be doing. What the material asks of the viewer up close versus at a distance.
+
+Say what the hand did. Not what materiality implies.
 
 ---
 
@@ -88,6 +90,8 @@ Analyze: what cultural conversation this work is entering. What it signals about
 
 Illegibility here is not automatically failure. It may be deliberate transgression. Name which and say why.
 
+Say where the work lands in the room, not how positioning functions theoretically.
+
 ---
 
 CONCEPTUAL
@@ -97,6 +101,8 @@ What argument or system of ideas is this work in dialogue with?
 Draw on the full breadth of art theory, philosophy, and art history. No framework limits.
 
 Analyze: what intellectual or artistic tradition this work is responding to. What position it appears to be taking — and whether the visual and material choices support that position. Where perceptual thinness might be the conceptual point. What historical precedents matter for reading this accurately.
+
+Say what argument the work is making. Not what it instantiates or problematizes.
 
 ---
 
@@ -318,7 +324,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           max_tokens: isDocent ? 1500 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
-            : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously.',
+            : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',
             content: [
