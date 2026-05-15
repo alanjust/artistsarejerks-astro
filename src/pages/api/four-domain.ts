@@ -177,6 +177,39 @@ The tension the work hasn't resolved — something visitors tend to land on diff
 
 2–3 sentences. Leave it open. No verdict.`;
 
+const CRITIC_PROMPT = (pass1: string, principleNames: string[]) => `You are writing a short piece of art criticism for an intelligent general reader who has not seen this work. Not a survey. Not a report. A case.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+FRAMEWORK TERMINOLOGY: Use the following named Principles to inform your thinking, but translate into plain language — readers don't need the names:
+${principleNames.join(', ')}
+
+---
+
+CLAIMS AND CERTAINTY:
+What is directly visible — what the eye does, how the work is made, how the surface behaves — state plainly.
+Cultural position, historical significance, conceptual argument — frame as positions, not verdicts. You can be assertive. But claims about how critics, institutions, or markets have actually received this specific work require the same epistemic frame: "one reading" not "this is."
+State intent as a reading: "this reads as deliberate" not "this was deliberate."
+
+---
+
+Write 350–450 words of continuous prose. No headers. No sections. No framework labels.
+
+Open with the thing that arrests you — what stops you in front of this work before you've named what it is. Not a description. Not a summary. The thing.
+
+Make the case. What is this work doing? Why does it matter — or where does it fall short? Move through specific observations. Don't summarize — accumulate.
+
+Situate it. Where does this work land in the larger conversation? What is it answering, ignoring, or departing from?
+
+Name one honest tension or limitation. Not a verdict. A live question the work leaves open.
+
+Close with a position. One or two sentences. Something you'd put your name on.
+
+Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. If it sounds like a wall label or a conference paper, rewrite it. If it sounds like someone who has stood in front of a lot of work and has something to say about this one specifically, it's right.`;
+
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
 
@@ -185,29 +218,12 @@ function getAudienceFraming(audience: string): string {
 The material/formal and perceptual domains are most live for this person. Frame noise findings as decisions still available — not verdicts on what's broken. The work is open. What can still change? What's worth reconsidering before going further? Keep the conceptual and cultural domains thorough but frame them as context, not urgency.`;
   }
 
-  if (a.includes('show') || a.includes('gallery') || a.includes('exhibit') || a.includes('pre-show')) {
-    return `AUDIENCE FRAMING — ARTIST, PRE-SHOW REVIEW:
-The cultural domain is primary here. The work is done — the question is whether it's legible to the institution and audience the show is aimed at. Frame noise findings around what might misfire in that specific context. If findings suggest the work may read differently than intended within the show's thesis, say so directly. Note: if this is one of several works, flag any signals that might create coherence problems across the body of work.`;
-  }
-
-  if (a.includes('curator') || a.includes('preparator') || a.includes('museum')) {
-    return `AUDIENCE FRAMING — CURATOR OR MUSEUM PREPARATOR:
-The cultural domain is the primary instrument. The conceptual domain matters for building or testing a curatorial argument. Frame noise findings around what might weaken an exhibit's through-line or confuse the institutional thesis. This person is making decisions about placement and grouping — findings should be actionable at that level.`;
-  }
-
-  if (a.includes('critic') || a.includes('educator') || a.includes('teacher') || a.includes('student')) {
-    return `AUDIENCE FRAMING — ART CRITIC OR EDUCATOR:
-All four domains carry equal weight. The noise findings here are pedagogical — their job is to show how domain failures are distinct from each other, so they can be named and taught separately. Don't collapse findings into a single verdict. The goal is to model the analytical distinction between perceptual failure, material dishonesty, cultural illegibility, and conceptual contradiction — because most criticism conflates them.`;
-  }
-
   if (a.includes('history') || a.includes('instructor') || a.includes('canon') || a.includes('historical')) {
-    return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR:
-The conceptual and historical domain is primary. The cultural domain explains the work's reception and canon position. The noise findings have a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help an instructor explain why a work matters in the canon even when students might initially find it visually unrewarding.`;
+    return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR / EDUCATOR:
+The conceptual and historical domain is primary. The cultural domain explains the work's reception and canon position. Noise findings have a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help someone explain why a work matters in the canon even when a student might initially find it visually unrewarding. Also identify what this work demonstrates as a teaching example — what principle or problem it makes visible that applies beyond this specific work.`;
   }
 
-  return audience
-    ? `AUDIENCE CONTEXT: ${audience}\nShape the overview and noise findings to be actionable for this specific context.`
-    : '';
+  return '';
 }
 
 function buildArtworkContext(fields: Record<string, string>): string {
@@ -309,21 +325,32 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .join('\n\n');
 
         send({ type: 'pass1_complete', pass1: pass1Text });
-        send({ type: 'status', message: 'Pass 2 — four domain readings…' });
+        const audienceForStatus = (audience || '').toLowerCase();
+        const statusMsg = audienceForStatus.includes('docent')
+          ? 'Pass 2 — docent guide…'
+          : audienceForStatus.includes('critic')
+          ? 'Pass 2 — criticism…'
+          : 'Pass 2 — four domain readings…';
+        send({ type: 'status', message: statusMsg });
 
         const artworkContext = buildArtworkContext(fields);
         const isDocent = (audience || '').toLowerCase().includes('docent');
+        const isCritic = (audience || '').toLowerCase().includes('critic');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
         const pass2UserText = isDocent
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + DOCENT_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : isCritic
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + CRITIC_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: isDocent ? 1500 : 8000,
+          max_tokens: isDocent ? 1500 : isCritic ? 1000 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
+            : isCritic
+            ? 'You are a working art critic writing a short review for an intelligent general reader. You have a point of view. You use it.'
             : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',

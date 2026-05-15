@@ -133,11 +133,9 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     <div class="fd-audience-row" id="audienceRow" style="display:none">
       <p class="fd-audience-label">I'm analyzing this as a</p>
       <div class="fd-audience-buttons" id="audienceButtons">
-        <button type="button" class="fd-aud-btn fd-aud-btn--active" data-value="">No framing</button>
-        <button type="button" class="fd-aud-btn" data-value="artist, work in progress">Artist — Work in Progress</button>
-        <button type="button" class="fd-aud-btn" data-value="curator or museum preparator">Curator / Gallery Preparator</button>
-        <button type="button" class="fd-aud-btn" data-value="art critic or educator">Educator / Critic</button>
-        <button type="button" class="fd-aud-btn" data-value="art history instructor">Art Historian</button>
+        <button type="button" class="fd-aud-btn fd-aud-btn--active" data-value="artist, work in progress">Artist — Work in Progress</button>
+        <button type="button" class="fd-aud-btn" data-value="art history instructor">Art Historian / Educator</button>
+        <button type="button" class="fd-aud-btn" data-value="critic">Critic</button>
         <button type="button" class="fd-aud-btn" data-value="docent / public audience">Docent / Public Audience</button>
       </div>
     </div>
@@ -1031,11 +1029,9 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 
             // Rename SYNTHESIS h2 to Overview + audience label — scan all h2s for reliability
             const overviewLabels: Record<string, string> = {
-              '':                               'Overview',
               'artist, work in progress':       'Overview — For the Artist',
-              'curator or museum preparator':   'Overview — Curatorial',
-              'art critic or educator':         'Overview — Educator / Critic',
-              'art history instructor':         'Overview — Art Historian',
+              'art history instructor':         'Overview — Art Historian / Educator',
+              'critic':                         'Overview',
               'docent / public audience':       'Overview — Docent Guide',
             };
             const overviewLabel = overviewLabels[selectedAudience] ?? 'Overview';
