@@ -1039,12 +1039,10 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               'docent / public audience':       'Overview — Docent Guide',
             };
             const overviewLabel = overviewLabels[selectedAudience] ?? 'Overview';
-            for (const h2 of Array.from(analysisText.querySelectorAll('h2'))) {
-              if (/synthesis/i.test(h2.textContent?.trim() || '')) {
-                h2.textContent = overviewLabel;
-                break;
-              }
-            }
+            analysisText.innerHTML = analysisText.innerHTML.replace(
+              /<h[1-6]>\s*SYNTHESIS\s*<\/h[1-6]>/gi,
+              `<h2>${overviewLabel}</h2>`
+            );
 
             pass1Text.textContent = data.pass1 || '';
 
