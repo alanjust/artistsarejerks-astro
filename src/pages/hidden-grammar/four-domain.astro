@@ -1020,9 +1020,16 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
             }
 
             analysisText.innerHTML = await marked(data.analysis || '');
+
+            // Strip model-generated "ANALYSIS: [title]" opener — duplicate of artwork metadata
+            const firstEl = analysisText.firstElementChild;
+            if (firstEl && /^ANALYSIS:/i.test(firstEl.textContent?.trim() || '')) {
+              firstEl.remove();
+            }
+
             linkPrinciples(analysisText);
 
-            // Always rename SYNTHESIS h2 to Overview + audience label
+            // Rename SYNTHESIS h2 to Overview + audience label — scan all h2s for reliability
             const overviewLabels: Record<string, string> = {
               '':                               'Overview',
               'artist, work in progress':       'Overview — For the Artist',
@@ -1032,9 +1039,11 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               'docent / public audience':       'Overview — Docent Guide',
             };
             const overviewLabel = overviewLabels[selectedAudience] ?? 'Overview';
-            const firstH2 = analysisText.querySelector('h2');
-            if (firstH2 && /synthesis/i.test(firstH2.textContent || '')) {
-              firstH2.textContent = overviewLabel;
+            for (const h2 of Array.from(analysisText.querySelectorAll('h2'))) {
+              if (/synthesis/i.test(h2.textContent?.trim() || '')) {
+                h2.textContent = overviewLabel;
+                break;
+              }
             }
 
             pass1Text.textContent = data.pass1 || '';
