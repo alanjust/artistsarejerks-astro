@@ -1044,6 +1044,18 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               `<h2>${overviewLabel}</h2>`
             );
 
+            // Strip "REGISTER N:" prefix from register headings, normalize to h2
+            analysisText.innerHTML = analysisText.innerHTML.replace(
+              /<h[1-6]>\s*REGISTER\s+\d+:\s*(.*?)\s*<\/h[1-6]>/gi,
+              '<h2>$1</h2>'
+            );
+
+            // Normalize NOISE — CONSOLIDATED heading to h2
+            analysisText.innerHTML = analysisText.innerHTML.replace(
+              /<h[1-6]>\s*NOISE\s*[—–\-]+\s*CONSOLIDATED\s*<\/h[1-6]>/gi,
+              '<h2>NOISE — CONSOLIDATED</h2>'
+            );
+
             pass1Text.textContent = data.pass1 || '';
 
             const artworkMeta = document.getElementById('artworkMeta') as HTMLElement;
