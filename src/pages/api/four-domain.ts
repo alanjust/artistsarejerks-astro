@@ -10,7 +10,7 @@ const PRINCIPLE_NAMES: string[] = (principlesData.principles as any[])
 
 const PASS1_PROMPT = `Describe only what you can directly observe in this image. Cover: what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye and what doesn't, how near and far space is handled. Be specific and granular. Report in the order the eye encounters things. No interpretation. No art historical references. No quality judgments.`;
 
-const PASS2_PROMPT = (pass1: string, principleNames: string[]) => `You are analyzing a work of art across four independent registers. A formal observation pass has already been completed — use it as your evidence base, but look at the image directly too, especially for the material and cultural registers.
+const PASS2_PROMPT = (pass1: string, principleNames: string[]) => `You are analyzing a work of art across four independent domains. A formal observation pass has already been completed — use it as your evidence base, but look at the image directly too, especially for the material and cultural domains.
 
 FORMAL OBSERVATIONS FROM PASS 1:
 ${pass1}
@@ -24,41 +24,43 @@ ${principleNames.join(', ')}
 ---
 
 CLAIMS AND CERTAINTY:
-Registers 1 and 2 are grounded in what is directly visible. State observations in those registers plainly.
+The perceptual and material domains are grounded in what is directly visible. State observations in those domains plainly.
 
-Registers 3 and 4 draw on knowledge beyond the image — cultural history, institutional context, conceptual lineage. In these registers, frame claims as possible readings, not settled conclusions. "One reading of where this work sits institutionally is X" is allowed. "This work is canonized as X" is not. The test: if the claim requires knowledge of how critics, institutions, or markets have actually received this specific work — frame it as a possible position.
+The cultural and conceptual domains draw on knowledge beyond the image — cultural history, institutional context, conceptual lineage. In these domains, frame claims as possible readings, not settled conclusions. "One reading of where this work sits institutionally is X" is allowed. "This work is canonized as X" is not. The test: if the claim requires knowledge of how critics, institutions, or markets have actually received this specific work — frame it as a possible position.
 
-In all four registers: state intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
+In all four domains: state intent and agency as readings, not facts. "This reads as deliberate" is allowed. "This was deliberate" is not.
 
 ---
 
 PROCESS ORDER vs. OUTPUT ORDER:
-Complete your full analysis of all four registers before writing any output. Then present results in this order:
-1. SYNTHESIS — write this first
+Complete your full analysis of all four domains before writing any output. Then present results in this order:
+1. OVERVIEW — write this first
 2. PERCEPTUAL
 3. MATERIAL AND FORMAL
 4. CULTURAL
 5. CONCEPTUAL
 6. NOISE — CONSOLIDATED — write this last
 
-Run all four registers. Do not collapse them into each other. A finding in one register is not evidence in another.
+Run all four domains. Do not collapse them into each other. A finding in one domain is not evidence in another.
 
-OUTPUT FORMAT FOR EACH REGISTER:
+OUTPUT FORMAT FOR EACH DOMAIN:
 Write full detailed prose only. No bullet summaries. No inline noise sub-sections — all noise findings go to the NOISE — CONSOLIDATED section at the end.
 
 ---
 
-SYNTHESIS
+OVERVIEW
 
-Which register is this work most alive in? Where does it earn the most — and where is it losing ground?
+Report what happens between the four domains. Not a verdict on the work — a map of how the domains behave in relation to each other.
 
-If an audience context was provided, address directly what's actionable for that person.
+Where do the perceptual, material, cultural, and conceptual findings pull in the same direction? Where do they conflict? Name the specific tensions. If the attentional logic and the conceptual argument are working against each other, say so. If the material handling stabilizes or destabilizes what the eye is doing, say that. Don't resolve contradictions the work hasn't resolved.
 
-One closing sentence. Not a quality verdict. A direction.
+Write in short declarative sentences. No hedging, but no omniscient authority either. State what the domain work shows — not what the critic concludes.
+
+One closing sentence. Name the most significant unresolved tension. Not a quality verdict. Not a direction for the artist. The live question the work is sitting inside.
 
 ---
 
-REGISTER 1: PERCEPTUAL
+PERCEPTUAL
 
 What does the eye do with this work in the first seconds of looking — before interpretation, before meaning?
 
@@ -68,7 +70,7 @@ Plain language. Name specific visual features.
 
 ---
 
-REGISTER 2: MATERIAL AND FORMAL
+MATERIAL AND FORMAL
 
 What is this work physically made of, and how is the making visible?
 
@@ -76,7 +78,7 @@ Analyze: what medium, substrate, and process are present. Whether the surface is
 
 ---
 
-REGISTER 3: CULTURAL
+CULTURAL
 
 Where does this work sit in the larger field of what gets valued, desired, and validated — by institutions, markets, critics, communities?
 
@@ -88,19 +90,19 @@ Illegibility here is not automatically failure. It may be deliberate transgressi
 
 ---
 
-REGISTER 4: CONCEPTUAL
+CONCEPTUAL
 
 What argument or system of ideas is this work in dialogue with?
 
 Draw on the full breadth of art theory, philosophy, and art history. No framework limits.
 
-Analyze: what intellectual or artistic tradition this work is responding to. What position it appears to be taking — and whether the visual and material choices support that position. Where thinness in the perceptual register might be the conceptual point. What historical precedents matter for reading this accurately.
+Analyze: what intellectual or artistic tradition this work is responding to. What position it appears to be taking — and whether the visual and material choices support that position. Where perceptual thinness might be the conceptual point. What historical precedents matter for reading this accurately.
 
 ---
 
 NOISE — CONSOLIDATED
 
-Four named sub-sections. Each names the specific conflict or interference. If nothing is interfering in a register, say so in one sentence.
+Four named sub-sections. Each names the specific conflict or interference. If nothing is interfering in a domain, say so in one sentence.
 
 PERCEPTUAL: What is interfering with a clean read? Name the specific visual conflict.
 
@@ -110,11 +112,11 @@ CULTURAL: What is preventing this work from being read clearly within the cultur
 
 CONCEPTUAL: Where does the work undercut its own argument?
 
-End with one sentence: which of these noise findings are intentional — serving a purpose in another register — versus accidental across all four.
+End with one sentence: which of these noise findings are intentional — serving a purpose in another domain — versus accidental across all four.
 
 ---
 
-Write directly. Specific. In Registers 1 and 2, state what you observe — no hedging needed. In Registers 3 and 4, claim what a reading of the image can support; frame interpretations as positions, not verdicts. Short sentences where a short sentence is enough.`;
+Write directly. Specific. In the perceptual and material sections, state what you observe — no hedging needed. In the cultural and conceptual sections, claim what a reading of the image can support; frame interpretations as positions, not verdicts. Short sentences where a short sentence is enough.`;
 
 const DOCENT_PROMPT = (pass1: string, principleNames: string[]) => `You are preparing a docent guide for museum visitors. Your job is to give the docent three things: a surprise, a story, and an argument to start. Not a survey of the work — an experience of it. Write for a docent who wants to hold a room, not brief it.
 
@@ -174,31 +176,31 @@ function getAudienceFraming(audience: string): string {
 
   if (a.includes('progress') || a.includes('wip') || a.includes('making')) {
     return `AUDIENCE FRAMING — ARTIST, WORK IN PROGRESS:
-The Material/Formal and Perceptual registers are most live for this person. Frame noise findings as decisions still available — not verdicts on what's broken. The work is open. What can still change? What's worth reconsidering before going further? Keep the Conceptual and Cultural registers thorough but frame them as context, not urgency.`;
+The material/formal and perceptual domains are most live for this person. Frame noise findings as decisions still available — not verdicts on what's broken. The work is open. What can still change? What's worth reconsidering before going further? Keep the conceptual and cultural domains thorough but frame them as context, not urgency.`;
   }
 
   if (a.includes('show') || a.includes('gallery') || a.includes('exhibit') || a.includes('pre-show')) {
     return `AUDIENCE FRAMING — ARTIST, PRE-SHOW REVIEW:
-The Cultural register is primary here. The work is done — the question is whether it's legible to the institution and audience the show is aimed at. Frame noise findings around what might misfire in that specific context. If findings suggest the work may read differently than intended within the show's thesis, say so directly. Note: if this is one of several works, flag any signals that might create coherence problems across the body of work.`;
+The cultural domain is primary here. The work is done — the question is whether it's legible to the institution and audience the show is aimed at. Frame noise findings around what might misfire in that specific context. If findings suggest the work may read differently than intended within the show's thesis, say so directly. Note: if this is one of several works, flag any signals that might create coherence problems across the body of work.`;
   }
 
   if (a.includes('curator') || a.includes('preparator') || a.includes('museum')) {
     return `AUDIENCE FRAMING — CURATOR OR MUSEUM PREPARATOR:
-The Cultural register is the primary instrument. The Conceptual register matters for building or testing a curatorial argument. Frame noise findings around what might weaken an exhibit's through-line or confuse the institutional thesis. This person is making decisions about placement and grouping — findings should be actionable at that level.`;
+The cultural domain is the primary instrument. The conceptual domain matters for building or testing a curatorial argument. Frame noise findings around what might weaken an exhibit's through-line or confuse the institutional thesis. This person is making decisions about placement and grouping — findings should be actionable at that level.`;
   }
 
   if (a.includes('critic') || a.includes('educator') || a.includes('teacher') || a.includes('student')) {
     return `AUDIENCE FRAMING — ART CRITIC OR EDUCATOR:
-All four registers carry equal weight. The noise detector here is pedagogical — its job is to show how domain failures are distinct from each other, so they can be named and taught separately. Don't collapse findings into a single verdict. The goal is to model the analytical distinction between perceptual failure, material dishonesty, cultural illegibility, and conceptual contradiction — because most criticism conflates them.`;
+All four domains carry equal weight. The noise findings here are pedagogical — their job is to show how domain failures are distinct from each other, so they can be named and taught separately. Don't collapse findings into a single verdict. The goal is to model the analytical distinction between perceptual failure, material dishonesty, cultural illegibility, and conceptual contradiction — because most criticism conflates them.`;
   }
 
   if (a.includes('history') || a.includes('instructor') || a.includes('canon') || a.includes('historical')) {
     return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR:
-The Conceptual/Historical register is primary. The Cultural register explains the work's reception and canon position. The noise detector has a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help an instructor explain why a work matters in the canon even when students might initially find it visually unrewarding.`;
+The conceptual and historical domain is primary. The cultural domain explains the work's reception and canon position. The noise findings have a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help an instructor explain why a work matters in the canon even when students might initially find it visually unrewarding.`;
   }
 
   return audience
-    ? `AUDIENCE CONTEXT: ${audience}\nShape the synthesis and noise findings to be actionable for this specific context.`
+    ? `AUDIENCE CONTEXT: ${audience}\nShape the overview and noise findings to be actionable for this specific context.`
     : '';
 }
 
@@ -316,7 +318,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           max_tokens: isDocent ? 1500 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
-            : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual registers simultaneously.',
+            : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously.',
           messages: [{
             role: 'user',
             content: [
