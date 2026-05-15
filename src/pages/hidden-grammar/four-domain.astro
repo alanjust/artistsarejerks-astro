@@ -162,7 +162,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         <img id="resultThumbnail" class="fd-meta-thumbnail" alt="Analyzed artwork">
         <dl class="fd-meta-fields" id="metaFields"></dl>
       </div>
-      <p class="fd-epistemic-note">Registers 1 and 2 read what's in the image. Registers 3 and 4 read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p>
+      <p class="fd-epistemic-note">The perceptual and material sections read what's in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p>
       <div id="analysisText" class="fd-analysis"></div>
       <div class="fd-copy-row">
         <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
@@ -1192,10 +1192,25 @@ strong { font-weight: 700; }
 hr { border: none; border-top: 1px solid #ccc; margin: 1rem 0; }
 ul, ol { margin: 0 0 0.7rem; padding-left: 1.25rem; }
 li { margin-bottom: 0.2rem; }
+.doc-framework { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #ccc; }
+.doc-framework h3 { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #999; margin: 0 0 0.4rem; }
+.doc-framework ul { margin: 0 0 0.6rem; padding-left: 1.1rem; font-size: 9pt; font-family: Arial, Helvetica, sans-serif; color: #333; }
+.doc-framework li { margin-bottom: 0.15rem; }
+.doc-note { font-size: 8.5pt; color: #888; font-style: italic; margin: 0 !important; }
 </style>
 </head>
 <body>
 ${headerHTML}
+<div class="doc-framework">
+  <h3>Art's Four Dimensions</h3>
+  <ul>
+    <li><strong>Perceptual</strong> — what the eye does in the first seconds, before meaning kicks in</li>
+    <li><strong>Material</strong> — what the work is made of, and how the making is visible</li>
+    <li><strong>Cultural</strong> — where the work sits in the field of what gets valued and recognized</li>
+    <li><strong>Conceptual</strong> — what argument or system of ideas the work is in dialogue with</li>
+  </ul>
+  <p class="doc-note">The perceptual and material sections read what's in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p>
+</div>
 <div>${analysisText.innerHTML}</div>
 </body>
 </html>`;
@@ -1236,12 +1251,14 @@ ${headerHTML}
     const metaHtml = artist || subLine ? `<div style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid #000;">${artist ? `<p style="font-size:1rem;font-weight:700;margin:0 0 0.25rem;font-family:Arial,sans-serif;">${artist}</p>` : ''}${subLine ? `<p style="font-size:0.875rem;color:#555;margin:0;font-family:Arial,sans-serif;">${subLine}</p>` : ''}</div>` : '';
     const metaPlain = [artist, subLine].filter(Boolean).join('\n');
 
-    const plain = (metaPlain ? metaPlain + '\n\n' : '') + htmlToPlainText(html);
+    const frameworkHtml = `<div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #e2e8f0;"><p style="font-size:0.6875rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;margin:0 0 0.5rem;font-family:Arial,sans-serif;">Art’s Four Dimensions</p><ul style="margin:0 0 0.75rem;padding-left:1.25rem;font-size:0.875rem;font-family:Arial,sans-serif;color:#334155;"><li style="margin-bottom:0.2rem;"><strong>Perceptual</strong> — what the eye does in the first seconds, before meaning kicks in</li><li style="margin-bottom:0.2rem;"><strong>Material</strong> — what the work is made of, and how the making is visible</li><li style="margin-bottom:0.2rem;"><strong>Cultural</strong> — where the work sits in the field of what gets valued and recognized</li><li style="margin-bottom:0.2rem;"><strong>Conceptual</strong> — what argument or system of ideas the work is in dialogue with</li></ul><p style="font-size:0.8125rem;color:#94a3b8;margin:0;font-style:italic;font-family:Arial,sans-serif;">The perceptual and material sections read what’s in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p></div>`;
+    const frameworkPlain = `Art's Four Dimensions\n• Perceptual — what the eye does in the first seconds, before meaning kicks in\n• Material — what the work is made of, and how the making is visible\n• Cultural — where the work sits in the field of what gets valued and recognized\n• Conceptual — what argument or system of ideas the work is in dialogue with\n\nThe perceptual and material sections read what's in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.`;
+    const plain = (metaPlain ? metaPlain + '\n\n' : '') + frameworkPlain + '\n\n' + htmlToPlainText(html);
     const imgTag = resizedImageForCopy
       ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
       : '';
     const absoluteHtml = html.replace(/\bhref="(\/)/g, `href="${window.location.origin}/`);
-    const htmlPayload = `<meta charset="utf-8">${imgTag}${metaHtml}${absoluteHtml}`;
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${metaHtml}${frameworkHtml}${absoluteHtml}`;
 
     try {
       await navigator.clipboard.write([
