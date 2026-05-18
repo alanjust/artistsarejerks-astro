@@ -278,6 +278,36 @@ The tension the work hasn't resolved — something visitors tend to land on diff
 
 2–3 sentences. Leave it open. No verdict.`;
 
+const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
+  const audienceLine = audience
+    ? `This analysis was prepared for: ${audience}.\n\n`
+    : '';
+
+  return `${audienceLine}A two-pass analysis of an artwork has been completed. Your job is to make the analytical moves explicit — to help the person who received this analysis build a skill they can use again.
+
+FORMAL OBSERVATIONS (PASS 1):
+${pass1}
+
+ANALYSIS (PASS 2):
+${pass2}
+
+---
+
+Write two sections. Use these headers exactly:
+
+## FRAMEWORK COMPETENCIES
+
+Identify 3–4 analytical habits this analysis demonstrated that apply to any work — not just this one. Write each as a move the reader can practice the next time they stand in front of a painting. Active, specific, usable. Not general principles. Not what to know. What to do.
+
+Calibrate to the person: if the audience is an artist, frame skills around reading material choices and what's still open. If an educator, frame around how to teach significance. If a critic, frame around making a case. If a docent or tour guide, frame around directing attention and building a stop.
+
+## THIS WORK TAUGHT
+
+Identify 2–3 perceptual or analytical moves this particular work made unusually clear — things visible here that might be harder to see in another work. Name them as tools the reader now has. "This work made [X] legible — look for it next time you encounter [Y]."
+
+Total: 300–450 words. Plain language. Short sentences. Write to the person who just read this analysis and wants to do this thinking themselves.`;
+};
+
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
 
@@ -448,7 +478,27 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .map((b: any) => b.text)
           .join('\n\n');
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text });
+        send({ type: 'status', message: 'Pass 3 — competency transfer…' });
+
+        const pass3Msg = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          system: 'You are an educator translating a finished analysis into transferable skills. Be direct and specific. Short sentences. No academic framing.',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
+              { type: 'text', text: COMPETENCY_PROMPT(pass1Text, pass2Text, audience || '') },
+            ],
+          }],
+        });
+
+        const pass3Text = pass3Msg.content
+          .filter((b: any) => b.type === 'text')
+          .map((b: any) => b.text)
+          .join('\n\n');
+
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text });
 
       } catch (err) {
         try {

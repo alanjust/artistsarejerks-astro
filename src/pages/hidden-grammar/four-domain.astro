@@ -168,6 +168,13 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         <button type="button" id="pdfBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Download PDF</button>
       </div>
 
+      <div id="competencySection" class="fd-competency" style="display:none">
+        <div class="fd-competency-header">
+          <span class="fd-competency-label">What to Take Forward</span>
+        </div>
+        <div id="competencyText" class="fd-competency-body"></div>
+      </div>
+
       <details class="fd-pass1-details">
         <summary class="fd-pass1-summary">
           <span>Pass 1 — formal observations</span>
@@ -693,6 +700,65 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     word-break: break-word;
   }
 
+  /* ── Competency section ── */
+  .fd-competency {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-left: 3px solid #4f46e5;
+    border-radius: 0 10px 10px 0;
+  }
+
+  .fd-competency-header {
+    margin-bottom: 0.875rem;
+  }
+
+  .fd-competency-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4f46e5;
+  }
+
+  :global(.fd-competency-body h2) {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  :global(.fd-competency-body h2:first-child) {
+    margin-top: 0;
+  }
+
+  :global(.fd-competency-body p) {
+    font-size: 0.9375rem;
+    color: #334155;
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+  }
+
+  :global(.fd-competency-body p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.fd-competency-body ul),
+  :global(.fd-competency-body ol) {
+    margin: 0 0 0.75rem;
+    padding-left: 1.25rem;
+    font-size: 0.9375rem;
+    color: #334155;
+  }
+
+  :global(.fd-competency-body li) {
+    margin-bottom: 0.375rem;
+    line-height: 1.65;
+  }
+
 </style>
 
 <script define:vars={{ principleNames, principleIdMap }}>
@@ -1056,6 +1122,13 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 
             pass1Text.textContent = data.pass1 || '';
 
+            if (data.competency) {
+              const competencySection = document.getElementById('competencySection') as HTMLElement;
+              const competencyBody = document.getElementById('competencyText') as HTMLElement;
+              competencyBody.innerHTML = await marked(data.competency);
+              competencySection.style.display = '';
+            }
+
             const artworkMeta = document.getElementById('artworkMeta') as HTMLElement;
             const metaFields = document.getElementById('metaFields') as HTMLElement;
 
@@ -1229,6 +1302,10 @@ ${headerHTML}
   <p class="doc-note">The perceptual and material sections read what's in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p>
 </div>
 <div>${analysisText.innerHTML}</div>
+${(() => {
+  const cb = document.getElementById('competencyText') as HTMLElement;
+  return cb?.innerHTML ? `<div style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #4f46e5;"><p style="font-family:Arial,Helvetica,sans-serif;font-size:7.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4f46e5;margin:0 0 1rem;">What to Take Forward</p>${cb.innerHTML}</div>` : '';
+})()}
 </body>
 </html>`;
 
@@ -1270,12 +1347,19 @@ ${headerHTML}
 
     const frameworkHtml = `<div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #e2e8f0;"><p style="font-size:0.6875rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;margin:0 0 0.5rem;font-family:Arial,sans-serif;">Art’s Four Dimensions</p><ul style="margin:0 0 0.75rem;padding-left:1.25rem;font-size:0.875rem;font-family:Arial,sans-serif;color:#334155;"><li style="margin-bottom:0.2rem;"><strong>Perceptual</strong> — what the eye does in the first seconds, before meaning kicks in</li><li style="margin-bottom:0.2rem;"><strong>Material</strong> — what the work is made of, and how the making is visible</li><li style="margin-bottom:0.2rem;"><strong>Cultural</strong> — where the work sits in the field of what gets valued and recognized</li><li style="margin-bottom:0.2rem;"><strong>Conceptual</strong> — what argument or system of ideas the work is in dialogue with</li></ul><p style="font-size:0.8125rem;color:#94a3b8;margin:0;font-style:italic;font-family:Arial,sans-serif;">The perceptual and material sections read what’s in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.</p></div>`;
     const frameworkPlain = `Art's Four Dimensions\n• Perceptual — what the eye does in the first seconds, before meaning kicks in\n• Material — what the work is made of, and how the making is visible\n• Cultural — where the work sits in the field of what gets valued and recognized\n• Conceptual — what argument or system of ideas the work is in dialogue with\n\nThe perceptual and material sections read what's in the image. The cultural and conceptual sections read the image in context — and context is always contested. The first two are observations. The last two are possible framings. If a framing feels wrong, that gap is information.`;
-    const plain = (metaPlain ? metaPlain + '\n\n' : '') + frameworkPlain + '\n\n' + htmlToPlainText(html);
+    const competencyEl = document.getElementById('competencyText') as HTMLElement;
+    const competencyHtml = competencyEl?.innerHTML
+      ? `<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:2px solid #4f46e5;"><p style="font-size:0.6875rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4f46e5;margin:0 0 0.75rem;font-family:Arial,sans-serif;">What to Take Forward</p>${competencyEl.innerHTML}</div>`
+      : '';
+    const competencyPlain = competencyEl?.innerHTML
+      ? '\n\nWHAT TO TAKE FORWARD\n\n' + htmlToPlainText(competencyEl.innerHTML)
+      : '';
+    const plain = (metaPlain ? metaPlain + '\n\n' : '') + frameworkPlain + '\n\n' + htmlToPlainText(html) + competencyPlain;
     const imgTag = resizedImageForCopy
       ? `<img src="${resizedImageForCopy}" style="float:right;max-width:120px;border-radius:8px;margin:0 0 1rem 1.5rem;" alt="Analyzed artwork">`
       : '';
     const absoluteHtml = html.replace(/\bhref="(\/)/g, `href="${window.location.origin}/`);
-    const htmlPayload = `<meta charset="utf-8">${imgTag}${metaHtml}${frameworkHtml}${absoluteHtml}`;
+    const htmlPayload = `<meta charset="utf-8">${imgTag}${metaHtml}${frameworkHtml}${absoluteHtml}${competencyHtml}`;
 
     try {
       await navigator.clipboard.write([
