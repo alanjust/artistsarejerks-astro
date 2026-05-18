@@ -173,6 +173,9 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
           <span class="fd-competency-label">What to Take Forward</span>
         </div>
         <div id="competencyText" class="fd-competency-body"></div>
+        <div class="fd-competency-copy-row">
+          <button type="button" id="copyCompetencyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Competency</button>
+        </div>
       </div>
 
       <details class="fd-pass1-details">
@@ -181,6 +184,9 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
           <span class="fd-toggle-arrow">›</span>
         </summary>
         <div id="pass1Text" class="fd-pass1-body"></div>
+        <div class="fd-pass1-copy-row">
+          <button type="button" id="copyObsBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Observations</button>
+        </div>
       </details>
     </div>
 
@@ -757,6 +763,21 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   :global(.fd-competency-body li) {
     margin-bottom: 0.375rem;
     line-height: 1.65;
+  }
+
+  .fd-competency-copy-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #ddd6fe;
+  }
+
+  .fd-pass1-copy-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.75rem 1.125rem;
+    border-top: 1px solid #f1f5f9;
   }
 
 </style>
@@ -1378,5 +1399,37 @@ ${(() => {
 
     copyBtn.textContent = '✓ Copied';
     setTimeout(() => { copyBtn.textContent = 'Copy Analysis'; }, 2500);
+  });
+
+  // ── Copy Competency ───────────────────────────────────────────────────────
+  document.getElementById('copyCompetencyBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('copyCompetencyBtn') as HTMLButtonElement;
+    const el  = document.getElementById('competencyText') as HTMLElement;
+    if (!el?.innerHTML.trim()) return;
+
+    const plain = htmlToPlainText(el.innerHTML);
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html':  new Blob([`<meta charset="utf-8">${el.innerHTML}`], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' }),
+        }),
+      ]);
+    } catch {
+      try { await navigator.clipboard.writeText(plain); } catch { return; }
+    }
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.textContent = 'Copy Competency'; }, 2500);
+  });
+
+  // ── Copy Observations ─────────────────────────────────────────────────────
+  document.getElementById('copyObsBtn')?.addEventListener('click', async () => {
+    const btn  = document.getElementById('copyObsBtn') as HTMLButtonElement;
+    const text = (document.getElementById('pass1Text') as HTMLElement)?.textContent?.trim();
+    if (!text) return;
+
+    try { await navigator.clipboard.writeText(text); } catch { return; }
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.textContent = 'Copy Observations'; }, 2500);
   });
 </script>

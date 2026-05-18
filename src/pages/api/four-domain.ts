@@ -297,15 +297,13 @@ Write two sections. Use these headers exactly:
 
 ## FRAMEWORK COMPETENCIES
 
-Identify 3–4 analytical habits this analysis demonstrated that apply to any work — not just this one. Write each as a move the reader can practice the next time they stand in front of a painting. Active, specific, usable. Not general principles. Not what to know. What to do.
-
-Calibrate to the person: if the audience is an artist, frame skills around reading material choices and what's still open. If an educator, frame around how to teach significance. If a critic, frame around making a case. If a docent or tour guide, frame around directing attention and building a stop.
+Identify 3–4 analytical habits this analysis demonstrated that apply to any work — not just this one. For each one, start with a specific moment from this analysis before naming the general habit. Don't announce what the skill is — arrive at it. Calibrate to the person: if the audience is an artist, frame around reading material choices and what's still open; if an educator, around how to teach significance; if a critic, around making a case; if a docent or tour guide, around directing attention and building a stop.
 
 ## THIS WORK TAUGHT
 
-Identify 2–3 perceptual or analytical moves this particular work made unusually clear — things visible here that might be harder to see in another work. Name them as tools the reader now has. "This work made [X] legible — look for it next time you encounter [Y]."
+Identify 2–3 perceptual or analytical moves this specific work made unusually legible — things you could see clearly here that would be harder to spot in a different painting. Tell the reader what to look for next time, and in what kind of work. Open with what was concrete and visible in this painting before naming what it demonstrates.
 
-Total: 300–450 words. Plain language. Short sentences. Write to the person who just read this analysis and wants to do this thinking themselves.`;
+Write for someone curious and smart who doesn't already speak the vocabulary. Open with something specific from this work before naming the principle. Jargon only when immediately followed by plain English. Longer sentences build the thought; short ones land it. The point arrives — don't announce it. Total: 300–450 words.`;
 };
 
 function getAudienceFraming(audience: string): string {
@@ -483,7 +481,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const pass3Msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 1000,
-          system: 'You are an educator translating a finished analysis into transferable skills. Be direct and specific. Short sentences. No academic framing.',
+          system: 'You are an educator writing for someone curious and smart who doesn\'t already speak the vocabulary of art criticism. Write the way Ira Glass tells a story: open with something concrete and recognizable, move toward the insight, land it plainly. Longer sentences build the thought; short ones land it. If you use a technical term, follow it immediately with plain English. The goal is to leave the reader thinking "I can do that next time" — not "I need to look that up."',
           messages: [{
             role: 'user',
             content: [
