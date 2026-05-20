@@ -808,10 +808,27 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   const PRINCIPLE_NAMES: string[] = (window as any).__PRINCIPLE_NAMES__ || [];
   const PRINCIPLE_ID_MAP: Record<string, number> = (window as any).__PRINCIPLE_ID_MAP__ || {};
 
+  // Aliases for principle names the model commonly truncates
+  const PRINCIPLE_ALIAS_MAP: Record<string, string> = {
+    'visual pop-out':          'Visual Pop-out / Pre-attentive Features',
+    'pre-attentive features':  'Visual Pop-out / Pre-attentive Features',
+    'gaze direction':          'Gaze Direction / Social Attention',
+    'social attention':        'Gaze Direction / Social Attention',
+    'pattern completion':      'Pattern Completion/Closure',
+    'color weight':            'Color Weight and Advancement',
+  };
+
+  // Full match list: canonical names + alias forms, sorted longest first
+  // Regex is case-insensitive so lowercase alias keys match any casing in output
+  const ALL_MATCH_NAMES = [
+    ...PRINCIPLE_NAMES,
+    ...Object.keys(PRINCIPLE_ALIAS_MAP),
+  ].sort((a, b) => b.length - a.length);
+
   function linkPrinciples(container: HTMLElement) {
     if (!PRINCIPLE_NAMES.length) return;
 
-    const escaped = PRINCIPLE_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const escaped = ALL_MATCH_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
 
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
@@ -832,7 +849,11 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
       while ((m = pattern.exec(text)) !== null) {
         if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
         const a = document.createElement('a');
-        const canonicalName = PRINCIPLE_NAMES.find(n => n.toLowerCase() === m![0].toLowerCase()) || m![0];
+        const matchedLower = m![0].toLowerCase();
+        const canonicalName =
+          PRINCIPLE_NAMES.find(n => n.toLowerCase() === matchedLower) ||
+          PRINCIPLE_ALIAS_MAP[matchedLower] ||
+          m![0];
         const pid = PRINCIPLE_ID_MAP[canonicalName];
         a.href = pid ? `/hidden-grammar/principles#principle-${pid}` : '/hidden-grammar/principles';
         a.target = '_blank';
