@@ -296,17 +296,30 @@ For canonical and well-known works, draw on documented history, critical recepti
 
 ---
 
-Write 600–900 words of continuous prose. No domain labels (PERCEPTUAL, MATERIAL AND FORMAL, CULTURAL, CONCEPTUAL). No section headers. Let paragraph breaks do the work.
+Write 600–900 words total. Use these five section headers in this order, written exactly as shown, as markdown h3:
 
-Do the four-domain thinking internally — what the eye does, what the work is made of and how the making shows, where it sits culturally, what argument or sensibility it carries. Don't present this as four sections. Let observations arise in the order they're most interesting, not the order of a schema.
+### what the eye does
+### how it's made
+### where it lives
+### what it's arguing
+### where it lands
 
-Open with the specific thing that stops you about this work. Not a description. Not a survey. The thing — before you've named what it is.
+These are quiet signposts for the reader — not bureaucratic labels. The prose within each section flows naturally.
 
-Move through what's interesting: the decisions, the tensions, the places where the work is doing something precise. Bring the reader along. If a technical observation matters, give them the concrete first, then the name for it. Don't assume art history knowledge, but don't avoid complexity — this reader can follow.
+### what the eye does
+Open with the specific thing that stops you about this work — before you've named what it is. Not a description. Not a survey. The thing. Then move through what the eye actually does: where attention goes, what holds it, what the work asks a viewer to do visually.
 
-For well-known works: use what's documented. The moment the work arrived in, the conversation it was entering, what it was arguing against or toward. State it directly. This reader wants to know — they just didn't have the vocabulary until now.
+### how it's made
+What is this work made of, and how does the making show? Surface, material, process — whatever is visible and relevant. Give the reader the concrete before the name for it.
 
-Close with an honest read. Is this work doing what it seems to want to do? Where does it arrive? Where is it still finding itself? Two to three sentences. A position you'd stand behind.`;
+### where it lives
+Draw on documented history — the moment the work arrived in, the conversation it was entering. For canonical works, state this directly. Where does it sit in the larger field of what gets valued and recognized? This reader wants to know; they just didn't have it yet.
+
+### what it's arguing
+What is this work after? What argument or sensibility does it carry? Name it in terms the reader can connect to — the live question the work is sitting inside, not the theoretical apparatus surrounding it.
+
+### where it lands
+An honest read. Is this work doing what it seems to want to do? Where does it fully arrive? Where is it still finding itself? Two to three sentences. A position you'd stand behind.`;
 
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
   const audienceLine = audience
