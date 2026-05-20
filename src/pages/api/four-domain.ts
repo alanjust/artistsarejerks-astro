@@ -319,6 +319,15 @@ The material/formal and perceptual domains are most live for this person. Frame 
 The conceptual and historical domain is primary. The cultural domain explains the work's reception and canon position. Noise findings have a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help someone explain why a work matters in the canon even when a student might initially find it visually unrewarding. Also identify what this work demonstrates as a teaching example — what principle or problem it makes visible that applies beyond this specific work.`;
   }
 
+  if (a.includes('art lover')) {
+    return `AUDIENCE FRAMING — ART LOVER:
+This person already loves art and wants to understand it more deeply. The perceptual and material domains confirm and sharpen what they already sense in the work — give language to responses they already have. The cultural domain draws directly on documented history, critical reception, and cultural context; for canonical and well-known works, state what's established plainly rather than hedging it as a possible reading. The conceptual domain names what the work is after in terms the reader can connect to — the live question the work is sitting inside, not the theoretical apparatus surrounding it.
+
+For the OVERVIEW: close with a real position. Is the work doing what it seems to want to do? Not a grade — an honest read, stated directly.
+
+For the NOISE — CONSOLIDATED section: override the four-sub-section format specified below. Write a single paragraph instead. Ask where this work is still finding itself. Be honest about limitation without delivering a verdict — name what's unresolved, not what has failed.`;
+  }
+
   return '';
 }
 
@@ -428,13 +437,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? 'Pass 2 — criticism…'
           : audienceForStatus.includes('tour')
           ? 'Pass 2 — tour guide…'
+          : audienceForStatus.includes('art lover')
+          ? 'Pass 2 — art lover reading…'
           : 'Pass 2 — four domain readings…';
         send({ type: 'status', message: statusMsg });
 
         const artworkContext = buildArtworkContext(fields);
-        const isDocent = (audience || '').toLowerCase().includes('docent');
-        const isCritic = (audience || '').toLowerCase().includes('critic');
-        const isTour  = (audience || '').toLowerCase().includes('tour');
+        const isDocent    = (audience || '').toLowerCase().includes('docent');
+        const isCritic    = (audience || '').toLowerCase().includes('critic');
+        const isTour      = (audience || '').toLowerCase().includes('tour');
+        const isArtLover  = (audience || '').toLowerCase().includes('art lover');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
         const pass2UserText = isDocent
@@ -454,6 +466,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             ? 'You are a working art critic writing a short review for an intelligent general reader. You have a point of view. You use it.'
             : isTour
             ? 'You are a museum educator preparing a complete tour stop guide — entry prompts for group looking, followed by a docent narrative a guide can speak from.'
+            : isArtLover
+            ? 'You are writing for someone who already loves art and wants to understand it more deeply — not as a student, but as a devoted reader. You have real aesthetic opinions and share them honestly, woven into the observations rather than announced as verdicts. Write with the movement of Ira Glass: concrete before abstract, bring the reader along, no vocabulary without plain-English follow-through. And with the directness of someone who has stood in front of a lot of work and has something to say about this one specifically. Longer sentences build the thought; short ones land it. For well-known works, draw on documented history and critical reception directly — don\'t hedge about what\'s established. Close the OVERVIEW with a real position on whether the work is doing what it seems to want.'
             : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',
