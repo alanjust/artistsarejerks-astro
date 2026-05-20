@@ -278,6 +278,36 @@ The tension the work hasn't resolved — something visitors tend to land on diff
 
 2–3 sentences. Leave it open. No verdict.`;
 
+const ART_LOVER_PROMPT = (pass1: string, principleNames: string[]) => `You are writing about this work for someone who already loves art and wants to understand it more deeply. Not a student — a devoted reader. They will give this real attention and want to feel like they see the work differently afterward.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+FRAMEWORK TERMINOLOGY: When your writing references a perceptual or compositional mechanism that corresponds to one of the following named Principles, use the exact name. Use these naturally in prose — don't force them, but don't paraphrase them either:
+
+${principleNames.join(', ')}
+
+---
+
+CLAIMS AND CERTAINTY:
+For canonical and well-known works, draw on documented history, critical reception, and cultural context directly — state what's established plainly. For genuinely contested readings, frame them as positions. You have a real aesthetic opinion about this work. Share it — woven into the observations, not handed down as a verdict.
+
+---
+
+Write 600–900 words of continuous prose. No domain labels (PERCEPTUAL, MATERIAL AND FORMAL, CULTURAL, CONCEPTUAL). No section headers. Let paragraph breaks do the work.
+
+Do the four-domain thinking internally — what the eye does, what the work is made of and how the making shows, where it sits culturally, what argument or sensibility it carries. Don't present this as four sections. Let observations arise in the order they're most interesting, not the order of a schema.
+
+Open with the specific thing that stops you about this work. Not a description. Not a survey. The thing — before you've named what it is.
+
+Move through what's interesting: the decisions, the tensions, the places where the work is doing something precise. Bring the reader along. If a technical observation matters, give them the concrete first, then the name for it. Don't assume art history knowledge, but don't avoid complexity — this reader can follow.
+
+For well-known works: use what's documented. The moment the work arrived in, the conversation it was entering, what it was arguing against or toward. State it directly. This reader wants to know — they just didn't have the vocabulary until now.
+
+Close with an honest read. Is this work doing what it seems to want to do? Where does it arrive? Where is it still finding itself? Two to three sentences. A position you'd stand behind.`;
+
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
   const audienceLine = audience
     ? `This analysis was prepared for: ${audience}.\n\n`
@@ -317,15 +347,6 @@ The material/formal and perceptual domains are most live for this person. Frame 
   if (a.includes('history') || a.includes('instructor') || a.includes('canon') || a.includes('historical')) {
     return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR / EDUCATOR:
 The conceptual and historical domain is primary. The cultural domain explains the work's reception and canon position. Noise findings have a specific job here: show where historical significance lives despite what might look like failure in another domain. Mondrian is the model — perceptual thinness is the conceptual argument. Frame findings to help someone explain why a work matters in the canon even when a student might initially find it visually unrewarding. Also identify what this work demonstrates as a teaching example — what principle or problem it makes visible that applies beyond this specific work.`;
-  }
-
-  if (a.includes('art lover')) {
-    return `AUDIENCE FRAMING — ART LOVER:
-This person already loves art and wants to understand it more deeply. The perceptual and material domains confirm and sharpen what they already sense in the work — give language to responses they already have. The cultural domain draws directly on documented history, critical reception, and cultural context; for canonical and well-known works, state what's established plainly rather than hedging it as a possible reading. The conceptual domain names what the work is after in terms the reader can connect to — the live question the work is sitting inside, not the theoretical apparatus surrounding it.
-
-For the OVERVIEW: close with a real position. Is the work doing what it seems to want to do? Not a grade — an honest read, stated directly.
-
-For the NOISE — CONSOLIDATED section: override the four-sub-section format specified below. Write a single paragraph instead. Ask where this work is still finding itself. Be honest about limitation without delivering a verdict — name what's unresolved, not what has failed.`;
   }
 
   return '';
@@ -455,11 +476,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + CRITIC_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : isTour
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + TOUR_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : isArtLover
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + ART_LOVER_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : 8000,
+          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : isArtLover ? 1500 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
             : isCritic
