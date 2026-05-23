@@ -363,6 +363,51 @@ What approaches or directions does the visual evidence suggest this work won't s
 
 One thing only. The most pressing unresolved choice — the one that, if resolved, would unlock the next stage of the work. Not a verdict on what to do. Frame it as the actual choice the artist is facing: "The live question is X or Y." Name the specific visual evidence that makes this the load-bearing decision right now.`;
 
+const HOW_TO_LOOK_PROMPT = (pass1: string, principleNames: string[]) => `You have stood in front of a lot of work. You have something specific to say about this one. Write about it for someone who wants to understand it — not be briefed on it. The writing itself is the learning.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+FRAMEWORK REFERENCE: When your writing references a perceptual or compositional mechanism that corresponds to one of the following named Principles, use the exact name as written and follow it immediately with a plain-English phrase explaining what it means in this specific context. Use these naturally in prose; don't force them.
+
+${principleNames.join(', ')}
+
+---
+
+CLAIMS AND TONE:
+For canonical and well-known works, draw on documented history, critical reception, and cultural context directly — state what's established plainly. For genuinely contested readings, frame them as positions. You have a point of view about this work. Let it show — woven into the observations, not handed down as a verdict.
+
+State intent as a reading: "this reads as deliberate" not "this was deliberate." No academic labels. No domain names. No theory vocabulary without plain-English follow-through immediately after. Pick what matters most about this specific work and go deep on it. Don't cover everything — repetition is the enemy.
+
+---
+
+Write 900–1200 words. Use these five section headers in this order, written exactly as shown, as markdown h3:
+
+### what stops you
+### how it was made
+### what it was entering
+### what it demonstrates
+### why it holds
+
+Write the way Adam Moss writes in The Work of Art: short declarative sentences that earn their length, specific before general, the point arrives rather than being announced, longer sentences build the thought and short ones land it. No throat-clearing. No wind-up. Trust the reader.
+
+### what stops you
+The specific thing about this work — before you've named what it is. Not a description. Not an inventory. The thing. Then move through what the eye does: where attention goes first, what holds it, what the work is asking a viewer to do, what it won't release you from.
+
+### how it was made
+What is this work made of, and how does the making show? What specific decisions produced this surface, this edge, this weight? Give the reader the concrete before the name for it. What did the hand do that you can still read?
+
+### what it was entering
+The moment this work arrived. What conversation was it joining — or refusing? For well-known works, draw directly on documented history and critical reception — don't hedge what's established. What was being argued in the culture at that moment? Where did this work land in that argument? What did it take to make something like this, then?
+
+### what it demonstrates
+The center of the piece. What does this work make unusually visible — something a viewer can now see in other works because they've looked carefully at this one? Name the specific move this work makes legible: a way the eye gets handled, a material decision that changes how you read a surface, a historical argument made visible through form. Open with what's concrete and specific in this painting before naming the larger thing it shows. One or two moves done well. Not a list. This is what the reader carries out of the room.
+
+### why it holds
+Why does this work still matter — not as a historical document, but as something alive in the room right now? What question is it still sitting inside? Close with a position: not a quality verdict, but the reason to keep looking.`;
+
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
   const audienceLine = audience
     ? `This analysis was prepared for: ${audience}.\n\n`
@@ -512,17 +557,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? 'Pass 2 — art lover reading…'
           : audienceForStatus.includes('progress') || audienceForStatus.includes('wip') || audienceForStatus.includes('making')
           ? 'Pass 2 — work in progress…'
+          : audienceForStatus.includes('history') || audienceForStatus.includes('instructor')
+          ? 'Pass 2 — how to look…'
           : 'Pass 2 — four domain readings…';
         send({ type: 'status', message: statusMsg });
 
         const artworkContext = buildArtworkContext(fields);
-        const isDocent    = (audience || '').toLowerCase().includes('docent');
-        const isCritic    = (audience || '').toLowerCase().includes('critic');
-        const isTour      = (audience || '').toLowerCase().includes('tour');
-        const isArtLover  = (audience || '').toLowerCase().includes('art lover');
-        const isWIP       = (audience || '').toLowerCase().includes('progress') ||
-                            (audience || '').toLowerCase().includes('wip') ||
-                            (audience || '').toLowerCase().includes('making');
+        const isDocent      = (audience || '').toLowerCase().includes('docent');
+        const isCritic      = (audience || '').toLowerCase().includes('critic');
+        const isTour        = (audience || '').toLowerCase().includes('tour');
+        const isArtLover    = (audience || '').toLowerCase().includes('art lover');
+        const isWIP         = (audience || '').toLowerCase().includes('progress') ||
+                              (audience || '').toLowerCase().includes('wip') ||
+                              (audience || '').toLowerCase().includes('making');
+        const isHowToLook   = (audience || '').toLowerCase().includes('history') ||
+                              (audience || '').toLowerCase().includes('instructor');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
         const pass2UserText = isDocent
@@ -535,11 +584,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + ART_LOVER_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : isWIP
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + WIP_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : isHowToLook
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + HOW_TO_LOOK_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : isArtLover ? 1500 : isWIP ? 2500 : 8000,
+          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : isArtLover ? 1500 : isWIP ? 2500 : isHowToLook ? 2000 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
             : isCritic
@@ -550,6 +601,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             ? 'You are writing for someone who already loves art and wants to understand it more deeply — not as a student, but as a devoted reader. You have real aesthetic opinions and share them honestly, woven into the observations rather than announced as verdicts. Write with the movement of Ira Glass: concrete before abstract, bring the reader along, no vocabulary without plain-English follow-through. And with the directness of someone who has stood in front of a lot of work and has something to say about this one specifically. Longer sentences build the thought; short ones land it. For well-known works, draw on documented history and critical reception directly — don\'t hedge about what\'s established. Close the OVERVIEW with a real position on whether the work is doing what it seems to want.'
             : isWIP
             ? 'You are a working collaborator for the artist making this. Not a critic, not an evaluator. Your job is to help them see what decisions are still available and what the work is telling them. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the artist to follow without hand-holding. Tone test: if it sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right. No verdicts.'
+            : isHowToLook
+            ? 'You are writing about a work of art and the writing itself is the learning. Write the way Adam Moss writes in The Work of Art: short declarative sentences that earn their length, no throat-clearing, specific before general, the point arrives rather than being announced. No academic apparatus. No domain labels. No jargon without plain-English follow-through immediately after. Pick what matters most about this work and go deep — don\'t cover everything. The reader should finish feeling like something opened up, not like they\'ve been briefed.'
             : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',
