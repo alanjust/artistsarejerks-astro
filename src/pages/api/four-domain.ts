@@ -380,13 +380,13 @@ ${pass2}
 
 Write two sections. Use these headers exactly:
 
-## FRAMEWORK COMPETENCIES
+## WAYS OF LOOKING
 
 Identify 3–4 analytical habits this analysis demonstrated that apply to any work — not just this one. For each one, start with a specific moment from this analysis before naming the general habit. Don't announce what the skill is — arrive at it. Calibrate to the person: if the audience is an artist, frame around reading material choices and what's still open; if an educator, around how to teach significance; if a critic, around making a case; if a docent or tour guide, around directing attention and building a stop.
 
-## THIS WORK TAUGHT
+## WHAT THIS WORK MAKES VISIBLE
 
-Identify 2–3 perceptual or analytical moves this specific work made unusually legible — things you could see clearly here that would be harder to spot in a different painting. Tell the reader what to look for next time, and in what kind of work. Open with what was concrete and visible in this painting before naming what it demonstrates.
+Identify 2–3 perceptual or analytical moves this specific work makes unusually legible — things you can see clearly here that would be harder to spot in a different painting. Tell the reader what to look for next time, and in what kind of work. Open with what is concrete and visible in this painting before naming what it demonstrates.
 
 Write for someone curious and smart who doesn't already speak the vocabulary. Open with something specific from this work before naming the principle. Jargon only when immediately followed by plain English. Longer sentences build the thought; short ones land it. The point arrives — don't announce it. Total: 300–450 words.`;
 };
