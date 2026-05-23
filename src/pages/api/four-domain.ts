@@ -321,6 +321,48 @@ What is this work after? What argument or sensibility does it carry? Name it in 
 ### where it lands
 An honest read. Is this work doing what it seems to want to do? Where does it fully arrive? Where is it still finding itself? Two to three sentences. A position you'd stand behind.`;
 
+const WIP_PROMPT = (pass1: string, principleNames: string[]) => `You are analyzing a work in progress for the artist making it. Your job is not to evaluate the work — it's to help them see what decisions are still available. The artist knows what's there. Give them what they can't see from inside the process.
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+FRAMEWORK REFERENCE: When your analysis references a perceptual or compositional mechanism that corresponds to one of the following named Principles, use the exact name as written and follow it immediately with a plain-English phrase explaining what it means in this specific context. Example: "Edge Detection — the way the eye is reading the boundary between the figure and ground here." Use these naturally in prose; don't force them.
+
+${principleNames.join(', ')}
+
+---
+
+CLAIMS AND TONE:
+State what's visible plainly. No hedging on perceptual and material observations — the eye is the evidence. No art historical placement, no cultural positioning, no conceptual framing. This work is in process; those domains are background. State intent as a reading: "this reads as deliberate" not "this was deliberate." No quality verdicts anywhere — not positive, not negative. Short sentences. Plain language.
+
+---
+
+OUTPUT FORMAT — FIVE SECTIONS. Use these headers exactly. Full prose only — no bullet points.
+
+## WHAT'S WORKING
+
+What has this work already solved? Perceptual decisions that are cohering. Material choices that are functioning. Compositional relationships that have found their logic. Name exactly what's working and where — specific and visual. No quality judgments. These are the things the artist can leave alone and build from.
+
+If nothing is clearly settled yet, say so in one sentence.
+
+## WHAT'S STILL LIVE
+
+Tensions that haven't resolved. Not problems — open questions the work is still sitting inside. Things that could go multiple ways and haven't committed yet. This is not failure. Name the specific visual evidence for each unresolved tension. Frame as possibility, not deficit.
+
+## WHAT'S FIGHTING ITSELF
+
+Where the work's own internal logic is in conflict. Not intention against the work — the work against itself. Name the two specific things in conflict and describe the exact nature of the conflict. These are the decisions that need to be made before the work can move forward. If a material choice is working against a perceptual choice, name both precisely.
+
+## WHAT THE WORK IS REFUSING
+
+What approaches or directions does the visual evidence suggest this work won't support? Frame it as: what is the painting saying no to? Name the specific observable condition — a color relationship, a surface quality, an edge behavior, a spatial logic — that creates the incompatibility. A refusal without a named observable cause is speculation, not a reading. If you cannot point to specific visual evidence for a refusal, say so in one sentence and stop.
+
+## THE DECISION POINT
+
+One thing only. The most pressing unresolved choice — the one that, if resolved, would unlock the next stage of the work. Not a verdict on what to do. Frame it as the actual choice the artist is facing: "The live question is X or Y." Name the specific visual evidence that makes this the load-bearing decision right now.`;
+
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
   const audienceLine = audience
     ? `This analysis was prepared for: ${audience}.\n\n`
@@ -351,11 +393,6 @@ Write for someone curious and smart who doesn't already speak the vocabulary. Op
 
 function getAudienceFraming(audience: string): string {
   const a = audience?.toLowerCase() || '';
-
-  if (a.includes('progress') || a.includes('wip') || a.includes('making')) {
-    return `AUDIENCE FRAMING — ARTIST, WORK IN PROGRESS:
-The material/formal and perceptual domains are most live for this person. Frame noise findings as decisions still available — not verdicts on what's broken. The work is open. What can still change? What's worth reconsidering before going further? Keep the conceptual and cultural domains thorough but frame them as context, not urgency.`;
-  }
 
   if (a.includes('history') || a.includes('instructor') || a.includes('canon') || a.includes('historical')) {
     return `AUDIENCE FRAMING — ART HISTORY INSTRUCTOR / EDUCATOR:
@@ -473,6 +510,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? 'Pass 2 — tour guide…'
           : audienceForStatus.includes('art lover')
           ? 'Pass 2 — art lover reading…'
+          : audienceForStatus.includes('progress') || audienceForStatus.includes('wip') || audienceForStatus.includes('making')
+          ? 'Pass 2 — work in progress…'
           : 'Pass 2 — four domain readings…';
         send({ type: 'status', message: statusMsg });
 
@@ -481,6 +520,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const isCritic    = (audience || '').toLowerCase().includes('critic');
         const isTour      = (audience || '').toLowerCase().includes('tour');
         const isArtLover  = (audience || '').toLowerCase().includes('art lover');
+        const isWIP       = (audience || '').toLowerCase().includes('progress') ||
+                            (audience || '').toLowerCase().includes('wip') ||
+                            (audience || '').toLowerCase().includes('making');
         const audienceFraming = getAudienceFraming(audience || '');
         const contextBlock = [artworkContext, audienceFraming].filter(Boolean).join('\n');
         const pass2UserText = isDocent
@@ -491,11 +533,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + TOUR_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : isArtLover
           ? (artworkContext ? artworkContext + '\n---\n\n' : '') + ART_LOVER_PROMPT(pass1Text, PRINCIPLE_NAMES)
+          : isWIP
+          ? (artworkContext ? artworkContext + '\n---\n\n' : '') + WIP_PROMPT(pass1Text, PRINCIPLE_NAMES)
           : (contextBlock ? contextBlock + '\n---\n\n' : '') + PASS2_PROMPT(pass1Text, PRINCIPLE_NAMES);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : isArtLover ? 1500 : 8000,
+          max_tokens: isDocent ? 1500 : isCritic ? 1000 : isTour ? 2000 : isArtLover ? 1500 : isWIP ? 2500 : 8000,
           system: isDocent
             ? 'You are a museum educator preparing practical docent materials for general visitors.'
             : isCritic
@@ -504,6 +548,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             ? 'You are a museum educator preparing a complete tour stop guide — entry prompts for group looking, followed by a docent narrative a guide can speak from.'
             : isArtLover
             ? 'You are writing for someone who already loves art and wants to understand it more deeply — not as a student, but as a devoted reader. You have real aesthetic opinions and share them honestly, woven into the observations rather than announced as verdicts. Write with the movement of Ira Glass: concrete before abstract, bring the reader along, no vocabulary without plain-English follow-through. And with the directness of someone who has stood in front of a lot of work and has something to say about this one specifically. Longer sentences build the thought; short ones land it. For well-known works, draw on documented history and critical reception directly — don\'t hedge about what\'s established. Close the OVERVIEW with a real position on whether the work is doing what it seems to want.'
+            : isWIP
+            ? 'You are a working collaborator for the artist making this. Not a critic, not an evaluator. Your job is to help them see what decisions are still available and what the work is telling them. Write like someone who has stood in front of a lot of work and can see clearly — not like someone delivering a report. Short sentences. No verdicts.'
             : 'You are a rigorous art analyst working across perceptual, material, cultural, and conceptual domains simultaneously. Write in short declarative sentences. Active present tense. No passive constructions, no institutional hedging, no academic abstractions. Trust the reader to follow without hand-holding. Tone test: if a sentence sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table and saying exactly what they see, it\'s right.',
           messages: [{
             role: 'user',
