@@ -34,6 +34,14 @@ export const toolkitBuckets = [
         phase: 'Full Analysis',
         link: '/hidden-grammar/four-domain',
       },
+      {
+        id: 'artifact',
+        label: 'Artifact Analysis',
+        tagline: 'Form, function, cultural context, and iconographic content — grounded in what is observable, calibrated to archaeological and anthropological vocabulary.',
+        status: 'live',
+        phase: 'Full Analysis',
+        link: '/hidden-grammar/artifact',
+      },
     ],
   },
 
