@@ -14,41 +14,77 @@ const PASS1_PROMPT = `Describe only what you can directly observe in this image.
 
 const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], audience: string) => {
   const audienceFrame = audience.includes('curator')
-    ? 'You are analyzing this artifact for a museum curator considering acquisition, display, and cultural significance.'
+    ? `You are analyzing this artifact for a museum curator. Address: typological placement and what it establishes, condition and what it affects interpretively, cultural significance and what tradition this object represents, and what comparable documented examples exist. Use field vocabulary precisely.`
     : audience.includes('educator')
-    ? 'You are analyzing this artifact for an educator preparing to teach with it — what it demonstrates, what it makes visible, why it matters as a teaching example.'
-    : 'You are analyzing this artifact for a researcher. Be precise, systematic, and grounded in observable evidence.';
+    ? `You are analyzing this artifact for an educator. Prioritize: what this object makes directly visible about production technique, cultural practice, or social organization — things a student can learn to see in other objects by looking carefully at this one.`
+    : `You are analyzing this artifact for a researcher. Be precise, systematic, and evidence-grounded. Maintain explicit uncertainty where the image cannot resolve a question.`;
 
   return `${audienceFrame}
+
+---
+
+DISPLACEMENT — read before analyzing:
+
+Do not apply fine art critical frameworks. Do not assess this object for aesthetic merit, compositional tension, artistic achievement, or formal innovation. Do not use language from museum wall text, gallery criticism, or art market vocabulary. Do not use: painterly, aesthetic, artistic, composition as an evaluative term, or any language that treats this object as made for contemplation or display.
+
+This object was made by people living within a specific cultural tradition, for purposes embedded in that tradition. Evaluate it against what it was made to do and what it tells us about the people who made it.
+
+Do not apply Western individualist frameworks to production. The maker was working within strong cultural conventions. Variability within those conventions is social and cultural signal — not personal artistic expression.
+
+Frame all interpretive claims as readings supported by specific visual evidence. Where meaning cannot be determined from the image, say so plainly. The people who made this object are gone; meaning cannot be fully recovered.
+
+---
 
 FORMAL OBSERVATIONS FROM PASS 1:
 ${pass1}
 
 ---
 
-FRAMEWORK REFERENCE: When your analysis references a perceptual or visual mechanism that corresponds to one of the following named Principles, use the exact name as written and follow it immediately with a plain-English phrase explaining what it means in this specific context:
+PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism that matches one of the following, use the exact name and follow it immediately with a plain-English phrase explaining what it means in this specific context:
 
 ${principleNames.join(', ')}
 
 ---
 
-IMPORTANT: This is an archaeological or anthropological artifact, not a work of fine art. Do not apply fine art criticism, aesthetic evaluation, or art market vocabulary. Do not use words like "painterly," "compositional tension," "aesthetic," or "artistic." Evaluate against what the object was made to do and what it tells us about the culture that produced it. State uncertainty plainly — if something cannot be determined from the image, say so.
+EVALUATIVE FRAMEWORK:
+
+Analyze across these four dimensions. For each, work from what is directly observable before moving to interpretation. Use these exact headers.
+
+## FORM AND CONSTRUCTION
+
+Describe vessel form: rim diameter (estimate from proportions if not documented), depth, wall curvature, base form. Assess wall thickness consistency — even walls indicate skilled coil construction; variation signals production-stage issues. Look for coil construction evidence: oblique striations, coil junctures at breaks or thin spots, paddle-and-anvil compression marks on the exterior.
+
+Assess surface treatment: slip coverage and quality (even, well-adhered white vs. mottled or thin), burnishing degree (uniform light reflection vs. textured surface), slip color (brilliant white suggests high kaolin content; cream or buff suggests lower-grade preparation).
+
+Assess paint: mineral paint (matte or semi-matte, permanent, iron-based) vs. carbon/organic paint (potentially shiny surface). Read line quality directly — single-stroke control, line weight consistency, evidence of hesitation or correction.
+
+## FUNCTION AND USE
+
+What does the form indicate about use? A bowl used for food preparation or serving shows different proportions and wear than one made for ritual or mortuary purposes. Look for use wear: interior abrasion from food contact, sooting on exterior base surfaces. Ancient repairs (pitch fills, drilled holes for lacing breaks) indicate the vessel was valued enough to repair during its working life.
+
+If a kill hole is present — a deliberate perforation through the base — this confirms burial context. Note: location (centered vs. off-center), method (punched vs. drilled), and placement relative to any image on the surface.
+
+Where function cannot be determined from the image, state what the evidence suggests and what remains uncertain.
+
+## CULTURAL CONTEXT
+
+Place this object within what is known about the tradition that produced it. What does the construction technique, surface treatment, and design system tell us about the technology available and the production conventions followed? What does the investment level — quality of slip preparation, precision of design execution, vessel form complexity — signal about the social context of production?
+
+Address: Was this household production or does the quality suggest emergent specialization? What does the iconographic program (if present) signal about social identity, community membership, or ritual role? What trade relationships or cultural contacts does the material or design vocabulary suggest?
+
+Frame all interpretations as readings supported by specific observable evidence. Where the evidence is insufficient to support a claim, say so.
+
+## ICONOGRAPHIC CONTENT
+
+Describe before interpreting. What figures, motifs, or geometric elements are present? Where are they located in the design field? How is the field organized — quartered, halved, continuous border, central medallion? Is the program figurative, geometric, or mixed?
+
+If figurative: identify specific figure types (species, human, composite being). Note whether action is depicted (hunting scene, movement, interaction between figures) or whether the figure functions emblematically. Composite figures — beings that combine human and animal characteristics — carry higher interpretive weight and greater uncertainty.
+
+After full description: what corpus parallels exist? What readings does the visual evidence support? Where iconographic meaning is contested or cannot be determined from this image alone, name the specific evidence and state what remains open.
 
 ---
 
-Analyze this artifact across four dimensions. Write full prose for each. Use these headers exactly:
-
-## FORM AND CONSTRUCTION
-What is this object physically? Describe the form, material, construction technique, surface treatment, scale, and condition as observable from the image. What does the physical evidence tell you about how it was made?
-
-## FUNCTION AND USE
-What was this object used for? Ground your analysis in the physical evidence — form, wear patterns, surface treatment, context indicators visible in the image. Where function cannot be determined from the image alone, state what the evidence suggests and what remains uncertain.
-
-## CULTURAL CONTEXT
-Where does this object sit in the cultural context of its makers? What does it signal about the society that produced it — its technology, social organization, trade relationships, or belief systems? Draw on what is observable in the object and what is known about the cultural tradition it belongs to. Frame interpretations as readings supported by evidence, not settled conclusions.
-
-## ICONOGRAPHIC CONTENT
-What visual program, symbolic content, or decorative system is present? Describe specific motifs, figures, patterns, or symbols. What tradition or convention do they belong to? Where iconographic meaning is contested or uncertain, name the specific visual evidence and state what readings it supports.`;
+REFERENCE CLASS: Treat well-documented assemblages — the Swarts Ruin collection (Peabody Museum) and the NAN Ranch material (Shafer 2003) — as your primary comparison baseline for Classic Mimbres ceramics. The range of production quality within these assemblages is your scale. Do not use unprovenanced market examples as reference points for contextual interpretation.`;
 };
 
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
@@ -190,7 +226,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          system: 'You are a specialist in archaeological and anthropological artifact analysis. Evaluate objects against what they were made to do and what they reveal about the cultures that produced them. Do not apply fine art criticism, aesthetic vocabulary, or art market language. Be precise, evidence-grounded, and honest about uncertainty. When you cannot determine something from the image, say so.',
+          system: 'You are a specialist in Southwest archaeology and anthropological artifact analysis, with deep knowledge of Mimbres ceramics and the Mogollon tradition. Apply the evaluative frameworks of J.J. Brody (formal and comparative iconographic analysis), Harry Shafer (production sequence and technological style), and Michelle Hegmon (ceramic variability as social information). Do not apply fine art criticism, aesthetic vocabulary, or art market language. Use field vocabulary precisely: provenience not provenance, chaîne opératoire, kill hole, slip, mineral vs. carbon paint, technological style. Be evidence-grounded and explicit about uncertainty — frame all interpretive claims as readings supported by specific observable evidence, not settled conclusions.',
           messages: [{
             role: 'user',
             content: [
