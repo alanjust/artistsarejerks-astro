@@ -5,9 +5,18 @@ import artifactPrinciplesData from '../../data/artifact-principles.json';
 
 export const prerender = false;
 
-// Tier A only — universal perceptual principles, domain-agnostic
+// All Tier A — used in Pass 2 reference list
 const PRINCIPLE_NAMES: string[] = (principlesData.principles as any[])
   .filter((p: any) => p.tier === 'A')
+  .map((p: any) => p.name as string)
+  .sort((a, b) => b.length - a.length);
+
+// Tier A principles applicable to artifact observation (excludes fine-art-specific:
+// Linear Perspective, Atmospheric Perspective, Light Source Logic, Common Fate,
+// Elevation in Picture Plane, Binocular vs. Monocular Depth Cues)
+const APPLICABLE_TIER_A_IDS = new Set([1, 2, 4, 5, 13, 15, 20, 28, 47, 48, 49, 51]);
+const APPLICABLE_TIER_A_NAMES: string[] = (principlesData.principles as any[])
+  .filter((p: any) => APPLICABLE_TIER_A_IDS.has(p.id))
   .map((p: any) => p.name as string)
   .sort((a, b) => b.length - a.length);
 
@@ -16,7 +25,7 @@ const ARTIFACT_PRINCIPLE_NAMES: string[] = (artifactPrinciplesData.principles as
   .map((p: any) => p.name as string)
   .sort((a, b) => b.length - a.length);
 
-const PASS1_PROMPT_SINGLE = (artifactPrincipleNames: string[]) =>
+const PASS1_PROMPT_SINGLE = (artifactPrincipleNames: string[], applicableTierANames: string[]) =>
   `Describe only what you can directly observe in this artifact image. Pure observation — no interpretation, no cultural attribution, no quality judgments.
 
 Cover systematically:
@@ -33,9 +42,13 @@ Be specific and granular. Work systematically across the object from one end to 
 
 ARTIFACT PERCEPTUAL PRINCIPLES: When your observation corresponds to one of the following, use the exact name and follow it immediately with what you specifically observe:
 
-${artifactPrincipleNames.join(', ')}`;
+${artifactPrincipleNames.join(', ')}
 
-const PASS1_PROMPT_MULTI = (count: number, artifactPrincipleNames: string[]) =>
+UNIVERSAL VISUAL PRINCIPLES: These apply to all artifact observation regardless of object type or domain. When your observation engages any of the following, use the exact name and follow it immediately with what you specifically observe:
+
+${applicableTierANames.join(', ')}`;
+
+const PASS1_PROMPT_MULTI = (count: number, artifactPrincipleNames: string[], applicableTierANames: string[]) =>
   `You are looking at ${count} images of the same artifact. Each image is labeled with its view. Work through each view in sequence, using the label as a header.
 
 For each view, describe only what you can directly observe — pure observation, no interpretation, no cultural attribution, no quality judgments.
@@ -46,7 +59,11 @@ After covering all views, note any features that are only visible — or that re
 
 ARTIFACT PERCEPTUAL PRINCIPLES: When your observation corresponds to one of the following, use the exact name and follow it immediately with what you specifically observe:
 
-${artifactPrincipleNames.join(', ')}`;
+${artifactPrincipleNames.join(', ')}
+
+UNIVERSAL VISUAL PRINCIPLES: These apply to all artifact observation regardless of object type or domain. When your observation engages any of the following, use the exact name and follow it immediately with what you specifically observe:
+
+${applicableTierANames.join(', ')}`;
 
 const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], artifactPrincipleNames: string[], audience: string, views: string[] = []) => {
   const audienceFrame = audience.includes('curator')
@@ -482,8 +499,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const imageCount = parsedImages.length;
   const viewLabels = parsedImages.map(img => img.label);
   const pass1Prompt = imageCount === 1
-    ? PASS1_PROMPT_SINGLE(ARTIFACT_PRINCIPLE_NAMES)
-    : PASS1_PROMPT_MULTI(imageCount, ARTIFACT_PRINCIPLE_NAMES);
+    ? PASS1_PROMPT_SINGLE(ARTIFACT_PRINCIPLE_NAMES, APPLICABLE_TIER_A_NAMES)
+    : PASS1_PROMPT_MULTI(imageCount, ARTIFACT_PRINCIPLE_NAMES, APPLICABLE_TIER_A_NAMES);
 
   const anthropic = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
