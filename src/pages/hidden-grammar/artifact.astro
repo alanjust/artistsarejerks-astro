@@ -1141,7 +1141,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   runBtn.addEventListener('click', runAnalysis);
 
   async function runAnalysis() {
-    if (!uploadedImage) return;
+    if (uploadedImages.length === 0) return;
 
     runBtn.disabled = true;
     runBtn.textContent = 'Running…';
@@ -1254,7 +1254,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
               .join('');
 
-            if (uploadedImage || metaEntries.length > 0) {
+            if (uploadedImages.length > 0 || metaEntries.length > 0) {
               artworkMeta.style.display = 'flex';
             }
 
