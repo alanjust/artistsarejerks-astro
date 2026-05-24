@@ -40,6 +40,8 @@ Do not apply Western individualist frameworks to production. The maker was worki
 
 Frame all interpretive claims as readings supported by specific visual evidence. Where meaning cannot be determined from the image, say so plainly. The people who made this object are gone; meaning cannot be fully recovered.
 
+For non-ceramic objects: do not default to ceramic analytical vocabulary. A carved wood effigy is not assessed for slip quality or paint type — it has its own evaluative criteria. Identify the object class first, then apply the matching criteria below.
+
 ---
 
 FORMAL OBSERVATIONS FROM PASS 1:
@@ -55,43 +57,152 @@ ${principleNames.join(', ')}
 
 EVALUATIVE FRAMEWORK:
 
-Analyze across these four dimensions. For each, work from what is directly observable before moving to interpretation. Use these exact headers.
+## STEP 1 — IDENTIFY OBJECT CLASS
 
-## FORM AND CONSTRUCTION
+Before applying any criteria, state what kind of object this is:
+- Ceramic vessel (bowl, olla, ladle, canteen, effigy vessel)
+- Carved organic (wood, bone, or antler effigy, tool, ornament, ritual object)
+- Composite object (multiple materials assembled: wood + fiber + stone + pigment)
+- Lithic (knapped stone: point, scraper, biface; or ground stone: mano, metate, palette)
+- Shell artifact (ornament, trumpet, inlay, pendant)
+- Fiber / textile / basketry
+- Other
 
-Describe vessel form: rim diameter (estimate from proportions if not documented), depth, wall curvature, base form. Assess wall thickness consistency — even walls indicate skilled coil construction; variation signals production-stage issues. Look for coil construction evidence: oblique striations, coil junctures at breaks or thin spots, paddle-and-anvil compression marks on the exterior.
+Also identify: cultural tradition (Mimbres, Hohokam, Ancestral Puebloan, Casas Grandes, Salado, other/unknown) and provenience status (fully documented / partially documented / undocumented).
 
-Assess surface treatment: slip coverage and quality (even, well-adhered white vs. mottled or thin), burnishing degree (uniform light reflection vs. textured surface), slip color (brilliant white suggests high kaolin content; cream or buff suggests lower-grade preparation).
-
-Assess paint: mineral paint (matte or semi-matte, permanent, iron-based) vs. carbon/organic paint (potentially shiny surface). Read line quality directly — single-stroke control, line weight consistency, evidence of hesitation or correction.
-
-## FUNCTION AND USE
-
-What does the form indicate about use? A bowl used for food preparation or serving shows different proportions and wear than one made for ritual or mortuary purposes. Look for use wear: interior abrasion from food contact, sooting on exterior base surfaces. Ancient repairs (pitch fills, drilled holes for lacing breaks) indicate the vessel was valued enough to repair during its working life.
-
-If a kill hole is present — a deliberate perforation through the base — this confirms burial context. Note: location (centered vs. off-center), method (punched vs. drilled), and placement relative to any image on the surface.
-
-Where function cannot be determined from the image, state what the evidence suggests and what remains uncertain.
-
-## CULTURAL CONTEXT
-
-Place this object within what is known about the tradition that produced it. What does the construction technique, surface treatment, and design system tell us about the technology available and the production conventions followed? What does the investment level — quality of slip preparation, precision of design execution, vessel form complexity — signal about the social context of production?
-
-Address: Was this household production or does the quality suggest emergent specialization? What does the iconographic program (if present) signal about social identity, community membership, or ritual role? What trade relationships or cultural contacts does the material or design vocabulary suggest?
-
-Frame all interpretations as readings supported by specific observable evidence. Where the evidence is insufficient to support a claim, say so.
-
-## ICONOGRAPHIC CONTENT
-
-Describe before interpreting. What figures, motifs, or geometric elements are present? Where are they located in the design field? How is the field organized — quartered, halved, continuous border, central medallion? Is the program figurative, geometric, or mixed?
-
-If figurative: identify specific figure types (species, human, composite being). Note whether action is depicted (hunting scene, movement, interaction between figures) or whether the figure functions emblematically. Composite figures — beings that combine human and animal characteristics — carry higher interpretive weight and greater uncertainty.
-
-After full description: what corpus parallels exist? What readings does the visual evidence support? Where iconographic meaning is contested or cannot be determined from this image alone, name the specific evidence and state what remains open.
+Then apply the criteria set for the identified object class below, followed by the cross-cutting criteria in Section G.
 
 ---
 
-REFERENCE CLASS: Treat well-documented assemblages — the Swarts Ruin collection (Peabody Museum) and the NAN Ranch material (Shafer 2003) — as your primary comparison baseline for Classic Mimbres ceramics. The range of production quality within these assemblages is your scale. Do not use unprovenanced market examples as reference points for contextual interpretation.`;
+## SECTION A — CERAMIC VESSELS
+
+*Apply when object class is: Ceramic vessel*
+
+**Form and construction:** Describe rim diameter (estimate from proportions if not documented), depth, wall curvature, base form. Wall thickness consistency — even walls indicate skilled coil construction; variation signals production-stage issues. Coil-and-scrape evidence: oblique striations, coil junctures at breaks or thin spots. Paddle-and-anvil finishing (Hohokam primary method). What does construction evidence say about skill and tradition?
+
+**Surface treatment and slip:** Slip quality and coverage (even, well-adhered vs. mottled, thin, peeling). Burnishing degree. Slip color: brilliant white (high kaolin, Mimbres) vs. buff/cream (Hohokam) vs. red (various).
+
+**Paint:** Mineral paint (matte, permanent, iron-based) vs. carbon/organic paint (potentially shiny, may flake). Read line quality directly — single-stroke control, weight consistency, hesitation or correction marks. Brush discipline is readable from the line work.
+
+**Design execution:** Symmetry precision, framing line integrity, compositional logic, hatching regularity. Does the design fill the field without crowding or misjudged scale?
+
+**Iconographic program:** Describe before interpreting. Figure type, field organization (quartered, halved, continuous border, central medallion), figurative vs. geometric, narrative vs. emblematic. Composite figures. Corpus parallels. What the evidence supports vs. what remains uncertain.
+
+**Kill hole (Mimbres burial ceramics only):** Present or absent. Location: centered vs. off-center. Method: punched vs. drilled. Placement relative to the image. Confirms burial context.
+
+**Firing and condition:** Oxidizing (tan/orange exterior) vs. reducing (gray/black) atmosphere. Fire clouds: minor (normal) vs. severe. Post-depositional damage vs. use wear vs. ancient repair vs. modern restoration.
+
+**Ceramic tradition placement:** Based on paste, temper, slip, paint, and design conventions — place in regional typology: Mimbres, Hohokam, Ancestral Puebloan, Casas Grandes, Salado, or trade ware. Trade wares indicate exchange events.
+
+---
+
+## SECTION B — CARVED ORGANIC OBJECTS (Wood, Bone, Antler)
+
+*Apply when object class is: Carved organic*
+
+**Material identification:** Wood (grain visible, light weight, checking/splitting susceptibility), bone (dense, smooth, cancellous interior at breaks), antler (external texture, branching structure). Material choice is a cultural production decision — cottonwood root, pine, and willow carry different working properties and cultural associations.
+
+**Construction method:** Subtractive carving (material removed from a blank) vs. additive construction (separate elements joined). Look for: tool marks, gouge traces, surface irregularities from hand carving. Join evidence — pegs, adhesive residue, binding marks — indicates additive construction.
+
+**Form analysis:** Overall body form and its referent (animal, human, geometric). Anatomical differentiation: how are body parts indicated — carved reduction, painted, inset? Proportions: schematic vs. naturalistic? Single-material or composite construction?
+
+**Surface treatment and pigment:** Pigment as ground coat (full surface) vs. discrete painted elements over a ground. Color zone organization: does the pigment program follow anatomy, orientation, or a conventional scheme? Mineral pigments: ochre/limonite = yellow, hematite = red, malachite = green, charcoal = black, kaolin/gypsum = white. Note surface condition: checking (drying cracks), splitting, erosion of painted surfaces.
+
+**Attached elements:** Fiber attachments (cord, bundles, wrappers) — material type, color(s), knot structure, location. Functional (securing elements, suspension) vs. purposive (fiber bundles, offerings, ritual binding)? Multi-color fiber bundles are composed, not random — dyeing signals intentional composition. Inset materials: turquoise, shell, stone — location, method of attachment. Insets at eye positions are conventional Southwest effigy markers.
+
+**Preservation context:** Organic materials survive primarily in dry cave contexts. Preservation state (intact fiber, retained pigment, structural integrity) is evidence about depositional conditions.
+
+---
+
+## SECTION C — COMPOSITE OBJECTS (Multi-Material)
+
+*Apply when object class is: Composite object*
+
+**Material inventory:** List every material category present — substrate (wood, stone, shell), surface treatment (pigment, slip, incision), attached elements (fiber, feathers, inset stone). The combination of materials is itself an analytical object.
+
+**Production sequence:** What was made first, what was added, what was attached last? Sequential production evidence (base object + later additions) vs. simultaneous assembly? Each addition is a separate production decision and procurement event.
+
+**Material investment assessment:** Add up the procurement and production requirements: raw material acquisition (local vs. trade), processing (carving, pigment preparation, dyeing), assembly skill. Investment level indicates social position — household production vs. specialist production vs. high-investment ritual object.
+
+**Compositional logic:** Is there an organizing principle behind material choices? Turquoise at eye positions is a Southwest convention. Color-coded pigments following anatomy are a deliberate choice. Multi-color fiber bundles are composed, not random. Look for the logic.
+
+**Conventional vs. novel:** Does this material assemblage follow a recognizable convention (known effigy type, bundle type, ritual object category) or appear novel? Novel assemblages require more interpretive caution.
+
+---
+
+## SECTION D — LITHIC ARTIFACTS
+
+*Apply when object class is: Lithic*
+
+**Material type:** Obsidian (source-traceable by INAA or pXRF), chert, basalt, quartzite, sandstone. Non-local or visually distinctive stone may signal selection for cultural properties beyond function.
+
+**Reduction technology:** Knapped — direct percussion, pressure flaking, biface thinning. Stage: primary flake (cortex present), secondary (cortex absent), formal tool (retouched). Hafting evidence: notches, stems, ground lateral edges. Ground stone — grinding facets, pecking surfaces, polish from use, residue staining.
+
+**Formal type:** Place in regional typological sequence. Projectile point types are temporally diagnostic. Ground stone forms also constrain date and region.
+
+**Use wear:** Edge damage patterns, polish from specific materials, residue staining, ground stone wear facets indicating motion direction.
+
+**Ornamental vs. utilitarian:** Stone ornaments (pendants, beads, inlays) criteria: formal shaping beyond function, drilled suspension holes, polished surfaces, non-local material. Turquoise, jet, argillite are primarily ornamental/ritual.
+
+---
+
+## SECTION E — SHELL ARTIFACTS
+
+*Apply when object class is: Shell artifact*
+
+**Species identification:** Gulf of California species (Glycymeris, Conus, Olivella, Laevicardium) — primary Hohokam trade shell, ~300–500 km distance. Pacific coast — longer distance. Gulf of Mexico (Spondylus, Busycon) — very long distance. Identification from photographs is approximate; note visible morphological features.
+
+**Manufacture evidence:** Raw vs. worked vs. finished. Stages: roughing out, shaping, perforation, finishing. Manufacturing debris indicates local production; finished pieces without debris indicate trade in finished objects.
+
+**Ornament type:** Glycymeris bracelet (Hohokam — circular, cut from body whorl, umbo often carved into frog or snake effigy). Shell pendant (cut and drilled). Shell bead (cylindrical or disc-shaped, drilled). Shell inlay (cut thin, mosaic work). Shell trumpet (large gastropod, apex removed — Strombus, Turbinella — ritual use).
+
+**Iconographic content on shell:** Carved figures on shell ornaments (Hohokam umbo effigies: frog, snake, lizard, human). Apply describe-before-interpret protocol.
+
+---
+
+## SECTION F — FIBER, TEXTILE, AND BASKETRY
+
+*Apply when object class is: Fiber / textile / basketry*
+
+**Construction technique:** Basketry — coiled (coil diameter, stitches per coil), plaited (plain, twill), twined. Textiles — plain weave, twill, tapestry, embroidery. Cordage — ply direction (Z or S twist), number of plies. Technique is tradition-diagnostic.
+
+**Material:** Plant fiber (yucca, cotton, apocynum, agave), animal fiber (feathers, fur, human hair). Cotton in the Southwest requires cultivation or trade — its presence indicates agricultural communities or exchange.
+
+**Dye evidence:** Natural color vs. dyed. Blue/green in prehistoric Southwest fiber is rare and significant — likely plant sources (larkspur, indigo) or mineral sources. Dyed fiber indicates intentional investment in color composition.
+
+**Pattern and design:** Geometric patterns in basketry and textiles often parallel ceramic design conventions within a tradition. Does the pattern correspond to known regional conventions?
+
+**Completeness and use wear:** Finished object or fragment? Wear patterns, repair, reweaving. Deliberately unfinished objects deposited as offerings are known from cache contexts.
+
+---
+
+## SECTION G — CROSS-CUTTING CRITERIA (All Object Classes)
+
+**Provenience status:** Fully documented (site, stratum, feature/burial number, associated assemblage) vs. partially documented (site known, context uncertain) vs. undocumented (purchase history only). Undocumented provenience severely limits interpretive scope — state this clearly.
+
+**Condition assessment:** Post-depositional damage vs. use wear vs. ancient repair vs. modern restoration. Ancient repairs indicate in-life value. Conservation treatment must be distinguished from original surface.
+
+**Temporal placement:** Does the object fit a known typological sequence? Where the object is post-Classic (post-1150 CE in the Mimbres area, post-1300 CE more broadly), note it exists in a transformed social landscape following the reorganization events of the 12th–13th centuries.
+
+**Function category:** Domestic/utilitarian | Serving/display | Ritual/ceremonial (non-utilitarian form, high material investment, turquoise/shell/feather elements, cave cache deposition, composite construction) | Mortuary (kill hole, burial association, funerary-specific forms) | Indeterminate (state this rather than forcing an assignment).
+
+**Social position of production:** Household production vs. part-time specialist vs. full-time specialist. Evidence: standardization (specialist production produces measurable regularity), production debris (workshops leave characteristic waste), material investment level. Full-time specialization is the exception in the prehistoric Southwest and requires specific evidence.
+
+---
+
+REFERENCE CLASS: Select the tradition-appropriate baseline.
+
+For Classic Mimbres ceramics: Swarts Ruin collection (Peabody Museum) and NAN Ranch assemblage (Shafer 2003) are the primary comparison baseline. Brody's *Mimbres Painted Pottery* corpus is the comparison baseline for figurative imagery. Do not use unprovenanced market examples as reference points.
+
+For Hohokam ceramics and shell: Snaketown assemblage (Haury 1976, Arizona State Museum). Glycymeris bracelet corpus at Arizona State Museum for shell ornament type identification.
+
+For Ancestral Puebloan: Pueblo Bonito material for Chaco-affiliated contexts; Mesa Verde National Park collections for 13th-century assemblages.
+
+For Casas Grandes / Paquimé: Minnis/Whalen 2015 synthesis and Centro INAH Chihuahua collections.
+
+For carved organic objects: Southwest wood effigy tradition documented through dry cave assemblages across the Mogollon Highlands and Four Corners region; compare with documented cave cache material.
+
+For post-Classic and Salado ceramics: Crown's *Ceramics and Ideology* (1994) for Salado Polychrome interpretation. Cordell's *Archaeology of the Southwest* (1997) for post-Classic regional context.`;
 };
 
 const COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
@@ -265,7 +376,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          system: 'You are a specialist in Southwest archaeology and anthropological artifact analysis, with deep knowledge of Mimbres ceramics and the Mogollon tradition. Apply the evaluative frameworks of J.J. Brody (formal and comparative iconographic analysis), Harry Shafer (production sequence and technological style), and Michelle Hegmon (ceramic variability as social information). Do not apply fine art criticism, aesthetic vocabulary, or art market language. Use field vocabulary precisely: provenience not provenance, chaîne opératoire, kill hole, slip, mineral vs. carbon paint, technological style. Be evidence-grounded and explicit about uncertainty — frame all interpretive claims as readings supported by specific observable evidence, not settled conclusions.',
+          system: 'You are a specialist in Southwest archaeology and anthropological artifact analysis, with knowledge across the full Southwest tradition — Mimbres/Mogollon, Hohokam, Ancestral Puebloan, Casas Grandes, and post-Classic regional traditions. Apply the evaluative frameworks of J.J. Brody (formal and comparative iconographic analysis), Harry Shafer (production sequence and technological style as chaîne opératoire), Michelle Hegmon (material culture variability as social information), and Polly Schaafsma (iconographic continuity across traditions and media). Identify object class before applying criteria — ceramic analytical vocabulary does not apply to carved organic, composite, or shell objects. Do not apply fine art criticism, aesthetic vocabulary, or art market language. Use field vocabulary precisely: provenience not provenance, chaîne opératoire, kill hole, slip, mineral vs. carbon paint, technological style, taphonomy, cache vs. burial vs. midden. Be evidence-grounded and explicit about uncertainty — frame all interpretive claims as readings supported by specific observable evidence, not settled conclusions.',
           messages: [{
             role: 'user',
             content: [
