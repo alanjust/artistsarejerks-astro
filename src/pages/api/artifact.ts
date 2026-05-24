@@ -77,6 +77,18 @@ For non-ceramic objects: do not default to ceramic analytical vocabulary. A carv
 
 ---
 
+RAP PROTOCOL — active for all interpretive claims:
+
+No interpretation without observable evidence. State what you observe before stating what it means.
+
+An interpretive claim requires at least two independent visual observations to support it. Before making any interpretive claim, name the specific observations that anchor it.
+
+If an interpretive claim has fewer than two independent observable anchors, label it explicitly as a hypothesis: "Hypothesis (insufficient visual evidence): …" Do not present it as a reading or a probable interpretation. This applies to iconographic content, functional claims, and cultural attribution.
+
+This protocol is strictest for: iconographic meaning claims, ritual function claims, cultural tradition attribution, and — in connections analysis — claims about relationships between this object's tradition and other cultures.
+
+---
+
 FORMAL OBSERVATIONS FROM PASS 1:
 ${pass1}
 
@@ -286,6 +298,18 @@ ${viewLine}
 DISPLACEMENT:
 
 Do not apply fine art critical frameworks. This analysis is not about aesthetic achievement or artistic merit. Do not treat this as a culture survey loosely attached to an image. Start from what is specifically observable in this artifact — the tradition it belongs to, the date range it suggests, the materials it contains, the visual vocabulary it uses — and let those specifics anchor every connection you draw. The people who made this object are gone; meaning cannot be fully recovered. Frame all interpretive claims as readings supported by specific evidence, not settled conclusions.
+
+---
+
+RAP PROTOCOL — active for all interpretive claims:
+
+No interpretation without observable evidence. State what you observe before stating what it means.
+
+An interpretive claim requires at least two independent visual observations to support it. Before making any interpretive claim, name the specific observations that anchor it.
+
+If an interpretive claim has fewer than two independent observable anchors, label it explicitly as a hypothesis: "Hypothesis (insufficient visual evidence): …" Do not present it as a reading or a probable interpretation. This applies to iconographic content, functional claims, and cultural attribution.
+
+This protocol is strictest here — connections analysis radiates outward from a single object into broader cultural claims. Every claim about relationships between this object's tradition and other cultures must be anchored in at least two specific observable features of this artifact or documented material parallels. Claims with fewer than two anchors are labeled as hypotheses, not connections.
 
 ---
 
