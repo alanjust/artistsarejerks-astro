@@ -1,0 +1,245 @@
+---
+export const prerender = false;
+import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
+import artifactPrinciples from '../../data/artifact-principles.json';
+
+const principles = artifactPrinciples.principles;
+---
+
+<HiddenGrammarLayout
+  title="Artifact Perceptual Principles"
+  description="15 observational habits for reading archaeological and anthropological artifacts — production traces, material boundaries, wear differentials, and what absence reveals."
+>
+  <div class="hg-page ap-page">
+
+    <header class="ap-header">
+      <nav class="hg-breadcrumb" aria-label="Breadcrumb">
+        <a href="/hidden-grammar">Art Lab</a>
+        <span class="hg-breadcrumb-sep">›</span>
+        <a href="/hidden-grammar/toolkit/artifact">Artifact Analysis</a>
+        <span class="hg-breadcrumb-sep">›</span>
+        <span>Perceptual Principles</span>
+      </nav>
+      <p class="ap-label">Reference</p>
+      <h1 class="ap-title">15 Artifact Perceptual Principles</h1>
+      <p class="ap-subtitle">These are observational habits, not evaluation criteria. They direct attention toward what matters when reading an artifact — production traces, material boundaries, wear differentials, the evidence of what is absent. They apply across all object classes: ceramic, carved organic, composite, lithic, shell, fiber, and painted stone. They are used in Pass 1 (observation) and cited by name in analysis output.</p>
+      <a href="/hidden-grammar/artifact" class="ap-tool-link">← Back to Artifact Analysis</a>
+    </header>
+
+    <div class="ap-grid">
+      {principles.map(p => (
+        <article class="ap-card" id={`principle-${p.id}`}>
+          <div class="ap-card-head">
+            <span class="ap-num">#{p.id}</span>
+            <div class="ap-name-block">
+              <h2 class="ap-name">{p.name}</h2>
+              <p class="ap-sub">{p.subtitle}</p>
+            </div>
+          </div>
+
+          <div class="ap-detail">
+            <p class="ap-detail-label">What it is</p>
+            <p class="ap-detail-text">{p.description}</p>
+          </div>
+
+          <div class="ap-detail ap-detail--apply">
+            <p class="ap-detail-label">How to apply it</p>
+            <p class="ap-detail-text">{p.howToApply}</p>
+          </div>
+
+          {p.applicableTo !== 'all' && (
+            <div class="ap-scope">
+              <p class="ap-detail-label">Object classes</p>
+              <p class="ap-scope-text">{p.applicableTo}</p>
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+
+  </div>
+</HiddenGrammarLayout>
+
+<style>
+  .ap-page {
+    max-width: 860px;
+  }
+
+  /* ── Header ── */
+  .ap-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .hg-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .hg-breadcrumb a {
+    color: #64748b;
+    text-decoration: none;
+  }
+
+  .hg-breadcrumb a:hover { color: #4f46e5; }
+
+  .hg-breadcrumb-sep { color: #cbd5e1; }
+
+  .ap-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.5rem;
+  }
+
+  .ap-title {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.875rem;
+  }
+
+  .ap-subtitle {
+    font-size: 0.9375rem;
+    color: #475569;
+    line-height: 1.7;
+    max-width: 68ch;
+    margin: 0 0 1rem;
+  }
+
+  .ap-tool-link {
+    font-size: 0.875rem;
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .ap-tool-link:hover { text-decoration: underline; }
+
+  /* ── Grid ── */
+  .ap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 640px) {
+    .ap-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Cards ── */
+  .ap-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem 1.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    scroll-margin-top: 1rem;
+    transition: border-color 0.15s;
+  }
+
+  .ap-card:hover {
+    border-color: #c7d2fe;
+  }
+
+  .ap-card:target {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px #eef2ff;
+  }
+
+  .ap-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .ap-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    white-space: nowrap;
+    padding-top: 0.125rem;
+    flex-shrink: 0;
+  }
+
+  .ap-name-block {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ap-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem;
+    line-height: 1.3;
+  }
+
+  .ap-sub {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* ── Detail rows ── */
+  .ap-detail {
+    padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .ap-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 0.375rem;
+  }
+
+  .ap-detail-text {
+    font-size: 0.875rem;
+    color: #334155;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .ap-detail--apply {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 0.75rem;
+    border-top: none;
+    margin-top: -0.125rem;
+  }
+
+  .ap-detail--apply .ap-detail-label {
+    color: #4f46e5;
+  }
+
+  .ap-detail--apply .ap-detail-text {
+    color: #1e293b;
+  }
+
+  .ap-scope {
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .ap-scope-text {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+    font-style: italic;
+  }
+</style>

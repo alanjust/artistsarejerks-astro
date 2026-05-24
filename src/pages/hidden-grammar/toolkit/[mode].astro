@@ -22,6 +22,7 @@ const analyzerLink = isLive
   : '/hidden-grammar/ai-analyze';
 const modeNote = mode.note || null;
 const modeDetail = mode.detail || null;
+const modeReferenceLink = mode.referenceLink || null;
 ---
 
 <HiddenGrammarLayout title={`${mode.label} — Art Lab Toolkit`}>
@@ -117,6 +118,15 @@ const modeDetail = mode.detail || null;
       </div>
     )}
 
+    <!-- ── REFERENCE LINK ───────────────────────────────────────── -->
+    {modeReferenceLink && (
+      <div class="detail-reference">
+        <a href={modeReferenceLink.url} class="detail-reference-link">
+          {modeReferenceLink.label}
+        </a>
+      </div>
+    )}
+
     <!-- ── BOTTOM NAV ─────────────────────────────────────────── -->
     <div class="detail-bottom-nav">
       <a href="/hidden-grammar/toolkit" class="hg-btn hg-btn--ghost">
@@ -124,7 +134,7 @@ const modeDetail = mode.detail || null;
       </a>
       {isLive && (
         <a href={analyzerLink} class="hg-btn hg-btn--primary">
-          Choose a prompt →
+          Open tool →
         </a>
       )}
     </div>
@@ -306,6 +316,23 @@ const modeDetail = mode.detail || null;
 
   .detail-placeholder p { margin: 0 0 0.5rem; }
   .detail-placeholder p:last-child { margin: 0; }
+
+  .detail-reference {
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 8px;
+  }
+
+  .detail-reference-link {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #4f46e5;
+    text-decoration: none;
+  }
+
+  .detail-reference-link:hover { text-decoration: underline; }
 
   .detail-bottom-nav {
     margin-top: 3rem;

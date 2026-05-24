@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
 import principlesData from '../../data/hg-principles.json';
+import artifactPrinciplesData from '../../data/artifact-principles.json';
 
 export const prerender = false;
 
@@ -10,12 +11,44 @@ const PRINCIPLE_NAMES: string[] = (principlesData.principles as any[])
   .map((p: any) => p.name as string)
   .sort((a, b) => b.length - a.length);
 
-const PASS1_PROMPT_SINGLE = `Describe only what you can directly observe in this image. Cover: what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye and what doesn't, how near and far space is handled. Be specific and granular. Report in the order the eye encounters things. No interpretation. No art historical references. No quality judgments.`;
+// Artifact-domain perceptual principles
+const ARTIFACT_PRINCIPLE_NAMES: string[] = (artifactPrinciplesData.principles as any[])
+  .map((p: any) => p.name as string)
+  .sort((a, b) => b.length - a.length);
 
-const PASS1_PROMPT_MULTI = (count: number) =>
-  `You are looking at ${count} images of the same artifact. Each image is labeled with its view. Work through each view in sequence, using the label as a header. For each view, describe only what you can directly observe — what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye. Be specific and granular. No interpretation. No art historical references. No quality judgments.`;
+const PASS1_PROMPT_SINGLE = (artifactPrincipleNames: string[]) =>
+  `Describe only what you can directly observe in this artifact image. Pure observation — no interpretation, no cultural attribution, no quality judgments.
 
-const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], audience: string, views: string[] = []) => {
+Cover systematically:
+- Overall form: what the object is, its general shape, orientation, and scale
+- Surface features: every mark, line, texture, and irregularity — read these as production evidence, not just surface description
+- Material boundaries: where one material or surface treatment ends and another begins
+- Color zones: what colors are present and how they are distributed across the object
+- Wear and condition: where surfaces appear more abraded, worn, polished, or eroded than others, and where they do not
+- Evidence of attachment or joining: holes, channels, residue, binding marks, inset cavities, grooves
+- Proportions: thickness, depth, wall relationships, scale relative to other features
+- Anything incomplete, interrupted, or where a gap in the surface suggests something is absent
+
+Be specific and granular. Work systematically across the object from one end to the other.
+
+ARTIFACT PERCEPTUAL PRINCIPLES: When your observation corresponds to one of the following, use the exact name and follow it immediately with what you specifically observe:
+
+${artifactPrincipleNames.join(', ')}`;
+
+const PASS1_PROMPT_MULTI = (count: number, artifactPrincipleNames: string[]) =>
+  `You are looking at ${count} images of the same artifact. Each image is labeled with its view. Work through each view in sequence, using the label as a header.
+
+For each view, describe only what you can directly observe — pure observation, no interpretation, no cultural attribution, no quality judgments.
+
+For each view cover: surface features visible from this angle (marks, lines, textures, irregularities read as production evidence), material boundaries, color zones and their distribution, wear and condition differential, evidence of attachment or joining, proportions and scale cues specific to this view.
+
+After covering all views, note any features that are only visible — or that read differently — from specific views.
+
+ARTIFACT PERCEPTUAL PRINCIPLES: When your observation corresponds to one of the following, use the exact name and follow it immediately with what you specifically observe:
+
+${artifactPrincipleNames.join(', ')}`;
+
+const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], artifactPrincipleNames: string[], audience: string, views: string[] = []) => {
   const audienceFrame = audience.includes('curator')
     ? `You are analyzing this artifact for a museum curator. Address: typological placement and what it establishes, condition and what it affects interpretively, cultural significance and what tradition this object represents, and what comparable documented examples exist. Use field vocabulary precisely.`
     : audience.includes('educator')
@@ -49,9 +82,11 @@ ${pass1}
 
 ---
 
-PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism that matches one of the following, use the exact name and follow it immediately with a plain-English phrase explaining what it means in this specific context:
+PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism, use the exact name from either list and follow it immediately with a plain-English phrase explaining what it means in this specific context.
 
-${principleNames.join(', ')}
+Universal perceptual principles: ${principleNames.join(', ')}
+
+Artifact observation principles: ${artifactPrincipleNames.join(', ')}
 
 ---
 
@@ -233,7 +268,7 @@ Identify 2–3 things this specific artifact made unusually clear — aspects of
 Write for someone curious and smart who doesn't already speak the vocabulary. Open with something specific from this artifact before naming the principle. Jargon only when immediately followed by plain English. Total: 300–450 words.`;
 };
 
-const CONNECTIONS_PROMPT = (pass1: string, principleNames: string[], audience: string, views: string[] = []) => {
+const CONNECTIONS_PROMPT = (pass1: string, principleNames: string[], artifactPrincipleNames: string[], audience: string, views: string[] = []) => {
   const audienceFrame = audience.includes('curator')
     ? `You are analyzing this artifact's cultural connections for a museum curator. Address what tradition and period this object represents, what exchange networks it participated in, what comparable cultures were doing at the same time, and how this object connects to the broader cultural landscape. Use field vocabulary precisely.`
     : audience.includes('educator')
@@ -259,9 +294,11 @@ ${pass1}
 
 ---
 
-PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism that matches one of the following, use the exact name and follow it immediately with a plain-English phrase explaining what it means in this specific context:
+PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism, use the exact name from either list and follow it immediately with a plain-English phrase explaining what it means in this specific context.
 
-${principleNames.join(', ')}
+Universal perceptual principles: ${principleNames.join(', ')}
+
+Artifact observation principles: ${artifactPrincipleNames.join(', ')}
 
 ---
 
@@ -420,7 +457,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const imageBlocks = buildImageBlocks(parsedImages);
   const imageCount = parsedImages.length;
   const viewLabels = parsedImages.map(img => img.label);
-  const pass1Prompt = imageCount === 1 ? PASS1_PROMPT_SINGLE : PASS1_PROMPT_MULTI(imageCount);
+  const pass1Prompt = imageCount === 1
+    ? PASS1_PROMPT_SINGLE(ARTIFACT_PRINCIPLE_NAMES)
+    : PASS1_PROMPT_MULTI(imageCount, ARTIFACT_PRINCIPLE_NAMES);
 
   const anthropic = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
@@ -436,7 +475,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const pass1Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
           max_tokens: 2048,
-          system: 'You are a visual observer. Report only what is directly present. No interpretation, no art history, no quality judgments.',
+          system: 'You are a trained artifact observer. Report only what is directly present and physically observable. Read surface features as production evidence. No interpretation, no cultural attribution, no quality judgments.',
           messages: [{
             role: 'user',
             content: [
@@ -475,9 +514,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const artifactContext = buildArtifactContext(fields);
         const pass2UserText = isConnections
           ? (artifactContext ? artifactContext + '\n---\n\n' : '') +
-            CONNECTIONS_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels)
+            CONNECTIONS_PROMPT(pass1Text, PRINCIPLE_NAMES, ARTIFACT_PRINCIPLE_NAMES, audience || '', viewLabels)
           : (artifactContext ? artifactContext + '\n---\n\n' : '') +
-            ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels);
+            ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, ARTIFACT_PRINCIPLE_NAMES, audience || '', viewLabels);
 
         const pass2SystemPrompt = isConnections
           ? 'You are a specialist in Southwest archaeology and cultural interaction, with deep knowledge of exchange networks, contemporaneous traditions, and the broader prehistoric Southwest landscape — Mimbres/Mogollon, Hohokam, Ancestral Puebloan, Casas Grandes, and post-Classic traditions. Approach artifacts as entry points into cultural worlds: what does this object tell us about who made it, who they traded with, what they shared with neighboring peoples, and what world they inhabited. Draw on the scholarship of Linda Cordell (Southwest as mosaic of interacting traditions), Polly Schaafsma (pan-Southwest iconographic continuity), Kate Spielmann (exchange networks and craft production), Phil Weigand and Garman Harbottle (turquoise trade networks), and Patricia Crown (ideological spread through material culture). Start from what is observable in the object and expand only to what the scholarly record supports. Frame contested relationships as contested, not resolved.'

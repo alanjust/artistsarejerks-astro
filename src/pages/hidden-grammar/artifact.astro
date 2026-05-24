@@ -2,6 +2,7 @@
 export const prerender = false;
 import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 import principlesData from '../../data/hg-principles.json';
+import artifactPrinciplesData from '../../data/artifact-principles.json';
 
 // Tier A only — universal perceptual principles, domain-agnostic
 const principleNames: string[] = (principlesData.principles as any[])
@@ -12,6 +13,16 @@ const principleNames: string[] = (principlesData.principles as any[])
 const principleIdMap: Record<string, number> = Object.fromEntries(
   (principlesData.principles as any[])
     .filter((p: any) => p.tier === 'A')
+    .map((p: any) => [p.name as string, p.id as number])
+);
+
+// Artifact-domain perceptual principles
+const artifactPrincipleNames: string[] = (artifactPrinciplesData.principles as any[])
+  .map((p: any) => p.name as string)
+  .sort((a, b) => b.length - a.length);
+
+const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
+  (artifactPrinciplesData.principles as any[])
     .map((p: any) => [p.name as string, p.id as number])
 );
 ---
@@ -866,8 +877,10 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 
 </style>
 
-<script define:vars={{ principleNames, principleIdMap }}>
+<script define:vars={{ principleNames, principleIdMap, artifactPrincipleNames, artifactPrincipleIdMap }}>
   window.__PRINCIPLE_NAMES__ = principleNames;
+  window.__ARTIFACT_PRINCIPLE_NAMES__ = artifactPrincipleNames;
+  window.__ARTIFACT_PRINCIPLE_ID_MAP__ = artifactPrincipleIdMap;
   window.__PRINCIPLE_ID_MAP__ = principleIdMap;
 </script>
 
@@ -876,11 +889,25 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 
   const PRINCIPLE_NAMES: string[] = (window as any).__PRINCIPLE_NAMES__ || [];
   const PRINCIPLE_ID_MAP: Record<string, number> = (window as any).__PRINCIPLE_ID_MAP__ || {};
+  const ARTIFACT_PRINCIPLE_NAMES: string[] = (window as any).__ARTIFACT_PRINCIPLE_NAMES__ || [];
+  const ARTIFACT_PRINCIPLE_ID_MAP: Record<string, number> = (window as any).__ARTIFACT_PRINCIPLE_ID_MAP__ || {};
+
+  // Build a combined lookup: name → { id, basePath }
+  interface PrincipleEntry { id: number; basePath: string; }
+  const ALL_PRINCIPLES: Record<string, PrincipleEntry> = {};
+  PRINCIPLE_NAMES.forEach(n => {
+    if (PRINCIPLE_ID_MAP[n]) ALL_PRINCIPLES[n.toLowerCase()] = { id: PRINCIPLE_ID_MAP[n], basePath: '/hidden-grammar/principles' };
+  });
+  ARTIFACT_PRINCIPLE_NAMES.forEach(n => {
+    if (ARTIFACT_PRINCIPLE_ID_MAP[n]) ALL_PRINCIPLES[n.toLowerCase()] = { id: ARTIFACT_PRINCIPLE_ID_MAP[n], basePath: '/hidden-grammar/artifact-principles' };
+  });
+
+  const ALL_NAMES = [...PRINCIPLE_NAMES, ...ARTIFACT_PRINCIPLE_NAMES].sort((a, b) => b.length - a.length);
 
   function linkPrinciples(container: HTMLElement) {
-    if (!PRINCIPLE_NAMES.length) return;
+    if (!ALL_NAMES.length) return;
 
-    const escaped = PRINCIPLE_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const escaped = ALL_NAMES.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
 
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
@@ -902,9 +929,8 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
         const a = document.createElement('a');
         const matchedLower = m![0].toLowerCase();
-        const canonicalName = PRINCIPLE_NAMES.find(n => n.toLowerCase() === matchedLower) || m![0];
-        const pid = PRINCIPLE_ID_MAP[canonicalName];
-        a.href = pid ? `/hidden-grammar/principles#principle-${pid}` : '/hidden-grammar/principles';
+        const entry = ALL_PRINCIPLES[matchedLower];
+        a.href = entry ? `${entry.basePath}#principle-${entry.id}` : '/hidden-grammar/artifact-principles';
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.className = 'fd-principle-link';

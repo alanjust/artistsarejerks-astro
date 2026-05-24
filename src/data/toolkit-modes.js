@@ -41,6 +41,18 @@ export const toolkitBuckets = [
         status: 'live',
         phase: 'Full Analysis',
         link: '/hidden-grammar/artifact',
+        referenceLink: { label: 'Perceptual Principles Reference →', url: '/hidden-grammar/artifact-principles' },
+        detail: {
+          what: 'Three-pass analysis of archaeological and anthropological artifacts. Pass 1 observes what is physically present using 15 artifact-specific perceptual principles. Pass 2 identifies object class, applies tradition-calibrated evaluative criteria, and analyzes form, construction, function, cultural context, and iconographic content. Pass 3 identifies analytical habits worth carrying to other objects.',
+          when: [
+            'Analyzing a specific artifact for research, documentation, or comparative study',
+            'Exploring the cultural connections and exchange networks surrounding an artifact',
+            'Building observational vocabulary for reading material culture',
+            'Preparing analysis for a researcher, curator, or educator audience',
+          ],
+          output: 'Three sections: formal observations (Pass 1), full artifact analysis (Pass 2), and transferable analytical habits (Pass 3). A second mode — Explore Connections — produces an outward-looking analysis across exchange networks, contemporaneous cultures, aesthetic parallels, and cultural trajectory.',
+          constraints: 'Calibrated to Southwest archaeology and anthropology. Displacement block actively suppresses fine art vocabulary and individualist expression frameworks. Object class is identified before criteria are applied — ceramic vocabulary does not default onto non-ceramic objects.',
+        },
       },
     ],
   },
