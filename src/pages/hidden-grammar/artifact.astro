@@ -122,7 +122,10 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
 
     <!-- Run -->
     <div id="runRow" style="display:none; margin-top: 1.25rem;">
-      <button type="button" id="runBtn" class="fd-btn fd-btn--primary">Run Analysis</button>
+      <div class="fd-run-buttons">
+        <button type="button" id="runBtn" class="fd-btn fd-btn--primary">Run Analysis</button>
+        <button type="button" id="connectionsBtn" class="fd-btn fd-btn--outline">Explore Connections</button>
+      </div>
     </div>
 
     <!-- Status -->
@@ -134,13 +137,13 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     <!-- Output -->
     <div id="output" style="display:none">
       <div class="fd-output-header">
-        <span class="fd-output-label">Analysis</span>
+        <span class="fd-output-label" id="outputLabel">Analysis</span>
       </div>
       <div class="fd-artwork-meta" id="artworkMeta" style="display:none">
         <img id="resultThumbnail" class="fd-meta-thumbnail" alt="Analyzed artifact">
         <dl class="fd-meta-fields" id="metaFields"></dl>
       </div>
-      <p class="fd-epistemic-note">The form, construction, and function sections are grounded in what is directly observable. The cultural context and iconographic sections draw on knowledge beyond the image — interpretations that can be contested. Where evidence is limited or readings are uncertain, that uncertainty is part of the analysis.</p>
+      <p class="fd-epistemic-note" id="epistemicNote">The form, construction, and function sections are grounded in what is directly observable. The cultural context and iconographic sections draw on knowledge beyond the image — interpretations that can be contested. Where evidence is limited or readings are uncertain, that uncertainty is part of the analysis.</p>
       <div id="analysisText" class="fd-analysis"></div>
       <div class="fd-copy-row">
         <button type="button" id="copyBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Copy Analysis</button>
@@ -534,6 +537,21 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   }
   .fd-btn--ghost:hover { border-color: #94a3b8; color: #334155; }
 
+  .fd-btn--outline {
+    background: transparent;
+    color: #4f46e5;
+    border: 1.5px solid #4f46e5;
+  }
+  .fd-btn--outline:hover { background: #f5f3ff; }
+  .fd-btn--outline:disabled { color: #a5b4fc; border-color: #c7d2fe; cursor: not-allowed; }
+
+  .fd-run-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    align-items: center;
+  }
+
   .fd-btn--sm {
     font-size: 0.8125rem;
     padding: 0.375rem 0.75rem;
@@ -925,15 +943,23 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
   });
 
   const runBtn          = document.getElementById('runBtn') as HTMLButtonElement;
+  const connectionsBtn  = document.getElementById('connectionsBtn') as HTMLButtonElement;
   const statusBar       = document.getElementById('statusBar') as HTMLElement;
   const statusText      = document.getElementById('statusText') as HTMLElement;
   const output          = document.getElementById('output') as HTMLElement;
   const analysisText    = document.getElementById('analysisText') as HTMLElement;
   const pass1Text       = document.getElementById('pass1Text') as HTMLElement;
+  const outputLabel     = document.getElementById('outputLabel') as HTMLElement;
+  const epistemicNote   = document.getElementById('epistemicNote') as HTMLElement;
   const copyBtn         = document.getElementById('copyBtn') as HTMLButtonElement;
   const pdfBtn          = document.getElementById('pdfBtn') as HTMLButtonElement;
   const pasteBtn        = document.getElementById('fdPasteBtn') as HTMLButtonElement;
   const resultThumbnail = document.getElementById('resultThumbnail') as HTMLImageElement;
+
+  const EPISTEMIC_ARTIFACT = 'The form, construction, and function sections are grounded in what is directly observable. The cultural context and iconographic sections draw on knowledge beyond the image — interpretations that can be contested. Where evidence is limited or readings are uncertain, that uncertainty is part of the analysis.';
+  const EPISTEMIC_CONNECTIONS = 'This analysis starts from what is observable in the artifact — tradition, date range, materials, iconographic vocabulary — then radiates outward into what is known about the broader cultural landscape. The artifact anchors the analysis; the connections draw on the scholarly record. Where relationships are contested or uncertain, that uncertainty is part of the analysis.';
+
+  let currentMode: 'artifact' | 'connections' = 'artifact';
 
   function renderSlots() {
     const hasImages = uploadedImages.length > 0;
@@ -1138,13 +1164,19 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
     reader.readAsDataURL(file);
   }
 
-  runBtn.addEventListener('click', runAnalysis);
+  runBtn.addEventListener('click', () => { currentMode = 'artifact'; runAnalysis(); });
+  connectionsBtn.addEventListener('click', () => { currentMode = 'connections'; runAnalysis(); });
 
   async function runAnalysis() {
     if (uploadedImages.length === 0) return;
 
     runBtn.disabled = true;
-    runBtn.textContent = 'Running…';
+    connectionsBtn.disabled = true;
+    if (currentMode === 'connections') {
+      connectionsBtn.textContent = 'Running…';
+    } else {
+      runBtn.textContent = 'Running…';
+    }
     output.style.display = 'none';
     statusBar.style.display = 'flex';
     statusText.textContent = 'Connecting…';
@@ -1170,6 +1202,7 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
           images: uploadedImages.map(img => ({ data: img.data, label: img.label })),
           audience: selectedAudience || undefined,
           fields,
+          mode: currentMode,
         }),
       });
 
@@ -1188,6 +1221,8 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         }
         runBtn.disabled = false;
         runBtn.textContent = 'Run Analysis';
+        connectionsBtn.disabled = false;
+        connectionsBtn.textContent = 'Explore Connections';
         return;
       }
 
@@ -1219,8 +1254,14 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
               alert(`${data.error || 'Analysis failed'}${detail}`);
               runBtn.disabled = false;
               runBtn.textContent = 'Run Analysis';
+              connectionsBtn.disabled = false;
+              connectionsBtn.textContent = 'Explore Connections';
               break outer;
             }
+
+            const isConnections = data.mode === 'connections';
+            outputLabel.textContent = isConnections ? 'Cultural Connections' : 'Analysis';
+            epistemicNote.textContent = isConnections ? EPISTEMIC_CONNECTIONS : EPISTEMIC_ARTIFACT;
 
             analysisText.innerHTML = await marked(data.analysis || '');
             linkPrinciples(analysisText);
@@ -1261,7 +1302,9 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
             output.style.display = '';
             output.scrollIntoView({ behavior: 'smooth', block: 'start' });
             runBtn.disabled = false;
-            runBtn.textContent = 'Run Again';
+            runBtn.textContent = 'Run Analysis';
+            connectionsBtn.disabled = false;
+            connectionsBtn.textContent = 'Explore Connections';
             break outer;
           } else if (data.type === 'error') {
             completed = true;
@@ -1269,6 +1312,8 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
             alert(`Analysis failed: ${data.error}`);
             runBtn.disabled = false;
             runBtn.textContent = 'Run Analysis';
+            connectionsBtn.disabled = false;
+            connectionsBtn.textContent = 'Explore Connections';
             break outer;
           }
         }
@@ -1279,6 +1324,8 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
         alert('Analysis incomplete — the connection was interrupted. Please try again.');
         runBtn.disabled = false;
         runBtn.textContent = 'Run Analysis';
+        connectionsBtn.disabled = false;
+        connectionsBtn.textContent = 'Explore Connections';
       }
 
     } catch (err) {
@@ -1286,6 +1333,8 @@ const principleIdMap: Record<string, number> = Object.fromEntries(
       alert(`Network error: ${err}`);
       runBtn.disabled = false;
       runBtn.textContent = 'Run Analysis';
+      connectionsBtn.disabled = false;
+      connectionsBtn.textContent = 'Explore Connections';
     }
   }
 

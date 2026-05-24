@@ -233,6 +233,105 @@ Identify 2–3 things this specific artifact made unusually clear — aspects of
 Write for someone curious and smart who doesn't already speak the vocabulary. Open with something specific from this artifact before naming the principle. Jargon only when immediately followed by plain English. Total: 300–450 words.`;
 };
 
+const CONNECTIONS_PROMPT = (pass1: string, principleNames: string[], audience: string, views: string[] = []) => {
+  const audienceFrame = audience.includes('curator')
+    ? `You are analyzing this artifact's cultural connections for a museum curator. Address what tradition and period this object represents, what exchange networks it participated in, what comparable cultures were doing at the same time, and how this object connects to the broader cultural landscape. Use field vocabulary precisely.`
+    : audience.includes('educator')
+    ? `You are analyzing this artifact's cultural connections for an educator. Prioritize what this object makes visible about cultural interaction, trade, and shared meaning — things a student can use as a framework for thinking about any culture and its neighbors.`
+    : `You are analyzing this artifact's cultural connections for a researcher. Be precise about evidence chains, flag where relationships are contested in the scholarly record, and maintain explicit uncertainty about indirect connections.`;
+
+  const viewLine = views.length > 1
+    ? `\nAVAILABLE VIEWS: ${views.join(', ')} — use all views to establish tradition, date range, and material indicators.\n`
+    : '';
+
+  return `${audienceFrame}
+${viewLine}
+---
+
+DISPLACEMENT:
+
+Do not apply fine art critical frameworks. This analysis is not about aesthetic achievement or artistic merit. Do not treat this as a culture survey loosely attached to an image. Start from what is specifically observable in this artifact — the tradition it belongs to, the date range it suggests, the materials it contains, the visual vocabulary it uses — and let those specifics anchor every connection you draw. The people who made this object are gone; meaning cannot be fully recovered. Frame all interpretive claims as readings supported by specific evidence, not settled conclusions.
+
+---
+
+FORMAL OBSERVATIONS FROM PASS 1:
+${pass1}
+
+---
+
+PERCEPTUAL PRINCIPLES REFERENCE: Where your analysis references a perceptual mechanism that matches one of the following, use the exact name and follow it immediately with a plain-English phrase explaining what it means in this specific context:
+
+${principleNames.join(', ')}
+
+---
+
+CONNECTIONS ANALYSIS:
+
+Use these five headers exactly. For each section, start from what is observable or identifiable in this specific artifact before expanding to what is known about the broader landscape.
+
+## CULTURAL TRADITION AND MOMENT
+
+Identify the cultural tradition this artifact belongs to and the date range it suggests. This is the anchor for everything that follows. State what observable evidence — construction technique, surface treatment, design vocabulary, material — supports the tradition identification. Where tradition cannot be identified with confidence, work with probabilities and say so.
+
+What was happening in this tradition at this time? What was the social landscape — large aggregated communities or dispersed, stable or in transition, actively exchanging or relatively isolated?
+
+## EXCHANGE AND MATERIAL NETWORKS
+
+What materials in this object came from outside the local area? What do those materials imply about exchange relationships? What direction did goods move, and what moved in return?
+
+For the Southwest: turquoise presence implies exchange participation (specific source requires INAA/pXRF — cannot be determined visually). Shell species indicate trade distance and direction. Copper indicates long-distance contact. Non-local ceramic types in an assemblage mark exchange events.
+
+Who were this tradition's documented trading partners at this period? What goods moved through these networks?
+
+## CONTEMPORANEOUS CULTURES
+
+Who else was active in the Southwest during this period? For each contemporaneous tradition, briefly address: what were they doing at this time, how did they relate to the tradition that produced this object (trading partners, largely separate, connected through shared ideological networks), and what material evidence marks the relationship?
+
+Keep the framing evidence-grounded. Relationships documented in the scholarly record differ from relationships that are plausible but unconfirmed — maintain that distinction.
+
+## AESTHETIC AND ICONOGRAPHIC PARALLELS
+
+What visual vocabulary does this object share with neighboring or contemporaneous traditions? What motifs, design conventions, or formal approaches appear across multiple Southwest traditions? What is distinctive to this tradition rather than shared?
+
+Where relevant, draw on Polly Schaafsma's documentation of pan-Southwest iconographic continuity — the same motifs (horned serpent, mountain lion, rain/cloud imagery, warrior/shield figures) appear across Hohokam, Mimbres, Ancestral Puebloan, and Casas Grandes contexts. Where the iconography on this object connects to that shared vocabulary, identify it. Where it appears tradition-specific, note that distinction.
+
+## TRAJECTORY
+
+What did this tradition grow from? What preceded it and what relationship does this object's style suggest to earlier periods?
+
+What came after? If this tradition underwent a collapse or reorganization, describe the nature of that transition and what is known about what followed. If this object is from a post-Classic or transitional period, address what changed in the social landscape that produced it.
+
+Where active scholarly debate exists — the nature of the Chaco system, the Mimbres collapse, Casas Grandes origins, Kachina cult emergence — name the debate and competing positions rather than asserting a single answer.`;
+};
+
+const CONNECTIONS_COMPETENCY_PROMPT = (pass1: string, pass2: string, audience: string): string => {
+  const audienceLine = audience
+    ? `This analysis was prepared for: ${audience}.\n\n`
+    : '';
+
+  return `${audienceLine}A cultural connections analysis of an archaeological artifact has been completed. Your job is to make the interpretive moves explicit — to help the reader understand how to read an artifact as evidence of a cultural world, not just as an isolated object.
+
+FORMAL OBSERVATIONS (PASS 1):
+${pass1}
+
+CONNECTIONS ANALYSIS (PASS 2):
+${pass2}
+
+---
+
+Write two sections. Use these headers exactly:
+
+## CONNECTIONS MADE HERE
+
+Identify 3–4 interpretive moves this analysis demonstrated that apply to thinking about any artifact in its cultural context. For each, start with a specific moment from this analysis before naming the general approach. How did observable features of the object become entry points into broader cultural knowledge?
+
+## WHERE TO LOOK NEXT
+
+Identify 2–3 specific threads this analysis opened that are worth pursuing further. For each, name what was identified, what's still uncertain or contested, and what kind of evidence — archaeological, comparative, compositional — would resolve it. Be specific about method, not just topic.
+
+Write for someone curious and smart who doesn't already speak the vocabulary. Open with something specific from this artifact before naming the principle. Jargon only when immediately followed by plain English. Total: 300–450 words.`;
+};
+
 function buildArtifactContext(fields: Record<string, string>): string {
   const labels: Record<string, string> = {
     culture:    'Culture / People',
@@ -288,7 +387,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const { images, audience, fields = {} } = body;
+  const { images, audience, fields = {}, mode = 'artifact' } = body;
 
   if (!images || !Array.isArray(images) || images.length === 0) {
     return new Response(JSON.stringify({ error: 'No images provided.' }), {
@@ -361,8 +460,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         send({ type: 'pass1_complete', pass1: pass1Text });
 
+        const isConnections = mode === 'connections';
         const audienceLower = (audience || '').toLowerCase();
-        const statusMsg = audienceLower.includes('curator')
+
+        const statusMsg = isConnections
+          ? 'Pass 2 — cultural connections…'
+          : audienceLower.includes('curator')
           ? 'Pass 2 — curatorial analysis…'
           : audienceLower.includes('educator')
           ? 'Pass 2 — teaching context…'
@@ -370,13 +473,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
         send({ type: 'status', message: statusMsg });
 
         const artifactContext = buildArtifactContext(fields);
-        const pass2UserText = (artifactContext ? artifactContext + '\n---\n\n' : '') +
-          ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels);
+        const pass2UserText = isConnections
+          ? (artifactContext ? artifactContext + '\n---\n\n' : '') +
+            CONNECTIONS_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels)
+          : (artifactContext ? artifactContext + '\n---\n\n' : '') +
+            ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels);
+
+        const pass2SystemPrompt = isConnections
+          ? 'You are a specialist in Southwest archaeology and cultural interaction, with deep knowledge of exchange networks, contemporaneous traditions, and the broader prehistoric Southwest landscape — Mimbres/Mogollon, Hohokam, Ancestral Puebloan, Casas Grandes, and post-Classic traditions. Approach artifacts as entry points into cultural worlds: what does this object tell us about who made it, who they traded with, what they shared with neighboring peoples, and what world they inhabited. Draw on the scholarship of Linda Cordell (Southwest as mosaic of interacting traditions), Polly Schaafsma (pan-Southwest iconographic continuity), Kate Spielmann (exchange networks and craft production), Phil Weigand and Garman Harbottle (turquoise trade networks), and Patricia Crown (ideological spread through material culture). Start from what is observable in the object and expand only to what the scholarly record supports. Frame contested relationships as contested, not resolved.'
+          : 'You are a specialist in Southwest archaeology and anthropological artifact analysis, with knowledge across the full Southwest tradition — Mimbres/Mogollon, Hohokam, Ancestral Puebloan, Casas Grandes, and post-Classic regional traditions. Apply the evaluative frameworks of J.J. Brody (formal and comparative iconographic analysis), Harry Shafer (production sequence and technological style as chaîne opératoire), Michelle Hegmon (material culture variability as social information), and Polly Schaafsma (iconographic continuity across traditions and media). Identify object class before applying criteria — ceramic analytical vocabulary does not apply to carved organic, composite, or shell objects. Do not apply fine art criticism, aesthetic vocabulary, or art market language. Use field vocabulary precisely: provenience not provenance, chaîne opératoire, kill hole, slip, mineral vs. carbon paint, technological style, taphonomy, cache vs. burial vs. midden. Be evidence-grounded and explicit about uncertainty — frame all interpretive claims as readings supported by specific observable evidence, not settled conclusions.';
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          system: 'You are a specialist in Southwest archaeology and anthropological artifact analysis, with knowledge across the full Southwest tradition — Mimbres/Mogollon, Hohokam, Ancestral Puebloan, Casas Grandes, and post-Classic regional traditions. Apply the evaluative frameworks of J.J. Brody (formal and comparative iconographic analysis), Harry Shafer (production sequence and technological style as chaîne opératoire), Michelle Hegmon (material culture variability as social information), and Polly Schaafsma (iconographic continuity across traditions and media). Identify object class before applying criteria — ceramic analytical vocabulary does not apply to carved organic, composite, or shell objects. Do not apply fine art criticism, aesthetic vocabulary, or art market language. Use field vocabulary precisely: provenience not provenance, chaîne opératoire, kill hole, slip, mineral vs. carbon paint, technological style, taphonomy, cache vs. burial vs. midden. Be evidence-grounded and explicit about uncertainty — frame all interpretive claims as readings supported by specific observable evidence, not settled conclusions.',
+          system: pass2SystemPrompt,
           messages: [{
             role: 'user',
             content: [
@@ -400,6 +510,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         send({ type: 'status', message: 'Pass 3 — what to take forward…' });
 
+        const pass3PromptText = isConnections
+          ? CONNECTIONS_COMPETENCY_PROMPT(pass1Text, pass2Text, audience || '')
+          : COMPETENCY_PROMPT(pass1Text, pass2Text, audience || '');
+
         const pass3Msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 1000,
@@ -408,7 +522,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
             role: 'user',
             content: [
               ...imageBlocks,
-              { type: 'text', text: COMPETENCY_PROMPT(pass1Text, pass2Text, audience || '') },
+              { type: 'text', text: pass3PromptText },
             ],
           }],
         });
@@ -418,7 +532,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .map((b: any) => b.text)
           .join('\n\n');
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text });
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode });
 
       } catch (err) {
         try {
