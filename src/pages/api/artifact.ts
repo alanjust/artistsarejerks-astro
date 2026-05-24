@@ -10,17 +10,24 @@ const PRINCIPLE_NAMES: string[] = (principlesData.principles as any[])
   .map((p: any) => p.name as string)
   .sort((a, b) => b.length - a.length);
 
-const PASS1_PROMPT = `Describe only what you can directly observe in this image. Cover: what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye and what doesn't, how near and far space is handled. Be specific and granular. Report in the order the eye encounters things. No interpretation. No art historical references. No quality judgments.`;
+const PASS1_PROMPT_SINGLE = `Describe only what you can directly observe in this image. Cover: what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye and what doesn't, how near and far space is handled. Be specific and granular. Report in the order the eye encounters things. No interpretation. No art historical references. No quality judgments.`;
 
-const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], audience: string) => {
+const PASS1_PROMPT_MULTI = (count: number) =>
+  `You are looking at ${count} images of the same artifact. Each image is labeled with its view. Work through each view in sequence, using the label as a header. For each view, describe only what you can directly observe — what's present and where, spatial relationships, how edges behave, how light and dark are distributed, color relationships, surface quality, what draws the eye. Be specific and granular. No interpretation. No art historical references. No quality judgments.`;
+
+const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], audience: string, views: string[] = []) => {
   const audienceFrame = audience.includes('curator')
     ? `You are analyzing this artifact for a museum curator. Address: typological placement and what it establishes, condition and what it affects interpretively, cultural significance and what tradition this object represents, and what comparable documented examples exist. Use field vocabulary precisely.`
     : audience.includes('educator')
     ? `You are analyzing this artifact for an educator. Prioritize: what this object makes directly visible about production technique, cultural practice, or social organization — things a student can learn to see in other objects by looking carefully at this one.`
     : `You are analyzing this artifact for a researcher. Be precise, systematic, and evidence-grounded. Maintain explicit uncertainty where the image cannot resolve a question.`;
 
-  return `${audienceFrame}
+  const viewLine = views.length > 1
+    ? `\nAVAILABLE VIEWS: ${views.join(', ')} — draw on all views in your analysis where relevant.\n`
+    : '';
 
+  return `${audienceFrame}
+${viewLine}
 ---
 
 DISPLACEMENT — read before analyzing:
@@ -138,6 +145,21 @@ function buildArtifactContext(fields: Record<string, string>): string {
     : '';
 }
 
+interface ImageInput { data: string; label: string; }
+
+interface ParsedImage {
+  imageData: string;
+  mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+  label: string;
+}
+
+function buildImageBlocks(parsed: ParsedImage[]) {
+  return parsed.flatMap(img => [
+    { type: 'text' as const, text: `[${img.label}]` },
+    { type: 'image' as const, source: { type: 'base64' as const, media_type: img.mediaType, data: img.imageData } },
+  ]);
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const apiKey = locals.runtime?.env?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -155,23 +177,40 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const { image, audience, fields = {} } = body;
+  const { images, audience, fields = {} } = body;
 
-  if (!image) {
-    return new Response(JSON.stringify({ error: 'No image provided' }), {
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    return new Response(JSON.stringify({ error: 'No images provided.' }), {
       status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const imageData = image.split(',')[1];
-  const mediaType = image.split(';')[0].split(':')[1];
   const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-  if (!supportedTypes.includes(mediaType)) {
+
+  let parsedImages: ParsedImage[];
+  try {
+    parsedImages = (images as ImageInput[]).map((img) => {
+      const mediaType = img.data.split(';')[0].split(':')[1];
+      if (!supportedTypes.includes(mediaType)) {
+        throw new Error(`Unsupported image format: ${mediaType}. Please convert to JPEG or PNG and try again.`);
+      }
+      return {
+        imageData: img.data.split(',')[1],
+        mediaType: mediaType as ParsedImage['mediaType'],
+        label: img.label || 'View',
+      };
+    });
+  } catch (err) {
     return new Response(
-      JSON.stringify({ error: `Unsupported image format: ${mediaType}. Please convert to JPEG or PNG and try again.` }),
+      JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
+
+  const imageBlocks = buildImageBlocks(parsedImages);
+  const imageCount = parsedImages.length;
+  const viewLabels = parsedImages.map(img => img.label);
+  const pass1Prompt = imageCount === 1 ? PASS1_PROMPT_SINGLE : PASS1_PROMPT_MULTI(imageCount);
 
   const anthropic = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
@@ -191,8 +230,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
           messages: [{
             role: 'user',
             content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
-              { type: 'text', text: PASS1_PROMPT },
+              ...imageBlocks,
+              { type: 'text', text: pass1Prompt },
             ],
           }],
         });
@@ -221,7 +260,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         const artifactContext = buildArtifactContext(fields);
         const pass2UserText = (artifactContext ? artifactContext + '\n---\n\n' : '') +
-          ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '');
+          ARTIFACT_PROMPT(pass1Text, PRINCIPLE_NAMES, audience || '', viewLabels);
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
@@ -230,7 +269,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           messages: [{
             role: 'user',
             content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
+              ...imageBlocks,
               { type: 'text', text: pass2UserText },
             ],
           }],
@@ -257,7 +296,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           messages: [{
             role: 'user',
             content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
+              ...imageBlocks,
               { type: 'text', text: COMPETENCY_PROMPT(pass1Text, pass2Text, audience || '') },
             ],
           }],
