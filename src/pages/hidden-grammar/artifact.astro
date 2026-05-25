@@ -87,6 +87,11 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
       </div>
 
       <div class="fd-field-row">
+        <label for="fieldAccession">Accession Number</label>
+        <input type="text" id="fieldAccession" name="accession" placeholder="e.g. 2001.12.1, NMNH A123456">
+      </div>
+
+      <div class="fd-field-row">
         <label for="fieldMaterial">Material</label>
         <input type="text" id="fieldMaterial" name="material" placeholder="e.g. black-on-white pottery, obsidian, bone">
       </div>
@@ -107,6 +112,16 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
       </div>
 
       <div class="fd-field-row">
+        <label for="fieldSourceInstitution">Image Source</label>
+        <input type="text" id="fieldSourceInstitution" name="sourceInstitution" placeholder="e.g. Smithsonian NMNH, Metropolitan Museum Open Access">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldSourceUrl">Source URL</label>
+        <input type="url" id="fieldSourceUrl" name="sourceUrl" placeholder="e.g. https://collections.si.edu/...">
+      </div>
+
+      <div class="fd-field-row">
         <label for="fieldCondition">Condition</label>
         <input type="text" id="fieldCondition" name="condition" placeholder="e.g. intact, kill hole present, reconstructed">
       </div>
@@ -114,6 +129,11 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
       <div class="fd-field-row">
         <label for="fieldContext">Research Context</label>
         <input type="text" id="fieldContext" name="context" placeholder="e.g. funerary context, iconographic study, comparative analysis">
+      </div>
+
+      <div class="fd-field-row">
+        <label for="fieldFieldNotes">Field Notes</label>
+        <textarea id="fieldFieldNotes" name="fieldNotes" placeholder="Excavation reports, field documentation, catalog entries, associated records"></textarea>
       </div>
 
       <div class="fd-field-row">
@@ -1220,16 +1240,20 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
     statusText.textContent = 'Connecting…';
 
     const fields = {
-      culture:    (document.getElementById('fieldCulture')     as HTMLInputElement)?.value.trim(),
-      period:     (document.getElementById('fieldPeriod')      as HTMLInputElement)?.value.trim(),
-      objectType: (document.getElementById('fieldObjectType')  as HTMLInputElement)?.value.trim(),
-      material:   (document.getElementById('fieldMaterial')    as HTMLInputElement)?.value.trim(),
-      dimensions: (document.getElementById('fieldDimensions')  as HTMLInputElement)?.value.trim(),
-      site:       (document.getElementById('fieldSite')        as HTMLInputElement)?.value.trim(),
-      collection: (document.getElementById('fieldCollection')  as HTMLInputElement)?.value.trim(),
-      condition:  (document.getElementById('fieldCondition')   as HTMLInputElement)?.value.trim(),
-      context:    (document.getElementById('fieldContext')     as HTMLInputElement)?.value.trim(),
-      notes:      (document.getElementById('fieldNotes')       as HTMLTextAreaElement)?.value.trim(),
+      culture:           (document.getElementById('fieldCulture')          as HTMLInputElement)?.value.trim(),
+      period:            (document.getElementById('fieldPeriod')           as HTMLInputElement)?.value.trim(),
+      objectType:        (document.getElementById('fieldObjectType')       as HTMLInputElement)?.value.trim(),
+      accession:         (document.getElementById('fieldAccession')        as HTMLInputElement)?.value.trim(),
+      material:          (document.getElementById('fieldMaterial')         as HTMLInputElement)?.value.trim(),
+      dimensions:        (document.getElementById('fieldDimensions')       as HTMLInputElement)?.value.trim(),
+      site:              (document.getElementById('fieldSite')             as HTMLInputElement)?.value.trim(),
+      collection:        (document.getElementById('fieldCollection')       as HTMLInputElement)?.value.trim(),
+      sourceInstitution: (document.getElementById('fieldSourceInstitution') as HTMLInputElement)?.value.trim(),
+      sourceUrl:         (document.getElementById('fieldSourceUrl')        as HTMLInputElement)?.value.trim(),
+      condition:         (document.getElementById('fieldCondition')        as HTMLInputElement)?.value.trim(),
+      context:           (document.getElementById('fieldContext')          as HTMLInputElement)?.value.trim(),
+      fieldNotes:        (document.getElementById('fieldFieldNotes')       as HTMLTextAreaElement)?.value.trim(),
+      notes:             (document.getElementById('fieldNotes')            as HTMLTextAreaElement)?.value.trim(),
     };
 
     try {

@@ -89,6 +89,19 @@ ${sectionsSchema}
 }`;
 };
 
+function dataUrlToBuffer(dataUrl: string): { buffer: Uint8Array; contentType: string; ext: string } {
+  const commaIdx = dataUrl.indexOf(',');
+  const header   = dataUrl.slice(0, commaIdx);
+  const base64   = dataUrl.slice(commaIdx + 1);
+  const contentType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+  const extMap: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+  const ext    = extMap[contentType] || 'jpg';
+  const binary = atob(base64);
+  const buffer = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) buffer[i] = binary.charCodeAt(i);
+  return { buffer, contentType, ext };
+}
+
 async function saveToD1(
   db: any,
   fields: Record<string, string>,
@@ -97,27 +110,56 @@ async function saveToD1(
   pass2: string,
   pass3: string,
   mode: string,
-  audience: string
+  audience: string,
+  images?: Array<{ data: string; label: string }>,
+  r2?: any
 ): Promise<number | null> {
   try {
     const objResult = await db.prepare(
-      `INSERT INTO objects (object_name, culture, period_label, material, dimensions, site, collection, condition, research_context, notes, object_class)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO objects (object_name, accession_number, culture, period_label, material, dimensions, site, collection, source_institution, source_url, condition, research_context, field_notes, notes, object_class)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
-      fields.objectType || 'Untitled',
-      fields.culture   || null,
-      fields.period    || null,
-      fields.material  || null,
-      fields.dimensions || null,
-      fields.site      || null,
-      fields.collection || null,
-      fields.condition || null,
-      fields.context   || null,
-      fields.notes     || null,
+      fields.objectType        || 'Untitled',
+      fields.accession         || null,
+      fields.culture           || null,
+      fields.period            || null,
+      fields.material          || null,
+      fields.dimensions        || null,
+      fields.site              || null,
+      fields.collection        || null,
+      fields.sourceInstitution || null,
+      fields.sourceUrl         || null,
+      fields.condition         || null,
+      fields.context           || null,
+      fields.fieldNotes        || null,
+      fields.notes             || null,
       record.object_class_identified || null
     ).run();
 
     const objectId = objResult.meta.last_row_id;
+
+    // Upload images to R2 and record in images table
+    if (r2 && Array.isArray(images) && images.length > 0) {
+      const imageInserts: Array<{ key: string; label: string; isPrimary: boolean }> = [];
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        try {
+          const { buffer, contentType, ext } = dataUrlToBuffer(img.data);
+          const safeLabel = (img.label || 'other').toLowerCase().replace(/[^a-z0-9]/g, '-');
+          const key = `objects/${objectId}/${i}-${safeLabel}.${ext}`;
+          await r2.put(key, buffer, { httpMetadata: { contentType } });
+          imageInserts.push({ key, label: img.label || 'Other', isPrimary: i === 0 });
+        } catch (imgErr) {
+          console.error('[R2 upload]', imgErr);
+        }
+      }
+      if (imageInserts.length > 0) {
+        await db.batch(imageInserts.map((img) =>
+          db.prepare(`INSERT INTO images (object_id, storage_url, view_label, is_primary) VALUES (?, ?, ?, ?)`)
+            .bind(objectId, img.key, img.label, img.isPrimary ? 1 : 0)
+        ));
+      }
+    }
 
     const analysisResult = await db.prepare(
       `INSERT INTO analyses (object_id, analysis_mode, audience, model_used, object_class_identified, tradition_identified, tradition_confidence, function_category, function_confidence, production_level, temporal_note, pass1_text, pass2_text, pass3_text)
@@ -772,6 +814,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         // Pass 4 — structured extraction + D1 save (internal, not streamed)
         let savedRecordId: number | null = null;
         const db = (locals as any).runtime?.env?.artlab_analyses;
+        const r2 = (locals as any).runtime?.env?.artlab_images;
 
         if (db) {
           send({ type: 'status', message: 'Saving to database…' });
@@ -803,7 +846,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
               db, fields, structuredRecord,
               pass1Text, pass2Text, pass3Text,
               isConnections ? 'connections' : 'artifact',
-              audience || ''
+              audience || '',
+              images,
+              r2
             );
           } catch (err) {
             console.error('[Pass 4]', err);
