@@ -67,6 +67,8 @@ PRINCIPLE REFERENCE — use exact names and ids when populating principles_fired
 Artifact principles (type "artifact"): ${ARTIFACT_PRINCIPLE_REF}
 Universal visual principles (type "universal_tier_a"): ${TIER_A_PRINCIPLE_REF}
 
+For each principle in principles_fired, set weight as an integer: 1 = peripheral presence (noticed but not central), 2 = clearly operative (shapes the reading), 3 = dominant (central to what makes this object what it is). Default to 2 if uncertain.
+
 Output this exact structure. Use only the enum values shown. Use null where genuinely unknown.
 
 {
@@ -78,7 +80,7 @@ Output this exact structure. Use only the enum values shown. Use null where genu
   "production_level": "household|part_time_specialist|full_time_specialist|indeterminate",
   "temporal_note": "<string or null>",
   "principles_fired": [
-    { "name": "<exact name from reference>", "id": 0, "type": "artifact|universal_tier_a", "pass": "pass1|pass2|both", "observation": "<the specific observation phrase>" }
+    { "name": "<exact name from reference>", "id": 0, "type": "artifact|universal_tier_a", "pass": "pass1|pass2|both", "weight": 1, "observation": "<the specific observation phrase>" }
   ],
   "rap_flags": [
     { "claim_type": "tradition_attribution|iconographic_meaning|functional_claim|inter_tradition_relationship", "confidence": "reading|hypothesis", "claim": "<specific claim text>", "anchor_count": 0 }
@@ -140,9 +142,9 @@ async function saveToD1(
     if (Array.isArray(record.principles_fired) && record.principles_fired.length > 0) {
       await db.batch(record.principles_fired.map((pf: any) =>
         db.prepare(
-          `INSERT INTO principle_firings (analysis_id, principle_name, principle_id, principle_type, fired_in_pass, observation_text)
-           VALUES (?, ?, ?, ?, ?, ?)`
-        ).bind(analysisId, pf.name, pf.id || 0, pf.type || 'artifact', pf.pass || 'pass1', pf.observation || null)
+          `INSERT INTO principle_firings (analysis_id, principle_name, principle_id, principle_type, fired_in_pass, weight, observation_text)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`
+        ).bind(analysisId, pf.name, pf.id || 0, pf.type || 'artifact', pf.pass || 'pass1', pf.weight || 2, pf.observation || null)
       ));
     }
 
