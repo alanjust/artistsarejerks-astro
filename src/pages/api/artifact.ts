@@ -784,10 +784,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
               }],
             });
 
-            const extractionText = extractionMsg.content
+            const extractionRaw = extractionMsg.content
               .filter((b: any) => b.type === 'text')
               .map((b: any) => b.text)
               .join('').trim();
+
+            // Strip markdown code fences if the model included them
+            const extractionText = extractionRaw
+              .replace(/^```(?:json)?\s*/i, '')
+              .replace(/\s*```\s*$/i, '')
+              .trim();
 
             const structuredRecord = JSON.parse(extractionText);
             savedRecordId = await saveToD1(
