@@ -508,6 +508,75 @@ const tierAPrinciples = [
     line-height: 1.5;
   }
 
+  /* ── Images ── */
+  .corpus-images-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .corpus-image-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .corpus-image {
+    max-width: 280px;
+    max-height: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f1f5f9;
+  }
+
+  .corpus-image-caption {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  /* ── Prose (marked output) ── */
+  .corpus-prose {
+    font-size: 0.9375rem;
+    color: #334155;
+    line-height: 1.65;
+  }
+
+  .corpus-prose p {
+    margin: 0 0 0.75rem 0;
+  }
+
+  .corpus-prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .corpus-prose strong {
+    color: #1e293b;
+    font-weight: 600;
+  }
+
+  .corpus-prose ul,
+  .corpus-prose ol {
+    padding-left: 1.25rem;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .corpus-prose li {
+    margin-bottom: 0.25rem;
+  }
+
+  /* ── Loading skeleton ── */
+  .corpus-detail-loading {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0;
+    padding: 0.5rem 0;
+  }
+
   /* ── Empty / error ── */
   .corpus-empty {
     text-align: center;
@@ -543,6 +612,8 @@ const tierAPrinciples = [
 </style>
 
 <script>
+  import { marked } from 'marked';
+
   function esc(s: string | null | undefined): string {
     if (!s) return '';
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -607,8 +678,16 @@ const tierAPrinciples = [
     error?: string;
   }
 
+  interface DetailRecord {
+    analysis: Record<string, unknown>;
+    firings: Firing[];
+    rap_flags: RapFlag[];
+    images: { storage_url: string; view_label: string; is_primary: number }[];
+  }
+
   let currentData: QueryResult | null = null;
-  const expandedIds = new Set<number>();
+  const expandedIds   = new Set<number>();
+  const loadedDetails = new Map<number, DetailRecord>();
 
   function getFilters(): Record<string, string> {
     const get = (id: string) => (document.getElementById(id) as HTMLSelectElement)?.value || '';
@@ -650,6 +729,105 @@ const tierAPrinciples = [
     el.textContent = n === 0 ? 'No analyses match.' : `${n} ${n === 1 ? 'analysis' : 'analyses'}`;
   }
 
+  function renderDetail(id: number): string {
+    const d = loadedDetails.get(id);
+    if (!d) {
+      return '<div class="corpus-card-detail"><p class="corpus-detail-loading">Loading…</p></div>';
+    }
+    const { analysis: a, firings, rap_flags, images } = d;
+
+    const imagesHtml = images.length > 0 ? `
+      <div>
+        <h4 class="corpus-detail-heading">Images</h4>
+        <div class="corpus-images-grid">
+          ${images.map(img => `
+            <figure class="corpus-image-figure">
+              <img src="/api/image/${esc(img.storage_url)}" alt="${esc(img.view_label)}" class="corpus-image" loading="lazy" />
+              <figcaption class="corpus-image-caption">${esc(img.view_label)}</figcaption>
+            </figure>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    const pass1Html = a.pass1_text ? `
+      <div>
+        <h4 class="corpus-detail-heading">Pass 1 — Observation</h4>
+        <div class="corpus-prose">${marked.parse(String(a.pass1_text))}</div>
+      </div>
+    ` : '';
+
+    const pass2Html = a.pass2_text ? `
+      <div>
+        <h4 class="corpus-detail-heading">Pass 2 — Analysis</h4>
+        <div class="corpus-prose">${marked.parse(String(a.pass2_text))}</div>
+      </div>
+    ` : '';
+
+    const pass3Html = a.pass3_text ? `
+      <div>
+        <h4 class="corpus-detail-heading">Pass 3 — Synthesis</h4>
+        <div class="corpus-prose">${marked.parse(String(a.pass3_text))}</div>
+      </div>
+    ` : '';
+
+    const firingsHtml = `
+      <div>
+        <h4 class="corpus-detail-heading">Principles Fired (${firings.length})</h4>
+        <div class="corpus-firings-list">
+          ${firings.map(f => `
+            <div class="corpus-firing">
+              <div class="corpus-firing-meta">
+                <span class="corpus-weight corpus-weight--${f.weight}">${f.weight}</span>
+                <span class="corpus-firing-name">${esc(f.principle_name)}</span>
+                <span class="corpus-firing-type corpus-firing-type--${f.principle_type}">${f.principle_type === 'artifact' ? 'artifact' : 'Tier A'}</span>
+                <span class="corpus-firing-pass">${passLabel(f.fired_in_pass)}</span>
+              </div>
+              ${f.observation_text ? `<p class="corpus-firing-obs">${esc(f.observation_text)}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    const rapHtml = rap_flags.length > 0 ? `
+      <div>
+        <h4 class="corpus-detail-heading">RAP Flags (${rap_flags.length})</h4>
+        <div class="corpus-rap-list">
+          ${rap_flags.map(r => `
+            <div>
+              <div class="corpus-rap-meta">
+                <span class="corpus-badge corpus-badge--${esc(r.confidence)}">${esc(r.confidence)}</span>
+                <span class="corpus-rap-type">${fmt(r.claim_type)}</span>
+                <span class="corpus-rap-anchors">${r.anchor_count} ${r.anchor_count === 1 ? 'anchor' : 'anchors'}</span>
+              </div>
+              ${r.claim_text ? `<p class="corpus-rap-text">${esc(r.claim_text)}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    const temporalHtml = a.temporal_note ? `
+      <div>
+        <h4 class="corpus-detail-heading">Temporal Note</h4>
+        <p class="corpus-rap-text">${esc(String(a.temporal_note))}</p>
+      </div>
+    ` : '';
+
+    return `
+      <div class="corpus-card-detail">
+        ${imagesHtml}
+        ${pass1Html}
+        ${pass2Html}
+        ${pass3Html}
+        ${firingsHtml}
+        ${rapHtml}
+        ${temporalHtml}
+      </div>
+    `;
+  }
+
   function renderResults(data: QueryResult) {
     const container = document.getElementById('corpusResults')!;
     if (!data.analyses || data.analyses.length === 0) {
@@ -658,65 +836,17 @@ const tierAPrinciples = [
     }
 
     const firingsByAnalysis = new Map<number, Firing[]>();
-    const rapByAnalysis     = new Map<number, RapFlag[]>();
     data.firings.forEach(f => {
       if (!firingsByAnalysis.has(f.analysis_id)) firingsByAnalysis.set(f.analysis_id, []);
       firingsByAnalysis.get(f.analysis_id)!.push(f);
     });
-    data.rap_flags.forEach(r => {
-      if (!rapByAnalysis.has(r.analysis_id)) rapByAnalysis.set(r.analysis_id, []);
-      rapByAnalysis.get(r.analysis_id)!.push(r);
-    });
 
     container.innerHTML = data.analyses.map(a => {
       const firings  = firingsByAnalysis.get(a.id) || [];
-      const rapFlags = rapByAnalysis.get(a.id) || [];
       const expanded = expandedIds.has(a.id);
       const label    = fmt(a.object_class_identified || a.object_name);
 
-      const detailHtml = expanded ? `
-        <div class="corpus-card-detail">
-          <div>
-            <h4 class="corpus-detail-heading">Principles Fired (${firings.length})</h4>
-            <div class="corpus-firings-list">
-              ${firings.map(f => `
-                <div class="corpus-firing">
-                  <div class="corpus-firing-meta">
-                    <span class="corpus-weight corpus-weight--${f.weight}">${f.weight}</span>
-                    <span class="corpus-firing-name">${esc(f.principle_name)}</span>
-                    <span class="corpus-firing-type corpus-firing-type--${f.principle_type}">${f.principle_type === 'artifact' ? 'artifact' : 'Tier A'}</span>
-                    <span class="corpus-firing-pass">${passLabel(f.fired_in_pass)}</span>
-                  </div>
-                  ${f.observation_text ? `<p class="corpus-firing-obs">${esc(f.observation_text)}</p>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-          ${rapFlags.length > 0 ? `
-          <div>
-            <h4 class="corpus-detail-heading">RAP Flags (${rapFlags.length})</h4>
-            <div class="corpus-rap-list">
-              ${rapFlags.map(r => `
-                <div>
-                  <div class="corpus-rap-meta">
-                    <span class="corpus-badge corpus-badge--${esc(r.confidence)}">${esc(r.confidence)}</span>
-                    <span class="corpus-rap-type">${fmt(r.claim_type)}</span>
-                    <span class="corpus-rap-anchors">${r.anchor_count} ${r.anchor_count === 1 ? 'anchor' : 'anchors'}</span>
-                  </div>
-                  ${r.claim_text ? `<p class="corpus-rap-text">${esc(r.claim_text)}</p>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-          ` : ''}
-          ${a.temporal_note ? `
-          <div>
-            <h4 class="corpus-detail-heading">Temporal Note</h4>
-            <p class="corpus-rap-text">${esc(a.temporal_note)}</p>
-          </div>
-          ` : ''}
-        </div>
-      ` : '';
+      const detailHtml = expanded ? renderDetail(a.id) : '';
 
       return `
         <article class="corpus-card${expanded ? ' corpus-card--expanded' : ''}" data-id="${a.id}">
@@ -756,12 +886,30 @@ const tierAPrinciples = [
     load();
   });
 
-  document.getElementById('corpusResults')!.addEventListener('click', e => {
+  document.getElementById('corpusResults')!.addEventListener('click', async e => {
     const btn = (e.target as Element).closest<HTMLButtonElement>('[data-expand]');
     if (!btn || !currentData) return;
     const id = parseInt(btn.dataset.expand!, 10);
-    if (expandedIds.has(id)) expandedIds.delete(id);
-    else expandedIds.add(id);
+
+    if (expandedIds.has(id)) {
+      expandedIds.delete(id);
+      renderResults(currentData);
+      return;
+    }
+
+    expandedIds.add(id);
+    renderResults(currentData);
+
+    if (!loadedDetails.has(id)) {
+      try {
+        const res  = await fetch(`/api/analysis/${id}`);
+        const data = await res.json() as DetailRecord;
+        loadedDetails.set(id, data);
+      } catch {
+        // leave loading skeleton in place
+      }
+    }
+
     renderResults(currentData);
   });
 
