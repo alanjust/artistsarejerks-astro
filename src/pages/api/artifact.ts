@@ -779,7 +779,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           try {
             const extractionMsg = await anthropic.messages.create({
               model: 'claude-haiku-4-5-20251001',
-              max_tokens: 2000,
+              max_tokens: 8192,
               system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
               messages: [{
                 role: 'user',
