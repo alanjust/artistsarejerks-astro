@@ -771,8 +771,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
         let savedRecordId: number | null = null;
         const db = (locals as any).runtime?.env?.artlab_analyses;
 
-        let dbDebug: Record<string, string> = {};
-
         if (db) {
           send({ type: 'status', message: 'Saving to database…' });
           let extractionRaw = '';
@@ -792,15 +790,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
               .map((b: any) => b.text)
               .join('').trim();
 
-            dbDebug.raw_first_100 = extractionRaw.slice(0, 100);
-
             const extractionText = extractionRaw
               .replace(/^```(?:json)?\s*/i, '')
               .replace(/\s*```\s*$/i, '')
               .trim();
 
             const structuredRecord = JSON.parse(extractionText);
-            dbDebug.parse = 'ok';
 
             savedRecordId = await saveToD1(
               db, fields, structuredRecord,
@@ -808,17 +803,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
               isConnections ? 'connections' : 'artifact',
               audience || ''
             );
-            dbDebug.save = savedRecordId ? `record_id ${savedRecordId}` : 'saveToD1 returned null';
           } catch (err) {
-            dbDebug.error = err instanceof Error ? err.message : String(err);
-            dbDebug.raw_first_100 = extractionRaw.slice(0, 100);
             console.error('[Pass 4]', err);
           }
-        } else {
-          dbDebug.error = 'db binding not available';
         }
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, db_debug: dbDebug, ...(savedRecordId ? { record_id: savedRecordId } : {}) });
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}) });
 
       } catch (err) {
         try {

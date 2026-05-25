@@ -1286,7 +1286,6 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
           } else if (data.type === 'complete') {
             completed = true;
             statusBar.style.display = 'none';
-            console.log('[DB Debug]', JSON.stringify(data.db_debug ?? 'not present', null, 2));
 
             if (!data.success) {
               const detail = data.details ? `\n\n${data.details}` : '';
