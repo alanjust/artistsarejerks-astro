@@ -2,3 +2,8 @@ name = "artistsarejerks-astro"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "artlab_analyses"
+database_name = "artlab-analyses"
+database_id = "3749396e-956a-4329-9c31-8f59d9bdf96a"

@@ -25,6 +25,161 @@ const ARTIFACT_PRINCIPLE_NAMES: string[] = (artifactPrinciplesData.principles as
   .map((p: any) => p.name as string)
   .sort((a, b) => b.length - a.length);
 
+// Principle reference strings for the extraction prompt
+const ARTIFACT_PRINCIPLE_REF = (artifactPrinciplesData.principles as any[])
+  .map((p: any) => `${p.name} (id:${p.id})`)
+  .join(', ');
+
+const TIER_A_PRINCIPLE_REF = (principlesData.principles as any[])
+  .filter((p: any) => APPLICABLE_TIER_A_IDS.has(p.id))
+  .map((p: any) => `${p.name} (id:${p.id})`)
+  .join(', ');
+
+const EXTRACTION_PROMPT = (
+  pass1: string,
+  pass2: string,
+  fields: Record<string, string>,
+  mode: string
+): string => {
+  const meta = Object.entries(fields)
+    .filter(([, v]) => v && v.trim())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n') || 'None provided';
+
+  const sectionsSchema = mode === 'artifact'
+    ? `  "sections": [
+    { "code": "A|B|C|D|E|F|G", "label": "<section label>", "summary": "<1-2 sentence summary>", "trade_materials": true, "kill_hole": null }
+  ]`
+    : `  "sections": []`;
+
+  return `Extract structured data from this artifact analysis. Output ONLY valid JSON — no markdown fences, no extra text.
+
+ARTIFACT METADATA:
+${meta}
+
+PASS 1 OBSERVATION:
+${pass1}
+
+PASS 2 ANALYSIS:
+${pass2}
+
+PRINCIPLE REFERENCE — use exact names and ids when populating principles_fired:
+Artifact principles (type "artifact"): ${ARTIFACT_PRINCIPLE_REF}
+Universal visual principles (type "universal_tier_a"): ${TIER_A_PRINCIPLE_REF}
+
+Output this exact structure. Use only the enum values shown. Use null where genuinely unknown.
+
+{
+  "object_class_identified": "ceramic_vessel|carved_organic|composite|lithic|shell|fiber|other",
+  "tradition_identified": "mimbres|hohokam|ancestral_puebloan|casas_grandes|salado|unknown",
+  "tradition_confidence": "reading|hypothesis|indeterminate",
+  "function_category": "domestic_utilitarian|serving_display|ritual_ceremonial|mortuary|indeterminate",
+  "function_confidence": "reading|hypothesis|indeterminate",
+  "production_level": "household|part_time_specialist|full_time_specialist|indeterminate",
+  "temporal_note": "<string or null>",
+  "principles_fired": [
+    { "name": "<exact name from reference>", "id": 0, "type": "artifact|universal_tier_a", "pass": "pass1|pass2|both", "observation": "<the specific observation phrase>" }
+  ],
+  "rap_flags": [
+    { "claim_type": "tradition_attribution|iconographic_meaning|functional_claim|inter_tradition_relationship", "confidence": "reading|hypothesis", "claim": "<specific claim text>", "anchor_count": 0 }
+  ],
+${sectionsSchema}
+}`;
+};
+
+async function saveToD1(
+  db: any,
+  fields: Record<string, string>,
+  record: any,
+  pass1: string,
+  pass2: string,
+  pass3: string,
+  mode: string,
+  audience: string
+): Promise<number | null> {
+  try {
+    const objResult = await db.prepare(
+      `INSERT INTO objects (object_name, culture, period_label, material, dimensions, site, collection, condition, research_context, notes, object_class)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      fields.objectType || 'Untitled',
+      fields.culture   || null,
+      fields.period    || null,
+      fields.material  || null,
+      fields.dimensions || null,
+      fields.site      || null,
+      fields.collection || null,
+      fields.condition || null,
+      fields.context   || null,
+      fields.notes     || null,
+      record.object_class_identified || null
+    ).run();
+
+    const objectId = objResult.meta.last_row_id;
+
+    const analysisResult = await db.prepare(
+      `INSERT INTO analyses (object_id, analysis_mode, audience, model_used, object_class_identified, tradition_identified, tradition_confidence, function_category, function_confidence, production_level, temporal_note, pass1_text, pass2_text, pass3_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      objectId,
+      mode,
+      audience || 'researcher',
+      'claude-sonnet-4-6',
+      record.object_class_identified || null,
+      record.tradition_identified    || null,
+      record.tradition_confidence    || 'indeterminate',
+      record.function_category       || 'indeterminate',
+      record.function_confidence     || 'indeterminate',
+      record.production_level        || 'indeterminate',
+      record.temporal_note           || null,
+      pass1, pass2, pass3
+    ).run();
+
+    const analysisId = analysisResult.meta.last_row_id;
+
+    if (Array.isArray(record.principles_fired) && record.principles_fired.length > 0) {
+      await db.batch(record.principles_fired.map((pf: any) =>
+        db.prepare(
+          `INSERT INTO principle_firings (analysis_id, principle_name, principle_id, principle_type, fired_in_pass, observation_text)
+           VALUES (?, ?, ?, ?, ?, ?)`
+        ).bind(analysisId, pf.name, pf.id || 0, pf.type || 'artifact', pf.pass || 'pass1', pf.observation || null)
+      ));
+    }
+
+    if (Array.isArray(record.rap_flags) && record.rap_flags.length > 0) {
+      await db.batch(record.rap_flags.map((rf: any) =>
+        db.prepare(
+          `INSERT INTO rap_flags (analysis_id, claim_type, confidence, claim_text, anchor_count)
+           VALUES (?, ?, ?, ?, ?)`
+        ).bind(analysisId, rf.claim_type, rf.confidence, rf.claim || null, rf.anchor_count || 0)
+      ));
+    }
+
+    if (mode === 'artifact' && Array.isArray(record.sections) && record.sections.length > 0) {
+      await db.batch(record.sections.map((s: any) =>
+        db.prepare(
+          `INSERT INTO section_readings (analysis_id, section_code, section_label, summary_text, trade_materials_flagged, kill_hole_present)
+           VALUES (?, ?, ?, ?, ?, ?)`
+        ).bind(
+          analysisId,
+          s.code, s.label, s.summary || null,
+          s.trade_materials ? 1 : 0,
+          s.kill_hole === null || s.kill_hole === undefined ? null : (s.kill_hole ? 1 : 0)
+        )
+      ));
+    }
+
+    if (mode === 'connections') {
+      await db.prepare(`INSERT INTO connections_records (analysis_id) VALUES (?)`).bind(analysisId).run();
+    }
+
+    return analysisId as number;
+  } catch (err) {
+    console.error('[D1] Save failed:', err);
+    return null;
+  }
+}
+
 const PASS1_PROMPT_SINGLE = (artifactPrincipleNames: string[], applicableTierANames: string[]) =>
   `Describe only what you can directly observe in this artifact image. Pure observation — no interpretation, no cultural attribution, no quality judgments.
 
@@ -612,7 +767,41 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .map((b: any) => b.text)
           .join('\n\n');
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode });
+        // Pass 4 — structured extraction + D1 save (internal, not streamed)
+        let savedRecordId: number | null = null;
+        const db = (locals as any).runtime?.env?.artlab_analyses;
+
+        if (db) {
+          send({ type: 'status', message: 'Saving to database…' });
+          try {
+            const extractionMsg = await anthropic.messages.create({
+              model: 'claude-haiku-4-5-20251001',
+              max_tokens: 2000,
+              system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
+              messages: [{
+                role: 'user',
+                content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }],
+              }],
+            });
+
+            const extractionText = extractionMsg.content
+              .filter((b: any) => b.type === 'text')
+              .map((b: any) => b.text)
+              .join('').trim();
+
+            const structuredRecord = JSON.parse(extractionText);
+            savedRecordId = await saveToD1(
+              db, fields, structuredRecord,
+              pass1Text, pass2Text, pass3Text,
+              isConnections ? 'connections' : 'artifact',
+              audience || ''
+            );
+          } catch (err) {
+            console.error('[Pass 4] Extraction or save failed:', err);
+          }
+        }
+
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}) });
 
       } catch (err) {
         try {
