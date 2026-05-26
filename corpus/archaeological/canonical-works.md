@@ -128,3 +128,98 @@ The standard synthetic overview. Use as a first reference for placing any artifa
 
 ### Crown, Patricia L. — *Ceramics and Ideology: Salado Polychrome Pottery* (1994)
 Key work for interpreting post-Classic polychrome ceramics and the Salado horizon. Demonstrates how ceramic conventions carry ideological content across broad geographic areas.
+
+---
+
+## Digital Repositories
+
+### tDAR — The Digital Archaeological Record
+**URL:** https://core.tdar.org
+**Access:** Free account required to download files. Registration open to researchers.
+**Maintained by:** Arizona State University Digital Antiquity program.
+**What's here:** The primary digital repository for Southwest archaeology gray literature — CRM site reports, excavation datasets, GIS data, unpublished field notes, and image collections that never entered formal publication. Significant holdings for Mimbres, Hohokam, Ancestral Puebloan, and Casas Grandes traditions. Many documents inaccessible anywhere else. Search by site name, tradition, county, or keyword.
+**For image acquisition:** Site reports frequently include artifact photographs, drawings, and ceramic type plates. Search for site names in the canonical sites list above to find associated documents.
+**Limitation:** Image quality varies by document age. Older scanned reports may have low-resolution plates.
+
+---
+
+## Image Acquisition Guide
+
+This section is operational, not scholarly. It maps where to find artifact images to upload to the analysis tool. The tool works only with images you supply — it has no live database connection. Your job is acquiring the image; the tool's job is analyzing it.
+
+### Tier 1 — Open Access, No Login Required
+
+**Smithsonian Open Access**
+URL: https://www.si.edu/openaccess
+License: CC0 — no restrictions. High-resolution downloads available directly.
+Coverage: All Smithsonian museums including NMNH. Strong Southwest holdings across traditions. Search by culture, material, or object type.
+Best for: Broad Southwest coverage. NMNH holds significant Mimbres, Hohokam, and Ancestral Puebloan material.
+
+**Wikimedia Commons**
+URL: https://commons.wikimedia.org
+License: Varies — most museum uploads are CC or public domain.
+Coverage: Uneven but substantial. Search "Mimbres pottery", "Hohokam ceramic", "Ancestral Puebloan" for usable results.
+Best for: Quick access to well-known objects that have been widely published and digitized.
+
+**Internet Archive**
+URL: https://archive.org
+License: Public domain for pre-1927 publications.
+Coverage: Full text of Cosgrove's Swarts Ruin report (1932) with ceramic plates. Early Fewkes reports on Hopi and Ancestral Puebloan material. Image quality varies by scan.
+Best for: Classic Mimbres Style III ceramics from the Swarts collection plates.
+
+### Tier 2 — Free Account Required
+
+**tDAR — The Digital Archaeological Record**
+See Digital Repositories section above.
+Best for: Gray literature, unpublished reports, images from specific excavated sites with full provenience documentation.
+
+**JSTOR**
+URL: https://www.jstor.org
+Access: Free account allows limited monthly article access.
+Coverage: American Antiquity, Kiva, Southwestern Lore, Journal of Archaeological Science. Articles frequently include ceramic photographs and drawings.
+Best for: Images of specific object types in peer-reviewed contexts with scholarly description.
+
+### Tier 3 — Museum Portals, Variable Access
+
+**Arizona State Museum — University of Arizona**
+URL: https://statemuseum.arizona.edu/collections
+Coverage: Primary institutional repository for Arizona archaeology. Major Hohokam collections. Shell ornament holdings. Haury's Snaketown material.
+Status: Online access improving. Check portal for downloadable images.
+
+**Maxwell Museum — University of New Mexico**
+URL: https://maxwellmuseum.unm.edu/collections
+Coverage: Strong regional Southwest coverage across traditions. Well-documented provenience.
+Status: Not all holdings online. May require direct contact for specific objects.
+
+**Museum of Northern Arizona**
+URL: https://musnaz.org/collections
+Coverage: Colorado Plateau and northern Arizona. Strong Ancestral Puebloan, Hopi, Sinagua.
+Status: Limited online image access. Research library access available by request.
+
+### Tier 4 — Restricted
+
+**Peabody Museum — Harvard University**
+URL: https://www.peabody.harvard.edu/collections
+Coverage: The Swarts Ruin collection — the single most important Classic Mimbres reference assemblage. Its limited digital access is a significant gap for this tool.
+Status: Not a practical source for casual image acquisition. Formal researcher access required. See access strategies below.
+
+---
+
+### Access Strategies for Restricted Collections
+
+**Casual researcher path:**
+Email the registrar or collections manager directly. Identify the specific objects you need (by accession number if possible) and state your purpose. Museums frequently provide low-resolution images for educational or research use on request, even when their online portal is unhelpful.
+
+**For Peabody specifically:**
+The Cosgrove report (Swarts Ruin, 1932) on Internet Archive contains photographs of a substantial portion of the collection. These are the publication-quality plates from the original excavation report — lower resolution than a direct download but usable for typological work.
+
+**Published corpus as image source:**
+Brody's Mimbres Painted Pottery (1977) and Shafer's NAN Ranch Ruin (2003) both contain substantial photographic plates. A physical copy of either book, photographed with a phone under good light, produces uploadable images. Not ideal but functional.
+
+---
+
+### Practical Notes
+
+Minimum useful image resolution: 1000px on the longest dimension. Larger is better.
+The artifact page accepts up to 6 images — interior, exterior, profile, bottom, and detail views cover the most analytical ground for ceramic vessels.
+Record the source URL and accession number in the artifact page fields when available. This builds a traceable research record.

@@ -1,9 +1,9 @@
 # Critics and Frameworks — Archaeological Domain
 # Southwest Archaeology — Broad Scope
 
-**Version:** 2 (expanded from Mimbres-only to broader Southwest)
+**Version:** 3 (Frameworks to Displace section added)
 **Status:** First draft — for expert review
-**Note:** Positions summarized from scholarship; verify citations against primary sources.
+**Note:** Scholar positions summarized from training knowledge except where source-extracts.md contains primary source verification. Hohokam, Ancestral Puebloan, and Casas Grandes sections remain paraphrase-supported pending primary source work.
 
 ---
 
@@ -128,6 +128,86 @@ Dry cave environments preserve organic materials absent from open sites. Cache d
 
 ### Compositional analysis (INAA, pXRF, petrography)
 Chemical and physical analysis of raw materials to identify source areas. Applies to ceramics (clay and temper sourcing), obsidian (volcanic source identification), turquoise (mine identification), and other materials. Visual analysis alone cannot establish raw material sources.
+
+---
+
+## Frameworks to Displace
+
+The following evaluative frameworks will attach by default when an LLM analyzes Southwest archaeological material. Each one produces category errors — it measures the work against criteria that are irrelevant or actively wrong for this domain. Name them explicitly in the displacement block so they can be suppressed.
+
+---
+
+### 1. Fine art critical vocabulary
+
+The dominant default. When an LLM sees a painted ceramic vessel, it reaches for the vocabulary of formalist art criticism and museum catalog writing: *tension, ambiguity, productive friction, sustained perceptual reward, compositional innovation, painterly quality, expressive line.* These terms come from Abstract Expressionism, 20th-century formalism, and the critical traditions built around Western fine art.
+
+Applied to Southwest ceramics, this vocabulary misidentifies what is being assessed. When Brody uses "positive-negative ambiguity" for Mimbres geometric painting, he means something specific and technical — the capacity of a design to be read simultaneously as dark-on-light or light-on-dark, a property deliberately built into the system. Fine art "ambiguity" means something different and carries different evaluative weight. The terms look similar; the evaluative logic behind them is not.
+
+**Suppress:** tension, productive friction, sustained perceptual reward, painterly, expressive, and any vocabulary that positions the work as a precursor to or echo of Western fine art movements.
+
+---
+
+### 2. Innovation as a primary criterion
+
+Fine art criticism treats innovation — departure from convention, development of individual style, formal invention — as the highest virtue. An artist who does something new is better than one who does something traditional with excellence.
+
+This is precisely wrong for Southwest archaeological material. Brody is explicit: "conscious striving for radical innovations or highly individualistic personal styles would have been unthinkable" for Mimbres painters. The tradition "permitted innovations only within strictly understood limits." The evaluative achievement is mastery within a constraining system, not escape from it. A Mimbres bowl that perfectly executes a quartered geometric composition with controlled positive-negative ambiguity is a success by the tradition's own standards. Calling it "conservative" or "derivative" imports an evaluative criterion the tradition never held.
+
+**Suppress:** originality, innovation, departure from convention, individual style as positive markers. Replace with: mastery within tradition, line control, adherence to the formal system, and the degree to which the composition achieves the system's specific goals (ambiguity, motion, tension-within-structure in Brody's technical sense).
+
+---
+
+### 3. Individual artistic genius / lone creator frame
+
+Fine art history is organized around individual makers — named artists with identified bodies of work, personal styles, biographical context. The question "who made this?" is central to fine art analysis.
+
+Southwest ceramic production was community-embedded, tradition-bound, and in most cases anonymous. Brody: "the quality of their work was always related to group standards or social ideals." The work of individual potters was recognized by contemporaries through subtle variation within conventional modes — not through departure from them. The production unit was the community and its tradition, not the individual artist.
+
+Applying the lone creator frame produces: attribution speculation, over-reading of individual marks as personal expression, and analysis that focuses on what differentiates a vessel from others rather than on what the vessel achieves within its tradition.
+
+**Suppress:** attribution to individual makers, reading of variation as personal expression, framing of the object as the product of individual vision. Replace with: placement within the tradition, assessment of craft quality relative to community standards, and — where relevant — Brody's three-tier distinction between skilled adult production, child/novice production, and iconographically knowledgeable but technically unskilled production.
+
+---
+
+### 4. The "decoration" frame
+
+When fine art or design criticism encounters painted pattern on a utilitarian object, it categorizes the painting as decoration — surface treatment added to an underlying functional form. This frame positions the iconographic program as secondary and ornamental.
+
+Southwest ceramic painting is not decoration. It is a visual language carrying iconographic content, social meaning, and in the Mimbres case a symbolic program that Brody argues operates at the level of a systematic corpus. Treating it as decoration produces description of surface pattern where analysis of visual meaning is needed.
+
+The practical consequence: a "decoration" frame asks "how does this look?" A visual language frame asks "what does this say, and how well does it say it by the tradition's conventions?"
+
+**Suppress:** decoration, ornamental, surface treatment (as a dismissive category). Replace with: iconographic program, design system, visual language.
+
+---
+
+### 5. Western developmental narrative ("primitive" → "sophisticated")
+
+Western art history is organized around a developmental trajectory — from early/simple/primitive toward later/complex/sophisticated, with the finest Western fine art as the implied endpoint. Applied to indigenous production, this produces: early geometric work read as "primitive," figurative work read as "developed," and the entire tradition read as moving toward something it was not in fact moving toward.
+
+Applied to Mimbres specifically: Style I geometric is not "primitive" relative to Style III figurative. The style sequence reflects an internal logic — technical elaboration of a design system, introduction of new subjects within an existing formal framework — not progress toward a fine art goal. Shafer is explicit that the Mimbres were "not the best ancient potters in the Southwest" technically while simultaneously having "no contemporary rivals" aesthetically. These are independent axes. The developmental narrative collapses them into one scale and gets both wrong.
+
+**Suppress:** primitive, developed, sophisticated (as developmental terms), any framing that positions the tradition as an early stage of something else. Replace with: placement within the tradition's own internal sequence (Style I/II/III for Mimbres), assessment against the tradition's own standards at the relevant period.
+
+---
+
+### 6. Studio craft / contemporary ceramics frame
+
+Contemporary studio pottery criticism values individual voice, deliberate departure from tradition, material experimentation, and the visible mark of individual process. The Shoji Hamada school, the Bernard Leach tradition, and contemporary American studio ceramics all reward these qualities.
+
+Applied to Southwest archaeological ceramics, this frame produces: reading of use-wear as damage (rather than as evidence of domestic function before burial), reading of tradition-conformance as lack of creative ambition, and reading of the formal system's constraints as limitations to be overcome rather than as the medium through which quality is achieved.
+
+**Suppress:** individual voice, studio practice vocabulary, any framing that reads tradition-conformance as a failure of ambition. Replace with: the Mimbres production model (community-embedded, tradition-bound, part-time specialist) and the evaluation of quality within that model.
+
+---
+
+### 7. Ethnographic curiosity frame
+
+A subtler default: treating objects primarily as windows onto cultural "otherness" — interesting because they reveal how different people lived, thought, or believed — rather than as objects with internal aesthetic and functional logic assessable on their own terms.
+
+This frame produces analysis that describes what is culturally distinctive rather than what works or fails by the tradition's own standards. It is also patronizing in a structural way: it positions the objects as data about a culture rather than as things made well or poorly by people who cared about making them well.
+
+**Suppress:** exotic, mysterious, ritual significance (as a catch-all), "windows into" framing. Replace with: the tradition's own evaluative vocabulary, drawn from the corpus. Cultural context is secondary framing, not the primary analytical lens.
 
 ---
 

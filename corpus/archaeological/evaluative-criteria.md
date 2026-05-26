@@ -1,9 +1,57 @@
 # Evaluative Criteria — Archaeological Domain
 # Southwest Archaeology — Broad Scope
 
-**Version:** 2 (expanded from Mimbres ceramics to all object classes)
+**Version:** 3 (STEP 0 ethical gate added; image analysis ceiling added; primary source extracts now available in source-extracts.md)
 **Status:** First draft — for expert review
 **Purpose:** What specialists actually assess when analyzing Southwest artifacts. Organized first by object class, then by analytical dimension.
+
+---
+
+## STEP 0 — Ethical Gate
+
+**Run before any analysis. This is a gate, not a criterion.**
+
+Four conditions require a different response than standard object analysis. Check all four before proceeding.
+
+---
+
+**Gate 1 — Commercial authentication**
+
+Is the submission requesting market valuation, authenticity certification, or rarity ranking for purposes of sale, insurance, or acquisition?
+
+If yes: do not proceed with standard analysis. The SAA Principles of Archaeological Ethics (2024, Principle No. 3) state directly: "The commercial sale or authentication of archaeological objects and other data for profit must not be practiced by archaeologists." This tool is not a valuation instrument. Redirect to an appropriate institutional resource.
+
+---
+
+**Gate 2 — NAGPRA / repatriation sensitivity**
+
+Does the object appear to be from a burial context, a sacred context, or to be affiliated with a federally recognized tribe with active or potential repatriation claims?
+
+Burial-context indicators for Mimbres ceramics specifically: kill hole present, flexed burial association documented, intramural deposition. More broadly: any human remains, funerary objects, sacred objects, or objects of cultural patrimony as defined under NAGPRA (Native American Graves Protection and Repatriation Act, 1990).
+
+If any indicator is present: flag the object before proceeding. Note the concern explicitly in the output. Do not suppress this flag in the interest of completing analysis.
+
+---
+
+**Gate 3 — Looted or undocumented object submitted for legitimizing analysis**
+
+Is there any indication that this object was recently removed from an archaeological site without authorization, or that analysis is being sought to establish a provenance narrative for a previously unattributed object?
+
+Red flags: object offered for sale or recently acquired without documented collection history; image submitted without any provenience information and with a request for attribution to a specific site; object in apparent fresh condition with no accumulation of soil or post-depositional wear.
+
+If red flags are present: note them explicitly. Analysis of undocumented objects is possible and sometimes legitimate (comparative study, educational purposes) but should not function as authentication for market or legal purposes.
+
+---
+
+**Gate 4 — Indigenous community rights**
+
+All Southwest archaeological material comes from cultures with living descendant communities. Tribal nations including but not limited to: the Pueblo peoples of New Mexico and Arizona, the Tohono O'odham, the Akimel O'odham, the Zuni, the Hopi, and the Western Apache have recognized cultural interests in the interpretation and representation of their ancestral material culture.
+
+The SAA Principles require archaeologists to "listen to and incorporate the knowledge and concerns of impacted communities." Analysis should acknowledge these interests, avoid interpretive claims that override or dismiss tribal oral tradition and cultural knowledge, and note when a question is better directed to community sources than to scholarly literature.
+
+---
+
+**If all four gates clear: proceed to STEP 1.**
 
 ---
 
@@ -189,3 +237,75 @@ Based on all evidence, place the object in a functional category:
 
 ### G6. Social Position of Production
 Was this produced in a household context, by a part-time specialist, or by a full-time specialist? Evidence: standardization (specialist production produces measurable regularity), production debris in context (workshops leave characteristic waste), material investment level (high-investment objects suggest specialist access to materials and time).
+
+---
+
+## SECTION H — IMAGE ANALYSIS CEILING
+
+**What this tool can and cannot determine from photographs alone.**
+
+Photography-based analysis has a hard ceiling. Stating what the tool cannot determine is as important as stating what it can. This section defines the ceiling so that outputs do not overclaim.
+
+---
+
+### H1. What image analysis can determine
+
+- **Object class**: ceramic vessel, lithic, shell ornament, fiber object, carved organic — identifiable from visible morphology in most cases
+- **Approximate form and proportions**: rim diameter, depth, overall shape — with scale caveats (see H2)
+- **Surface treatment**: slip coverage, burnishing, paint presence, approximate color
+- **Design program**: iconographic content, compositional structure, style period (for Mimbres ceramics: Style I/II/III is usually readable from photographs)
+- **Visible condition**: surface cracking, paint loss, missing sections, fire clouding, obvious repairs
+- **Cultural tradition**: typological assignment to Mimbres, Hohokam, Ancestral Puebloan, Casas Grandes, or other — in most cases, from visual evidence alone
+- **Approximate temporal placement**: typological period from design conventions and vessel form
+- **Probable function category**: domestic, serving, ritual, mortuary — from form, iconographic content, and visible use-wear markers
+- **Kill hole presence and method**: visible from photograph if image quality is sufficient
+
+---
+
+### H2. What image analysis cannot determine without additional information
+
+**Scale and physical dimensions**: photographs without scale bars or known reference objects give no reliable size information. A Mimbres bowl photographed alone could be 8 cm or 28 cm in diameter. Do not estimate dimensions without a scale reference.
+
+**Actual wall thickness and construction quality**: cross-sections from breaks are sometimes visible; otherwise wall thickness is not assessable from exterior photography.
+
+**Temper type and clay paste composition**: these require physical examination or laboratory analysis (petrography, INAA). Visible surface texture can suggest paste coarseness but cannot identify specific temper materials.
+
+**Paint chemistry** (mineral vs. carbon/organic): both appear dark in photographs. Distinguishing mineral iron-based paint from carbon/organic paint requires physical examination or laboratory analysis. This distinction matters for typological placement and for understanding production choices.
+
+**Hardness and fabric density**: requires physical handling. Firing temperature effects (vitrification, warping at high temperatures) may be visible in extreme cases but are not assessable from standard photography.
+
+**Residue evidence**: sooting on exterior is sometimes visible; interior residue (food processing, pigment use) requires examination or laboratory analysis.
+
+---
+
+### H3. What image analysis cannot determine without provenience documentation
+
+**Site association**: an unprovenanced object cannot be reliably assigned to a specific site from visual evidence alone. Style can indicate a regional tradition; it cannot identify a specific site of origin.
+
+**Burial vs. non-burial context**: kill hole presence suggests mortuary use; its absence does not confirm non-mortuary context. Kill hole method and placement confirm intentional perforation; they do not document the burial assemblage.
+
+**Associated assemblage**: what was found with this object is not visible in the object itself. The social meaning of assemblage — what the combination of objects says about the burial, the room, or the cache — is irrecoverable without excavation documentation.
+
+**Stratigraphic context**: temporal placement from typology is approximate (typically ±50–100 years for ceramic styles). Absolute dating requires radiocarbon analysis of associated organic material from documented context.
+
+---
+
+### H4. What image analysis cannot determine regardless of image quality
+
+**Compositional sourcing**: clay paste origin, obsidian source, turquoise source, shell species confirmation in borderline cases — all require laboratory analysis (INAA, pXRF, petrography). Typological inferences about source are probabilistic, not definitive.
+
+**Ancient DNA**: kinship relationships, biological sex in ambiguous cases, population movement — require ancient DNA analysis. Image analysis cannot address these questions.
+
+**Residue identity**: what specific foods, pigments, or substances contacted the vessel surface — requires organic residue analysis (GC-MS or equivalent).
+
+**Absolute age**: thermoluminescence dating (ceramics), radiocarbon dating (associated organics), dendrochronology (wood) — all require physical samples from documented contexts.
+
+---
+
+### H5. How to handle the ceiling in outputs
+
+When analysis reaches the ceiling, say so directly. The correct move is:
+
+> "Visible evidence suggests X. Confirmation would require [physical examination / laboratory analysis / provenience documentation]."
+
+Do not hedge indefinitely or qualify every statement. State what the image shows with confidence where the evidence supports confidence. Mark the ceiling where it exists. The goal is accurate calibration — neither overclaiming certainty nor underclaiming where the visual evidence is genuinely informative.
