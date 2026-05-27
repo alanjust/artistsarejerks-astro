@@ -245,7 +245,9 @@ ${artifactPrincipleNames.join(', ')}
 
 UNIVERSAL VISUAL PRINCIPLES: These apply to all artifact observation regardless of object type or domain. When your observation engages any of the following, use the exact name and follow it immediately with what you specifically observe:
 
-${applicableTierANames.join(', ')}`;
+${applicableTierANames.join(', ')}
+
+ARTIFACT-DOMAIN APPLICATION OF TIER A PRINCIPLES: When applying Tier A principles alongside the 15 Artifact Perceptual Principles, do not use studioTool framing — do not ask what an artist did to a viewer. Ask what the mechanism reveals about the object. Edge Detection reads line quality as production evidence; Figure-Ground reads positive-negative design strategy; Color Opponent Channels reads zone organization logic; Closure reads whether negative space is designed or residual; and so on for each active principle.`;
 
 const PASS1_PROMPT_MULTI = (count: number, artifactPrincipleNames: string[], applicableTierANames: string[]) =>
   `You are looking at ${count} images of the same artifact. Each image is labeled with its view. Work through each view in sequence, using the label as a header.
@@ -262,7 +264,9 @@ ${artifactPrincipleNames.join(', ')}
 
 UNIVERSAL VISUAL PRINCIPLES: These apply to all artifact observation regardless of object type or domain. When your observation engages any of the following, use the exact name and follow it immediately with what you specifically observe:
 
-${applicableTierANames.join(', ')}`;
+${applicableTierANames.join(', ')}
+
+ARTIFACT-DOMAIN APPLICATION OF TIER A PRINCIPLES: When applying Tier A principles alongside the 15 Artifact Perceptual Principles, do not use studioTool framing — do not ask what an artist did to a viewer. Ask what the mechanism reveals about the object. Edge Detection reads line quality as production evidence; Figure-Ground reads positive-negative design strategy; Color Opponent Channels reads zone organization logic; Closure reads whether negative space is designed or residual; and so on for each active principle.`;
 
 const ARTIFACT_PROMPT = (pass1: string, principleNames: string[], artifactPrincipleNames: string[], audience: string, views: string[] = []) => {
   const audienceFrame = audience.includes('curator')
