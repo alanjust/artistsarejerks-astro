@@ -79,6 +79,8 @@ Output this exact structure. Use only the enum values shown. Use null where genu
   "function_confidence": "reading|hypothesis|indeterminate",
   "production_level": "household|part_time_specialist|full_time_specialist|indeterminate",
   "temporal_note": "<string or null>",
+  "tradition_routing_basis": "visual_only|metadata_confirmed|metadata_conflict|ambiguous",
+  "metadata_completeness": "none|partial|full",
   "principles_fired": [
     { "name": "<exact name from reference>", "id": 0, "type": "artifact|universal_tier_a", "pass": "pass1|pass2|both", "weight": 1, "observation": "<the specific observation phrase>" }
   ],
@@ -162,8 +164,8 @@ async function saveToD1(
     }
 
     const analysisResult = await db.prepare(
-      `INSERT INTO analyses (object_id, analysis_mode, audience, model_used, object_class_identified, tradition_identified, tradition_confidence, function_category, function_confidence, production_level, temporal_note, pass1_text, pass2_text, pass3_text)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO analyses (object_id, analysis_mode, audience, model_used, object_class_identified, tradition_identified, tradition_confidence, function_category, function_confidence, production_level, temporal_note, pass1_text, pass2_text, pass3_text, tool_version, tradition_routing_basis, metadata_completeness)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       objectId,
       mode,
@@ -176,7 +178,10 @@ async function saveToD1(
       record.function_confidence     || 'indeterminate',
       record.production_level        || 'indeterminate',
       record.temporal_note           || null,
-      pass1, pass2, pass3
+      pass1, pass2, pass3,
+      'v3.1',
+      record.tradition_routing_basis || 'visual_only',
+      record.metadata_completeness   || 'none'
     ).run();
 
     const analysisId = analysisResult.meta.last_row_id;
@@ -356,6 +361,43 @@ Artifact observation principles: ${artifactPrincipleNames.join(', ')}
 
 EVALUATIVE FRAMEWORK:
 
+## STEP 0 — TRADITION IDENTIFICATION GATE (ceramic vessels only; skip for all other object classes)
+
+The observable features of most Southwest ceramic vessels — cream or white slip, dark painted design, hemispherical bowl form — are shared across multiple traditions. Do not default to Mimbres. Run this gate before applying any tradition-specific criteria in STEP 1 and Section A.
+
+**CHECK 1 — Slip × paint program:**
+- Brilliant white to cream slip + single dark pigment (black-brown) → proceed to CHECK 2
+- Buff to gray-buff + single warm pigment (red-orange) on buff ground → route to Hohokam Red-on-Buff
+- White or cream + two chemically distinct pigments (dark body + warm secondary of clearly different hue and saturation) → flag two-pigment program; run all candidate traditions before attributing; do not default to Mimbres
+- White or cream + three or more distinct color zones → route to polychrome traditions (Salado, Casas Grandes, AP polychrome)
+- Red slip → narrow by form and design; multiple traditions possible
+- Unknown / ambiguous → flag explicitly; proceed with all candidate traditions
+
+**CHECK 2 — Mimbres vs. Ancestral Puebloan disambiguation (when CHECK 1 routes here):**
+
+AP-positive indicators — two or more together are well-supported:
+- Band or register design bounded above and below by framing lines, with repeated units filling the band → AP
+- Fine parallel hatching filling an entire geometric panel as the primary design filler → Chaco-tradition AP
+- All-over layout partitioned into two to four symmetric quadrants → Mesa Verde-period AP
+- Flat bowl rim with short painted ticks, dots, or lines → Mesa Verde Black-on-white, strong AP indicator
+- Vessel forms include mugs, kiva jars, pitchers, or dippers → AP-specific forms absent from Classic Mimbres
+
+Mimbres-positive indicators:
+- Central medallion filling the bowl interior; single large figure or geometric program in the field → Mimbres
+- Checkerboard, hatching, or step-pattern used as body fill on a figurative subject → Mimbres figurative convention
+- Concentric-circle eye convention on an animal or human figure → Mimbres figurative convention
+- Kill hole present → supports Mimbres burial bowl attribution
+
+Attribution requires at least two positive indicators from one tradition. If indicators split or only one is present, state the ambiguity explicitly before proceeding: "Observable features are consistent with both Classic Mimbres Black-on-white and Ancestral Puebloan [type]. Definitive attribution requires paste and temper analysis and provenience documentation." Do not resolve the ambiguity by defaulting to Mimbres.
+
+**Metadata check:** Review the ARTIFACT DOCUMENTATION block above before proceeding:
+- If metadata names a tradition and STEP 0 routing agrees → state tradition, note the match, record routing basis as metadata_confirmed
+- If metadata names a tradition and STEP 0 routing conflicts → state the conflict explicitly; treat visual evidence as primary; record routing basis as metadata_conflict
+- If no metadata was provided → open the tradition statement with "Proceeding on visual evidence only:" and record routing basis as visual_only
+- If routing produces genuine ambiguity → record routing basis as ambiguous
+
+---
+
 ## STEP 1 — IDENTIFY OBJECT CLASS
 
 Before applying any criteria, state what kind of object this is:
@@ -367,7 +409,7 @@ Before applying any criteria, state what kind of object this is:
 - Fiber / textile / basketry
 - Other
 
-Also identify: cultural tradition (Mimbres, Hohokam, Ancestral Puebloan, Casas Grandes, Salado, other/unknown) and provenience status (fully documented / partially documented / undocumented).
+Also identify: cultural tradition as determined by STEP 0 routing — state the tradition and the two or more indicators that support it — and provenience status (fully documented / partially documented / undocumented).
 
 Then apply the criteria set for the identified object class below, followed by the cross-cutting criteria in Section G.
 
@@ -683,7 +725,7 @@ function buildArtifactContext(fields: Record<string, string>): string {
 
   return lines.length > 0
     ? `ARTIFACT DOCUMENTATION:\n${lines.join('\n')}\n`
-    : '';
+    : `ARTIFACT DOCUMENTATION:\nNo metadata provided — analysis proceeds on visual evidence only.\n`;
 }
 
 interface ImageInput { data: string; label: string; }
