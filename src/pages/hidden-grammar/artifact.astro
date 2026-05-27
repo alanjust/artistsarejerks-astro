@@ -118,7 +118,16 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
 
       <div class="fd-field-row">
         <label for="fieldSourceUrl">Source URL</label>
-        <input type="url" id="fieldSourceUrl" name="sourceUrl" placeholder="e.g. https://collections.si.edu/...">
+        <div class="fd-url-col">
+          <div class="fd-url-row">
+            <input type="url" id="fieldSourceUrl" name="sourceUrl" placeholder="e.g. https://collections.si.edu/...">
+            <button type="button" id="fetchMetaBtn" class="fd-btn fd-btn--ghost fd-btn--sm">Fetch metadata</button>
+          </div>
+          <div id="fetchMetaStatus" class="fd-fetch-status" style="display:none"></div>
+          <div id="fetchImageUrl" class="fd-fetch-image-url" style="display:none">
+            <a id="fetchImageLink" href="#" target="_blank" rel="noopener" class="fd-fetch-image-link">View source image (open to download and upload manually)</a>
+          </div>
+        </div>
       </div>
 
       <div class="fd-field-row">
@@ -325,6 +334,39 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
     min-height: 72px;
     line-height: 1.5;
   }
+
+  .fd-url-col {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .fd-url-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+  }
+  .fd-url-row input {
+    flex: 1;
+    min-width: 0;
+  }
+  .fd-fetch-status {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    padding: 0.125rem 0;
+  }
+  .fd-fetch-status--error   { color: #dc2626; }
+  .fd-fetch-status--success { color: #059669; }
+  .fd-fetch-image-url {
+    margin-top: 0.25rem;
+  }
+  .fd-fetch-image-link {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .fd-fetch-image-link:hover { color: #64748b; }
 
   @media (max-width: 560px) {
     .fd-field-row {
@@ -1221,6 +1263,77 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
     };
     reader.readAsDataURL(file);
   }
+
+  const fetchMetaBtn    = document.getElementById('fetchMetaBtn')    as HTMLButtonElement;
+  const fetchMetaStatus = document.getElementById('fetchMetaStatus') as HTMLDivElement;
+  const fetchImageUrl   = document.getElementById('fetchImageUrl')   as HTMLDivElement;
+  const fetchImageLink  = document.getElementById('fetchImageLink')  as HTMLAnchorElement;
+
+  fetchMetaBtn?.addEventListener('click', async () => {
+    const url = (document.getElementById('fieldSourceUrl') as HTMLInputElement)?.value.trim();
+    if (!url) return;
+
+    fetchMetaBtn.disabled = true;
+    fetchMetaBtn.textContent = 'Fetching…';
+    fetchMetaStatus.className = 'fd-fetch-status';
+    fetchMetaStatus.textContent = '';
+    fetchMetaStatus.style.display = 'none';
+    fetchImageUrl.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/fetch-institution-metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        fetchMetaStatus.textContent = data.error || 'Fetch failed';
+        fetchMetaStatus.className = 'fd-fetch-status fd-fetch-status--error';
+        fetchMetaStatus.style.display = 'block';
+        return;
+      }
+
+      const f = data.fields as Record<string, string>;
+      const fieldMap: Record<string, string> = {
+        objectType:        'fieldObjectType',
+        accession:         'fieldAccession',
+        culture:           'fieldCulture',
+        period:            'fieldPeriod',
+        material:          'fieldMaterial',
+        dimensions:        'fieldDimensions',
+        site:              'fieldSite',
+        collection:        'fieldCollection',
+        sourceInstitution: 'fieldSourceInstitution',
+        notes:             'fieldNotes',
+      };
+      let filled = 0;
+      for (const [key, elId] of Object.entries(fieldMap)) {
+        if (f[key]) {
+          const el = document.getElementById(elId) as HTMLInputElement | HTMLTextAreaElement | null;
+          if (el && !el.value.trim()) {
+            el.value = f[key];
+            filled++;
+          }
+        }
+      }
+      if (f.imageUrl) {
+        fetchImageLink.href = f.imageUrl;
+        fetchImageUrl.style.display = 'block';
+      }
+      fetchMetaStatus.textContent = filled > 0 ? `${filled} field${filled === 1 ? '' : 's'} filled` : 'No new fields to fill';
+      fetchMetaStatus.className = 'fd-fetch-status fd-fetch-status--success';
+      fetchMetaStatus.style.display = 'block';
+    } catch {
+      fetchMetaStatus.textContent = 'Network error—could not reach fetch endpoint';
+      fetchMetaStatus.className = 'fd-fetch-status fd-fetch-status--error';
+      fetchMetaStatus.style.display = 'block';
+    } finally {
+      fetchMetaBtn.disabled = false;
+      fetchMetaBtn.textContent = 'Fetch metadata';
+    }
+  });
 
   runBtn.addEventListener('click', () => { currentMode = 'artifact'; runAnalysis(); });
   connectionsBtn.addEventListener('click', () => { currentMode = 'connections'; runAnalysis(); });
