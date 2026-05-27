@@ -368,7 +368,7 @@ The observable features of most Southwest ceramic vessels — cream or white sli
 **CHECK 1 — Slip × paint program:**
 - Brilliant white to cream slip + single dark pigment (black-brown) → proceed to CHECK 2
 - Buff to gray-buff + single warm pigment (red-orange) on buff ground → route to Hohokam Red-on-Buff
-- White or cream + two chemically distinct pigments (dark body + warm secondary of clearly different hue and saturation) → flag two-pigment program; run all candidate traditions before attributing; do not default to Mimbres
+- White or cream + two chemically distinct pigments (dark body + warm secondary of clearly different hue and saturation) → TWO-PIGMENT BLOCK: Do NOT proceed to CHECK 2. Classic Mimbres Black-on-white is a single-pigment tradition. A visually distinct secondary warm pigment (orange, rust, red-brown — a different hue, not just a thinner or lighter application of the same pigment) rules out standard Classic Mimbres attribution without specific corpus documentation. State: "Two-pigment program detected. Classic Mimbres Black-on-white attribution is not supported. Candidate traditions: (a) documented two-pigment Mimbres figurative variants — exceptions in the corpus, require specific comparative documentation to confirm; (b) Ancestral Puebloan bichrome and polychrome types — AP bowls regularly use warm secondary pigments alongside a dark primary; (c) post-Classic horizon traditions after approximately 1150–1200 CE." List each candidate with the evidence for and against it from observable features. Do not confirm Classic Mimbres attribution based on Mimbres-positive design features if the two-pigment program is present.
 - White or cream + three or more distinct color zones → route to polychrome traditions (Salado, Casas Grandes, AP polychrome)
 - Red slip → narrow by form and design; multiple traditions possible
 - Unknown / ambiguous → flag explicitly; proceed with all candidate traditions
@@ -387,8 +387,9 @@ Mimbres-positive indicators:
 - Checkerboard, hatching, or step-pattern used as body fill on a figurative subject → Mimbres figurative convention
 - Concentric-circle eye convention on an animal or human figure → Mimbres figurative convention
 - Kill hole present → supports Mimbres burial bowl attribution
+- Small cross/plus marks distributed in the open field — present in multiple Southwest traditions; count only as a weak supporting indicator when at least two other Mimbres-positive features are present
 
-Attribution requires at least two positive indicators from one tradition. If indicators split or only one is present, state the ambiguity explicitly before proceeding: "Observable features are consistent with both Classic Mimbres Black-on-white and Ancestral Puebloan [type]. Definitive attribution requires paste and temper analysis and provenience documentation." Do not resolve the ambiguity by defaulting to Mimbres.
+Attribution requires at least two positive indicators from one tradition. Exception: if a two-pigment program was detected in CHECK 1, Mimbres-positive indicators from CHECK 2 are insufficient to confirm Classic Mimbres Black-on-white. Design elements that appear Mimbres-like — central medallion, figurative subject, field marks — appear in AP and post-Classic traditions. The two-pigment detection in CHECK 1 takes precedence and routes to the multi-tradition candidate list regardless of CHECK 2 results. If indicators split or only one is present, state the ambiguity explicitly before proceeding: "Observable features are consistent with both Classic Mimbres Black-on-white and Ancestral Puebloan [type]. Definitive attribution requires paste and temper analysis and provenience documentation." Do not resolve the ambiguity by defaulting to Mimbres.
 
 **Metadata check:** Review the ARTIFACT DOCUMENTATION block above before proceeding:
 - If metadata names a tradition and STEP 0 routing agrees → state tradition, note the match, record routing basis as metadata_confirmed
