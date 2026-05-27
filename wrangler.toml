@@ -11,6 +11,3 @@ database_id = "3749396e-956a-4329-9c31-8f59d9bdf96a"
 [[r2_buckets]]
 binding = "artlab_images"
 bucket_name = "artlab-images"
-
-[vars]
-SMITHSONIAN_API_KEY = ""
