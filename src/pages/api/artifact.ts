@@ -860,7 +860,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: 3000,
+          max_tokens: 5000,
           system: pass2SystemPrompt,
           messages: [{
             role: 'user',
