@@ -379,13 +379,15 @@ Then apply the criteria set for the identified object class below, followed by t
 
 **Form and construction:** Describe rim diameter (estimate from proportions if not documented), depth, wall curvature, base form. Wall thickness consistency — even walls indicate skilled coil construction; variation signals production-stage issues. Coil-and-scrape evidence: oblique striations, coil junctures at breaks or thin spots. Paddle-and-anvil finishing (Hohokam primary method). What does construction evidence say about skill and tradition?
 
-**Surface treatment and slip:** Slip quality and coverage (even, well-adhered vs. mottled, thin, peeling). Burnishing degree. Slip color: brilliant white (high kaolin, Mimbres) vs. buff/cream (Hohokam) vs. red (various).
+**Surface treatment and slip:** Slip quality and coverage (even, well-adhered vs. mottled, thin, peeling). Burnishing: describe surface reflectivity as directly observed — specular highlights, sheen distribution, matte zones. Note that intermediate burnishing levels are not reliably determinable from photographs; state what is visible and hedge the inference. Slip color: brilliant white (high kaolin, Mimbres) vs. buff/cream (Hohokam) vs. red (various).
 
 **Paint:** Mineral paint (matte, permanent, iron-based) vs. carbon/organic paint (potentially shiny, may flake). Read line quality directly — single-stroke control, weight consistency, hesitation or correction marks. Brush discipline is readable from the line work.
 
 **Design execution:** Symmetry precision, framing line integrity, compositional logic, hatching regularity. Does the design fill the field without crowding or misjudged scale?
 
 **Iconographic program:** Describe before interpreting. Figure type, field organization (quartered, halved, continuous border, central medallion), figurative vs. geometric, narrative vs. emblematic. Composite figures. Corpus parallels. What the evidence supports vs. what remains uncertain.
+
+Species identification and composite-figure classification require corpus comparison. A claim that a depicted animal is a specific species (turkey vs. other large bird, gar vs. other fish) requires documentary comparison against a reference corpus — it cannot be made from image evidence alone. Likewise, classifying a figure as a composite being (human-animal hybrid, transformation figure) requires at least two independently observable anatomical anomalies anchored in the depicted form itself, not in the general fact that composite figures exist in the tradition. One material observation plus one tradition-level fact does not satisfy the two-anchor requirement. If corpus comparison is not available, classify to the most general identifiable level (bird, fish, quadruped) and label any more specific reading as a hypothesis.
 
 **Kill hole (Mimbres burial ceramics only):** Present or absent. Location: centered vs. off-center. Method: punched vs. drilled. Placement relative to the image. Confirms burial context.
 
@@ -495,11 +497,11 @@ The evaluative framework above supports confident analysis of tradition, product
 
 **Image analysis can determine:** object class, approximate form and proportions, surface treatment, design program, style period, visible condition, cultural tradition, approximate temporal placement, probable function category, kill hole presence and method.
 
-**Image analysis cannot determine without additional information:** actual dimensions (no scale reference = no reliable size data), wall thickness, temper type, paint chemistry (mineral vs. carbon), hardness.
+**Image analysis cannot determine without additional information:** actual dimensions (no scale reference = no reliable size data), wall thickness, temper type (requires petrographic thin-section analysis or optical microscopy), paint chemistry (mineral vs. carbon — requires physical examination for surface sheen differential under magnification, or pXRF / INAA for compositional confirmation), hardness, burnishing degree (photographs can distinguish high-gloss polish from matte surfaces at extremes — intermediate burnishing levels are not reliably assessable from image evidence; describe surface reflectivity as observed and hedge burnishing claims accordingly).
 
 **Image analysis cannot determine without provenience:** site association (style identifies tradition, not site), burial vs. non-burial context (kill hole confirms burial; its absence does not confirm non-burial), associated assemblage.
 
-**Image analysis cannot determine regardless of image quality:** compositional source of raw materials (requires INAA/pXRF), absolute age (requires radiocarbon or TL dating), residue identity (requires organic residue analysis).
+**Image analysis cannot determine regardless of image quality:** compositional source of raw materials — clay paste origin (INAA or petrographic analysis), obsidian source (INAA or pXRF), turquoise source (INAA), shell species confirmation in borderline cases (physical morphological examination); absolute age (requires radiocarbon or TL dating); residue identity — what specific foods, pigments, or substances contacted the surface requires organic residue analysis (GC-MS or equivalent); sooting visible on exterior is sometimes assessable from photographs, interior residue is not.
 
 When analysis reaches the ceiling, say: *"Visible evidence suggests X. Confirmation would require [physical examination / laboratory analysis / provenience documentation]."* Do not hedge everything. State what the image shows with confidence where it is warranted. Mark the ceiling where it exists.
 
@@ -848,7 +850,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         const pass3Msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 1000,
-          system: 'You are an educator writing for someone curious and smart who wants to understand how to look at artifacts. Write the way Ira Glass tells a story: open with something concrete and recognizable, move toward the insight, land it plainly. If you use a technical term, follow it immediately with plain English. The goal is to leave the reader thinking "I can do that next time."',
+          system: 'You are an educator writing for someone curious and smart who wants to understand how to look at artifacts. Write the way Ira Glass tells a story: open with something concrete and recognizable, move toward the insight, land it plainly. If you use a technical term, follow it immediately with plain English. The goal is to leave the reader thinking "I can do that next time." Do not use fine art vocabulary: no aesthetic, painterly, compositional tension, formal innovation, artistic achievement, or language from museum wall text or gallery criticism. Do not frame the object as made for contemplation or visual pleasure. Takeaways must be grounded in what the material evidence showed — what the production traces revealed, what the design system did, what the cultural context made legible. The habits you identify should be habits of looking at physical evidence, not habits of aesthetic appreciation.',
           messages: [{
             role: 'user',
             content: [
