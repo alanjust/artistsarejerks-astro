@@ -7,10 +7,6 @@ function parseSmithsonianUrl(url: string): string | null {
     const edanMatch = url.match(/edanmdm[_:]([^&?#/\s]+)/i);
     if (edanMatch) return `edanmdm:${edanMatch[1]}`;
 
-    // ARK identifier: n2t.net/ark:/65665/xxx or ark:/65665/xxx anywhere
-    const arkMatch = url.match(/ark:\/65665\/([^&?#\s]+)/i);
-    if (arkMatch) return `ark:/65665/${arkMatch[1]}`;
-
     // /object/xxx path segment
     const objMatch = url.match(/\/object\/([^?#\s]+)/i);
     if (objMatch) return decodeURIComponent(objMatch[1]);
@@ -107,7 +103,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const objectId = parseSmithsonianUrl(url);
+  // n2t.net ARK resolver URLs redirect to the real collections.si.edu URL — follow
+  // the redirect chain so parseSmithsonianUrl can extract the EDAN ID from the final URL.
+  let resolvedUrl = url;
+  if (/n2t\.net/i.test(url) || /^ark:/i.test(url)) {
+    try {
+      const redirected = await fetch(url, { redirect: 'follow' });
+      resolvedUrl = redirected.url;
+    } catch {
+      // fall through and try parsing the original URL
+    }
+  }
+
+  const objectId = parseSmithsonianUrl(resolvedUrl);
   if (!objectId) {
     return new Response(JSON.stringify({ error: 'Could not parse a Smithsonian object ID from that URL' }), {
       status: 400,
