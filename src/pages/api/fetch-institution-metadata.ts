@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 
 function parseSmithsonianUrl(url: string): string | null {
