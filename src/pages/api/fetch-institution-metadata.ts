@@ -132,9 +132,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const apiKey = env?.SMITHSONIAN_API_KEY || '';
 
   // ARK IDs go through the search API; EDAN IDs go through the content API.
+  // Strip the ark:/65665/ prefix — search by the bare local ID only.
   const isArk = objectId.startsWith('ark:');
+  const localId = isArk ? objectId.replace(/^ark:\/\d+\//i, '') : objectId;
   const apiUrl = isArk
-    ? `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(objectId)}&api_key=${apiKey}`
+    ? `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(`"${localId}"`)}&api_key=${apiKey}`
     : `https://api.si.edu/openaccess/api/v1.0/content/${encodeURIComponent(objectId)}?api_key=${apiKey}`;
 
   let siResponse: Response;
@@ -172,8 +174,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   if (!record) {
     const rowCount = Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[]).length : 'rows not array';
-    const keys = Object.keys(responseObj || {}).join(',');
-    return new Response(JSON.stringify({ error: `Record not found — rows:${rowCount} keys:${keys} url:${apiUrl}` }), {
+    const msg = responseObj?.message ?? '';
+    return new Response(JSON.stringify({ error: `Record not found — rows:${rowCount} msg:${msg} url:${apiUrl}` }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     });
