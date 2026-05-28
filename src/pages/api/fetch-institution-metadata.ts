@@ -173,9 +173,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     : responseObj;
 
   if (!record) {
-    const rowCount = Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[]).length : 'rows not array';
-    const msg = responseObj?.message ?? '';
-    return new Response(JSON.stringify({ error: `Record not found — rows:${rowCount} msg:${msg} url:${apiUrl}` }), {
+    const notInOpenAccess = isArk && resolvedUrl.includes('nmnh.si.edu');
+    const message = notInOpenAccess
+      ? 'This NMNH record is not in the Smithsonian Open Access API — enter metadata manually'
+      : 'Record not found in Smithsonian Open Access API — enter metadata manually';
+    return new Response(JSON.stringify({ error: message }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     });
