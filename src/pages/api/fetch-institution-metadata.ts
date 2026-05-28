@@ -1,6 +1,13 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
 
+// ─── URL parsers ──────────────────────────────────────────────────────────────
+
+function parseMetUrl(url: string): string | null {
+  const match = url.match(/metmuseum\.org\/art\/collection\/search\/(\d+)/i);
+  return match ? match[1] : null;
+}
+
 function parseSmithsonianUrl(url: string): string | null {
   try {
     // edanmdm:xxx or edanmdm_xxx embedded anywhere in the URL
@@ -26,6 +33,48 @@ function parseSmithsonianUrl(url: string): string | null {
   return null;
 }
 
+// ─── Field mappers ────────────────────────────────────────────────────────────
+
+function mapMetRecord(data: Record<string, unknown>): Record<string, string> {
+  const fields: Record<string, string> = {};
+
+  const objectName = String(data.objectName || '');
+  const title      = String(data.title      || '');
+  if (objectName) fields.objectType = objectName;
+  // Include title in notes if it adds information beyond the object name
+  if (title && title !== objectName) fields.notes = title;
+
+  const accession = String(data.accessionNumber || '');
+  if (accession) fields.accession = accession;
+
+  const culture = String(data.culture || '');
+  if (culture) fields.culture = culture;
+
+  const period = String(data.objectDate || '');
+  if (period) fields.period = period;
+
+  const material = String(data.medium || '');
+  if (material) fields.material = material;
+
+  const dimensions = String(data.dimensions || '');
+  if (dimensions) fields.dimensions = dimensions;
+
+  const siteParts = [data.excavation, data.locale, data.locus, data.subregion, data.region, data.state]
+    .map(s => String(s || '').trim())
+    .filter(Boolean);
+  if (siteParts.length > 0) fields.site = siteParts.join(', ');
+
+  const collection = String(data.creditLine || data.department || '');
+  if (collection) fields.collection = collection;
+
+  fields.sourceInstitution = 'Metropolitan Museum of Art';
+
+  const imageUrl = String(data.primaryImage || '');
+  if (imageUrl) fields.imageUrl = imageUrl;
+
+  return fields;
+}
+
 function firstText(arr: unknown[] | undefined): string {
   if (!Array.isArray(arr) || arr.length === 0) return '';
   const item = arr[0];
@@ -38,11 +87,11 @@ function firstText(arr: unknown[] | undefined): string {
 }
 
 function mapSmithsonianRecord(record: unknown): Record<string, string> {
-  const r     = record as Record<string, unknown>;
-  const c     = (r.content || {}) as Record<string, unknown>;
-  const dnr   = (c.descriptiveNonRepeating || {}) as Record<string, unknown>;
-  const is_   = (c.indexedStructured       || {}) as Record<string, unknown>;
-  const ft    = (c.freetext                || {}) as Record<string, unknown>;
+  const r   = record as Record<string, unknown>;
+  const c   = (r.content || {}) as Record<string, unknown>;
+  const dnr = (c.descriptiveNonRepeating || {}) as Record<string, unknown>;
+  const is_ = (c.indexedStructured       || {}) as Record<string, unknown>;
+  const ft  = (c.freetext                || {}) as Record<string, unknown>;
 
   const fields: Record<string, string> = {};
 
@@ -89,6 +138,8 @@ function mapSmithsonianRecord(record: unknown): Record<string, string> {
   return fields;
 }
 
+// ─── Route handler ────────────────────────────────────────────────────────────
+
 export const POST: APIRoute = async ({ request, locals }) => {
   let body: { url?: unknown };
   try {
@@ -108,83 +159,74 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  // n2t.net ARK resolver URLs redirect to the real SI subdomain URL — follow
-  // the redirect chain so parseSmithsonianUrl can extract the object ID.
-  let resolvedUrl = url;
-  if (/n2t\.net/i.test(url) || /^ark:/i.test(url)) {
+  const json = (obj: unknown, status = 200) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  // ── Metropolitan Museum of Art ──────────────────────────────────────────────
+  const metId = parseMetUrl(url);
+  if (metId) {
+    let res: Response;
     try {
-      const redirected = await fetch(url, { redirect: 'follow' });
-      resolvedUrl = redirected.url;
+      res = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${metId}`);
     } catch {
-      // fall through and try parsing the original URL
+      return json({ error: 'Failed to reach Met API' }, 502);
     }
+    if (!res.ok) return json({ error: `Met API error: ${res.status}` }, 502);
+    let data: Record<string, unknown>;
+    try { data = await res.json(); } catch { return json({ error: 'Could not parse Met response' }, 502); }
+    if (data.message) return json({ error: String(data.message) }, 404);
+    return json({ institution: 'met', fields: mapMetRecord(data) });
   }
 
-  const objectId = parseSmithsonianUrl(resolvedUrl);
-  if (!objectId) {
-    return new Response(JSON.stringify({ error: 'Could not parse a Smithsonian object ID from that URL' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  // ── Smithsonian ─────────────────────────────────────────────────────────────
+  if (/si\.edu|n2t\.net/i.test(url)) {
+    let resolvedUrl = url;
+    if (/n2t\.net/i.test(url) || /^ark:/i.test(url)) {
+      try {
+        const redirected = await fetch(url, { redirect: 'follow' });
+        resolvedUrl = redirected.url;
+      } catch { /* fall through */ }
+    }
+
+    const objectId = parseSmithsonianUrl(resolvedUrl);
+    if (!objectId) {
+      return json({ error: 'Could not parse a Smithsonian object ID from that URL' }, 400);
+    }
+
+    const env = (locals as any).runtime?.env;
+    const apiKey = env?.SMITHSONIAN_API_KEY || '';
+    const isArk = objectId.startsWith('ark:');
+    const localId = isArk ? objectId.replace(/^ark:\/\d+\//i, '') : objectId;
+    const apiUrl = isArk
+      ? `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(`"${localId}"`)}&api_key=${apiKey}`
+      : `https://api.si.edu/openaccess/api/v1.0/content/${encodeURIComponent(objectId)}?api_key=${apiKey}`;
+
+    let siRes: Response;
+    try { siRes = await fetch(apiUrl); } catch { return json({ error: 'Failed to reach Smithsonian API' }, 502); }
+    if (!siRes.ok) return json({ error: `Smithsonian API error: ${siRes.status}` }, 502);
+
+    let data: Record<string, unknown>;
+    try { data = await siRes.json(); } catch { return json({ error: 'Could not parse Smithsonian response' }, 502); }
+
+    const responseObj = data?.response as Record<string, unknown> | undefined;
+    const record = isArk
+      ? (Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[])[0] : undefined)
+      : responseObj;
+
+    if (!record) {
+      const isNmnh = resolvedUrl.includes('nmnh.si.edu');
+      return json({
+        error: isNmnh
+          ? 'This NMNH record is not in the Smithsonian Open Access API — enter metadata manually'
+          : 'Record not found in Smithsonian Open Access API — enter metadata manually',
+      }, 404);
+    }
+
+    return json({ institution: 'smithsonian', fields: mapSmithsonianRecord(record) });
   }
 
-  const env = (locals as any).runtime?.env;
-  const apiKey = env?.SMITHSONIAN_API_KEY || '';
-
-  // ARK IDs go through the search API; EDAN IDs go through the content API.
-  // Strip the ark:/65665/ prefix — search by the bare local ID only.
-  const isArk = objectId.startsWith('ark:');
-  const localId = isArk ? objectId.replace(/^ark:\/\d+\//i, '') : objectId;
-  const apiUrl = isArk
-    ? `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(`"${localId}"`)}&api_key=${apiKey}`
-    : `https://api.si.edu/openaccess/api/v1.0/content/${encodeURIComponent(objectId)}?api_key=${apiKey}`;
-
-  let siResponse: Response;
-  try {
-    siResponse = await fetch(apiUrl);
-  } catch {
-    return new Response(JSON.stringify({ error: 'Failed to reach Smithsonian API' }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (!siResponse.ok) {
-    return new Response(JSON.stringify({ error: `Smithsonian API error: ${siResponse.status}` }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  let data: Record<string, unknown>;
-  try {
-    data = await siResponse.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'Could not parse Smithsonian response' }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  // Search returns rows[]; content returns the record directly.
-  const responseObj = data?.response as Record<string, unknown> | undefined;
-  const record = isArk
-    ? (Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[])[0] : undefined)
-    : responseObj;
-
-  if (!record) {
-    const notInOpenAccess = isArk && resolvedUrl.includes('nmnh.si.edu');
-    const message = notInOpenAccess
-      ? 'This NMNH record is not in the Smithsonian Open Access API — enter metadata manually'
-      : 'Record not found in Smithsonian Open Access API — enter metadata manually';
-    return new Response(JSON.stringify({ error: message }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const fields = mapSmithsonianRecord(record);
-  return new Response(JSON.stringify({ institution: 'smithsonian', fields }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return json({ error: 'Unrecognized URL — paste a metmuseum.org or si.edu collection URL' }, 400);
 };
