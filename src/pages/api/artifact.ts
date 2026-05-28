@@ -1159,7 +1159,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         const pass2Stream = anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: 5000,
+          max_tokens: 8000,
           system: pass2SystemPrompt,
           messages: [{
             role: 'user',
@@ -1190,7 +1190,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         const pass3Msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
+          max_tokens: 1500,
           system: 'You are an educator writing for someone curious and smart who wants to understand how to look at artifacts. Write the way Ira Glass tells a story: open with something concrete and recognizable, move toward the insight, land it plainly. If you use a technical term, follow it immediately with plain English. The goal is to leave the reader thinking "I can do that next time." Do not use fine art vocabulary: no aesthetic, painterly, compositional tension, formal innovation, artistic achievement, or language from museum wall text or gallery criticism. Do not frame the object as made for contemplation or visual pleasure. Takeaways must be grounded in what the material evidence showed — what the production traces revealed, what the design system did, what the cultural context made legible. The habits you identify should be habits of looking at physical evidence, not habits of aesthetic appreciation.',
           messages: [{
             role: 'user',
