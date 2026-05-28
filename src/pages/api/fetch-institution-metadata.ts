@@ -7,12 +7,17 @@ function parseSmithsonianUrl(url: string): string | null {
     const edanMatch = url.match(/edanmdm[_:]([^&?#/\s]+)/i);
     if (edanMatch) return `edanmdm:${edanMatch[1]}`;
 
+    const u = new URL(url);
+
+    // ark= query param (collections.nmnh.si.edu and other SI subdomains)
+    const arkParam = u.searchParams.get('ark');
+    if (arkParam) return arkParam;
+
     // /object/xxx path segment
     const objMatch = url.match(/\/object\/([^?#\s]+)/i);
     if (objMatch) return decodeURIComponent(objMatch[1]);
 
     // id= query param
-    const u = new URL(url);
     const idParam = u.searchParams.get('id');
     if (idParam) return idParam;
   } catch {
@@ -103,8 +108,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  // n2t.net ARK resolver URLs redirect to the real collections.si.edu URL — follow
-  // the redirect chain so parseSmithsonianUrl can extract the EDAN ID from the final URL.
+  // n2t.net ARK resolver URLs redirect to the real SI subdomain URL — follow
+  // the redirect chain so parseSmithsonianUrl can extract the object ID.
   let resolvedUrl = url;
   if (/n2t\.net/i.test(url) || /^ark:/i.test(url)) {
     try {
@@ -117,15 +122,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const objectId = parseSmithsonianUrl(resolvedUrl);
   if (!objectId) {
-    return new Response(JSON.stringify({ error: `Could not parse object ID. Resolved URL: ${resolvedUrl}` }), {
+    return new Response(JSON.stringify({ error: 'Could not parse a Smithsonian object ID from that URL' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const env = (locals as { runtime?: { env?: Record<string, string> } }).runtime?.env;
+  const env = (locals as any).runtime?.env;
   const apiKey = env?.SMITHSONIAN_API_KEY || '';
-  const apiUrl = `https://api.si.edu/openaccess/api/v1.0/content/${encodeURIComponent(objectId)}?api_key=${apiKey}`;
+
+  // ARK IDs go through the search API; EDAN IDs go through the content API.
+  const isArk = objectId.startsWith('ark:');
+  const apiUrl = isArk
+    ? `https://api.si.edu/openaccess/api/v1.0/search?q=${encodeURIComponent(objectId)}&api_key=${apiKey}`
+    : `https://api.si.edu/openaccess/api/v1.0/content/${encodeURIComponent(objectId)}?api_key=${apiKey}`;
 
   let siResponse: Response;
   try {
@@ -154,7 +164,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const record = data?.response;
+  // Search returns rows[]; content returns the record directly.
+  const responseObj = data?.response as Record<string, unknown> | undefined;
+  const record = isArk
+    ? (Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[])[0] : undefined)
+    : responseObj;
+
   if (!record) {
     return new Response(JSON.stringify({ error: 'Record not found' }), {
       status: 404,
