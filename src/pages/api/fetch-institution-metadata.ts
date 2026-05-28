@@ -171,7 +171,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     : responseObj;
 
   if (!record) {
-    return new Response(JSON.stringify({ error: 'Record not found' }), {
+    const debug = isArk
+      ? { rowCount: Array.isArray(responseObj?.rows) ? (responseObj!.rows as unknown[]).length : 'not array', keys: Object.keys(responseObj || {}), apiUrl }
+      : { responseKeys: Object.keys(responseObj || {}), apiUrl };
+    return new Response(JSON.stringify({ error: 'Record not found', debug }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     });
