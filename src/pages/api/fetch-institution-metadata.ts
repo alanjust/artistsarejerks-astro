@@ -6,6 +6,10 @@ function parseSmithsonianUrl(url: string): string | null {
     const edanMatch = url.match(/edanmdm[_:]([^&?#/\s]+)/i);
     if (edanMatch) return `edanmdm:${edanMatch[1]}`;
 
+    // ARK identifier: n2t.net/ark:/65665/xxx or ark:/65665/xxx anywhere
+    const arkMatch = url.match(/ark:\/65665\/([^&?#\s]+)/i);
+    if (arkMatch) return `ark:/65665/${arkMatch[1]}`;
+
     // /object/xxx path segment
     const objMatch = url.match(/\/object\/([^?#\s]+)/i);
     if (objMatch) return decodeURIComponent(objMatch[1]);
