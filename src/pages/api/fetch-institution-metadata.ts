@@ -117,7 +117,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const objectId = parseSmithsonianUrl(resolvedUrl);
   if (!objectId) {
-    return new Response(JSON.stringify({ error: 'Could not parse a Smithsonian object ID from that URL' }), {
+    return new Response(JSON.stringify({ error: `Could not parse object ID. Resolved URL: ${resolvedUrl}` }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
