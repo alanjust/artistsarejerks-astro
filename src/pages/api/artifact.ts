@@ -69,15 +69,6 @@ Universal visual principles (type "universal_tier_a"): ${TIER_A_PRINCIPLE_REF}
 
 For each principle in principles_fired, set weight: 1 = peripheral, 2 = clearly operative, 3 = dominant.
 
-For principle_vector: score each key using ONLY the Pass 1 observation above. Do not draw on Pass 2.
-0 = genuinely absent — the principle has no basis in this artifact (e.g. Face Detection on a vessel with no faces = 0)
-1 = peripheral — physically present but minor, not central to how the object reads
-2 = operative — clearly active, shapes how the object reads
-3 = dominant — central to what makes this artifact what it is
-Score all 27. Most scores will be 0. Use 0 freely — it is not a failure to observe, it is an accurate reading.
-principle_vector is REQUIRED. Never set it to null. Every value must be an integer 0–3.
-ap_1=Production Trace Reading, ap_2=Sequence Inference, ap_3=Material Boundary Attention, ap_4=Wear Differential, ap_5=Absence as Evidence, ap_6=Composite Detection, ap_7=Anatomical Correspondence, ap_8=Symmetry as Evidence, ap_9=Proportion as Encoding, ap_10=Color Zone Logic, ap_11=Investment Gradient, ap_12=Attachment Point Reading, ap_13=Orientation Dependency, ap_14=Completion State, ap_15=Reduction vs. Construction, ta_1=Edge Detection, ta_2=Color Opponent Channels, ta_4=Figure-Ground Relationships, ta_5=Grouping, ta_13=Overlap/Occlusion, ta_15=Closure/Negative Space, ta_20=Simultaneous Contrast, ta_28=Specularity/Surface Reflection, ta_47=Face Detection, ta_48=Biological Motion Detection, ta_49=Gaze Direction/Social Attention, ta_51=Visual Pop-out/Pre-attentive Features
-
 Output this exact structure. Use only the enum values shown. Use null where genuinely unknown.
 
 {
@@ -96,17 +87,55 @@ Output this exact structure. Use only the enum values shown. Use null where genu
   "rap_flags": [
     { "claim_type": "tradition_attribution|iconographic_meaning|functional_claim|inter_tradition_relationship", "confidence": "reading|hypothesis", "claim": "<specific claim text>", "anchor_count": 0 }
   ],
-${sectionsSchema},
-  "principle_vector": {
-    "ap_1": 0, "ap_2": 0, "ap_3": 0, "ap_4": 0, "ap_5": 0,
-    "ap_6": 0, "ap_7": 0, "ap_8": 0, "ap_9": 0, "ap_10": 0,
-    "ap_11": 0, "ap_12": 0, "ap_13": 0, "ap_14": 0, "ap_15": 0,
-    "ta_1": 0, "ta_2": 0, "ta_4": 0, "ta_5": 0, "ta_13": 0,
-    "ta_15": 0, "ta_20": 0, "ta_28": 0, "ta_47": 0, "ta_48": 0,
-    "ta_49": 0, "ta_51": 0
-  }
+${sectionsSchema}
 }`;
 };
+
+// Dedicated vector scoring prompt — Pass 1 text only, no other context
+const VECTOR_SCORING_PROMPT = (pass1: string): string =>
+  `Score each of the 27 perceptual principles below using ONLY the Pass 1 observation text provided. Output ONLY a flat JSON object with exactly 27 integer keys. No markdown, no commentary, no extra text.
+
+Scale:
+0 = not present — the principle has no physical basis in this artifact
+1 = peripheral — present but minor
+2 = operative — clearly active, shapes how the object reads
+3 = dominant — central to what makes this artifact what it is
+
+Most scores will be 0. Use 0 freely for anything not physically observable.
+
+PASS 1 OBSERVATION:
+${pass1}
+
+ARTIFACT PRINCIPLES (score from pass1 only):
+ap_1: Production Trace Reading
+ap_2: Sequence Inference
+ap_3: Material Boundary Attention
+ap_4: Wear Differential
+ap_5: Absence as Evidence
+ap_6: Composite Detection
+ap_7: Anatomical Correspondence
+ap_8: Symmetry as Evidence
+ap_9: Proportion as Encoding
+ap_10: Color Zone Logic
+ap_11: Investment Gradient
+ap_12: Attachment Point Reading
+ap_13: Orientation Dependency
+ap_14: Completion State
+ap_15: Reduction vs. Construction
+
+TIER A UNIVERSAL PRINCIPLES (score from pass1 only):
+ta_1: Edge Detection
+ta_2: Color Opponent Channels
+ta_4: Figure-Ground Relationships
+ta_5: Grouping
+ta_13: Overlap/Occlusion
+ta_15: Closure/Negative Space
+ta_20: Simultaneous Contrast
+ta_28: Specularity/Surface Reflection
+ta_47: Face Detection
+ta_48: Biological Motion Detection
+ta_49: Gaze Direction/Social Attention
+ta_51: Visual Pop-out/Pre-attentive Features`;
 
 function dataUrlToBuffer(dataUrl: string): { buffer: Uint8Array; contentType: string; ext: string } {
   const commaIdx = dataUrl.indexOf(',');
@@ -269,7 +298,7 @@ async function saveToD1(
     return analysisId as number;
   } catch (err) {
     console.error('[D1] Save failed:', err);
-    return null;
+    throw err;
   }
 }
 
@@ -1250,45 +1279,78 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .map((b: any) => b.text)
           .join('\n\n');
 
-        // Pass 4 — structured extraction + D1 save (internal, not streamed)
+        // Pass 4 — structured extraction + vector scoring (parallel), then D1 save
         let savedRecordId: number | null = null;
         const db = (locals as any).runtime?.env?.artlab_analyses;
         const r2 = (locals as any).runtime?.env?.artlab_images;
 
-        if (db) {
+        if (!db) {
+          send({ type: 'status', message: '⚠ DB binding unavailable — analysis not saved' });
+        } else {
           send({ type: 'status', message: 'Saving to database…' });
-          let extractionRaw = '';
           try {
-            const extractionMsg = await anthropic.messages.create({
-              model: 'claude-sonnet-4-6',
-              max_tokens: 16000,
-              system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
-              messages: [
-                { role: 'user', content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }] },
-                { role: 'assistant', content: [{ type: 'text', text: '{' }] },
-              ],
-            });
+            // allSettled: vector failure is tolerated — analysis saves regardless
+            const [extractionResult, vectorResult] = await Promise.allSettled([
+              anthropic.messages.create({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 16000,
+                system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
+                messages: [
+                  { role: 'user', content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }] },
+                  { role: 'assistant', content: [{ type: 'text', text: '{' }] },
+                ],
+              }),
+              anthropic.messages.create({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 512,
+                system: 'You are a scoring assistant. Output ONLY a flat JSON object. No markdown, no commentary, no extra text.',
+                messages: [
+                  { role: 'user', content: [{ type: 'text', text: VECTOR_SCORING_PROMPT(pass1Text) }] },
+                  { role: 'assistant', content: [{ type: 'text', text: '{' }] },
+                ],
+              }),
+            ]);
 
-            extractionRaw = '{' + extractionMsg.content
+            // Extraction failure is fatal — bail out without saving
+            if (extractionResult.status === 'rejected') throw extractionResult.reason;
+            const extractionMsg = extractionResult.value;
+
+            // Parse main extraction
+            let extractionText = ('{' + extractionMsg.content
               .filter((b: any) => b.type === 'text')
               .map((b: any) => b.text)
-              .join('').trim();
-
-            // Strip markdown fences, then extract just the outer { … } so any
-            // preamble or trailing commentary from the model can't break the parse.
-            let extractionText = extractionRaw
+              .join('').trim())
               .replace(/^```(?:json)?\s*/i, '')
               .replace(/\s*```\s*$/i, '')
               .trim();
-            const jsonStart = extractionText.indexOf('{');
-            const jsonEnd   = extractionText.lastIndexOf('}');
-            if (jsonStart !== -1 && jsonEnd > jsonStart) {
-              extractionText = extractionText.slice(jsonStart, jsonEnd + 1);
-            }
-            console.log('[Pass 4] extraction length:', extractionText.length, 'has principle_vector:', extractionText.includes('"principle_vector"'));
-
+            const exStart = extractionText.indexOf('{');
+            const exEnd   = extractionText.lastIndexOf('}');
+            if (exStart !== -1 && exEnd > exStart) extractionText = extractionText.slice(exStart, exEnd + 1);
+            console.log('[Pass 4] extraction length:', extractionText.length);
             const structuredRecord = JSON.parse(extractionText);
-            console.log('[Pass 4] parsed ok, principle_vector type:', typeof structuredRecord.principle_vector);
+
+            // Parse vector — failure logs a warning but save continues
+            if (vectorResult.status === 'fulfilled') {
+              try {
+                let vectorText = ('{' + vectorResult.value.content
+                  .filter((b: any) => b.type === 'text')
+                  .map((b: any) => b.text)
+                  .join('').trim())
+                  .replace(/^```(?:json)?\s*/i, '')
+                  .replace(/\s*```\s*$/i, '')
+                  .trim();
+                const vStart = vectorText.indexOf('{');
+                const vEnd   = vectorText.lastIndexOf('}');
+                if (vStart !== -1 && vEnd > vStart) vectorText = vectorText.slice(vStart, vEnd + 1);
+                const vectorParsed = JSON.parse(vectorText);
+                structuredRecord.principle_vector = vectorParsed;
+                console.log('[Pass 4] vector keys:', Object.keys(vectorParsed).length);
+              } catch (vectorParseErr) {
+                console.error('[Pass 4] vector parse failed, saving without vector:', vectorParseErr);
+              }
+            } else {
+              console.error('[Pass 4] vector API call failed, saving without vector:', vectorResult.reason);
+            }
 
             savedRecordId = await saveToD1(
               db, fields, structuredRecord,
@@ -1298,8 +1360,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
               images,
               r2
             );
+            send({ type: 'status', message: savedRecordId ? `Saved — record #${savedRecordId}` : '⚠ Save returned no record ID' });
           } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
             console.error('[Pass 4]', err);
+            send({ type: 'status', message: `⚠ Save failed: ${msg}` });
           }
         }
 

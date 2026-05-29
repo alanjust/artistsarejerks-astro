@@ -20,6 +20,27 @@ const { id } = Astro.params;
     </div>
 
   </div>
+
+  <!-- Similarity modal -->
+  <div id="similarModal" class="ad-similar-modal" hidden>
+    <div class="ad-similar-modal-inner">
+      <div class="ad-similar-modal-header">
+        <h2 class="ad-similar-modal-title">Similar Artifacts</h2>
+        <button id="similarModalClose" class="ad-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="ad-similar-threshold">
+        <span class="ad-similar-threshold-label">Min similarity</span>
+        <div class="ad-similar-threshold-btns" id="thresholdBtns">
+          <button class="ad-threshold-btn ad-threshold-btn--active" data-min="0">All</button>
+          <button class="ad-threshold-btn" data-min="70">70%+</button>
+          <button class="ad-threshold-btn" data-min="80">80%+</button>
+          <button class="ad-threshold-btn" data-min="90">90%+</button>
+        </div>
+      </div>
+      <div id="similarResults" class="ad-similar-results"></div>
+    </div>
+  </div>
+
 </HiddenGrammarLayout>
 
 <style is:global>
@@ -160,6 +181,27 @@ const { id } = Astro.params;
     text-transform: uppercase;
     color: #94a3b8;
     margin: 0;
+  }
+
+  .ad-find-similar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.3125rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #4f46e5;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ad-find-similar-btn:hover {
+    background: #eef2ff;
+    border-color: #a5b4fc;
   }
 
   .ad-radar-placeholder {
@@ -379,7 +421,7 @@ const { id } = Astro.params;
     line-height: 1.7;
   }
 
-  /* ── Object metadata table ── */
+  /* ── Object metadata ── */
   .ad-meta-grid {
     display: grid;
     grid-template-columns: 140px 1fr;
@@ -397,7 +439,7 @@ const { id } = Astro.params;
     word-break: break-word;
   }
 
-  /* ── Compare button ── */
+  /* ── Compare button (stub) ── */
   .ad-compare-bar {
     position: fixed;
     bottom: 1.5rem;
@@ -426,7 +468,7 @@ const { id } = Astro.params;
     box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
   }
 
-  /* ── RAP flag styles ── */
+  /* ── RAP flags ── */
   .ad-rap-list {
     display: flex;
     flex-direction: column;
@@ -459,12 +501,234 @@ const { id } = Astro.params;
     line-height: 1.5;
   }
 
+  /* ── Similarity modal ── */
+  .ad-similar-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem 1rem 4rem;
+    backdrop-filter: blur(2px);
+  }
+
+  .ad-similar-modal[hidden] {
+    display: none;
+  }
+
+  .ad-similar-modal-inner {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 640px;
+    padding: 1.75rem 2rem 2rem;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  }
+
+  .ad-similar-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .ad-similar-modal-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .ad-modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .ad-modal-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  /* ── Threshold controls ── */
+  .ad-similar-threshold {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .ad-similar-threshold-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    flex-shrink: 0;
+  }
+
+  .ad-similar-threshold-btns {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .ad-threshold-btn {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  }
+
+  .ad-threshold-btn:hover {
+    border-color: #94a3b8;
+    color: #1e293b;
+  }
+
+  .ad-threshold-btn--active {
+    background: #eef2ff;
+    border-color: #a5b4fc;
+    color: #4338ca;
+    font-weight: 600;
+  }
+
+  /* ── Similarity results list ── */
+  .ad-similar-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ad-similar-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9375rem;
+  }
+
+  .ad-similar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .ad-similar-item:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1);
+  }
+
+  .ad-similar-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f1f5f9;
+    flex-shrink: 0;
+    border: 1px solid #e2e8f0;
+  }
+
+  .ad-similar-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ad-similar-thumb-empty {
+    width: 100%;
+    height: 100%;
+    background: #f1f5f9;
+  }
+
+  .ad-similar-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .ad-similar-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #1e293b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ad-similar-meta {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .ad-similar-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    min-width: 56px;
+  }
+
+  .ad-similar-pct {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .ad-similar-pct--high { color: #059669; }
+  .ad-similar-pct--mid  { color: #d97706; }
+  .ad-similar-pct--low  { color: #94a3b8; }
+
+  .ad-similar-bar {
+    width: 100%;
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .ad-similar-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: #4f46e5;
+    transition: width 0.3s ease;
+  }
+
   /* ── Responsive ── */
   @media (max-width: 640px) {
     .ad-headline { font-size: 1.25rem; }
     .ad-radar-section { padding: 1rem; }
     .ad-pass3-block { margin-left: 0; padding: 1rem 1.25rem; }
     .ad-meta-grid { grid-template-columns: 110px 1fr; }
+    .ad-similar-modal-inner { padding: 1.25rem; }
   }
 </style>
 
@@ -496,33 +760,33 @@ const { id } = Astro.params;
   // ── Radar chart ──────────────────────────────────────────────────────────────
 
   const PRINCIPLES = [
-    { key: 'ap_1',  name: 'Production Trace Reading',      type: 'artifact' },
-    { key: 'ap_2',  name: 'Sequence Inference',             type: 'artifact' },
-    { key: 'ap_3',  name: 'Material Boundary Attention',    type: 'artifact' },
-    { key: 'ap_4',  name: 'Wear Differential',              type: 'artifact' },
-    { key: 'ap_5',  name: 'Absence as Evidence',            type: 'artifact' },
-    { key: 'ap_6',  name: 'Composite Detection',            type: 'artifact' },
-    { key: 'ap_7',  name: 'Anatomical Correspondence',      type: 'artifact' },
-    { key: 'ap_8',  name: 'Symmetry as Evidence',           type: 'artifact' },
-    { key: 'ap_9',  name: 'Proportion as Encoding',         type: 'artifact' },
-    { key: 'ap_10', name: 'Color Zone Logic',               type: 'artifact' },
-    { key: 'ap_11', name: 'Investment Gradient',            type: 'artifact' },
-    { key: 'ap_12', name: 'Attachment Point Reading',       type: 'artifact' },
-    { key: 'ap_13', name: 'Orientation Dependency',         type: 'artifact' },
-    { key: 'ap_14', name: 'Completion State',               type: 'artifact' },
-    { key: 'ap_15', name: 'Reduction vs. Construction',     type: 'artifact' },
-    { key: 'ta_1',  name: 'Edge Detection',                 type: 'tier_a' },
-    { key: 'ta_2',  name: 'Color Opponent Channels',        type: 'tier_a' },
-    { key: 'ta_4',  name: 'Figure-Ground Relationships',    type: 'tier_a' },
-    { key: 'ta_5',  name: 'Grouping',                       type: 'tier_a' },
-    { key: 'ta_13', name: 'Overlap / Occlusion',            type: 'tier_a' },
-    { key: 'ta_15', name: 'Closure / Negative Space',       type: 'tier_a' },
-    { key: 'ta_20', name: 'Simultaneous Contrast',          type: 'tier_a' },
+    { key: 'ap_1',  name: 'Production Trace Reading',        type: 'artifact' },
+    { key: 'ap_2',  name: 'Sequence Inference',              type: 'artifact' },
+    { key: 'ap_3',  name: 'Material Boundary Attention',     type: 'artifact' },
+    { key: 'ap_4',  name: 'Wear Differential',               type: 'artifact' },
+    { key: 'ap_5',  name: 'Absence as Evidence',             type: 'artifact' },
+    { key: 'ap_6',  name: 'Composite Detection',             type: 'artifact' },
+    { key: 'ap_7',  name: 'Anatomical Correspondence',       type: 'artifact' },
+    { key: 'ap_8',  name: 'Symmetry as Evidence',            type: 'artifact' },
+    { key: 'ap_9',  name: 'Proportion as Encoding',          type: 'artifact' },
+    { key: 'ap_10', name: 'Color Zone Logic',                type: 'artifact' },
+    { key: 'ap_11', name: 'Investment Gradient',             type: 'artifact' },
+    { key: 'ap_12', name: 'Attachment Point Reading',        type: 'artifact' },
+    { key: 'ap_13', name: 'Orientation Dependency',          type: 'artifact' },
+    { key: 'ap_14', name: 'Completion State',                type: 'artifact' },
+    { key: 'ap_15', name: 'Reduction vs. Construction',      type: 'artifact' },
+    { key: 'ta_1',  name: 'Edge Detection',                  type: 'tier_a' },
+    { key: 'ta_2',  name: 'Color Opponent Channels',         type: 'tier_a' },
+    { key: 'ta_4',  name: 'Figure-Ground Relationships',     type: 'tier_a' },
+    { key: 'ta_5',  name: 'Grouping',                        type: 'tier_a' },
+    { key: 'ta_13', name: 'Overlap / Occlusion',             type: 'tier_a' },
+    { key: 'ta_15', name: 'Closure / Negative Space',        type: 'tier_a' },
+    { key: 'ta_20', name: 'Simultaneous Contrast',           type: 'tier_a' },
     { key: 'ta_28', name: 'Specularity / Surface Reflection', type: 'tier_a' },
-    { key: 'ta_47', name: 'Face Detection',                 type: 'tier_a' },
-    { key: 'ta_48', name: 'Biological Motion Detection',    type: 'tier_a' },
+    { key: 'ta_47', name: 'Face Detection',                  type: 'tier_a' },
+    { key: 'ta_48', name: 'Biological Motion Detection',     type: 'tier_a' },
     { key: 'ta_49', name: 'Gaze Direction / Social Attention', type: 'tier_a' },
-    { key: 'ta_51', name: 'Visual Pop-out / Pre-attentive', type: 'tier_a' },
+    { key: 'ta_51', name: 'Visual Pop-out / Pre-attentive',  type: 'tier_a' },
   ];
 
   function buildRadar(vector: Record<string, number>): string {
@@ -535,32 +799,23 @@ const { id } = Astro.params;
       return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
     }
 
-    // Reference rings
-    const ring1 = Array.from({ length: n }, (_, i) => spoke(i, r * (1 / 3)))
-      .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ') + ' Z';
-    const ring2 = Array.from({ length: n }, (_, i) => spoke(i, r * (2 / 3)))
-      .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ') + ' Z';
-    const ring3 = Array.from({ length: n }, (_, i) => spoke(i, r))
+    const ring = (frac: number) => Array.from({ length: n }, (_, i) => spoke(i, r * frac))
       .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ') + ' Z';
 
-    // Full polygon connecting all 27 points
     const allPoints = PRINCIPLES.map((p, i) => {
       const score = vector[p.key] ?? 0;
-      const radius = score === 0 ? 4 : r * (score / 3);
-      return spoke(i, radius);
+      return spoke(i, score === 0 ? 4 : r * (score / 3));
     });
 
     const polyPath = allPoints
       .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
       .join(' ') + ' Z';
 
-    // Spoke lines
-    const spokeLines = PRINCIPLES.map((p, i) => {
+    const spokeLines = PRINCIPLES.map((_, i) => {
       const outer = spoke(i, r);
       return `<line x1="${cx}" y1="${cy}" x2="${outer.x.toFixed(2)}" y2="${outer.y.toFixed(2)}" stroke="#e2e8f0" stroke-width="1"/>`;
     }).join('');
 
-    // Labels
     const labelOffset = r + 22;
     const labels = PRINCIPLES.map((p, i) => {
       const pos = spoke(i, labelOffset);
@@ -570,7 +825,6 @@ const { id } = Astro.params;
       return `<text x="${pos.x.toFixed(2)}" y="${pos.y.toFixed(2)}" text-anchor="${anchor}" font-size="7.5" fill="${color}" font-family="system-ui,sans-serif" dominant-baseline="middle"><title>${esc(p.name)}</title>${esc(shortName)}</text>`;
     }).join('');
 
-    // Score dots at each spoke tip
     const dots = PRINCIPLES.map((p, i) => {
       const score = vector[p.key] ?? 0;
       if (score === 0) return '';
@@ -580,9 +834,9 @@ const { id } = Astro.params;
     }).join('');
 
     return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Perceptual signature radar chart">
-      <path d="${ring1}" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-      <path d="${ring2}" fill="none" stroke="#e2e8f0" stroke-width="1"/>
-      <path d="${ring3}" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+      <path d="${ring(1/3)}" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+      <path d="${ring(2/3)}" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+      <path d="${ring(1)}"   fill="none" stroke="#cbd5e1" stroke-width="1"/>
       ${spokeLines}
       <path d="${polyPath}" fill="rgba(79,70,229,0.12)" stroke="#4f46e5" stroke-width="1.5" stroke-linejoin="round"/>
       ${dots}
@@ -619,7 +873,7 @@ const { id } = Astro.params;
       const res = await fetch(`/api/analysis/${artifactId}`);
       if (!res.ok) throw new Error(`${res.status}`);
       data = await res.json();
-    } catch (err) {
+    } catch {
       container.innerHTML = `<p class="ad-loading">Failed to load analysis. Please try again.</p>`;
       return;
     }
@@ -630,7 +884,6 @@ const { id } = Astro.params;
       return;
     }
 
-    // Primary image
     const primaryImg = images?.find((img: any) => img.is_primary) || images?.[0];
     const otherImgs  = images?.filter((img: any) => img !== primaryImg) || [];
 
@@ -658,11 +911,11 @@ const { id } = Astro.params;
       </div>
     ` : '';
 
-    // Radar
     const radarHtml = `
       <div class="ad-radar-section">
         <div class="ad-radar-header">
           <p class="ad-radar-title">Perceptual Signature</p>
+          ${vector ? `<button class="ad-find-similar-btn" id="findSimilarBtn">Find similar →</button>` : ''}
         </div>
         ${vector
           ? `<div class="ad-radar-svg-wrap">${buildRadar(vector)}</div>
@@ -672,7 +925,6 @@ const { id } = Astro.params;
       </div>
     `;
 
-    // Pass 2
     const pass2Html = a.pass2_text ? `
       <div class="ad-section">
         <h2 class="ad-section-heading">Analysis</h2>
@@ -680,7 +932,6 @@ const { id } = Astro.params;
       </div>
     ` : '';
 
-    // Pass 3
     const pass3Html = a.pass3_text ? `
       <div class="ad-pass3-block">
         <h2 class="ad-section-heading">What to Take Forward</h2>
@@ -688,7 +939,6 @@ const { id } = Astro.params;
       </div>
     ` : '';
 
-    // Firings
     const firingsHtml = firings?.length > 0 ? `
       <div class="ad-section">
         <h2 class="ad-section-heading">Principles Fired (${firings.length})</h2>
@@ -707,7 +957,6 @@ const { id } = Astro.params;
       </div>
     ` : '';
 
-    // RAP flags — collapsible
     const rapHtml = rap_flags?.length > 0 ? `
       <details class="ad-details">
         <summary class="ad-details-summary">
@@ -731,7 +980,6 @@ const { id } = Astro.params;
       </details>
     ` : '';
 
-    // Pass 1 — collapsible
     const pass1Html = a.pass1_text ? `
       <details class="ad-details">
         <summary class="ad-details-summary">
@@ -742,17 +990,16 @@ const { id } = Astro.params;
       </details>
     ` : '';
 
-    // Object metadata
     const metaFields = [
-      ['Accession',    a.accession_number],
-      ['Culture',      a.culture],
-      ['Period',       a.period_label],
-      ['Material',     a.material],
-      ['Dimensions',   a.dimensions],
-      ['Site',         a.site],
-      ['Collection',   a.collection],
-      ['Condition',    a.condition],
-      ['Source',       a.source_institution],
+      ['Accession',  a.accession_number],
+      ['Culture',    a.culture],
+      ['Period',     a.period_label],
+      ['Material',   a.material],
+      ['Dimensions', a.dimensions],
+      ['Site',       a.site],
+      ['Collection', a.collection],
+      ['Condition',  a.condition],
+      ['Source',     a.source_institution],
     ].filter(([, v]) => v);
 
     const metaHtml = metaFields.length > 0 ? `
@@ -772,9 +1019,8 @@ const { id } = Astro.params;
       </details>
     ` : '';
 
-    // Headline
     const headline = fmt(a.object_class_identified || a.object_name);
-    const subline   = [a.culture, a.period_label].filter(Boolean).join(', ');
+    const subline  = [a.culture, a.period_label].filter(Boolean).join(', ');
 
     container.innerHTML = `
       <div class="ad-header">
@@ -808,15 +1054,115 @@ const { id } = Astro.params;
     container.querySelectorAll<HTMLImageElement>('.ad-thumb').forEach(thumb => {
       thumb.addEventListener('click', () => {
         const primary = document.getElementById('adPrimaryImg') as HTMLImageElement;
-        if (primary) {
-          primary.src = thumb.dataset.src || '';
-          primary.alt = thumb.dataset.label || '';
-        }
+        if (primary) { primary.src = thumb.dataset.src || ''; primary.alt = thumb.dataset.label || ''; }
         container.querySelectorAll('.ad-thumb').forEach(t => t.classList.remove('ad-thumb--active'));
         thumb.classList.add('ad-thumb--active');
       });
     });
+
+    // Find similar button
+    document.getElementById('findSimilarBtn')?.addEventListener('click', openSimilarModal);
   }
+
+  // ── Similarity search ─────────────────────────────────────────────────────────
+
+  let similarResults: any[] = [];
+  let activeThreshold = 0;
+
+  function similarityClass(pct: number): string {
+    if (pct >= 90) return 'ad-similar-pct--high';
+    if (pct >= 70) return 'ad-similar-pct--mid';
+    return 'ad-similar-pct--low';
+  }
+
+  function renderSimilarResults() {
+    const container = document.getElementById('similarResults')!;
+    const filtered  = similarResults.filter(r => r.similarity >= activeThreshold);
+
+    if (filtered.length === 0) {
+      const msg = similarResults.length === 0
+        ? 'No other artifacts with perceptual signatures yet. Run more analyses to enable similarity search.'
+        : `No artifacts at ${activeThreshold}%+ similarity. Try a lower threshold.`;
+      container.innerHTML = `<p class="ad-similar-empty">${msg}</p>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(r => {
+      const name = fmt(r.object_class_identified || r.object_name);
+      const meta = [
+        r.tradition_identified && r.tradition_identified !== 'unknown' ? fmt(r.tradition_identified) : null,
+        r.tradition_confidence,
+        r.audience,
+      ].filter(Boolean).join(' · ');
+
+      return `
+        <a href="/hidden-grammar/corpus/${r.id}"
+           class="ad-similar-item"
+           target="_blank"
+           rel="noopener noreferrer"
+           onclick="if(window.innerWidth<1024){this.removeAttribute('target');}"
+        >
+          <div class="ad-similar-thumb">
+            ${r.primary_image_url
+              ? `<img src="/api/image/${esc(r.primary_image_url)}" alt="${esc(name)}" loading="lazy" />`
+              : '<div class="ad-similar-thumb-empty"></div>'}
+          </div>
+          <div class="ad-similar-info">
+            <span class="ad-similar-name">${esc(name)}</span>
+            <span class="ad-similar-meta">${esc(meta)}</span>
+          </div>
+          <div class="ad-similar-score">
+            <span class="ad-similar-pct ${similarityClass(r.similarity)}">${r.similarity}%</span>
+            <div class="ad-similar-bar">
+              <div class="ad-similar-bar-fill" style="width:${r.similarity}%"></div>
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  async function openSimilarModal() {
+    const modal   = document.getElementById('similarModal')!;
+    const content = document.getElementById('similarResults')!;
+    modal.hidden  = false;
+    document.body.style.overflow = 'hidden';
+    content.innerHTML = '<p class="ad-similar-empty">Loading…</p>';
+
+    try {
+      const res  = await fetch(`/api/similar/${artifactId}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      similarResults = data.results || [];
+      renderSimilarResults();
+    } catch {
+      content.innerHTML = '<p class="ad-similar-empty">Failed to load similarity data.</p>';
+    }
+  }
+
+  function closeSimilarModal() {
+    document.getElementById('similarModal')!.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('similarModalClose')!.addEventListener('click', closeSimilarModal);
+
+  document.getElementById('similarModal')!.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeSimilarModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeSimilarModal();
+  });
+
+  document.getElementById('thresholdBtns')!.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.ad-threshold-btn');
+    if (!btn) return;
+    activeThreshold = parseInt(btn.dataset.min || '0', 10);
+    document.querySelectorAll('.ad-threshold-btn').forEach(b => b.classList.remove('ad-threshold-btn--active'));
+    btn.classList.add('ad-threshold-btn--active');
+    renderSimilarResults();
+  });
 
   loadAndRender();
 </script>
