@@ -66,3 +66,80 @@ export const GET: APIRoute = async ({ params, locals }) => {
     });
   }
 };
+
+export const DELETE: APIRoute = async ({ params, locals }) => {
+  const db  = (locals as any).runtime?.env?.artlab_analyses;
+  const r2  = (locals as any).runtime?.env?.artlab_images;
+
+  if (!db) {
+    return new Response(JSON.stringify({ error: 'Database unavailable' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const id = parseInt(params.id || '', 10);
+  if (isNaN(id)) {
+    return new Response(JSON.stringify({ error: 'Invalid id' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    const analysis = await db.prepare(
+      'SELECT object_id FROM analyses WHERE id = ?'
+    ).bind(id).first() as { object_id: number } | null;
+
+    if (!analysis) {
+      return new Response(JSON.stringify({ error: 'Not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const objectId = analysis.object_id;
+
+    // Delete analysis-scoped rows (CASCADE may not be enforced in D1)
+    await db.batch([
+      db.prepare('DELETE FROM principle_vectors  WHERE analysis_id = ?').bind(id),
+      db.prepare('DELETE FROM principle_firings  WHERE analysis_id = ?').bind(id),
+      db.prepare('DELETE FROM rap_flags          WHERE analysis_id = ?').bind(id),
+      db.prepare('DELETE FROM section_readings   WHERE analysis_id = ?').bind(id),
+      db.prepare('DELETE FROM connections_records WHERE analysis_id = ?').bind(id),
+      db.prepare('DELETE FROM analyses           WHERE id = ?').bind(id),
+    ]);
+
+    // Delete object + images only if no other analyses reference it
+    const remaining = await db.prepare(
+      'SELECT COUNT(*) as n FROM analyses WHERE object_id = ?'
+    ).bind(objectId).first() as { n: number };
+
+    if (remaining.n === 0) {
+      const imageRows = await db.prepare(
+        'SELECT storage_url FROM images WHERE object_id = ?'
+      ).bind(objectId).all();
+
+      if (r2 && imageRows.results.length > 0) {
+        await Promise.allSettled(
+          (imageRows.results as { storage_url: string }[]).map(row => r2.delete(row.storage_url))
+        );
+      }
+
+      await db.batch([
+        db.prepare('DELETE FROM images  WHERE object_id = ?').bind(objectId),
+        db.prepare('DELETE FROM objects WHERE id = ?').bind(objectId),
+      ]);
+    }
+
+    return new Response(JSON.stringify({ deleted: id }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
