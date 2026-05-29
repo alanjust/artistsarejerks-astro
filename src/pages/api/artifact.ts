@@ -67,7 +67,11 @@ PRINCIPLE REFERENCE — use exact names and ids when populating principles_fired
 Artifact principles (type "artifact"): ${ARTIFACT_PRINCIPLE_REF}
 Universal visual principles (type "universal_tier_a"): ${TIER_A_PRINCIPLE_REF}
 
-For each principle in principles_fired, set weight as an integer: 1 = peripheral presence (noticed but not central), 2 = clearly operative (shapes the reading), 3 = dominant (central to what makes this object what it is). Default to 2 if uncertain.
+For each principle in principles_fired, set weight: 1 = peripheral, 2 = clearly operative, 3 = dominant.
+
+For principle_vector: score each key using ONLY the Pass 1 observation above. Do not draw on Pass 2.
+0 = not present, 1 = peripheral, 2 = operative, 3 = dominant. Score all 27 — 0 is valid.
+ap_1=Production Trace Reading, ap_2=Sequence Inference, ap_3=Material Boundary Attention, ap_4=Wear Differential, ap_5=Absence as Evidence, ap_6=Composite Detection, ap_7=Anatomical Correspondence, ap_8=Symmetry as Evidence, ap_9=Proportion as Encoding, ap_10=Color Zone Logic, ap_11=Investment Gradient, ap_12=Attachment Point Reading, ap_13=Orientation Dependency, ap_14=Completion State, ap_15=Reduction vs. Construction, ta_1=Edge Detection, ta_2=Color Opponent Channels, ta_4=Figure-Ground Relationships, ta_5=Grouping, ta_13=Overlap/Occlusion, ta_15=Closure/Negative Space, ta_20=Simultaneous Contrast, ta_28=Specularity/Surface Reflection, ta_47=Face Detection, ta_48=Biological Motion Detection, ta_49=Gaze Direction/Social Attention, ta_51=Visual Pop-out/Pre-attentive Features
 
 Output this exact structure. Use only the enum values shown. Use null where genuinely unknown.
 
@@ -87,64 +91,15 @@ Output this exact structure. Use only the enum values shown. Use null where genu
   "rap_flags": [
     { "claim_type": "tradition_attribution|iconographic_meaning|functional_claim|inter_tradition_relationship", "confidence": "reading|hypothesis", "claim": "<specific claim text>", "anchor_count": 0 }
   ],
-${sectionsSchema}
-}
-
-VECTOR SCORING — PASS 1 ONLY:
-
-Score each principle below using ONLY the Pass 1 observation text above.
-Do not draw on Pass 2. Scores reflect what was physically observable
-in the artifact, not what was interpreted.
-
-Scale:
-0 = not present or not observable in this artifact
-1 = peripheral — present but minor, not central to the observation
-2 = operative — clearly active, shapes how the object reads
-3 = dominant — central to what makes this artifact what it is
-
-You must score all 27. A score of 0 is a valid and expected result.
-Do not skip any dimension. If a principle had nothing to observe, score it 0.
-
-ARTIFACT PRINCIPLES (score from pass1 text only):
-ap_1: Production Trace Reading
-ap_2: Sequence Inference
-ap_3: Material Boundary Attention
-ap_4: Wear Differential
-ap_5: Absence as Evidence
-ap_6: Composite Detection
-ap_7: Anatomical Correspondence
-ap_8: Symmetry as Evidence
-ap_9: Proportion as Encoding
-ap_10: Color Zone Logic
-ap_11: Investment Gradient
-ap_12: Attachment Point Reading
-ap_13: Orientation Dependency
-ap_14: Completion State
-ap_15: Reduction vs. Construction
-
-TIER A UNIVERSAL PRINCIPLES (score from pass1 text only):
-ta_1:  Edge Detection
-ta_2:  Color Opponent Channels
-ta_4:  Figure-Ground Relationships
-ta_5:  Grouping
-ta_13: Overlap/Occlusion
-ta_15: Closure/Negative Space
-ta_20: Simultaneous Contrast
-ta_28: Specularity/Surface Reflection
-ta_47: Face Detection
-ta_48: Biological Motion Detection
-ta_49: Gaze Direction/Social Attention
-ta_51: Visual Pop-out/Pre-attentive Features
-
-Add this flat object to your JSON output as a top-level key:
-
-"principle_vector": {
-  "ap_1": 0, "ap_2": 0, "ap_3": 0, "ap_4": 0, "ap_5": 0,
-  "ap_6": 0, "ap_7": 0, "ap_8": 0, "ap_9": 0, "ap_10": 0,
-  "ap_11": 0, "ap_12": 0, "ap_13": 0, "ap_14": 0, "ap_15": 0,
-  "ta_1": 0, "ta_2": 0, "ta_4": 0, "ta_5": 0, "ta_13": 0,
-  "ta_15": 0, "ta_20": 0, "ta_28": 0, "ta_47": 0, "ta_48": 0,
-  "ta_49": 0, "ta_51": 0
+${sectionsSchema},
+  "principle_vector": {
+    "ap_1": 0, "ap_2": 0, "ap_3": 0, "ap_4": 0, "ap_5": 0,
+    "ap_6": 0, "ap_7": 0, "ap_8": 0, "ap_9": 0, "ap_10": 0,
+    "ap_11": 0, "ap_12": 0, "ap_13": 0, "ap_14": 0, "ap_15": 0,
+    "ta_1": 0, "ta_2": 0, "ta_4": 0, "ta_5": 0, "ta_13": 0,
+    "ta_15": 0, "ta_20": 0, "ta_28": 0, "ta_47": 0, "ta_48": 0,
+    "ta_49": 0, "ta_51": 0
+  }
 }`;
 };
 
