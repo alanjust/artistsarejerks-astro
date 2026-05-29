@@ -1299,19 +1299,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
               anthropic.messages.create({
                 model: 'claude-sonnet-4-6',
                 max_tokens: 16000,
-                system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
+                system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text. Begin your response with { and end with }.',
                 messages: [
                   { role: 'user', content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }] },
-                  { role: 'assistant', content: [{ type: 'text', text: '{' }] },
                 ],
               }),
               anthropic.messages.create({
                 model: 'claude-sonnet-4-6',
                 max_tokens: 512,
-                system: 'You are a scoring assistant. Output ONLY a flat JSON object. No markdown, no commentary, no extra text.',
+                system: 'You are a scoring assistant. Output ONLY a flat JSON object. No markdown, no commentary, no extra text. Begin your response with { and end with }.',
                 messages: [
                   { role: 'user', content: [{ type: 'text', text: VECTOR_SCORING_PROMPT(pass1Text) }] },
-                  { role: 'assistant', content: [{ type: 'text', text: '{' }] },
                 ],
               }),
             ]);
@@ -1321,10 +1319,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
             const extractionMsg = extractionResult.value;
 
             // Parse main extraction
-            let extractionText = ('{' + extractionMsg.content
+            let extractionText = extractionMsg.content
               .filter((b: any) => b.type === 'text')
               .map((b: any) => b.text)
-              .join('').trim())
+              .join('').trim()
               .replace(/^```(?:json)?\s*/i, '')
               .replace(/\s*```\s*$/i, '')
               .trim();
@@ -1337,10 +1335,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
             // Parse vector — failure logs a warning but save continues
             if (vectorResult.status === 'fulfilled') {
               try {
-                let vectorText = ('{' + vectorResult.value.content
+                let vectorText = vectorResult.value.content
                   .filter((b: any) => b.type === 'text')
                   .map((b: any) => b.text)
-                  .join('').trim())
+                  .join('').trim()
                   .replace(/^```(?:json)?\s*/i, '')
                   .replace(/\s*```\s*$/i, '')
                   .trim();
