@@ -295,6 +295,9 @@ async function saveToD1(
       }
     }
 
+    const verify = await db.prepare('SELECT id FROM analyses WHERE id = ?').bind(analysisId).first();
+    if (!verify) throw new Error(`D1 write confirmed failed: row ${analysisId} missing after INSERT`);
+
     return analysisId as number;
   } catch (err) {
     console.error('[D1] Save failed:', err);
