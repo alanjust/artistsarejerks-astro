@@ -1261,15 +1261,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
           try {
             const extractionMsg = await anthropic.messages.create({
               model: 'claude-sonnet-4-6',
-              max_tokens: 8192,
+              max_tokens: 16000,
               system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
-              messages: [{
-                role: 'user',
-                content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }],
-              }],
+              messages: [
+                { role: 'user', content: [{ type: 'text', text: EXTRACTION_PROMPT(pass1Text, pass2Text, fields, isConnections ? 'connections' : 'artifact') }] },
+                { role: 'assistant', content: [{ type: 'text', text: '{' }] },
+              ],
             });
 
-            extractionRaw = extractionMsg.content
+            extractionRaw = '{' + extractionMsg.content
               .filter((b: any) => b.type === 'text')
               .map((b: any) => b.text)
               .join('').trim();
