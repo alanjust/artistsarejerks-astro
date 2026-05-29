@@ -70,7 +70,11 @@ Universal visual principles (type "universal_tier_a"): ${TIER_A_PRINCIPLE_REF}
 For each principle in principles_fired, set weight: 1 = peripheral, 2 = clearly operative, 3 = dominant.
 
 For principle_vector: score each key using ONLY the Pass 1 observation above. Do not draw on Pass 2.
-0 = not present, 1 = peripheral, 2 = operative, 3 = dominant. Score all 27 — 0 is valid.
+0 = genuinely absent — the principle has no basis in this artifact (e.g. Face Detection on a vessel with no faces = 0)
+1 = peripheral — physically present but minor, not central to how the object reads
+2 = operative — clearly active, shapes how the object reads
+3 = dominant — central to what makes this artifact what it is
+Score all 27. Most scores will be 0. Use 0 freely — it is not a failure to observe, it is an accurate reading.
 principle_vector is REQUIRED. Never set it to null. Every value must be an integer 0–3.
 ap_1=Production Trace Reading, ap_2=Sequence Inference, ap_3=Material Boundary Attention, ap_4=Wear Differential, ap_5=Absence as Evidence, ap_6=Composite Detection, ap_7=Anatomical Correspondence, ap_8=Symmetry as Evidence, ap_9=Proportion as Encoding, ap_10=Color Zone Logic, ap_11=Investment Gradient, ap_12=Attachment Point Reading, ap_13=Orientation Dependency, ap_14=Completion State, ap_15=Reduction vs. Construction, ta_1=Edge Detection, ta_2=Color Opponent Channels, ta_4=Figure-Ground Relationships, ta_5=Grouping, ta_13=Overlap/Occlusion, ta_15=Closure/Negative Space, ta_20=Simultaneous Contrast, ta_28=Specularity/Surface Reflection, ta_47=Face Detection, ta_48=Biological Motion Detection, ta_49=Gaze Direction/Social Attention, ta_51=Visual Pop-out/Pre-attentive Features
 
