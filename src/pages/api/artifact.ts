@@ -71,6 +71,7 @@ For each principle in principles_fired, set weight: 1 = peripheral, 2 = clearly 
 
 For principle_vector: score each key using ONLY the Pass 1 observation above. Do not draw on Pass 2.
 0 = not present, 1 = peripheral, 2 = operative, 3 = dominant. Score all 27 — 0 is valid.
+principle_vector is REQUIRED. Never set it to null. Every value must be an integer 0–3.
 ap_1=Production Trace Reading, ap_2=Sequence Inference, ap_3=Material Boundary Attention, ap_4=Wear Differential, ap_5=Absence as Evidence, ap_6=Composite Detection, ap_7=Anatomical Correspondence, ap_8=Symmetry as Evidence, ap_9=Proportion as Encoding, ap_10=Color Zone Logic, ap_11=Investment Gradient, ap_12=Attachment Point Reading, ap_13=Orientation Dependency, ap_14=Completion State, ap_15=Reduction vs. Construction, ta_1=Edge Detection, ta_2=Color Opponent Channels, ta_4=Figure-Ground Relationships, ta_5=Grouping, ta_13=Overlap/Occlusion, ta_15=Closure/Negative Space, ta_20=Simultaneous Contrast, ta_28=Specularity/Surface Reflection, ta_47=Face Detection, ta_48=Biological Motion Detection, ta_49=Gaze Direction/Social Attention, ta_51=Visual Pop-out/Pre-attentive Features
 
 Output this exact structure. Use only the enum values shown. Use null where genuinely unknown.
@@ -249,12 +250,12 @@ async function saveToD1(
           analysisId, objectId,
           record.object_class_identified || null,
           record.tradition_identified    || null,
-          pv.ap_1  ?? 0, pv.ap_2  ?? 0, pv.ap_3  ?? 0, pv.ap_4  ?? 0, pv.ap_5  ?? 0,
-          pv.ap_6  ?? 0, pv.ap_7  ?? 0, pv.ap_8  ?? 0, pv.ap_9  ?? 0, pv.ap_10 ?? 0,
-          pv.ap_11 ?? 0, pv.ap_12 ?? 0, pv.ap_13 ?? 0, pv.ap_14 ?? 0, pv.ap_15 ?? 0,
-          pv.ta_1  ?? 0, pv.ta_2  ?? 0, pv.ta_4  ?? 0, pv.ta_5  ?? 0, pv.ta_13 ?? 0,
-          pv.ta_15 ?? 0, pv.ta_20 ?? 0, pv.ta_28 ?? 0, pv.ta_47 ?? 0, pv.ta_48 ?? 0,
-          pv.ta_49 ?? 0, pv.ta_51 ?? 0
+          Number(pv.ap_1)  || 0, Number(pv.ap_2)  || 0, Number(pv.ap_3)  || 0, Number(pv.ap_4)  || 0, Number(pv.ap_5)  || 0,
+          Number(pv.ap_6)  || 0, Number(pv.ap_7)  || 0, Number(pv.ap_8)  || 0, Number(pv.ap_9)  || 0, Number(pv.ap_10) || 0,
+          Number(pv.ap_11) || 0, Number(pv.ap_12) || 0, Number(pv.ap_13) || 0, Number(pv.ap_14) || 0, Number(pv.ap_15) || 0,
+          Number(pv.ta_1)  || 0, Number(pv.ta_2)  || 0, Number(pv.ta_4)  || 0, Number(pv.ta_5)  || 0, Number(pv.ta_13) || 0,
+          Number(pv.ta_15) || 0, Number(pv.ta_20) || 0, Number(pv.ta_28) || 0, Number(pv.ta_47) || 0, Number(pv.ta_48) || 0,
+          Number(pv.ta_49) || 0, Number(pv.ta_51) || 0
         ).run();
       } catch (vecErr) {
         console.error('[D1] Vector insert failed:', vecErr);
@@ -1269,12 +1270,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
               .map((b: any) => b.text)
               .join('').trim();
 
-            const extractionText = extractionRaw
+            // Strip markdown fences, then extract just the outer { … } so any
+            // preamble or trailing commentary from the model can't break the parse.
+            let extractionText = extractionRaw
               .replace(/^```(?:json)?\s*/i, '')
               .replace(/\s*```\s*$/i, '')
               .trim();
+            const jsonStart = extractionText.indexOf('{');
+            const jsonEnd   = extractionText.lastIndexOf('}');
+            if (jsonStart !== -1 && jsonEnd > jsonStart) {
+              extractionText = extractionText.slice(jsonStart, jsonEnd + 1);
+            }
+            console.log('[Pass 4] extraction length:', extractionText.length, 'has principle_vector:', extractionText.includes('"principle_vector"'));
 
             const structuredRecord = JSON.parse(extractionText);
+            console.log('[Pass 4] parsed ok, principle_vector type:', typeof structuredRecord.principle_vector);
 
             savedRecordId = await saveToD1(
               db, fields, structuredRecord,
