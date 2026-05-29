@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
   }
 
   try {
-    const [analysisRow, firingsResult, rapResult, imagesResult] = await Promise.all([
+    const [analysisRow, firingsResult, rapResult, imagesResult, vectorRow] = await Promise.all([
       db.prepare(`
         SELECT
           a.id, a.object_id, a.analysis_mode, a.audience,
@@ -39,6 +39,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       db.prepare(`SELECT * FROM principle_firings WHERE analysis_id = ? ORDER BY weight DESC`).bind(id).all(),
       db.prepare(`SELECT * FROM rap_flags WHERE analysis_id = ? ORDER BY id`).bind(id).all(),
       db.prepare(`SELECT storage_url, view_label, is_primary FROM images WHERE object_id = (SELECT object_id FROM analyses WHERE id = ?) ORDER BY is_primary DESC, id ASC`).bind(id).all(),
+      db.prepare(`SELECT * FROM principle_vectors WHERE analysis_id = ?`).bind(id).first(),
     ]);
 
     if (!analysisRow) {
@@ -49,10 +50,11 @@ export const GET: APIRoute = async ({ params, locals }) => {
     }
 
     return new Response(JSON.stringify({
-      analysis: analysisRow,
+      analysis:  analysisRow,
       firings:   firingsResult.results,
       rap_flags: rapResult.results,
       images:    imagesResult.results,
+      vector:    vectorRow ?? null,
     }), {
       headers: { 'Content-Type': 'application/json' },
     });

@@ -45,7 +45,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
         a.object_class_identified, a.tradition_identified, a.tradition_confidence,
         a.function_category, a.function_confidence, a.production_level,
         a.temporal_note, a.created_at,
-        o.object_name, o.culture, o.period_label, o.material, o.site, o.collection
+        o.object_name, o.culture, o.period_label, o.material, o.site, o.collection,
+        (SELECT storage_url FROM images WHERE object_id = o.id AND is_primary = 1 LIMIT 1) AS primary_image_url
       FROM analyses a
       JOIN objects o ON o.id = a.object_id
       ${where}

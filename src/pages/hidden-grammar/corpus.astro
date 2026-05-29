@@ -710,8 +710,6 @@ const tierAPrinciples = [
 </style>
 
 <script>
-  import { marked } from 'marked';
-
   function esc(s: string | null | undefined): string {
     if (!s) return '';
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -726,12 +724,6 @@ const tierAPrinciples = [
     if (!s) return '';
     const d = new Date(s.replace(' ', 'T') + 'Z');
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  function passLabel(p: string): string {
-    if (p === 'both') return 'P1+P2';
-    if (p === 'pass2') return 'P2';
-    return 'P1';
   }
 
   interface Analysis {
@@ -776,16 +768,7 @@ const tierAPrinciples = [
     error?: string;
   }
 
-  interface DetailRecord {
-    analysis: Record<string, unknown>;
-    firings: Firing[];
-    rap_flags: RapFlag[];
-    images: { storage_url: string; view_label: string; is_primary: number }[];
-  }
-
   let currentData: QueryResult | null = null;
-  const expandedIds   = new Set<number>();
-  const loadedDetails = new Map<number, DetailRecord>();
 
   function getFilters(): Record<string, string> {
     const get = (id: string) => (document.getElementById(id) as HTMLSelectElement)?.value || '';
@@ -827,147 +810,6 @@ const tierAPrinciples = [
     el.textContent = n === 0 ? 'No analyses match.' : `${n} ${n === 1 ? 'analysis' : 'analyses'}`;
   }
 
-  function renderDetail(id: number): string {
-    const d = loadedDetails.get(id);
-    if (!d) {
-      return '<div class="corpus-card-detail"><p class="corpus-detail-loading">Loading…</p></div>';
-    }
-    const { analysis: a, firings, rap_flags, images } = d;
-
-    // ── Context header (audience + mode) ──────────────────────────────
-    const contextHtml = `
-      <div class="corpus-detail-context">
-        <span class="corpus-badge corpus-badge--audience">${esc(String(a.audience ?? ''))}</span>
-        <span class="corpus-badge corpus-badge--mode">${esc(String(a.analysis_mode ?? ''))}</span>
-      </div>
-    `;
-
-    // ── Object metadata ────────────────────────────────────────────────
-    const metaFields: { label: string; value: unknown }[] = [
-      { label: 'Accession',  value: a.accession_number },
-      { label: 'Culture',    value: a.culture },
-      { label: 'Period',     value: a.period_label },
-      { label: 'Material',   value: a.material },
-      { label: 'Dimensions', value: a.dimensions },
-      { label: 'Site',       value: a.site },
-      { label: 'Collection', value: a.collection },
-    ].filter(f => f.value);
-
-    const metadataHtml = metaFields.length > 0 ? `
-      <div>
-        <h4 class="corpus-detail-heading">Object</h4>
-        <dl class="corpus-object-meta">
-          ${metaFields.map(f => `
-            <div class="corpus-object-meta-row">
-              <dt class="corpus-object-meta-label">${esc(f.label)}</dt>
-              <dd class="corpus-object-meta-value">${esc(String(f.value))}</dd>
-            </div>
-          `).join('')}
-        </dl>
-      </div>
-    ` : '';
-
-    // ── Images ────────────────────────────────────────────────────────
-    const imagesHtml = images.length > 0 ? `
-      <div>
-        <h4 class="corpus-detail-heading">Images</h4>
-        <div class="corpus-images-grid">
-          ${images.map(img => `
-            <figure class="corpus-image-figure">
-              <img src="/api/image/${esc(img.storage_url)}" alt="${esc(img.view_label)}" class="corpus-image" loading="lazy" />
-              <figcaption class="corpus-image-caption">${esc(img.view_label)}</figcaption>
-            </figure>
-          `).join('')}
-        </div>
-      </div>
-    ` : '';
-
-    // ── Pass 2 ────────────────────────────────────────────────────────
-    const pass2Html = a.pass2_text ? `
-      <div>
-        <h4 class="corpus-detail-heading">Pass 2—Analysis</h4>
-        <div class="corpus-prose">${marked.parse(String(a.pass2_text))}</div>
-      </div>
-    ` : '';
-
-    // ── Pass 3 (visually distinct) ────────────────────────────────────
-    const pass3Html = a.pass3_text ? `
-      <div class="corpus-pass3-block">
-        <h4 class="corpus-detail-heading">Pass 3—Synthesis</h4>
-        <div class="corpus-prose">${marked.parse(String(a.pass3_text))}</div>
-      </div>
-    ` : '';
-
-    // ── Firings ───────────────────────────────────────────────────────
-    const firingsHtml = `
-      <div>
-        <h4 class="corpus-detail-heading">Principles Fired (${firings.length})</h4>
-        <div class="corpus-firings-list">
-          ${firings.map(f => `
-            <div class="corpus-firing">
-              <div class="corpus-firing-meta">
-                <span class="corpus-weight corpus-weight--${f.weight}">${f.weight}</span>
-                <span class="corpus-firing-name">${esc(f.principle_name)}</span>
-                <span class="corpus-firing-type corpus-firing-type--${f.principle_type}">${f.principle_type === 'artifact' ? 'artifact' : 'Tier A'}</span>
-                <span class="corpus-firing-pass">${passLabel(f.fired_in_pass)}</span>
-              </div>
-              ${f.observation_text ? `<p class="corpus-firing-obs">${esc(f.observation_text)}</p>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-
-    // ── RAP flags ─────────────────────────────────────────────────────
-    const rapHtml = rap_flags.length > 0 ? `
-      <div>
-        <h4 class="corpus-detail-heading">RAP Flags (${rap_flags.length})</h4>
-        <div class="corpus-rap-list">
-          ${rap_flags.map(r => `
-            <div>
-              <div class="corpus-rap-meta">
-                <span class="corpus-badge corpus-badge--${esc(r.confidence)}">${esc(r.confidence)}</span>
-                <span class="corpus-rap-type">${fmt(r.claim_type)}</span>
-                <span class="corpus-rap-anchors">${r.anchor_count} ${r.anchor_count === 1 ? 'anchor' : 'anchors'}</span>
-              </div>
-              ${r.claim_text ? `<p class="corpus-rap-text">${esc(r.claim_text)}</p>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    ` : '';
-
-    // ── Temporal note ─────────────────────────────────────────────────
-    const temporalHtml = a.temporal_note ? `
-      <div>
-        <h4 class="corpus-detail-heading">Temporal Note</h4>
-        <p class="corpus-rap-text">${esc(String(a.temporal_note))}</p>
-      </div>
-    ` : '';
-
-    // ── Pass 1 (collapsible, at bottom) ──────────────────────────────
-    const pass1Html = a.pass1_text ? `
-      <details class="corpus-pass1-details">
-        <summary class="corpus-detail-heading corpus-pass1-summary">Pass 1—Observation</summary>
-        <div class="corpus-prose">${marked.parse(String(a.pass1_text))}</div>
-      </details>
-    ` : '';
-
-    return `
-      <div class="corpus-card-detail">
-        ${contextHtml}
-        ${metadataHtml}
-        ${imagesHtml}
-        ${pass2Html}
-        ${pass3Html}
-        ${firingsHtml}
-        ${rapHtml}
-        ${temporalHtml}
-        ${pass1Html}
-      </div>
-    `;
-  }
-
   function renderResults(data: QueryResult) {
     const container = document.getElementById('corpusResults')!;
     if (!data.analyses || data.analyses.length === 0) {
@@ -982,14 +824,11 @@ const tierAPrinciples = [
     });
 
     container.innerHTML = data.analyses.map(a => {
-      const firings  = firingsByAnalysis.get(a.id) || [];
-      const expanded = expandedIds.has(a.id);
-      const label    = fmt(a.object_class_identified || a.object_name);
-
-      const detailHtml = expanded ? renderDetail(a.id) : '';
+      const firings = firingsByAnalysis.get(a.id) || [];
+      const label   = fmt(a.object_class_identified || a.object_name);
 
       return `
-        <article class="corpus-card${expanded ? ' corpus-card--expanded' : ''}" data-id="${a.id}">
+        <article class="corpus-card" data-id="${a.id}">
           <div class="corpus-card-main">
             <div class="corpus-card-top">
               <span class="corpus-object-class">${esc(label)}</span>
@@ -1007,10 +846,9 @@ const tierAPrinciples = [
             </div>
             <div class="corpus-card-footer">
               <span class="corpus-firing-count">${firings.length} ${firings.length === 1 ? 'principle' : 'principles'} fired</span>
-              <button class="corpus-expand-btn" data-expand="${a.id}">${expanded ? 'Collapse ▲' : 'Expand ▼'}</button>
+              <a href="/hidden-grammar/corpus/${a.id}" class="corpus-expand-btn" target="_blank" rel="noopener noreferrer" onclick="if(window.innerWidth < 1024) { this.removeAttribute('target'); }">View Analysis →</a>
             </div>
           </div>
-          ${detailHtml}
         </article>
       `;
     }).join('');
@@ -1022,35 +860,7 @@ const tierAPrinciples = [
 
   document.getElementById('clearBtn')!.addEventListener('click', () => {
     document.querySelectorAll<HTMLSelectElement>('.corpus-filter').forEach(el => { el.value = ''; });
-    expandedIds.clear();
     load();
-  });
-
-  document.getElementById('corpusResults')!.addEventListener('click', async e => {
-    const btn = (e.target as Element).closest<HTMLButtonElement>('[data-expand]');
-    if (!btn || !currentData) return;
-    const id = parseInt(btn.dataset.expand!, 10);
-
-    if (expandedIds.has(id)) {
-      expandedIds.delete(id);
-      renderResults(currentData);
-      return;
-    }
-
-    expandedIds.add(id);
-    renderResults(currentData);
-
-    if (!loadedDetails.has(id)) {
-      try {
-        const res  = await fetch(`/api/analysis/${id}`);
-        const data = await res.json() as DetailRecord;
-        loadedDetails.set(id, data);
-      } catch {
-        // leave loading skeleton in place
-      }
-    }
-
-    renderResults(currentData);
   });
 
   load();
