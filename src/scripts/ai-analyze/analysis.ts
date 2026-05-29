@@ -397,6 +397,12 @@ export function initAnalysis() {
 
             wireCopyButton('copyMainOutput', 0);
 
+            const corpusLink = document.getElementById('viewInCorpusLink') as HTMLAnchorElement | null;
+            if (corpusLink && result.record_id) {
+              corpusLink.href = `/hidden-grammar/corpus/${result.record_id}`;
+              corpusLink.style.display = '';
+            }
+
             const isWip = state.promptId.includes('wip');
             const isCO = state.modeId === 'constraints-opportunities';
             if (isWip || isCO) injectExplorationPanel(result.raw || '');
@@ -449,6 +455,10 @@ export function initAnalysis() {
     document.getElementById('viewToggle')?.remove();
     document.getElementById('sectionIP')?.remove();
     document.getElementById('sectionVE')?.remove();
+
+    // Reset corpus link
+    const corpusLink = document.getElementById('viewInCorpusLink') as HTMLAnchorElement | null;
+    if (corpusLink) { corpusLink.style.display = 'none'; corpusLink.href = '#'; }
 
     // Reset exploration panel
     const explorationPanel = document.getElementById('explorationPanel');
