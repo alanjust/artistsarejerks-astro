@@ -1484,6 +1484,14 @@ const artifactPrincipleIdMap: Record<string, number> = Object.fromEntries(
             }
 
             output.style.display = '';
+
+            if (data.save_error) {
+              const saveWarn = document.createElement('div');
+              saveWarn.style.cssText = 'margin-bottom:1rem;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:0.875rem;color:#b91c1c;line-height:1.5;';
+              saveWarn.textContent = `⚠ This analysis was not saved to the corpus: ${data.save_error}`;
+              output.prepend(saveWarn);
+            }
+
             output.scrollIntoView({ behavior: 'smooth', block: 'start' });
             runBtn.disabled = false;
             runBtn.textContent = 'Run Analysis';
