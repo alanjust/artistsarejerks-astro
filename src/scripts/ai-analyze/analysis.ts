@@ -403,6 +403,13 @@ export function initAnalysis() {
               corpusLink.style.display = '';
             }
 
+            if (result.save_error) {
+              const saveWarn = document.createElement('div');
+              saveWarn.style.cssText = 'margin-top:1rem;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:0.875rem;color:#b91c1c;line-height:1.5;';
+              saveWarn.textContent = `⚠ This analysis was not saved to the corpus: ${result.save_error}`;
+              if (resultsPanel) resultsPanel.prepend(saveWarn);
+            }
+
             const isWip = state.promptId.includes('wip');
             const isCO = state.modeId === 'constraints-opportunities';
             if (isWip || isCO) injectExplorationPanel(result.raw || '');

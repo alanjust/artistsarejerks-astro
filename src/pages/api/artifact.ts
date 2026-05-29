@@ -1281,10 +1281,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
         // Pass 4 — structured extraction + vector scoring (parallel), then D1 save
         let savedRecordId: number | null = null;
+        let saveError: string | null = null;
         const db = (locals as any).runtime?.env?.artlab_analyses;
         const r2 = (locals as any).runtime?.env?.artlab_images;
 
         if (!db) {
+          saveError = 'DB binding unavailable';
           send({ type: 'status', message: '⚠ DB binding unavailable — analysis not saved' });
         } else {
           send({ type: 'status', message: 'Saving to database…' });
@@ -1360,15 +1362,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
               images,
               r2
             );
+            if (!savedRecordId) saveError = 'Save returned no record ID';
             send({ type: 'status', message: savedRecordId ? `Saved — record #${savedRecordId}` : '⚠ Save returned no record ID' });
           } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             console.error('[Pass 4]', err);
+            saveError = msg;
             send({ type: 'status', message: `⚠ Save failed: ${msg}` });
           }
         }
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}) });
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}), ...(saveError ? { save_error: saveError } : {}) });
 
       } catch (err) {
         try {
