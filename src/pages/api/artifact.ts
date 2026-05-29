@@ -271,6 +271,7 @@ async function saveToD1(
     // Vector insert — principle scores from Pass 1
     if (record.principle_vector && typeof record.principle_vector === 'object') {
       const pv = record.principle_vector;
+      const sc = (v: unknown) => Math.min(3, Math.max(0, Math.round(Number(v) || 0)));
       try {
         await db.prepare(
           `INSERT INTO principle_vectors (
@@ -283,12 +284,12 @@ async function saveToD1(
           analysisId, objectId,
           record.object_class_identified || null,
           record.tradition_identified    || null,
-          Number(pv.ap_1)  || 0, Number(pv.ap_2)  || 0, Number(pv.ap_3)  || 0, Number(pv.ap_4)  || 0, Number(pv.ap_5)  || 0,
-          Number(pv.ap_6)  || 0, Number(pv.ap_7)  || 0, Number(pv.ap_8)  || 0, Number(pv.ap_9)  || 0, Number(pv.ap_10) || 0,
-          Number(pv.ap_11) || 0, Number(pv.ap_12) || 0, Number(pv.ap_13) || 0, Number(pv.ap_14) || 0, Number(pv.ap_15) || 0,
-          Number(pv.ta_1)  || 0, Number(pv.ta_2)  || 0, Number(pv.ta_4)  || 0, Number(pv.ta_5)  || 0, Number(pv.ta_13) || 0,
-          Number(pv.ta_15) || 0, Number(pv.ta_20) || 0, Number(pv.ta_28) || 0, Number(pv.ta_47) || 0, Number(pv.ta_48) || 0,
-          Number(pv.ta_49) || 0, Number(pv.ta_51) || 0
+          sc(pv.ap_1),  sc(pv.ap_2),  sc(pv.ap_3),  sc(pv.ap_4),  sc(pv.ap_5),
+          sc(pv.ap_6),  sc(pv.ap_7),  sc(pv.ap_8),  sc(pv.ap_9),  sc(pv.ap_10),
+          sc(pv.ap_11), sc(pv.ap_12), sc(pv.ap_13), sc(pv.ap_14), sc(pv.ap_15),
+          sc(pv.ta_1),  sc(pv.ta_2),  sc(pv.ta_4),  sc(pv.ta_5),  sc(pv.ta_13),
+          sc(pv.ta_15), sc(pv.ta_20), sc(pv.ta_28), sc(pv.ta_47), sc(pv.ta_48),
+          sc(pv.ta_49), sc(pv.ta_51)
         ).run();
       } catch (vecErr) {
         console.error('[D1] Vector insert failed:', vecErr);
