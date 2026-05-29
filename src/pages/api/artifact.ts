@@ -1285,6 +1285,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         // Pass 4 — structured extraction + vector scoring (parallel), then D1 save
         let savedRecordId: number | null = null;
         let saveError: string | null = null;
+        let vectorNote: string | null = null;
         const db = (locals as any).runtime?.env?.artlab_analyses;
         const r2 = (locals as any).runtime?.env?.artlab_images;
 
@@ -1332,7 +1333,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
             console.log('[Pass 4] extraction length:', extractionText.length);
             const structuredRecord = JSON.parse(extractionText);
 
-            // Parse vector — failure logs a warning but save continues
+            // Parse vector — failure is tolerated but now surfaced
             if (vectorResult.status === 'fulfilled') {
               try {
                 let vectorText = vectorResult.value.content
@@ -1347,12 +1348,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 if (vStart !== -1 && vEnd > vStart) vectorText = vectorText.slice(vStart, vEnd + 1);
                 const vectorParsed = JSON.parse(vectorText);
                 structuredRecord.principle_vector = vectorParsed;
-                console.log('[Pass 4] vector keys:', Object.keys(vectorParsed).length);
               } catch (vectorParseErr) {
-                console.error('[Pass 4] vector parse failed, saving without vector:', vectorParseErr);
+                vectorNote = `vector parse failed: ${vectorParseErr instanceof Error ? vectorParseErr.message : String(vectorParseErr)}`;
+                send({ type: 'status', message: `⚠ ${vectorNote}` });
               }
             } else {
-              console.error('[Pass 4] vector API call failed, saving without vector:', vectorResult.reason);
+              const reason = vectorResult.reason;
+              vectorNote = `vector API failed: ${reason instanceof Error ? reason.message : String(reason)}`;
+              send({ type: 'status', message: `⚠ ${vectorNote}` });
             }
 
             savedRecordId = await saveToD1(
@@ -1373,7 +1376,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           }
         }
 
-        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}), ...(saveError ? { save_error: saveError } : {}) });
+        send({ type: 'complete', success: true, pass1: pass1Text, analysis: pass2Text, competency: pass3Text, mode, ...(savedRecordId ? { record_id: savedRecordId } : {}), ...(saveError ? { save_error: saveError } : {}), ...(vectorNote ? { vector_note: vectorNote } : {}) });
 
       } catch (err) {
         try {
