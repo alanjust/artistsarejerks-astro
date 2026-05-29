@@ -161,7 +161,7 @@ async function saveToD1(
   audience: string,
   images?: Array<{ data: string; label: string }>,
   r2?: any
-): Promise<number | null> {
+): Promise<{ analysisId: number; objectId: number } | null> {
   try {
     const objResult = await db.prepare(
       `INSERT INTO objects (object_name, accession_number, culture, period_label, material, dimensions, site, collection, source_institution, source_url, condition, research_context, field_notes, notes, object_class)
@@ -269,37 +269,10 @@ async function saveToD1(
     }
 
     // Vector insert — principle scores from Pass 1
-    if (record.principle_vector && typeof record.principle_vector === 'object') {
-      const pv = record.principle_vector;
-      const sc = (v: unknown) => Math.min(3, Math.max(0, Math.round(Number(v) || 0)));
-      try {
-        await db.prepare(
-          `INSERT INTO principle_vectors (
-            analysis_id, object_id, institution_id, object_class, tradition_identified, pass,
-            ap_1, ap_2, ap_3, ap_4, ap_5, ap_6, ap_7, ap_8, ap_9, ap_10,
-            ap_11, ap_12, ap_13, ap_14, ap_15,
-            ta_1, ta_2, ta_4, ta_5, ta_13, ta_15, ta_20, ta_28, ta_47, ta_48, ta_49, ta_51
-          ) VALUES (?, ?, 1, ?, ?, 'pass1', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).bind(
-          analysisId, objectId,
-          record.object_class_identified || null,
-          record.tradition_identified    || null,
-          sc(pv.ap_1),  sc(pv.ap_2),  sc(pv.ap_3),  sc(pv.ap_4),  sc(pv.ap_5),
-          sc(pv.ap_6),  sc(pv.ap_7),  sc(pv.ap_8),  sc(pv.ap_9),  sc(pv.ap_10),
-          sc(pv.ap_11), sc(pv.ap_12), sc(pv.ap_13), sc(pv.ap_14), sc(pv.ap_15),
-          sc(pv.ta_1),  sc(pv.ta_2),  sc(pv.ta_4),  sc(pv.ta_5),  sc(pv.ta_13),
-          sc(pv.ta_15), sc(pv.ta_20), sc(pv.ta_28), sc(pv.ta_47), sc(pv.ta_48),
-          sc(pv.ta_49), sc(pv.ta_51)
-        ).run();
-      } catch (vecErr) {
-        console.error('[D1] Vector insert failed:', vecErr);
-      }
-    }
-
     const verify = await db.prepare('SELECT id FROM analyses WHERE id = ?').bind(analysisId).first();
     if (!verify) throw new Error(`D1 write confirmed failed: row ${analysisId} missing after INSERT`);
 
-    return analysisId as number;
+    return { analysisId: analysisId as number, objectId: objectId as number };
   } catch (err) {
     console.error('[D1] Save failed:', err);
     throw err;
@@ -1359,7 +1332,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
               send({ type: 'status', message: `⚠ ${vectorNote}` });
             }
 
-            savedRecordId = await saveToD1(
+            const saveResult = await saveToD1(
               db, fields, structuredRecord,
               pass1Text, pass2Text, pass3Text,
               isConnections ? 'connections' : 'artifact',
@@ -1367,8 +1340,41 @@ export const POST: APIRoute = async ({ request, locals }) => {
               images,
               r2
             );
-            if (!savedRecordId) saveError = 'Save returned no record ID';
-            send({ type: 'status', message: savedRecordId ? `Saved — record #${savedRecordId}` : '⚠ Save returned no record ID' });
+            if (!saveResult) {
+              saveError = 'Save returned no result';
+            } else {
+              savedRecordId = saveResult.analysisId;
+              send({ type: 'status', message: `Saved — record #${savedRecordId}` });
+
+              // Vector insert — done here so errors surface through vectorNote
+              if (structuredRecord.principle_vector && typeof structuredRecord.principle_vector === 'object') {
+                const pv = structuredRecord.principle_vector;
+                const sc = (v: unknown) => Math.min(3, Math.max(0, Math.round(Number(v) || 0)));
+                try {
+                  await db.prepare(
+                    `INSERT INTO principle_vectors (
+                      analysis_id, object_id, institution_id, object_class, tradition_identified, pass,
+                      ap_1, ap_2, ap_3, ap_4, ap_5, ap_6, ap_7, ap_8, ap_9, ap_10,
+                      ap_11, ap_12, ap_13, ap_14, ap_15,
+                      ta_1, ta_2, ta_4, ta_5, ta_13, ta_15, ta_20, ta_28, ta_47, ta_48, ta_49, ta_51
+                    ) VALUES (?, ?, 1, ?, ?, 'pass1', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                  ).bind(
+                    savedRecordId, saveResult.objectId,
+                    structuredRecord.object_class_identified || null,
+                    structuredRecord.tradition_identified    || null,
+                    sc(pv.ap_1),  sc(pv.ap_2),  sc(pv.ap_3),  sc(pv.ap_4),  sc(pv.ap_5),
+                    sc(pv.ap_6),  sc(pv.ap_7),  sc(pv.ap_8),  sc(pv.ap_9),  sc(pv.ap_10),
+                    sc(pv.ap_11), sc(pv.ap_12), sc(pv.ap_13), sc(pv.ap_14), sc(pv.ap_15),
+                    sc(pv.ta_1),  sc(pv.ta_2),  sc(pv.ta_4),  sc(pv.ta_5),  sc(pv.ta_13),
+                    sc(pv.ta_15), sc(pv.ta_20), sc(pv.ta_28), sc(pv.ta_47), sc(pv.ta_48),
+                    sc(pv.ta_49), sc(pv.ta_51)
+                  ).run();
+                } catch (vecErr) {
+                  vectorNote = `vector insert failed: ${vecErr instanceof Error ? vecErr.message : String(vecErr)}`;
+                  send({ type: 'status', message: `⚠ ${vectorNote}` });
+                }
+              }
+            }
           } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             console.error('[Pass 4]', err);
