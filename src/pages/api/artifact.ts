@@ -88,6 +88,63 @@ Output this exact structure. Use only the enum values shown. Use null where genu
     { "claim_type": "tradition_attribution|iconographic_meaning|functional_claim|inter_tradition_relationship", "confidence": "reading|hypothesis", "claim": "<specific claim text>", "anchor_count": 0 }
   ],
 ${sectionsSchema}
+}
+
+VECTOR SCORING — PASS 1 ONLY:
+
+Score each principle below using ONLY the Pass 1 observation text above.
+Do not draw on Pass 2. Scores reflect what was physically observable
+in the artifact, not what was interpreted.
+
+Scale:
+0 = not present or not observable in this artifact
+1 = peripheral — present but minor, not central to the observation
+2 = operative — clearly active, shapes how the object reads
+3 = dominant — central to what makes this artifact what it is
+
+You must score all 27. A score of 0 is a valid and expected result.
+Do not skip any dimension. If a principle had nothing to observe, score it 0.
+
+ARTIFACT PRINCIPLES (score from pass1 text only):
+ap_1: Production Trace Reading
+ap_2: Sequence Inference
+ap_3: Material Boundary Attention
+ap_4: Wear Differential
+ap_5: Absence as Evidence
+ap_6: Composite Detection
+ap_7: Anatomical Correspondence
+ap_8: Symmetry as Evidence
+ap_9: Proportion as Encoding
+ap_10: Color Zone Logic
+ap_11: Investment Gradient
+ap_12: Attachment Point Reading
+ap_13: Orientation Dependency
+ap_14: Completion State
+ap_15: Reduction vs. Construction
+
+TIER A UNIVERSAL PRINCIPLES (score from pass1 text only):
+ta_1:  Edge Detection
+ta_2:  Color Opponent Channels
+ta_4:  Figure-Ground Relationships
+ta_5:  Grouping
+ta_13: Overlap/Occlusion
+ta_15: Closure/Negative Space
+ta_20: Simultaneous Contrast
+ta_28: Specularity/Surface Reflection
+ta_47: Face Detection
+ta_48: Biological Motion Detection
+ta_49: Gaze Direction/Social Attention
+ta_51: Visual Pop-out/Pre-attentive Features
+
+Add this flat object to your JSON output as a top-level key:
+
+"principle_vector": {
+  "ap_1": 0, "ap_2": 0, "ap_3": 0, "ap_4": 0, "ap_5": 0,
+  "ap_6": 0, "ap_7": 0, "ap_8": 0, "ap_9": 0, "ap_10": 0,
+  "ap_11": 0, "ap_12": 0, "ap_13": 0, "ap_14": 0, "ap_15": 0,
+  "ta_1": 0, "ta_2": 0, "ta_4": 0, "ta_5": 0, "ta_13": 0,
+  "ta_15": 0, "ta_20": 0, "ta_28": 0, "ta_47": 0, "ta_48": 0,
+  "ta_49": 0, "ta_51": 0
 }`;
 };
 
@@ -220,6 +277,33 @@ async function saveToD1(
 
     if (mode === 'connections') {
       await db.prepare(`INSERT INTO connections_records (analysis_id) VALUES (?)`).bind(analysisId).run();
+    }
+
+    // Vector insert — principle scores from Pass 1
+    if (record.principle_vector && typeof record.principle_vector === 'object') {
+      const pv = record.principle_vector;
+      try {
+        await db.prepare(
+          `INSERT INTO principle_vectors (
+            analysis_id, object_id, institution_id, object_class, tradition_identified, pass,
+            ap_1, ap_2, ap_3, ap_4, ap_5, ap_6, ap_7, ap_8, ap_9, ap_10,
+            ap_11, ap_12, ap_13, ap_14, ap_15,
+            ta_1, ta_2, ta_4, ta_5, ta_13, ta_15, ta_20, ta_28, ta_47, ta_48, ta_49, ta_51
+          ) VALUES (?, ?, 1, ?, ?, 'pass1', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          analysisId, objectId,
+          record.object_class_identified || null,
+          record.tradition_identified    || null,
+          pv.ap_1  ?? 0, pv.ap_2  ?? 0, pv.ap_3  ?? 0, pv.ap_4  ?? 0, pv.ap_5  ?? 0,
+          pv.ap_6  ?? 0, pv.ap_7  ?? 0, pv.ap_8  ?? 0, pv.ap_9  ?? 0, pv.ap_10 ?? 0,
+          pv.ap_11 ?? 0, pv.ap_12 ?? 0, pv.ap_13 ?? 0, pv.ap_14 ?? 0, pv.ap_15 ?? 0,
+          pv.ta_1  ?? 0, pv.ta_2  ?? 0, pv.ta_4  ?? 0, pv.ta_5  ?? 0, pv.ta_13 ?? 0,
+          pv.ta_15 ?? 0, pv.ta_20 ?? 0, pv.ta_28 ?? 0, pv.ta_47 ?? 0, pv.ta_48 ?? 0,
+          pv.ta_49 ?? 0, pv.ta_51 ?? 0
+        ).run();
+      } catch (vecErr) {
+        console.error('[D1] Vector insert failed:', vecErr);
+      }
     }
 
     return analysisId as number;
@@ -1216,7 +1300,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           let extractionRaw = '';
           try {
             const extractionMsg = await anthropic.messages.create({
-              model: 'claude-haiku-4-5-20251001',
+              model: 'claude-sonnet-4-6',
               max_tokens: 8192,
               system: 'You are a data extraction assistant. Extract structured data from artifact analysis text and output ONLY valid JSON. No markdown fences, no commentary, no extra text.',
               messages: [{
