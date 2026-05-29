@@ -1351,17 +1351,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
                 const pv = structuredRecord.principle_vector;
                 const sc = (v: unknown) => Math.min(3, Math.max(0, Math.round(Number(v) || 0)));
                 try {
+                  // 33 columns → 33 bound params (no embedded literals)
                   await db.prepare(
                     `INSERT INTO principle_vectors (
                       analysis_id, object_id, institution_id, object_class, tradition_identified, pass,
-                      ap_1, ap_2, ap_3, ap_4, ap_5, ap_6, ap_7, ap_8, ap_9, ap_10,
+                      ap_1,  ap_2,  ap_3,  ap_4,  ap_5,  ap_6,  ap_7,  ap_8,  ap_9,  ap_10,
                       ap_11, ap_12, ap_13, ap_14, ap_15,
-                      ta_1, ta_2, ta_4, ta_5, ta_13, ta_15, ta_20, ta_28, ta_47, ta_48, ta_49, ta_51
-                    ) VALUES (?, ?, 1, ?, ?, 'pass1', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                      ta_1,  ta_2,  ta_4,  ta_5,  ta_13, ta_15, ta_20, ta_28, ta_47, ta_48, ta_49, ta_51
+                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
                   ).bind(
-                    savedRecordId, saveResult.objectId,
+                    savedRecordId, saveResult.objectId, 1,
                     structuredRecord.object_class_identified || null,
                     structuredRecord.tradition_identified    || null,
+                    'pass1',
                     sc(pv.ap_1),  sc(pv.ap_2),  sc(pv.ap_3),  sc(pv.ap_4),  sc(pv.ap_5),
                     sc(pv.ap_6),  sc(pv.ap_7),  sc(pv.ap_8),  sc(pv.ap_9),  sc(pv.ap_10),
                     sc(pv.ap_11), sc(pv.ap_12), sc(pv.ap_13), sc(pv.ap_14), sc(pv.ap_15),
