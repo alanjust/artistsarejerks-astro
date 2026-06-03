@@ -116,18 +116,28 @@ Primary institutional home for Casas Grandes / Paquimé material. Houses excavat
 
 ### Haury, Emil W. — *The Hohokam: Desert Farmers and Craftsmen* (1976)
 The Snaketown excavation report. Primary reference for Hohokam ceramic, shell, and material culture sequences. Haury's typology and chronology remain the baseline for Hohokam analysis.
+**Archive.org:** `hohokamdesertfar0000haur` — https://archive.org/details/hohokamdesertfar0000haur (access-restricted, borrow required)
+**Target chapters:** Ceramics chapter (Red-on-Buff type definitions, design vocabulary, production sequences); shell ornaments chapter (Glycymeris bracelet manufacture evidence at Snaketown); synthesis/chronology overview.
 
-### Minnis, Paul E. and Michael E. Whalen — *Casas Grandes and the Ancient Southwest* (2015)
-Current synthesis of Paquimé archaeology. Replaces Di Peso's earlier multi-volume report as the working reference for Casas Grandes material culture and regional context.
+### Minnis, Paul E. and Michael E. Whalen, eds. — *Ancient Paquimé and the Casas Grandes World* (2015)
+Current synthesis of Paquimé archaeology. Replaces Di Peso's earlier multi-volume report as the working reference for Casas Grandes material culture and regional context. Note: not available on Archive.org — library or purchase access required.
+**Archive.org:** Not available.
+**Supplementary on Archive.org:** Townsend et al., *Casas Grandes and the Ceramic Art of the Ancient Southwest* (2005, Art Institute of Chicago catalog) — `casasgrandescera0000unse` — https://archive.org/details/casasgrandescera0000unse — includes Moulard's scholarly essay on Ramos Polychrome design vocabulary. Not a primary excavation source but the best available substitute until Minnis/Whalen is accessible.
 
-### Schaafsma, Polly — *Indian Rock Art of the Southwest* (1980)
+### Schaafsma, Polly — *Indian Rock Art of the Southwest* (1986)
 The foundational survey of Southwest rock art iconography. Essential for placing ceramic and portable object imagery within the broader visual tradition. Documents what symbols appear where, when, and in what combinations.
+**Archive.org:** `indianrockartofs0000scha` — https://archive.org/details/indianrockartofs0000scha (access-restricted; note this item was removed from the standard borrow pool — check borrowability at time of access)
+**Target chapters:** Hohokam rock art of Southern Arizona; Anasazi; Mogollon; Pueblo rock art after A.D. 1300. These four cover the traditions in the disambiguation protocol. Concluding remarks chapter for cross-tradition symbol distribution.
 
 ### Cordell, Linda S. — *Archaeology of the Southwest* (1997, 2nd ed.)
 The standard synthetic overview. Use as a first reference for placing any artifact in regional and temporal context before moving to tradition-specific literature.
+**Archive.org:** `archaeologyofsou0000cord` — https://archive.org/details/archaeologyofsou0000cord (access-restricted, borrow required)
+**Target chapters:** AP ceramic traditions by period (Basketmaker, Pueblo II/III chapters); Mogollon/Mimbres section (cross-reference calibration); post-Classic transitions chapter. Check table of contents on borrow for chapter numbers.
 
 ### Crown, Patricia L. — *Ceramics and Ideology: Salado Polychrome Pottery* (1994)
 Key work for interpreting post-Classic polychrome ceramics and the Salado horizon. Demonstrates how ceramic conventions carry ideological content across broad geographic areas.
+**Archive.org:** `ceramicsideology0000crow` — https://archive.org/details/ceramicsideology0000crow (access-restricted, borrow available via inlibrary collection)
+**Target chapters:** Type definitions chapter (Gila, Tonto, Pinto Polychrome criteria); design analysis chapter; geographic distribution and ideological spread chapter.
 
 ---
 
@@ -140,6 +150,14 @@ Key work for interpreting post-Classic polychrome ceramics and the Salado horizo
 **What's here:** The primary digital repository for Southwest archaeology gray literature — CRM site reports, excavation datasets, GIS data, unpublished field notes, and image collections that never entered formal publication. Significant holdings for Mimbres, Hohokam, Ancestral Puebloan, and Casas Grandes traditions. Many documents inaccessible anywhere else. Search by site name, tradition, county, or keyword.
 **For image acquisition:** Site reports frequently include artifact photographs, drawings, and ceramic type plates. Search for site names in the canonical sites list above to find associated documents.
 **Limitation:** Image quality varies by document age. Older scanned reports may have low-resolution plates.
+
+### cyberSW
+**URL:** https://www.cybersw.org
+**Access:** Free registration for public database access. Research-level access by request.
+**Maintained by:** NSF-funded partnership — Arizona State University, University of Arizona, Desert Archaeology Inc., and others.
+**What's here:** A synthetic analytical database that merges multiple existing Southwest archaeological databases into one platform. Site records, ceramic type distributions, obsidian sourcing data, architectural data, chronological sequences, and network analysis tools. Distinguished from tDAR: tDAR is a document repository (reports, images); cyberSW is a data platform (distributions, networks, analytical tools).
+**For corpus comparison:** The ceramics distribution data is directly useful for artifact analysis — you can map where specific ceramic types (Classic Mimbres, Hohokam Red-on-Buff, Salado Polychrome) appear across the Southwest and identify site associations. This is the kind of comparative corpus work the displacement block calls for when routing an object to its tradition and reference class.
+**Limitation:** Not an image source. Use for distribution data and comparative context, not for acquiring artifact photographs.
 
 ---
 

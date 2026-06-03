@@ -13,6 +13,8 @@ This applies to all copy: UI text, prompts, descriptions, code comments, documen
 - **STYLING_GUIDE.md** - Responsive design strategy, design tokens, CSS patterns
 - **COLOR_REFERENCE.md** - 26-color palette reference
 
+**Architecture pattern (all analysis projects):** For the input/ingestion architecture of any analysis project — Hidden Grammar artifact tool, four-domain Art Lab page, CPG, and future corpus domains — follow `agent_docs/pattern-catalog-first-ingestion.md` (Catalog-First Ingestion / Evidence-Claim Split): score the artifact blind, store its claims separately, catalog first and analyze later, document claims in three layers (raw / JSON / canonical). The Grammar of Things is the reference implementation.
+
 ## Screenshot & Design Priority
 
 1. **Uploaded screenshots** - Follow exactly as shown

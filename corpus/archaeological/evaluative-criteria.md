@@ -1,9 +1,25 @@
 # Evaluative Criteria — Archaeological Domain
 # Southwest Archaeology — Broad Scope
 
-**Version:** 3 (STEP 0 ethical gate added; image analysis ceiling added; primary source extracts now available in source-extracts.md)
-**Status:** First draft — for expert review
-**Purpose:** What specialists actually assess when analyzing Southwest artifacts. Organized first by object class, then by analytical dimension.
+**Version:** 4 (parallel tradition structure; STEP 2 tradition identification gate added; Section A reorganized by tradition subsections — Mimbres, Hohokam, AP, Casas Grandes, Salado; source coverage explicit per subsection; Sections B–F light tradition notes added; built from: tradition-identification-protocol.md for non-Mimbres diagnostic criteria, evaluative-criteria.md v3.1 for all prior Mimbres and universal criteria)
+**Status:** First draft — for expert review. Non-Mimbres subsections are paraphrase-supported except AP black-on-white types (Wilson 2012, 2014 via NM OAS Southwest Ceramic Typology database).
+**Purpose:** What specialists actually assess when analyzing Southwest artifacts. Object-class-first organization retained; tradition subsections within Section A provide tradition-calibrated evaluative criteria. Run tradition-identification-protocol.md before applying Section A.
+
+---
+
+## Claim Taxonomy
+
+Four epistemic statuses appear in this document. High-stakes or non-obvious claims are tagged inline. Untagged claims are either self-evidently observable or carry a source citation that signals their status. This notation convention matches source-extracts.md.
+
+**[OBS]** — *Observable.* Directly readable from image or physical examination. Two independent trained viewers would reach the same description. These are the anchor claims that all interpretation must build from. State with confidence. Do not hedge.
+
+**[CONS]** — *Field consensus.* Established through typological, empirical, or cross-study agreement; treated as reliable background knowledge. Includes well-replicated typological sequences, production technique identifications with broad support, and date ranges established by multiple independent methods. State with confidence; attribute to field rather than individual if no single source dominates.
+
+**[INTERP]** — *Scholarly interpretation.* A specific scholar's reading; grounded in evidence but may be contested, revised, or applicable only within a specific tradition or period. Always cite the source. Use hedged language ("likely," "suggests," "consistent with") rather than assertive language. An [INTERP] requires at least two [OBS] anchors to be stated; one observation plus one tradition-level fact is a hypothesis, not a reading.
+
+**[THEORY]** — *Analytical framework.* A deliberate interpretive lens being applied; defines what counts as relevant evidence and how it is organized. Different frameworks yield different questions and different blind spots. Naming the framework makes it possible to assess what it reveals and what it does not address.
+
+**Epistemic chain rule:** A claim cannot be more certain than its weakest supporting claim. Do not state an [INTERP] as if it were [CONS]. Do not treat a [THEORY] prediction as if it were [OBS] confirmation.
 
 ---
 
@@ -71,42 +87,205 @@ Before applying any criteria, identify what kind of object this is. The wrong ob
 
 ---
 
+## STEP 2 — Tradition Identification Gate
+
+**Run before applying tradition-specific evaluative criteria. This step is required — do not skip to Section A without completing it.**
+
+Object class is now identified. Before applying the tradition-specific criteria in Sections A–F below, identify the cultural tradition using `corpus/archaeological/tradition-identification-protocol.md`.
+
+That protocol runs: CHECK 1 (slip × paint program routing matrix) → CHECK 2 (Mimbres vs. AP disambiguation) → multi-tradition check for two-pigment programs → polychrome traditions → Hohokam Red-on-Buff → ambiguity handling. It provides the specific observable criteria to distinguish traditions from image evidence alone.
+
+**Why this gate exists:** Applying Mimbres evaluative criteria to an AP vessel produces wrong outputs. Applying Hohokam criteria to a Casas Grandes vessel produces wrong outputs. The tradition must be identified before the tradition's standards can be applied.
+
+After completing tradition-identification-protocol.md, return here and apply:
+
+| Identified tradition | Apply subsection |
+|---|---|
+| Mimbres / Mogollon | A-Mimbres |
+| Hohokam Red-on-Buff | A-Hohokam |
+| Ancestral Puebloan (any type) | A-AP |
+| Casas Grandes / Paquimé | A-Casas Grandes |
+| Salado Polychrome | A-Salado |
+| Unknown / indeterminate | A0 only — list candidate traditions |
+
+If tradition cannot be determined: apply A0 (universal criteria) only, state the candidate traditions and the specific evidence for each, and note what physical examination would resolve the attribution.
+
+---
+
 ## SECTION A — CERAMIC VESSELS
 
-### A1. Vessel Form and Morphology
-Rim diameter, depth, wall curvature, base form. Wall thickness consistency — even walls indicate skilled coil construction. Rim form: direct, flared, or insloping — each typologically significant. Form determines vessel class and constrains functional interpretation.
+### A0 — Universal criteria (all traditions)
 
-**Key uncertainty:** Scale is often lost in photographs. Rim diameter estimation requires edge cues and scale reference objects.
+Apply these before tradition-specific criteria. They are tradition-neutral observations.
 
-### A2. Construction Technique
-Evidence of coil-and-scrape: oblique striations on exterior, coil junctures at breaks or thin spots. Paddle-and-anvil finishing: exterior compression marks. Interior scraping tool marks. Mimbres pottery is universally coil-built; departures suggest non-local production.
+**Vessel form and morphology:** Rim diameter (estimate from proportions if undocumented — state clearly when estimating), depth, wall curvature, base form. Wall thickness consistency — even walls indicate skilled construction; variation signals production-stage issues. Rim form: direct, flared, or insloping — each typologically significant within traditions. [OBS]
 
-For Hohokam: paddle-and-anvil construction is primary method. Coil traces less visible than in Mimbres.
+*Scale caveat:* Photographs without scale bars give no reliable size information. Do not estimate dimensions without a known reference object.
 
-### A3. Surface Treatment and Slip
-Slip application: even, well-adhered vs. mottled, thin, or peeling. Burnishing degree: uniform reflection vs. textured surface. Slip color and quality: brilliant white (high kaolin, Mimbres) vs. buff/cream (Hohokam) vs. red (various). Slip coverage — full vs. partial; exterior treatment.
+**Construction technique evidence:** Coil-and-scrape evidence: oblique striations on exterior, coil junctures at breaks or thin spots. [OBS] Paddle-and-anvil evidence: exterior compression marks rather than oblique striations. [OBS] Interior scraping tool marks. [OBS] Construction technique is tradition-diagnostic — see tradition subsections for interpretation.
 
-### A4. Paint Type and Application
-**Mineral paint** (iron-based): matte or semi-matte, permanent, does not flake. **Carbon/organic paint** (plant-based): potentially shiny surface, may flake with age. Line quality: single-stroke control vs. multiple strokes, hesitation marks, corrections. Brush discipline is readable from the line work.
+**Surface treatment — universal observation:** Slip presence/absence. [OBS] Slip coverage: full vs. partial; exterior treatment. [OBS] Slip adhesion quality: even, well-adhered vs. mottled, thin, or peeling. [OBS]
 
-### A5. Design Execution Quality
-Symmetry precision, framing line integrity, compositional logic, hatching regularity. Does the design fill the available field without crowding or misjudged scale? Errors in geometric design read as production errors; errors in figurative design may read as expressive variation — know the difference.
+*Burnishing ceiling:* Photographs can distinguish high-gloss polish from fully matte surfaces at the extremes. Intermediate burnishing levels are not reliably determinable from image evidence alone — the camera cannot capture sheen angle. Describe surface reflectivity as directly observed (specular highlights, sheen distribution, matte zones). Do not assert burnishing degree beyond what is directly visible; state the ceiling when reached.
 
-### A6. Iconographic Program (Ceramic)
-Describe before interpreting. Figure type, field organization (quartered, halved, continuous border), figural vs. geometric, narrative vs. emblematic. Composite figures. Corpus parallels. What the evidence supports vs. what remains uncertain.
+**Paint presence and line quality:** Paint present or absent. [OBS] Line quality: single-stroke control, weight consistency, evidence of hesitation or correction. [OBS] Brush discipline is readable from the line work.
 
-### A7. Kill Hole (Mimbres burial ceramics)
-Presence or absence. Location: centered vs. off-center. Method: punched vs. drilled. Placement relative to the image. Confirms burial context.
+**Kill hole:** Present or absent. [OBS] Location: base (expected for Mimbres), elsewhere (unusual). Method: punched, drilled, or smashed — each leaves a different scar profile. [OBS] Kill hole practice is a specific Mimbres burial custom — see A-Mimbres for interpretation.
 
-### A8. Firing Quality
-Firing atmosphere: oxidizing (tan/orange exterior) vs. reducing (gray/black). Fire clouds: minor (normal) vs. severe. Hardness. Spalling evidence.
+**Firing and condition:** Firing atmosphere: oxidizing (tan/orange exterior) vs. reducing (gray/black). [OBS] Fire clouds on exterior: note location and extent. [OBS] Post-depositional damage vs. use wear vs. ancient repair vs. modern restoration. [OBS] Ancient repairs indicate in-life value.
 
-### A9. Ceramic Tradition Identification
-Based on paste, temper, slip, paint, and design conventions: place in regional ceramic typology. Mimbres, Hohokam, Ancestral Puebloan, Casas Grandes, Salado, or mixed/trade ware. Tradewares indicate exchange networks — a Hohokam vessel in a Mimbres site is an exchange event.
+---
+
+### A-Mimbres — Mimbres / Mogollon ceramics
+
+*Source coverage: primary-source-supported (Brody, Mimbres Painted Pottery, 2004; Shafer, Mimbres Archaeology at the NAN Ranch Ruin, 2003)*
+*Scope: Classic Mimbres Black-on-white (~850–1150 CE), Mimbres Valley and surrounding Mogollon region, SW New Mexico*
+
+**Slip:** Brilliant white to cream; high kaolin content. [CONS] Interior-slip-only is standard Mimbres Valley production. [CONS — Brody] Exterior slip is unusual and may indicate production from an outlying area — upper Gila or Rio Grande drainage production suggested by exterior slip and thin or absent bottom framing lines. [INTERP — Brody; regional substyle marker]
+
+**Paint:** Single dark pigment (mineral, iron-based) — matte or semi-matte, permanent. [CONS] A warm secondary pigment as a chemically distinct second color is not standard Classic Mimbres Black-on-white. Its presence shifts attribution — return to tradition-identification-protocol.md multi-tradition check before proceeding.
+
+**Construction:** Coil-and-scrape universally. [CONS — Brody, Shafer] Mimbres vessels "are often lopsided and rarely symmetrical" — the Mimbreños "were not the best ancient potters in the Southwest" technically (Shafer, NAN Ranch). [INTERP — Shafer] Assess technical forming quality and aesthetic/painting quality as independent axes. A vessel with irregular forming and exceptional painting is the expected pattern, not a contradiction.
+
+**Paint quality standard:** "Indifferent draftsmanship voided visual success no matter how fertile the imagination. Superb draftsmen who followed the rules could hardly go wrong" (Brody, Form and Structure). [INTERP — Brody] Line control is the technical prerequisite for visual success in the Mimbres system. Assess: consistent width, even edges, controlled direction changes.
+
+**Design system:** Interior-dominant composition — full bowl interior as the field. Framing lines (typically two or more) defining the design zone. [CONS — Brody] Positive-negative ambiguity in geometric work: the capacity of a composition to be read simultaneously as dark-on-light or light-on-dark — a specific technical achievement in the Mimbres geometric system, not a general formal virtue. [INTERP — Brody; applies to Mimbres geometric only]
+
+**Design execution:** Symmetry precision, framing line integrity, compositional logic, hatching regularity. [OBS] Does the design fill the available field without crowding or misjudged scale? [OBS] Errors in geometric design read as production errors [CONS]; errors in figurative design may read as departure from convention [INTERP — document the specific departure with at least two observable examples before using it as an interpretive claim].
+
+**Figurative conventions (when present):** Single large figure or scene filling the bowl interior (central medallion organization). [CONS — Brody] Checkerboard, hatching, or step-pattern body fill on figurative subjects. Concentric-circle eye convention across multiple animal types. Profile orientation with single visible wing or limb. [CONS — Brody corpus]
+
+*Compositional base rates [CONS — Brody, Table 2; scope: published corpus at time of analysis; use as calibration prior, not a rule]:* Single-figure compositions 64% of figurative corpus; two-figure non-narrative 15%; narrative with humans 9%; narrative without humans 7%. Do not over-read narrative into what statistically is most likely a single-figure composition.
+
+**Iconographic program:** [THEORY — Brody/Schaafsma describe-before-interpret protocol] Describe before interpreting. Figure type [OBS], field organization (quartered, halved, continuous border) [OBS], figural vs. geometric [OBS], narrative vs. emblematic [INTERP — requires at least two observable narrative elements; single figure + context does not satisfy].
+
+*Species identification and composite figures:* A species claim requires corpus comparison — cannot be made from image evidence alone. Classify to the most general identifiable level (bird, fish, quadruped) and label any more specific reading as a hypothesis. A composite-figure claim requires two independently observable anatomical anomalies anchored in the depicted form itself. One material observation plus one tradition-level fact does not satisfy the requirement.
+
+*Transformation and composite figures [INTERP — Brody]:* "Interchangeability, transformation, and being and becoming are the core creative principles of Mimbres art." Anchor this interpretation in specific observable anatomical features. Document the [OBS] evidence before invoking the framework.
+
+**Production mode typology [INTERP — Brody; Mimbres scope only; do not extend to other traditions without independent evidence]:**
+1. *Skilled adult production:* controlled line [OBS], correct style conventions [CONS], competent vessel forming [OBS]
+2. *Child or novice production:* poor vessel forming AND poor painting on the same vessel — both skills absent together
+3. *Iconographically knowledgeable but technically unskilled:* correct narrative content, poor line control, painting on a well-made vessel. [NOTE: Brody's hypothesis that this mode indicates a male contributor is a scholarly interpretation, not a confirmed conclusion — do not state as fact]
+
+**Kill hole interpretation:** Kill hole practice did not begin until the Late Three Circle phase — it is a Classic period marker. [CONS — Shafer, NAN Ranch ch. 8] Confirms burial context. [CONS]
+
+**Firing notes:** Fire clouds on exterior are expected and were deliberately tolerated — not an error. [INTERP — Brody] Fire clouds on interior: unusual. [CONS] Mixed black-and-red paint may be a deliberate aesthetic choice, not a firing failure. [INTERP — Brody]
+
+**Reference collection:** Swarts Ruin collection (Peabody Museum) and NAN Ranch assemblage (Shafer 2003) are the primary comparison baseline for production quality range. Brody's Mimbres Painted Pottery (2004) corpus is the comparison baseline for figurative imagery. Do not use unprovenanced market examples as reference points.
+
+---
+
+### A-Hohokam — Hohokam Red-on-Buff ceramics
+
+*Source coverage: paraphrase-supported pending primary source extraction (Task #7: Haury, The Hohokam: Desert Farmers and Craftsmen, 1976; Archive.org identifier: hohokamdesertfar0000haur)*
+*Scope: Pioneer through Sedentary periods (~300–1100 CE), S Arizona river valleys (Salt, Gila, Santa Cruz drainages)*
+*Confidence level: provisional — state as paraphrase-supported in outputs until Task #7 is complete*
+
+**Slip and paint program:** Buff to gray-buff slip ground; single warm red-orange pigment on buff ground. [CONS — paraphrase] This slip + paint combination is the primary routing indicator from tradition-identification-protocol.md CHECK 1. Cream or white slip routes to Mimbres/AP disambiguation instead — do not apply Hohokam criteria to a white-slip vessel.
+
+**Construction:** Paddle-and-anvil is the primary Hohokam construction method. [CONS — paraphrase, Haury] Observable evidence: exterior compression marks rather than oblique striations. Coil-and-scrape striations suggest non-Hohokam production. Photographs showing the exterior surface at sufficient quality can show this distinction.
+
+**Design vocabulary:** Life-form imagery rendered with Hohokam-specific stylized conventions — birds, lizards, snakes, human figures — with movement and posture conventions that differ from Mimbres figurative codes. [CONS — paraphrase] Geometric interlocking designs; scrolls also present. [CONS — paraphrase] Apply describe-before-interpret: document the specific figures and motifs before attributing tradition-specific conventions.
+
+**Vessel forms:** Broader range than Mimbres — not just open bowls but jars, effigy vessels, incense burners, trays. [CONS — paraphrase] Vessel form diversity is a secondary check after slip and paint.
+
+**Period indicators:** Red-on-Buff spans roughly ~300–1100 CE (Pioneer through Sedentary periods). Classic Hohokam (after ~1100 CE) shifts toward different ceramic types. A Red-on-Buff vessel places in the pre-Classic or Sedentary period. [CONS — paraphrase]
+
+**Reference collection:** Snaketown assemblage, Arizona State Museum (Haury 1976). Glycymeris bracelet corpus at Arizona State Museum for Hohokam shell ornament type identification.
+
+---
+
+### A-AP — Ancestral Puebloan ceramics
+
+*Source coverage: primary-source-supported for Chaco/Cibola and Mesa Verde black-on-white types (Wilson 2012, 2014 via NM OAS Southwest Ceramic Typology database, ceramics.nmarchaeology.org); paraphrase-supported for Kayenta/Tusayan and polychrome types; Cordell 1997 primary source extraction pending*
+*Scope: Four Corners region and surrounding areas, ~750–1300 CE; type-specific criteria organized by regional tradition and period below*
+
+**Universal AP black-on-white indicators:** White or cream slip; dark mineral or carbon paint. [CONS] Multiple framing lines of different weights; banded or register design organization. [CONS — Wilson 2012, 2014] These features distinguish AP from Mimbres, which uses interior-dominant composition without consistent register subdivision into bounded bands.
+
+*Two or more of the following AP-positive indicators together make AP attribution well-supported:*
+
+**Band/register design organization [CONS — Wilson 2012]:** Design organized as a panel bounded above and below by framing lines, geometric elements filling the band interior. When more than one framing line is present, typically different thicknesses — Mesa Verde convention: thick line on top, thinner line below. Mimbres Classic geometric bowls do not organize decoration as bounded bands.
+
+**Fine parallel hatching as primary fill [CONS — Wilson 2014]:** Evenly-spaced fine parallel lines as the primary filler of triangular or rectangular geometric fields — characteristic of Chaco-tradition types. Mimbres uses hatching but typically as body fill on figurative subjects, not as the dominant fill of abstract geometric panels.
+
+**All-over layout with quadrant subdivision [CONS — Wilson 2012]:** Bowl interior partitioned into two, three, or four symmetric quadrants, each filled with parallel arrangements of geometric elements. Single thick line near the rim as the only framing element. This radial-quadrant structure is visually distinct from the Mimbres central medallion.
+
+**Rim ticking [CONS — Wilson 2012]:** Short painted ticks, dots, or lines perpendicular or parallel to the rim on flat bowl rims. Classic Mimbres bowls have painted rim lines but not ticking in this sense. Rim ticking is a strong positive indicator for Mesa Verde-period AP.
+
+**Vessel form diversity [CONS]:** Mugs, kiva jars, pitchers (handled), and dippers alongside bowls strongly indicate AP. The mug form is AP-specific — no Classic Mimbres equivalent.
+
+**AP type-specific indicators by regional tradition and period:**
+
+*Chaco and Cibola White Ware (~900–1150 CE) [CONS — Wilson 2014]:*
+Thin, hard walls; white paste (often visible at breaks); mineral paint (sharp, hard black); crushed sherd temper (not visible from images); fine hatching as primary design filler; banded layout with multiple framing lines of varying weight; bowls and distinctive pitchers. Key types: Red Mesa Black-on-white, Gallup Black-on-white, Chaco Black-on-white. Period indicator: pre-1150 CE.
+
+*Northern San Juan / Mesa Verde (~1150–1280 CE) [CONS — Wilson 2012]:*
+Thick walls (noticeably heavier than Chaco or Mimbres); pearly-white, well-polished slip on both interior and exterior bowl surfaces; organic paint (slightly softer, faded purplish-black — softer-edged than mineral black); flat rims with ticking; banded and all-over (quadrant) layouts — all-over layouts dominant in later assemblages; stepped triangles, diamonds, interlocking elements, ticked lines; significant vessel form diversity (bowls, mugs, kiva jars, dippers). Key types: Mancos Black-on-white, McElmo Black-on-white, Mesa Verde Black-on-white. Period indicator: 1150–1280 CE.
+
+*Paint character note:* Organic (carbon) pigment can read as softer, slightly browner, or less sharply reflective than mineral black. This distinction is real but cannot be confirmed from image evidence alone — organic vs. mineral paint identification requires physical or spectroscopic testing (pXRF, INAA). Treat as a supporting observation, not a primary criterion.
+
+*Kayenta / Tusayan (~900–1300 CE) [CONS — NM OAS, paraphrase for this regional tradition]:*
+Carbon pigment (dull black, slight brownish tint, occasionally slightly watery application); design vocabulary includes both curvilinear elements and geometric program — interlocking scrolls alongside solid triangles, parallel lines; geographic distribution centered in northeastern Arizona (Kayenta heartland) and Flagstaff region. Distinguishable from Mesa Verde by the presence of curvilinear and scroll elements in the geometric program. Key types: Black Mesa Black-on-white, Sosi Black-on-white, Tusayan Black-on-white.
+
+**AP polychrome types [paraphrase-supported]:**
+
+*St. Johns Polychrome (~1175–1300 CE):* Two-pigment program — dark body color plus warm secondary pigment as distinct materials — on white or cream slip; geometric design vocabulary; Arizona/New Mexico border region distribution.
+
+*Sikyatki Polychrome (late prehistoric / early historic Hopi):* Yellow-orange slip ground (not white) — the slip color alone distinguishes it from all AP black-on-white types; black and red design elements on yellow-orange ground; naturalistic bird imagery distinctive. If the vessel has a yellow-orange rather than white slip ground, Sikyatki or Hopi tradition should be considered before any other attribution.
+
+**Reference collections:** Pueblo Bonito material (Chaco Culture NHP, Smithsonian) for Chaco-affiliated contexts. Mesa Verde NP collections for 13th-century cliff dwelling assemblages. Maxwell Museum (UNM) for broad regional comparative material. NM OAS Southwest Ceramic Typology database (ceramics.nmarchaeology.org) for type descriptions — primary source for Wilson 2012, 2014.
+
+---
+
+### A-Casas Grandes — Casas Grandes / Paquimé ceramics
+
+*Source coverage: paraphrase-supported pending primary source extraction (Task #9: Minnis/Whalen, Ancient Paquimé and the Casas Grandes World, 2015; interim reference: Moulard essay in Townsend et al., Casas Grandes and the Ceramic Art of the Ancient Southwest, Art Institute of Chicago, 2005; Archive.org identifier: casasgrandescera0000unse)*
+*Scope: Paquimé sphere, NW Chihuahua and surrounding regions, ~1200–1450 CE*
+*Confidence level: provisional — state as paraphrase-supported in outputs until Task #9 is complete*
+
+**Slip and paint program:** White slip ground; geometric designs in black and red — a three-color program (black + red + white). [CONS — paraphrase] The three-color combination distinguishes Ramos Polychrome from AP black-on-white types (which lack a red secondary pigment) and from Salado Polychrome (different ground treatment and design vocabulary).
+
+**Design vocabulary:** Geometric designs are primary. Macaw and serpent imagery are characteristic iconographic elements of the Casas Grandes tradition. [CONS — paraphrase] The three-color program combined with macaw or serpent imagery together make Casas Grandes attribution supportable.
+
+**Vessel forms:** Includes effigy vessels — a form uncommon in Mimbres and AP production. [CONS — paraphrase] Effigy vessel presence alongside the three-color program is a strong Casas Grandes indicator.
+
+**Geographic note:** Casas Grandes material found outside the Paquimé heartland (NW Chihuahua) may represent trade wares. Note site distance from core area when provenience is documented.
+
+**Reference collection:** Centro INAH Chihuahua collections for Ramos Polychrome and Casas Grandes material culture.
+
+---
+
+### A-Salado — Salado Polychrome
+
+*Source coverage: paraphrase-supported (Crown, Ceramics and Ideology, 1994)*
+*Scope: ~1275–1450 CE; broad geographic distribution across the post-Classic Southwest. The Salado horizon is a geographic distribution of ceramic types, not a single ethnic group.*
+
+**Slip and paint program:** Red, white, and black on buff ground. [CONS — paraphrase] Three distinct color zones on buff. This combination distinguishes Salado from Casas Grandes (white slip ground, different design vocabulary) and from AP polychrome types.
+
+**Design vocabulary:** Geometric designs with interlocking scrolls and hatched panels. [CONS — paraphrase] Not the macaw/serpent imagery of Casas Grandes; not the fine parallel hatching as primary fill of Chaco types.
+
+**Vessel forms:** Jars with handles are characteristic. [CONS — paraphrase] Handles are diagnostic — present in Salado, absent in Mimbres, uncommon in AP.
+
+**Temporal placement:** Post-Classic — ~1275–1450 CE. [CONS] Objects in Salado Polychrome types exist in a transformed social landscape following the 12th–13th century reorganization events. Classic-period interpretive frameworks may not apply without modification.
+
+**The Salado horizon as ideological distribution [INTERP — Crown 1994]:** The geographic spread of Salado Polychrome represents the spread of a shared ritual/ideological complex through ceramic conventions, not population movement. Similar designs appearing across a broad area indicate shared belief systems, not shared ancestry. This argument establishes the principle that ceramic conventions can carry ideological content independently of population movement.
+
+---
+
+### A-General — Tradition placement and trade ware identification
+
+After applying tradition-specific criteria, assign the object to a cultural tradition. Is it Mimbres, Hohokam, AP, Casas Grandes, Salado, or other? [CONS when two or more criteria converge]
+
+**Trade ware identification:** A Hohokam vessel in a Mimbres site context is an exchange event. A Mimbres vessel in an AP site context is an exchange event. [CONS — requires provenience] Trade ware identification requires provenience documentation — without context, it is a style attribution, not a trade ware identification.
+
+**Mixed-tradition assemblages** at a single site indicate exchange or migration events. [INTERP — requires provenience; state as hypothesis without documented context]
 
 ---
 
 ## SECTION B — CARVED ORGANIC OBJECTS (Wood, Bone, Antler)
+
+*Tradition note: Carved organic objects survive primarily in dry cave contexts. The best-documented assemblages come from AP dry cave deposits across the Four Corners region and Mogollon Highlands. Mimbres-area carved organic material is less well-represented in the published literature. Apply universal criteria below; note tradition affiliation where evidence supports it.*
 
 ### B1. Material Identification
 What material is this? Wood (grain visible, light weight, susceptible to checking and splitting), bone (dense, smooth, often showing cancellous interior at breaks), antler (distinctive external texture, branching structure). Material choice is a production decision — cottonwood root, pine, and willow have different working properties and different cultural associations in Southwest traditions.
@@ -134,6 +313,8 @@ Organic materials survive in dry cave contexts, occasionally in arid open sites 
 
 ## SECTION C — COMPOSITE OBJECTS (Multi-Material)
 
+*Tradition note: High-investment composite objects are documented across Southwest traditions. Casas Grandes effigy vessels and composite objects are a distinct sub-category — when object may be Casas Grandes-affiliated, apply A-Casas Grandes ceramic criteria alongside composite criteria here.*
+
 ### C1. Material Inventory
 List every material category present: substrate material (wood, stone, shell), surface treatment (pigment, slip, incision), attached elements (fiber, feathers, inset stone). The combination of materials is itself an analytical object.
 
@@ -153,8 +334,12 @@ Does this assemblage of materials follow a recognizable convention (compare with
 
 ## SECTION D — LITHIC ARTIFACTS
 
+*Tradition note: Projectile point typology is tradition- and period-diagnostic. Mimbres-specific point types are documented in D3 below (Shafer, NAN Ranch). AP and Hohokam contexts have separate typological sequences — consult regional typological references for non-Mimbres lithic assemblages. Ground stone metate sequence (D3) applies broadly across Southwest agricultural traditions.*
+
 ### D1. Material Type
 Obsidian, chert, basalt, quartzite, sandstone, other. Material type affects both working properties and cultural significance. Obsidian is traceable to volcanic sources by composition; INAA or pXRF can identify origin. Source identification indicates trade distance. Colored or banded stone may be selected for visual properties beyond utilitarian function.
+
+*Mimbres obsidian sources [CONS — Shafer, NAN Ranch]:* Mule Creek (eastern Arizona), Ewe Canyon, Antelope Wells — all 120–150 km distant from the Mimbres Valley. Obsidian presence = non-local exchange participation at minimum.
 
 ### D2. Reduction Technology
 **Knapped stone**: direct percussion, pressure flaking, biface thinning, notching. Evidence of tool type (projectile point, scraper, knife, drill). Stage of reduction: primary flake (cortex present), secondary flake (cortex absent), formal tool (retouched). Hafting evidence: notches, stems, ground lateral edges.
@@ -163,6 +348,10 @@ Obsidian, chert, basalt, quartzite, sandstone, other. Material type affects both
 
 ### D3. Formal Type
 Place in regional typological sequence. Projectile points in the Southwest have well-documented temporal sequences; type identification constrains date range. Ground stone types (three-quarter grooved axe, notched mano) are also temporally and regionally diagnostic.
+
+*Mimbres Classic period arrow point types [CONS — Shafer, NAN Ranch ch. 11]:* Hinton (parallel side notches, concave base), Swarts (parallel side notches, convex base), Cosgrove (parallel side notches, multiple notches on one edge).
+
+*Ground stone metate sequence [CONS]:* Oval basin → trough open one end → trough open both ends; correlates with maize intensification across Southwest traditions.
 
 ### D4. Use Wear
 Edge damage patterns consistent with specific uses (cutting, scraping, drilling). Polish from contact with specific materials. Residue staining. Ground stone wear facets indicating motion direction and intensity.
@@ -174,10 +363,14 @@ Stone ornaments (pendants, beads, inlays) are distinct from tools. Ornament crit
 
 ## SECTION E — SHELL ARTIFACTS
 
+*Tradition note: Shell ornament production is particularly well-documented for Hohokam contexts. The Glycymeris bracelet (E3) is a diagnostic Hohokam ornament type. NAN Ranch species counts (Shafer) provide a Mimbres-context baseline for what shell types were present and in what quantities. Apply section criteria universally; tradition affiliation is usually determinable from ornament type.*
+
 ### E1. Species Identification
 Shell species identification is analytically important — different species have different geographic ranges and therefore different trade distances. **Gulf of California species** (Glycymeris, Conus, Olivella, Laevicardium): the primary Hohokam shell trade material, sourced from ~300–500 km distance. **Pacific coast species**: longer-distance trade. **Gulf of Mexico species** (Spondylus, Busycon): very long-distance trade, indicates broad exchange networks.
 
 Species identification from photographs is approximate. Note visible morphological features — umbo shape, surface texture, overall form.
+
+*NAN Ranch species counts for Mimbres-context reference [CONS — Shafer]:* Glycymeris 361, Nassarius 182, Pecten 137, Haliotis 81, Spondylus 74, Olivella 34, Conus 5, coral 2, Strombus 2. Spondylus at 74 specimens indicates sustained long-distance exchange participation.
 
 ### E2. Manufacture Evidence
 Raw shell vs. worked shell vs. finished ornament. Manufacturing stages: roughing out (removing umbo material, cutting), shaping (grinding to form), perforation (drilling), finishing (surface polish). Manufacturing debris (waste flakes, perforated shells, partially worked pieces) indicates local production. Finished pieces without manufacturing debris indicate trade in finished objects.
@@ -186,11 +379,13 @@ Raw shell vs. worked shell vs. finished ornament. Manufacturing stages: roughing
 **Glycymeris bracelet** (Hohokam): circular form cut from the body whorl; umbo area often carved into frog or snake effigy; diagnostic Hohokam ornament type. **Shell pendant**: cut and drilled piece worn as suspension ornament. **Shell bead**: cylindrical or disc-shaped, drilled. **Shell inlay**: cut thin for mosaic or inlay work. **Shell trumpet**: large gastropod (Strombus, Turbinella) with apex removed; ritual/ceremonial use.
 
 ### E4. Iconographic Content on Shell
-Carved figures on shell ornaments (especially Hohokam umbo effigies): frog, snake, lizard, human. Incised designs on shell. Apply same "describe before interpret" protocol as ceramic iconographic analysis.
+Carved figures on shell ornaments (especially Hohokam umbo effigies): frog, snake, lizard, human. Incised designs on shell. Apply same describe-before-interpret protocol as ceramic iconographic analysis.
 
 ---
 
 ## SECTION F — FIBER, TEXTILE, AND BASKETRY
+
+*Tradition note: Fiber production was technically sophisticated across all Southwest traditions. Absence of fiber evidence at a site is taphonomic, not cultural — organic materials decompose in most depositional contexts. Dry cave preservation is exceptional. The surviving published record is biased toward AP dry cave assemblages; do not assume all fiber objects are AP-affiliated.*
 
 ### F1. Construction Technique
 **Basketry**: coiled (coil diameter, stitches per coil, foundation material), plaited (plain, twill), twined (plain, diagonal, three-strand). **Textiles**: plain weave, twill, tapestry, embroidery. **Cordage**: ply direction (Z or S twist), number of plies, fiber type. Technique is diagnostic — specific traditions have specific construction conventions.
@@ -236,7 +431,11 @@ Based on all evidence, place the object in a functional category:
 - **Indeterminate**: insufficient evidence to assign function
 
 ### G6. Social Position of Production
-Was this produced in a household context, by a part-time specialist, or by a full-time specialist? Evidence: standardization (specialist production produces measurable regularity), production debris in context (workshops leave characteristic waste), material investment level (high-investment objects suggest specialist access to materials and time).
+Was this produced in a household context, by a part-time specialist, or by a full-time specialist? [CONS — Spielmann] The three criteria for specialist production are: measurable standardization against a comparative sample; production debris in a dedicated workshop space; distribution patterns suggesting exchange rather than household use. All three are required for a confident specialist attribution — one alone is insufficient.
+
+[INTERP — Brody, scope: Mimbres only] "No evidence suggests that anything approaching full-time craft specialization or professionalism existed" in Mimbres production. Use "cottage-level craft specialist" (Shafer/Creel) for Mimbres ceramic production organization. Do not extend this claim to other traditions without independent evidence — Hohokam shell ornament production and Ancestral Puebloan turquoise working have separate debates about specialization that are not resolved by the Mimbres evidence.
+
+Material investment level [OBS] is an entry point, not a conclusion — high investment suggests specialist access but does not confirm it without the workshop and distribution evidence.
 
 ---
 

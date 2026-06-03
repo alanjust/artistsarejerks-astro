@@ -1,7 +1,7 @@
-# Archaeological Displacement Block — v3
+# Archaeological Displacement Block — v3.1
 
 **Domain:** Archaeological / Anthropological Artifact Analysis
-**Version:** 3
+**Version:** 3.2
 **Date:** May 2026
 **Status:** First draft — not yet tested against images
 **Built from:** corpus/archaeological/ (v3 corpus files — source-extracts.md, evaluative-criteria.md, critics-and-frameworks.md now at v3; canonical-works.md at v2)
@@ -133,9 +133,11 @@ Analyze this artifact using the evaluative framework of Southwest archaeology an
 
 **Frameworks applying to all object classes:**
 
-- **Technological style and chaîne opératoire (Shafer):** Every material has a production sequence from raw material to finished object. Each stage leaves observable evidence. Read the production sequence before interpreting meaning.
-- **Social organization frame (Hegmon):** Objects encode social information at multiple scales. Ask what social work this object was doing — community identity, household production, ritual role — before asking what it depicts.
-- **Iconographic program analysis (Brody/Schaafsma):** Describe before interpreting. What is visually present? What is the organizational logic? What corpus parallels exist? Where meaning cannot be recovered, state that plainly.
+These three are analytical frameworks — they define what questions get asked and what counts as evidence. They are [THEORY]-level commitments, not empirical claims. Different frameworks would yield different outputs. Apply all three; note where they yield conflicting readings.
+
+- **[THEORY] Technological style and chaîne opératoire (Shafer):** Every material has a production sequence from raw material to finished object. Each stage leaves observable evidence [OBS]. Read the production sequence before interpreting meaning. What this framework reveals: production decisions, skill level, tradition encoding. What it does not address: iconographic content, social function.
+- **[THEORY] Social organization frame (Hegmon):** Objects encode social information at multiple scales. Ask what social work this object was doing — community identity, household production, ritual role — before asking what it depicts. What this framework reveals: scale of production, community vs. household signals, exchange indicators. What it does not address: specific iconographic meaning.
+- **[THEORY] Iconographic program analysis (Brody/Schaafsma):** Describe before interpreting. What is visually present? [OBS] What is the organizational logic? [OBS→INTERP] What corpus parallels exist? [CONS when available] Where meaning cannot be recovered, state that plainly. What this framework reveals: visual content and compositional structure. What it does not address: production sequence, social context of exchange.
 
 ---
 
@@ -147,7 +149,9 @@ Analyze this artifact using the evaluative framework of Southwest archaeology an
 
 *Primary source note:* Shafer (NAN Ranch 2003) states directly that Mimbres bowls "are often lopsided and rarely symmetrical" and that "the ancient Mimbreños were not the best ancient potters in the Southwest" technically. Assess technical forming quality and aesthetic/painting quality as independent axes. A vessel with irregular forming and exceptional painting is not a contradiction — it is the expected pattern.
 
-**Surface treatment and slip:** Slip quality and coverage (even, well-adhered vs. mottled, thin, peeling). Burnishing degree (uniform light reflection vs. textured surface). Slip color: brilliant white (high kaolin content, Mimbres) vs. buff/cream (Hohokam) vs. red (various). Slip coverage — full vs. partial; exterior treatment.
+**Surface treatment and slip:** Slip quality and coverage (even, well-adhered vs. mottled, thin, peeling). Slip color: brilliant white (high kaolin content, Mimbres) vs. buff/cream (Hohokam) vs. red (various). Slip coverage — full vs. partial; exterior treatment.
+
+*Burnishing — image ceiling applies:* Describe surface reflectivity as directly observed — specular highlights, sheen distribution, matte zones. Photographs can distinguish high-gloss polish from fully matte surfaces at the extremes. Intermediate burnishing levels are not reliably determinable from image evidence alone. State what is visible; hedge the inference about burnishing degree accordingly.
 
 *Regional substyle marker:* Interior-slip-only is standard Mimbres Valley production. Exterior slip is unusual and may indicate production from an outlying area. Thin or absent bottom framing lines may indicate upper Gila or Rio Grande drainage production rather than Mimbres Valley (Brody).
 
@@ -155,10 +159,10 @@ Analyze this artifact using the evaluative framework of Southwest archaeology an
 
 *Primary source quality standard:* "Indifferent draftsmanship voided visual success no matter how fertile the imagination. Superb draftsmen who followed the rules could hardly go wrong" (Brody, Form and Structure). Line control is the technical prerequisite for visual success in the Mimbres system. Assess line quality against this standard: consistent width, even edges, controlled direction changes.
 
-**Production mode identification:** Three modes are observable from the image evidence (Brody):
-1. *Skilled adult production:* controlled line, correct style conventions, competent vessel forming
-2. *Child or novice production:* poor vessel forming AND poor painting on the same vessel — both skills absent together
-3. *Iconographically knowledgeable but technically unskilled:* narrative content is correct (figures, scenes, compositional conventions) but line control is poor — painting appears on a well-made vessel. Possibly a male contributor in a tradition where painting was primarily female.
+**Production mode identification:** [INTERP — Brody; scope: Mimbres ceramics only; do not extend to other traditions without independent evidence] Three modes are readable from image evidence:
+1. *Skilled adult production:* controlled line [OBS], correct style conventions [CONS], competent vessel forming [OBS]
+2. *Child or novice production:* poor vessel forming AND poor painting on the same vessel — both skills absent together [OBS pattern; the interpretation as child/novice is Brody's reading]
+3. *Iconographically knowledgeable but technically unskilled:* narrative content is correct (figures, scenes, compositional conventions) [OBS + CONS] but line control is poor [OBS] — painting appears on a well-made vessel [OBS]. [INTERP — "possibly a male contributor": this is Brody's hypothesis based on the gendered division of labor; it is a scholarly interpretation, not a confirmed conclusion. Do not state as fact.]
 
 **Design execution:** Symmetry precision, framing line integrity, compositional logic, hatching regularity. Does the design fill the field without crowding or misjudged scale? These read production skill and planning — the maker had to project the full design onto a curved surface before beginning.
 
@@ -166,9 +170,11 @@ Analyze this artifact using the evaluative framework of Southwest archaeology an
 
 **Iconographic program:** Describe before interpreting. Figure type, field organization (quartered, halved, continuous border, central medallion), figurative vs. geometric, narrative vs. emblematic. Composite figures. Corpus parallels. What the evidence supports vs. what remains uncertain.
 
-*Compositional conventions (Mimbres figurative):* Single-figure compositions represent 64% of the Mimbres figurative corpus; two-figure non-narrative 15%; narrative with humans 9%; narrative without humans 7% (Brody, Table 2). Do not over-read narrative into what may be a static single-figure composition.
+**Species identification and composite-figure classification require corpus comparison.** A claim that a depicted animal is a specific species (turkey vs. other large bird, gar vs. other fish) requires documentary comparison against a reference corpus — it cannot be made from image evidence alone. Likewise, classifying a figure as a composite being (human-animal hybrid, transformation figure) requires at least two independently observable anatomical anomalies anchored in the depicted form itself, not in the general fact that composite figures exist in the tradition. One material observation plus one tradition-level fact does not satisfy the two-anchor requirement. If corpus comparison is not available, classify to the most general identifiable level (bird, fish, quadruped) and label any more specific reading as a hypothesis.
 
-*Transformation and composite figures:* "Interchangeability, transformation, and being and becoming are the core creative principles of Mimbres art" (Brody). Hybrid figures, figures mid-transformation between species, figures combining human and animal characteristics — these are not failures of naturalism; they are the subject.
+*Compositional conventions (Mimbres figurative):* [CONS — Brody, Table 2; scope: published corpus at time of Brody's analysis, which skews toward excavated and collected vessels] Single-figure compositions represent 64% of the Mimbres figurative corpus; two-figure non-narrative 15%; narrative with humans 9%; narrative without humans 7%. These figures are a calibration tool — the base rate warns against over-reading narrative into what statistically is most likely a static single-figure composition. Use as a prior, not a rule.
+
+*Transformation and composite figures:* [INTERP — Brody; scope: Mimbres figurative ceramics] "Interchangeability, transformation, and being and becoming are the core creative principles of Mimbres art." Hybrid figures [OBS — when two independently observable anatomical features from different species are present], figures mid-transformation between species [OBS — when anatomical features are in transition within the same figure], figures combining human and animal characteristics [OBS — state the specific human and animal features visible] — these are not failures of naturalism; they are the subject. The [INTERP] claim is that transformation is a core organizing principle; the [OBS] claims are the specific anatomical features visible in this object. Anchor the interpretation in the observations.
 
 **Kill hole (Mimbres burial ceramics only):** Present or absent. Location: near the base (expected) vs. elsewhere (unusual). Method: punched from exterior, punched from interior, drilled, or smashed — each leaves a different scar profile. Placement relative to the image. Kill hole practice did not begin until the Late Three Circle phase — it is a Classic period marker (Shafer, NAN Ranch ch. 8). Confirms burial context.
 
@@ -288,11 +294,11 @@ Before drawing conclusions, assess what the image evidence actually supports. St
 
 **Image analysis can determine:** object class, approximate form and proportions, surface treatment, design program, style period, visible condition, cultural tradition, approximate temporal placement, probable function category, kill hole presence and method.
 
-**Image analysis cannot determine without additional information:** actual dimensions (no scale reference = no reliable size data), wall thickness, temper type, paint chemistry (mineral vs. carbon), hardness.
+**Image analysis cannot determine without additional information:** actual dimensions (no scale reference = no reliable size data), wall thickness, temper type (requires petrographic thin-section analysis or optical microscopy), paint chemistry (mineral vs. carbon — requires physical examination for surface sheen differential under magnification, or pXRF / INAA for compositional confirmation), hardness (requires Mohs testing or physical handling), burnishing degree (photographs can distinguish high-gloss polish from fully matte surfaces at extremes — intermediate levels require physical examination).
 
 **Image analysis cannot determine without provenience:** site association (style identifies tradition, not site), burial vs. non-burial context (kill hole confirms burial; its absence does not confirm non-burial), associated assemblage.
 
-**Image analysis cannot determine regardless of image quality:** compositional source of raw materials (requires INAA/pXRF), absolute age (requires radiocarbon or TL dating), residue identity (requires organic residue analysis).
+**Image analysis cannot determine regardless of image quality:** compositional source of raw materials — clay paste origin (INAA or petrographic analysis), obsidian source (INAA or pXRF), turquoise source (INAA), shell species confirmation in borderline cases (physical morphological examination); absolute age (requires radiocarbon dating of associated organics or thermoluminescence dating of ceramics); residue identity — what specific foods, pigments, or substances contacted the surface requires organic residue analysis (GC-MS or equivalent); sooting visible on exterior is sometimes assessable from photographs, interior residue is not.
 
 When analysis reaches the ceiling, say: *"Visible evidence suggests X. Confirmation would require [physical examination / laboratory analysis / provenience documentation]."* Do not hedge everything. State what the image shows with confidence where it is warranted. Mark the ceiling where it exists.
 
@@ -311,6 +317,22 @@ When analysis reaches the ceiling, say: *"Visible evidence suggests X. Confirmat
 **Carved organic objects (all traditions):** Southwest wood effigy tradition documented through dry cave assemblages across the Mogollon Highlands and Four Corners region. No single dominant reference collection — compare with documented cave cache material. Vivian, Dodgen, and Hartmann 1978 (Chetro Ketl carved wood) is the largest published assemblage.
 
 **Post-Classic and Salado ceramics:** Crown's *Ceramics and Ideology* (1994) for Salado Polychrome horizon. Cordell's *Archaeology of the Southwest* (1997) for post-Classic regional context.
+
+---
+
+### Step 5b — Pass 3 displacement (competency / takeaway section)
+
+The competency section (What to Take Forward) runs after the main analysis and addresses a different audience register — it explains what the analysis made visible and what habits of looking it demonstrated. Because this section is written in more accessible language, it is at higher risk of drifting into fine art vocabulary or aesthetic appreciation framing.
+
+**Apply the following to all Pass 3 output:**
+
+Do not use fine art vocabulary: no aesthetic, painterly, compositional tension, formal innovation, artistic achievement, or language from museum wall text or gallery criticism. Do not frame the object as made for contemplation or visual pleasure.
+
+Takeaways must be grounded in what the material evidence showed — what the production traces revealed, what the design system did, what the cultural context made legible. The habits of looking identified should be habits of reading physical evidence, not habits of aesthetic appreciation.
+
+When translating technical analysis into accessible language for Pass 3, translate toward the material and the cultural — not toward the aesthetic. "The maker solved this problem this way" is the correct register. "This composition achieves visual reward" is not.
+
+This applies equally to the standard competency section and the connections competency section.
 
 ---
 
@@ -351,6 +373,10 @@ Do not use: painterly, aesthetic as a noun, artistic achievement, formal innovat
 **v2 (May 2026):** Expanded from Mimbres ceramics to full Southwest object range. Seven evaluative criteria sections (A–G). Cultural tradition coverage expanded to full Southwest. Reference class expanded. Vocabulary expanded with 10 additional terms. Displacement instructions expanded for non-ceramic object class vocabulary. Built from v2 corpus files. For expert review.
 
 **v3 (May 2026):** (1) Displacement section replaced — generic fine art suppression replaced with seven named, specific frameworks drawn from critics-and-frameworks.md v3 Frameworks to Displace section; (2) STEP 0 ethical gate added as pre-analysis check (four gates); (3) Section A expanded with primary-source-backed quality criteria from Brody and Shafer: technical/aesthetic split, "indifferent draftsmanship" quality standard, three production modes, regional substyle markers (framing line thickness, exterior slip), fire clouds as deliberately tolerated, mixed black-and-red as possible aesthetic choice; (4) Source coverage caveat added to routing step — Mimbres sections are primary-source-supported, Hohokam/Ancestral Puebloan/Casas Grandes sections are paraphrase-supported; (5) Image analysis ceiling added as Step 4; (6) Step 5 vocabulary: "cottage-level craft specialist" added. Built from v3 corpus files. Not yet tested against images. Next: test against 3–5 Mimbres images across typological range (Style II geometric, Style III geometric, Style III figurative). Document drift in this log.
+
+**v3.2 (May 2026):** Epistemic taxonomy applied. Three Step 3 analytical frameworks tagged [THEORY] with "reveals/does not address" notes. Production mode typology tagged [INTERP — Brody; Mimbres-only scope]. Compositional statistics tagged [CONS — Brody corpus, with sampling caveat]. Transformation/composite figure claim restructured to separate [OBS] anchor requirements from [INTERP] interpretive claim. Male-contributor hypothesis explicitly flagged as [INTERP], not confirmed conclusion. Taxonomy definition lives in evaluative-criteria.md v3.1; this document references and applies it.
+
+**v3.1 (May 2026):** Four targeted fixes from v3 vs. v4 testing (5 image pairs, Style II geometric + Style III geometric + Style III figurative fish bowl + Style III figurative composite + Ancient Puebloan): (1) Step 5b added — Pass 3 displacement block for competency/takeaway section, which was escaping fine art vocabulary suppression consistently across all test images; (2) Species identification and composite-figure classification ceiling added to Section A Iconographic program — one material observation plus one tradition-level fact does not satisfy two-anchor requirement; named species and composite-figure claims require corpus comparison or explicit hypothesis label; (3) Burnishing moved from evaluable criterion to ceiling-flagged item in both Section A surface treatment and Step 4 — intermediate burnishing levels not reliably determinable from photographs; (4) Laboratory method names added throughout Step 4 ceiling — pXRF, INAA, petrographic thin-section, optical microscopy, Mohs testing, GC-MS; compositional sourcing entry expanded to distinguish clay paste, obsidian, turquoise, and shell species as separate analytical questions with separate methods. Corpus file updated in sync with Claude Code instructions to artifact.ts. Tested against: Style II geometric, Style III geometric, Style III figurative fish bowl, Style III figurative composite (turkey), Ancient Puebloan bowl (tradition misattribution identified — not fixed in v3.1; requires v4 corpus redesign).
 
 ---
 
