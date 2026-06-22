@@ -1214,7 +1214,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
           messages: [{
             role: 'user',
             content: [
-              ...imageBlocks,
               { type: 'text', text: pass2UserText },
             ],
           }],

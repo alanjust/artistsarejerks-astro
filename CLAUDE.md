@@ -1,5 +1,25 @@
 # Artists Are Jerks - Astro Site
 
+## Pass 2 Is Always Text-Only — No Exceptions
+
+Pass 2 in every analysis engine (four-domain.ts, four-domain-dev.ts, artifact.ts, analyze-artwork.ts, and any future file) must never include an image block in its content array. The correct content array is always:
+
+```ts
+content: [{ type: 'text', text: pass2UserText }]
+```
+
+Never:
+```ts
+content: [
+  { type: 'image', source: ... },  // WRONG — remove this
+  { type: 'text', text: pass2UserText },
+]
+```
+
+Pass 1 is the blind observation record. Pass 2 synthesizes that record against documentation or principles. If Pass 2 also sees the image, it generates new observations outside the Pass 1 record, which corrupts the fingerprint's independence. This applies to single-image and multi-image (imageBlocks spread) patterns alike. Do not add the image back under any circumstances — not for "material domain," not for "cultural domain," not for any mode or audience.
+
+---
+
 ## Typographic Rules — Always Enforced
 
 **Em dashes:** No spaces. Ever. Use `—` not ` — `.
@@ -146,6 +166,8 @@ output—code comments, documentation, commit messages, user-facing
 copy, and generated prose. If a banned word is the most accurate 
 choice, find a plainer one.
 
+---
+At the start of your first reply in each session, greet me as "Mr. Fuzzface" and tell me which CLAUDE.md files you loaded this session (list the full paths). Keep greeting me this way in every session. If you ever stop, assume something's wrong with how this file is loading.
 ---
 
 ## Current Work Scope

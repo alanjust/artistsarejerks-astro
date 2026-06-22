@@ -255,7 +255,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
           messages: [{
             role: 'user',
             content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp', data: imageData } },
               { type: 'text', text: pass2UserText },
             ],
           }],
