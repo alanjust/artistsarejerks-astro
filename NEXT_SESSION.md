@@ -93,6 +93,28 @@ Persona card CTAs in `hidden-grammar.astro` updated to `/hidden-grammar/for/*` r
 
 ---
 
+### Item 5: Art Lab Eval Harness — linters.py — DEFERRED
+
+`docs/dieter_rams_eval.zip` (extracted from Grammar of Things `/docs/` as of 2026-06-12) contains `linters.py` — deterministic quality checks for analysis output.
+
+**Decision:** Run as monitor only for now. Do NOT fold into eval score.
+
+**How to use it today:**
+```
+cd ~/artistsarejerks-astro/autoresearch
+python /tmp/rams_eval/linters.py path/to/analysis_output.md
+```
+
+**When ready to integrate, ordered by safety:**
+1. T0 machinery-leak penalty (5 pts) — safe, unambiguous
+2. T3 section-duplication penalty (3 pts) — real bug class, calibrate 0.30 Jaccard threshold first (literature standard 0.80)
+3. T1a slop vocabulary — verify "intricate"/"meticulous" fire rate on real artifact prose before penalizing
+4. T1b hedging patterns — leave as info-only log; the patterns directly conflict with the judge's register-separation criterion and will push the optimizer toward flat assertion (the opposite of this project's epistemic design)
+
+**Before any integration:** fix stale references in `docs/clyde-brief-linters.md` — judge is Sonnet (not Haiku), baseline is 78.8 (not 76.2 as brief states). Run one full eval batch, inspect false-positive rate per tier before assigning penalties.
+
+---
+
 ## Architecture Reference
 
 ### Zone Map — Do Not Mix

@@ -1,8 +1,58 @@
 # Art Lab — Product Roadmap
-<!-- Last updated: 2026-03-12 -->
+<!-- Last updated: 2026-07-03 -->
 <!-- Companion to CLAUDE.md. Read CLAUDE.md first. -->
 <!-- This document is the delegation brief: what Art Lab is for, where it's heading, and in what order. -->
 <!-- Every development session should be traceable to a theme here. -->
+
+---
+
+## New Direction (2026-07-03) — WIP feedback as the central feature
+
+**Status: stated intent, not yet built. Everything below this section is the prior framing — kept for reference, not yet reconciled with this pivot.**
+
+### The idea
+
+Alan is spinning off the work-in-progress (WIP) feedback mode currently living in Hidden Grammar of Art (`hidden-grammar-of-art`, a separate site) and bringing it here, to Artists Are Jerks — not as one more mode among many, but as **the central feature of the site**. An artist uploads work still in process and gets grounded, non-judgmental perceptual feedback: what's observably present, what it's doing perceptually, held apart from interpretation and completely apart from quality verdicts. That's the front door.
+
+The rest of the Hidden Grammar framework — docent-style commentary, critical readings, tour-guide narration, how-to-look instruction, the kind of content this roadmap's prior framing spread across many "lenses" and toolkit modes — becomes **a secondary layer**: an added benefit available to anyone who joins the site, not the reason someone shows up. WIP feedback is the reason someone shows up.
+
+### Why this is a pivot, not an addition
+
+The existing roadmap below this section describes Art Lab as wide at the top: three personas, a large toolkit of analytical lenses, an institutional-credibility theme aimed at museum education directors and university faculty, a three-tier monetization plan. That's a different product shape than "one thing, done well, for artists mid-process." Alan has said this earlier framing doesn't land with him right now — this note doesn't resolve that tension, it just names it so the next session doesn't quietly build against two different premises at once.
+
+### What looks like it survives this pivot
+
+- The underlying Hidden Grammar analysis engine and prompt architecture — the perceptual observation → registered interpretation discipline is the actual asset, independent of how many modes sit on top of it.
+- The `/hidden-grammar/for/artist` persona page — already built around exactly this audience.
+- The WIP mode's Exploration Panel ("What could this become?") — already live, already artist-in-process-shaped.
+- Some form of account/access system (prior Theme 5) — sustainability doesn't go away just because the product gets narrower, though the three-tier shape may not survive in its current form.
+
+### What looks like it doesn't survive
+
+- Theme 3 (lenses as the headline differentiator) — a "17 critical frameworks" pitch is the opposite of "one clear thing."
+- Theme 4 (institutional distributor / "ship captain" framing) — written for a different audience than an artist opening the site to get unstuck on a painting.
+- The toolkit-as-primary-navigation pattern — if WIP feedback is the front door, the toolkit's many-modes-by-use-case structure is no longer what a first-time visitor should see first.
+
+### What this needs before it's buildable
+
+- A concrete decision on what actually gets ported from `hidden-grammar-of-art`'s WIP mode — prompt text, register discipline, image-handling — versus what's rebuilt fresh here.
+- A decision on what "side commentary and instruction" concretely means as a secondary layer: is it the existing docent/critic/tour modes wholesale, a trimmed subset, or something reshaped around supporting the WIP-feedback front door specifically?
+- Reconciliation with the account/monetization theme below — a narrower, single-purpose product may want a simpler access model than the three-tier plan assumes.
+- **Step B cross-model corroboration — see below. Treat as load-bearing for this pivot, not optional polish.**
+
+### Why Step B matters more here than it did anywhere else this framework has lived
+
+Grammar of Things and Hidden Grammar of Art both run a "Step B" synthesis: instead of trusting a single AI read, the image gets described independently by multiple separately-trained models (Claude, Gemini, OpenAI), and a separate pass classifies each observed claim by how well it held up across those independent reads — genuinely corroborated across models, a possible single-model quirk, or actively contradicted. Grammar of Things also tags each of its principles with a static assessment of whether a model plausibly has real training data behind that kind of claim at all, versus just sounding plausible. Where a claim is both cross-model-corroborated *and* the underlying principle has no real training-data grounding, the system attaches an explicit caveat: agreement across independently-built models is real evidence against one model inventing something, but it isn't evidence the claim is *correct* — the models could just as easily be converging on a shared descriptive habit from overlapping training data rather than each independently verifying a real physical fact.
+
+Earlier, discussing whether Hidden Grammar of Art needed this, the case against was that known, exhibited works already have an external check — Manet's *Olympia* has 150 years of art-historical scholarship a reader can go verify a claim against. That argument doesn't apply here. WIP feedback is by definition about work with no scholarship, no prior criticism, no canon — often work nobody but the artist has ever seen. There is no answer key to check the AI's read against, which is exactly the situation Grammar of Things' archaeological artifacts are in (a claim about a specific object's wear pattern may be the only observation of it that has ever been written down). The difference here is who's on the receiving end: not a researcher cross-checking a claim against literature, but an artist deciding whether to trust what a machine told them about their own unfinished work. That's a higher-stakes audience for an ungrounded-but-confident claim to reach, not a lower one.
+
+Practically, this means: if WIP feedback becomes this site's central feature, it should not launch as a single ungrounded model pass, even though that's the simpler build. The Grammar of Things implementation (Step B restructured to a structured per-claim classification, static grounding tags per principle, and a deterministic — not model-authored — caveat attached when a claim is corroborated but ungrounded) is a working, verified reference design, not a proposal — it's live in production there today. Porting the pattern is real work (Hidden Grammar of Art's own principle set would need the same grounding-tag pass Grammar of Things got, and the caveat template's wording would need to fit an artist's voice rather than a researcher's), but it doesn't need to be invented from scratch.
+
+### Default behavior: no canon comparison unless the artist asks for it
+
+Checked whether the existing `/corpus/` reference material or the `hidden-grammar/corpus.astro` artifact browser already handle this — they don't. The `/corpus/` directory is dev-time source material (critics, canonical works, evaluative criteria) for building domain-appropriate prompt framing in *other* domains (CPG, craft, archaeological, pattern-design), not a live artist-vs-canon comparison feature. `corpus.astro` is an archaeological-artifact browsing UI, an early prototype of what's now the standalone Grammar of Things site. Neither does this work already — it needs to be decided and built.
+
+The decision: WIP feedback should not compare a novice or intermediate artist's work to the art canon by default. "This evokes Rothko's color-field approach" reads as either a compliment or an implicit indictment depending entirely on how developed the artist already feels, and it smuggles evaluation back into a tool whose whole discipline (already established in Pass 1 across every one of these projects — pure observation, no interpretation, no quality judgment) is built to withhold exactly that. An artist who wants a canon-comparative read can ask for it explicitly, as its own prompt — that's a real, valid mode, just not the default one. Revisit what that opt-in prompting looks like later; for now, the default WIP path should not reach for the canon on its own.
 
 ---
 

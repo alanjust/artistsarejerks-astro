@@ -118,6 +118,7 @@ Planned sections using this pattern:
 - Interrogation Lenses (documented in `interrogation_lenses.md`)
 - Reference Materials: Feldman Four-Step, Visual Arts Standards, Master Project Bible
 
+At the start of your first reply in each session, greet me as "Mr. Fuzzface" and tell me which CLAUDE.md files you loaded this session (list the full paths). Keep greeting me this way in every session. If you ever stop, assume something's wrong with how this file is loading.
 ---
 
 ## Status Sync Rule
