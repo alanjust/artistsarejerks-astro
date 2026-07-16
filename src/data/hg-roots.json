@@ -385,54 +385,6 @@
       "activators": ["Principle #19 (Visual Weight)", "Principle #8 (Symmetry)"]
     },
     {
-      "id": "t-h-w",
-      "name": "Entropy",
-      "hebrew": "T-H-W",
-      "subtitle": "THE NOISE",
-      "governs": "How a work loses clarity through interference, breakdown, or unintentional confusion.",
-      "function": "Entropy accounts for signal degradation. It describes how marks, forms, or structures interfere with one another so that perception stalls or collapses. This root operates through loss, not complexity.",
-      "accessConditions": [
-        "RAP Evidence Gate passed",
-        "At least 2 distinct mechanisms support it",
-        "At least 1 alternative Root (e.g., Ch-Sh-V or K-S-F) explicitly considered"
-      ],
-      "anchorCues": [
-        "Visual mud or unresolved mixtures",
-        "Signals that cancel or obscure one another",
-        "Overworked surfaces with no footholds",
-        "Competing cues without hierarchy",
-        "Ambiguity that repels attention rather than sustains it"
-      ],
-      "notThis": [
-        "Not complexity",
-        "Not richness",
-        "Not deliberate ambiguity",
-        "Not mystery"
-      ],
-      "overreachRisk": "This Root is often invoked as a critical dismissal when the viewer fails to engage. Difficulty is confused with breakdown even when structure or intention is present.",
-      "disproofTest": "Is perception actually obstructed, or am I mistaking challenge for failure?",
-      "adjacentRoots": [
-        {
-          "id": "ch-sh-v",
-          "name": "Design Logic",
-          "overlap": "Both concern organization",
-          "difference": "Design Logic structures coherence. Entropy erodes it."
-        },
-        {
-          "id": "k-s-f",
-          "name": "Signal Strength",
-          "overlap": "Both affect attention",
-          "difference": "Signal competes for attention. Entropy prevents it from stabilizing."
-        }
-      ],
-      "roleInInterpretation": {
-        "allowed": ["Hypotheses about interference, breakdown, or loss of clarity"],
-        "notAllowed": ["Claims about intent, incompetence, or value"]
-      },
-      "globalEcho": null,
-      "activators": ["Negative Activator (Violation of Principle #24 Value Structure)", "Principle #20 (Simultaneous Contrast - muddy mixing)"]
-    },
-    {
       "id": "ch-m-r",
       "name": "Materiality",
       "hebrew": "Ch-M-R",
@@ -528,5 +480,54 @@
       "globalEcho": null,
       "activators": ["Principle #27 (Cropping/Framing)", "Principle #9 (Scale Relationships)"]
     }
-  ]
+  ],
+  "ambiguityFlag": {
+    "id": "t-h-w",
+    "name": "Entropy",
+    "hebrew": "T-H-W",
+    "subtitle": "THE NOISE",
+    "governs": "How a work loses clarity through interference, breakdown, or unintentional confusion.",
+    "function": "Entropy accounts for signal degradation. It describes how marks, forms, or structures interfere with one another so that perception stalls or collapses. This root operates through loss, not complexity.",
+    "flagFraming": "Unlike the ten Roots, Entropy doesn't make a claim about the whole work. It notices something narrower: a specific passage where signals compete, cancel, or fail to resolve. It doesn't judge whether that passage helps the work or costs it something — that call belongs to whoever's reading the analysis, not the analysis itself. A work can carry this flag in one passage while still being confidently organized by any of the ten Roots elsewhere.",
+    "accessConditions": [
+      "RAP Evidence Gate passed",
+      "At least 2 distinct mechanisms support it",
+      "At least 1 alternative Root (e.g., Ch-Sh-V or K-S-F) explicitly considered"
+    ],
+    "anchorCues": [
+      "Visual mud or unresolved mixtures",
+      "Signals that cancel or obscure one another",
+      "Overworked surfaces with no footholds",
+      "Competing cues without hierarchy",
+      "Ambiguity that repels attention rather than sustains it"
+    ],
+    "notThis": [
+      "Not complexity",
+      "Not richness",
+      "Not deliberate ambiguity",
+      "Not mystery"
+    ],
+    "overreachRisk": "This Root is often invoked as a critical dismissal when the viewer fails to engage. Difficulty is confused with breakdown even when structure or intention is present.",
+    "disproofTest": "Is perception actually obstructed, or am I mistaking challenge for failure?",
+    "adjacentRoots": [
+      {
+        "id": "ch-sh-v",
+        "name": "Design Logic",
+        "overlap": "Both concern organization",
+        "difference": "Design Logic structures coherence. Entropy erodes it."
+      },
+      {
+        "id": "k-s-f",
+        "name": "Signal Strength",
+        "overlap": "Both affect attention",
+        "difference": "Signal competes for attention. Entropy prevents it from stabilizing."
+      }
+    ],
+    "roleInInterpretation": {
+      "allowed": ["Hypotheses about interference, breakdown, or loss of clarity"],
+      "notAllowed": ["Claims about intent, incompetence, or value"]
+    },
+    "globalEcho": null,
+    "activators": ["Negative Activator (Violation of Principle #24 Value Structure)", "Principle #20 (Simultaneous Contrast - muddy mixing)"]
+  }
 }

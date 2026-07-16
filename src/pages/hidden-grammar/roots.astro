@@ -4,17 +4,17 @@ import HiddenGrammarLayout from '../../layouts/HiddenGrammarLayout.astro';
 import roots from '../../data/hg-roots.json';
 ---
 
-<HiddenGrammarLayout title="The 11 Roots" description="The 11 Roots (Drivers) — analytical categories describing what a work is doing at a functional level.">
+<HiddenGrammarLayout title="The 10 Roots" description="The 10 Roots (Drivers) — analytical categories describing what a work is doing at a functional level.">
   <div class="hg-page roots-page">
     <header class="roots-header">
       <p class="roots-label">Framework</p>
-      <h1 class="roots-title">The 11 Roots</h1>
+      <h1 class="roots-title">The 10 Roots</h1>
       <p class="roots-tagline">The Drivers: Analytical Categories for How Art Functions</p>
     </header>
 
     <div class="roots-intro">
       <p>
-        The 11 Roots (also called Drivers) are analytical categories derived from Hebrew grammatical concepts.
+        The 10 Roots (also called Drivers) are analytical categories derived from Hebrew grammatical concepts.
         They describe <strong>what a work is doing</strong> at a functional level—how it constructs meaning,
         guides attention, or creates presence—without jumping to interpretation.
       </p>
@@ -23,6 +23,10 @@ import roots from '../../data/hg-roots.json';
         They are hypotheses based on observable mechanisms, not facts about artist intent.
         When two Roots remain in competition, that tension is held rather than forced to resolution.
         Competing Root claims are a quality signal, not a sign of incomplete analysis.
+      </p>
+      <p class="roots-intro-note">
+        <strong>A note on Entropy:</strong> what used to be an eleventh Root has moved to its own section below.
+        It isn't a claim about a whole work the way the other ten are — see "Ambiguity Flag" for why.
       </p>
     </div>
 
@@ -136,6 +140,43 @@ import roots from '../../data/hg-roots.json';
         </article>
       ))}
     </div>
+
+    <section class="ambiguity-flag-section" id={roots.ambiguityFlag.id}>
+      <div class="flag-header">
+        <p class="roots-label">A different kind of thing</p>
+        <h2>Ambiguity Flag: {roots.ambiguityFlag.name}</h2>
+        <span class="root-hebrew">{roots.ambiguityFlag.hebrew}</span>
+      </div>
+
+      <p class="flag-framing">{roots.ambiguityFlag.flagFraming}</p>
+
+      <div class="root-body">
+        <section class="root-section">
+          <h3>Governs</h3>
+          <p>{roots.ambiguityFlag.governs}</p>
+        </section>
+
+        <section class="root-section">
+          <h3>What it notices</h3>
+          <p class="section-intro">Language in the analysis that suggests a specific, localized cluster — not the whole work:</p>
+          <ul class="anchor-cues-list">
+            {roots.ambiguityFlag.anchorCues.map((cue) => (<li>{cue}</li>))}
+          </ul>
+        </section>
+
+        <section class="root-section warning-section">
+          <h3>What this flag is NOT</h3>
+          <ul class="not-list">
+            {roots.ambiguityFlag.notThis.map((item) => (<li>{item}</li>))}
+          </ul>
+        </section>
+
+        <section class="root-section">
+          <h3>The question this flag asks</h3>
+          <p class="test-text">{roots.ambiguityFlag.disproofTest}</p>
+        </section>
+      </div>
+    </section>
 
     <div class="quick-reference">
       <h2>Quick Reference</h2>
@@ -458,6 +499,37 @@ import roots from '../../data/hg-roots.json';
 
   .interpretation-grid li:last-child {
     border-bottom: none;
+  }
+
+  /* ── Ambiguity Flag ───────────────────────── */
+  .ambiguity-flag-section {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    scroll-margin-top: 80px;
+  }
+
+  .flag-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #fde68a;
+  }
+
+  .flag-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #b45309;
+    margin: 0.25rem 0;
+  }
+
+  .flag-framing {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #334155;
+    margin: 0 0 1.5rem;
+    font-style: italic;
   }
 
   /* ── Quick reference ──────────────────────── */
