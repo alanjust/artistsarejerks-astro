@@ -27,4 +27,4 @@ All public-facing copy on this site — page intros, section descriptions, card 
 
 **Tone test:** Read the copy aloud. If it sounds like someone presenting at a conference, rewrite it. If it sounds like someone leaning across a table, it's right.
 
-**Reference:** The intro copy on `hidden-grammar.astro` (the Art Lab landing page) is the canonical example of this voice on this site. When in doubt, match that register.
+**Reference:** The former canonical example is preserved in the `art-lab-final-2026` Git archive. When in doubt, consult that archived landing-page copy.
