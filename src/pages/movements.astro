@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BackButton from '../components/BackButton.astro';
 import artHistoryMovements from '../data/art_history_movements.json';
 import artists from '../data/artists.json';
 
@@ -46,6 +47,7 @@ function getMovementArtists(movementName: string, movementSlug: string) {
 
 <BaseLayout title="Art Movements - Artists Are Jerks" bodyClass="movements-page">
   <div class="movements-container">
+    <BackButton />
     <header class="movements-header">
       <h1>Art Movements</h1>
       <p class="subtitle">1960s to NOW</p>
@@ -171,8 +173,39 @@ function getMovementArtists(movementName: string, movementSlug: string) {
     }
 
     @media (max-width: 768px) {
+      .movements-container {
+        padding: 1rem 1.5rem;
+      }
+
+      .movements-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .subtitle {
+        margin-bottom: 1rem;
+      }
+
+      .description,
+      .movement-description {
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
       .movements-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .movement-card {
+        padding: 1rem;
+      }
+
+      .movement-description {
+        margin-bottom: 1rem;
+      }
+
+      .artist-list {
+        line-height: 1.5;
       }
 
       .movements-header h1 {

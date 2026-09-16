@@ -686,3 +686,288 @@
 .art-wheel-content::-webkit-scrollbar {
   display: none;
 }
+
+/* ========================================
+   MOBILE ART WHEEL — HORIZONTAL TIMELINE
+   ======================================== */
+
+.art-wheel-mobile,
+.art-wheel-description-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .art-wheel-page .site-header {
+    border-bottom-width: 9px;
+  }
+
+  .art-wheel-page .header-content {
+    height: 50px;
+  }
+
+  .art-wheel-container {
+    max-width: 390px;
+    min-height: auto;
+    padding: 0 16px 18px;
+    overflow: visible;
+  }
+
+  .art-wheel-main-wrapper {
+    display: none;
+  }
+
+  .art-wheel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 auto;
+    padding: 11px 0 5px;
+  }
+
+  .art-wheel-header h1 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-family: "Averia Sans Libre", sans-serif;
+    font-size: clamp(2rem, 9.2vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .art-wheel-subtitle {
+    margin: 0;
+    color: var(--color-header);
+    font-family: "Inter", sans-serif;
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .art-wheel-subtitle-secondary,
+  .art-wheel-description-desktop {
+    display: none;
+  }
+
+  .art-wheel-description-mobile {
+    display: block;
+  }
+
+  .art-wheel-description {
+    max-width: 350px;
+    margin: 0 auto;
+    color: var(--color-text-secondary);
+    font-family: "Inter", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.43;
+  }
+
+  .art-wheel-mobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-family: "Inter", sans-serif;
+  }
+
+  .mobile-timeline-title {
+    margin: 7px 0;
+    color: var(--color-text-primary);
+    font-family: "Inter", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .mobile-timeline-viewport {
+    height: 41px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-timeline-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-timeline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+    padding-inline: calc(50% - 74px);
+  }
+
+  .mobile-timeline-stop {
+    padding: 8px 16px;
+    border: 0;
+    border-radius: var(--radius-base);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    font-family: "Averia Sans Libre", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    scroll-snap-align: center;
+    white-space: nowrap;
+  }
+
+  .mobile-timeline-stop.active {
+    background: var(--mobile-movement-color, #4eb84e);
+    color: var(--color-text-primary);
+  }
+
+  .mobile-timeline-stop:focus-visible,
+  .mobile-movement-button:focus-visible,
+  .mobile-artwork-thumbnail:focus-visible {
+    outline: 3px solid var(--color-text-primary);
+    outline-offset: 3px;
+  }
+
+  .mobile-timeline-status {
+    margin: 7px 0 8px;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .mobile-artwork-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    background: var(--color-black);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16);
+    color: var(--color-white);
+  }
+
+  .mobile-artwork-meta {
+    margin: 0;
+    color: var(--color-title);
+    font-family: "Inter", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    line-height: 1.2;
+  }
+
+  .mobile-artwork-helper {
+    margin: 0;
+    color: var(--color-gray-300);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 17px;
+  }
+
+  .mobile-artwork-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+  }
+
+  .mobile-artwork-thumbnail {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-white);
+    text-decoration: none;
+  }
+
+  .mobile-artwork-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 161 / 108;
+    border-radius: var(--radius-base);
+    object-fit: cover;
+  }
+
+  .mobile-artwork-title {
+    display: block;
+    color: var(--color-white);
+    font-family: "Averia Sans Libre", sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  .mobile-artwork-artist {
+    display: block;
+    color: var(--color-gray-300);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    line-height: 15px;
+  }
+
+  .mobile-movement-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+    padding: 14px 0 0;
+  }
+
+  .mobile-movement-button {
+    min-height: 46px;
+    padding: 12px 24px;
+    border: 0;
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    font-family: "Averia Sans Libre", sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .mobile-movement-button-secondary {
+    background: transparent;
+    color: var(--color-text-primary);
+  }
+
+  .mobile-movement-button-primary {
+    background: var(--mobile-movement-color, #4eb84e);
+    color: var(--color-text-primary);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (max-width: 768px) {
+  .mobile-timeline-stop:not(.active):hover,
+  .mobile-movement-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  .mobile-timeline-stop.active:hover,
+  .mobile-movement-button-primary:hover {
+    background: color-mix(in srgb, var(--mobile-movement-color, #4eb84e) 78%, white);
+  }
+
+  .mobile-artwork-thumbnail:hover .mobile-artwork-image {
+    filter: brightness(1.08);
+  }
+}
+
+@media (max-width: 374px) {
+  .art-wheel-container {
+    padding-inline: 12px;
+  }
+
+  .art-wheel-header h1 {
+    font-size: 2rem;
+  }
+
+  .mobile-movement-button {
+    padding-inline: 18px;
+    font-size: 1rem;
+  }
+}

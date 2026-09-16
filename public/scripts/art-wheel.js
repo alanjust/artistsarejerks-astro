@@ -5,6 +5,8 @@ let currentMovementIndex = 0;
 let selectedArtistIndex = 0;
 let isDragging = false;
 let startAngle = 0;
+let mobileMovements = [];
+let currentMobileMovementIndex = 0;
 
 // Exact order of movements painted on the wheel (clockwise from title - REVERSED)
 const wheelOrder = [
@@ -29,6 +31,28 @@ const wheelOrder = [
   "Minimalism",                  // 18
   "Pop Art"                      // 19
 ];
+
+const movementEras = {
+  "Pop Art": "1960s",
+  "Minimalism": "1960s",
+  "Conceptual Art": "1970s",
+  "Performance Art": "1970s",
+  "Land Art / Earthworks": "1970s",
+  "Photorealism": "1970s",
+  "Postminimalism": "1970s",
+  "Neo-Expressionism": "1980s",
+  "Appropriation Art": "1980s",
+  "Street Art / Graffiti Art": "1980s",
+  "Installation Art": "1990s",
+  "Digital Art / New Media Art": "1990s",
+  "Young British Artists (YBAs)": "1990s",
+  "Relational Aesthetics": "1990s",
+  "Bio Art": "2000s",
+  "Post-Internet Art": "2010s",
+  "Contemporary Indigenous Art": "2010s",
+  "Social Practice Art": "2010s",
+  "AI and Algorithmic Art": "2020s"
+};
 
 // Function to clean HTML tags and extra whitespace
 function cleanHtmlText(text) {
@@ -153,6 +177,142 @@ function updateFeaturedArtwork(movement, index) {
   }
 }
 
+function getArtworkTitleParts(title) {
+  const cleanedTitle = cleanHtmlText(title || 'Untitled');
+  const yearMatch = cleanedTitle.match(/\((\d{4}(?:[-–]\d{2,4})?)\)\s*$/);
+
+  return {
+    title: yearMatch ? cleanedTitle.replace(yearMatch[0], '').trim() : cleanedTitle,
+    year: yearMatch ? yearMatch[1] : ''
+  };
+}
+
+function selectMobileMovement(index, options) {
+  if (!mobileMovements.length) return;
+
+  const settings = options || {};
+  currentMobileMovementIndex = (index + mobileMovements.length) % mobileMovements.length;
+  const movement = mobileMovements[currentMobileMovementIndex];
+  const movementArtists = (movement.artists || []).slice(0, 5);
+  const timeline = document.getElementById('mobileTimeline');
+  const selectedButton = timeline && timeline.querySelector('[data-mobile-index="' + currentMobileMovementIndex + '"]');
+
+  document.querySelectorAll('.mobile-timeline-stop').forEach(function (button, buttonIndex) {
+    const isSelected = buttonIndex === currentMobileMovementIndex;
+    button.classList.toggle('active', isSelected);
+    button.setAttribute('aria-selected', String(isSelected));
+    button.tabIndex = isSelected ? 0 : -1;
+  });
+
+  document.documentElement.style.setProperty('--mobile-movement-color', movement.color || '#4eb84e');
+  document.getElementById('mobileArtworkMeta').textContent = movement.name.toUpperCase() + '  ·  ' + movementArtists.length + ' ARTWORKS';
+  document.getElementById('mobileTimelineStatus').textContent = 'Swipe timeline  •  ' + (currentMobileMovementIndex + 1) + ' of ' + mobileMovements.length;
+
+  const gallery = document.getElementById('mobileArtworkGallery');
+  gallery.replaceChildren();
+  movementArtists.forEach(function (artist) {
+    const titleParts = getArtworkTitleParts(artist.artwork.title);
+    const link = document.createElement('a');
+    link.className = 'mobile-artwork-thumbnail';
+    link.href = artist.slug ? '/artists/' + artist.slug + '/' : '#';
+
+    const image = document.createElement('img');
+    image.className = 'mobile-artwork-image';
+    image.src = artist.artwork.imageUrl || "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23ecf0f1'/><text x='150' y='100' text-anchor='middle' dy='0.3em' font-size='14' fill='%23666'>No Image</text></svg>";
+    image.alt = titleParts.title + ' by ' + cleanHtmlText(artist.name);
+    image.loading = 'lazy';
+
+    const title = document.createElement('span');
+    title.className = 'mobile-artwork-title';
+    title.textContent = titleParts.title;
+
+    const artistName = document.createElement('span');
+    artistName.className = 'mobile-artwork-artist';
+    artistName.textContent = cleanHtmlText(artist.name);
+
+    link.append(image, title, artistName);
+    gallery.appendChild(link);
+  });
+
+  if (selectedButton && !settings.skipScroll) {
+    selectedButton.scrollIntoView({
+      behavior: settings.behavior || 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
+
+  if (settings.updateUrl !== false && movement.slug) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('movement', movement.slug);
+    window.history.replaceState({}, '', url);
+  }
+}
+
+function initializeMobileExperience() {
+  const timeline = document.getElementById('mobileTimeline');
+  const timelineViewport = timeline && timeline.parentElement;
+  if (!timeline) return;
+
+  mobileMovements = movements.filter(function (movement) { return !movement.isTitle; }).reverse();
+  timeline.innerHTML = '';
+
+  mobileMovements.forEach(function (movement, index) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'mobile-timeline-stop';
+    button.dataset.mobileIndex = String(index);
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-selected', 'false');
+    button.textContent = (movementEras[movement.name] || '') + ' · ' + movement.name;
+    button.addEventListener('click', function () { selectMobileMovement(index); });
+    button.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        selectMobileMovement(index + (event.key === 'ArrowRight' ? 1 : -1));
+      }
+    });
+    timeline.appendChild(button);
+  });
+
+  let scrollSelectionTimer;
+  timelineViewport.addEventListener('scroll', function () {
+    window.clearTimeout(scrollSelectionTimer);
+    scrollSelectionTimer = window.setTimeout(function () {
+      const viewportRect = timelineViewport.getBoundingClientRect();
+      const viewportCenter = viewportRect.left + viewportRect.width / 2;
+      let closestIndex = currentMobileMovementIndex;
+      let closestDistance = Infinity;
+
+      timeline.querySelectorAll('.mobile-timeline-stop').forEach(function (button, index) {
+        const rect = button.getBoundingClientRect();
+        const distance = Math.abs(rect.left + rect.width / 2 - viewportCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      if (closestIndex !== currentMobileMovementIndex) {
+        selectMobileMovement(closestIndex, { skipScroll: true });
+      }
+    }, 120);
+  }, { passive: true });
+
+  document.getElementById('mobilePrevious').addEventListener('click', function () {
+    selectMobileMovement(currentMobileMovementIndex - 1);
+  });
+  document.getElementById('mobileNext').addEventListener('click', function () {
+    selectMobileMovement(currentMobileMovementIndex + 1);
+  });
+
+  const requestedMovement = new URLSearchParams(window.location.search).get('movement');
+  const requestedIndex = requestedMovement
+    ? mobileMovements.findIndex(function (movement) { return movement.slug === requestedMovement; })
+    : -1;
+  selectMobileMovement(requestedIndex >= 0 ? requestedIndex : 0, { behavior: 'auto', updateUrl: false });
+}
+
 function loadArtData() {
   const dataScript = document.getElementById('art-data');
   if (dataScript) {
@@ -224,12 +384,15 @@ function loadArtData() {
 
         return {
           name: wheelName,
+          slug: matchedMovement ? (matchedMovement['Slug'] || '') : '',
           description: matchedMovement ? (matchedMovement['Description'] || '') : 'Coming soon...',
+          color: matchedMovement ? (matchedMovement['Bkgd Color'] || '#4eb84e') : '#4eb84e',
           artists: artists
         };
       });
 
       updateContent(0);
+      initializeMobileExperience();
 
     } catch (e) {
       console.error('Error loading data:', e);

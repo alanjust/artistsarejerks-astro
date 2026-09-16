@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BackButton from '../../components/BackButton.astro';
 import artists from '../../data/artists.json';
 
 export async function getStaticPaths() {
@@ -11,39 +12,36 @@ export async function getStaticPaths() {
 
 const { artist } = Astro.props;
 
-// Helper function to strip HTML tags
-function stripHtml(html: string): string {
-  return html?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() || '';
+function parseArtistInformation(infoHtml: string) {
+  const lines = infoHtml
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .split('\n')
+    .map((line: string) => line.trim())
+    .filter(Boolean);
+
+  const quoteLine = lines.find((line: string) => line.startsWith('Quote:')) || '';
+  const quote = quoteLine
+    .replace(/^Quote:\s*/, '')
+    .replace(/^["“]/, '')
+    .replace(/["”]$/, '')
+    .trim();
+
+  return {
+    quote,
+    aboutLines: lines.filter((line: string) => !line.startsWith('Quote:'))
+  };
 }
 
-// Helper function to parse artist information
-function parseArtistInfo(infoHtml: string) {
-  const info: any = {};
-  const cleanInfo = stripHtml(infoHtml);
-  
-  // Split by line breaks and parse each field
-  const lines = cleanInfo.split('Br').map((line: string) => line.trim()).filter((line: string) => line);
-  
-  lines.forEach((line: string) => {
-    if (line.startsWith('Born:')) info.born = line.replace('Born:', '').trim();
-    else if (line.startsWith('Died:')) info.died = line.replace('Died:', '').trim();
-    else if (line.startsWith('Nationality:')) info.nationality = line.replace('Nationality:', '').trim();
-    else if (line.startsWith('Style:')) info.style = line.replace('Style:', '').trim();
-    else if (line.startsWith('Influences:')) info.influences = line.replace('Influences:', '').trim();
-    else if (line.startsWith('Major Exhibitions:')) info.exhibitions = line.replace('Major Exhibitions:', '').trim();
-    else if (line.startsWith('Quote:')) info.quote = line.replace('Quote:', '').trim().replace(/^[""]/, '').replace(/[""]$/, '');
-  });
-  
-  return info;
-}
-
-const artistInfo = parseArtistInfo(artist['Artist Information'] || '');
+const artistInfo = parseArtistInformation(artist['Artist Information'] || '');
 const bgColor = artist['Bkgd Color'] || '#ffa042';
 ---
 
 <BaseLayout title={`${artist['Artist Name']} - Artists Are Jerks`} bodyClass="artist-detail-page">
   <div class="artist-page" style={`background-color: ${bgColor};`}>
     <div class="artist-container">
+      <BackButton fallback={artist['Related Art Movement'] ? `/movements/${artist['Related Art Movement']}/` : '/artists/'} />
       <h1 class="artist-name">{artist['Artist Name']}</h1>
       
       {artist['Artist Info Link'] && (
@@ -61,14 +59,6 @@ const bgColor = artist['Bkgd Color'] || '#ffa042';
       ) : (
         <p class="art-movement">{artist['Art Movement']}</p>
       )}
-      
-      <div class="artist-details">
-        {artistInfo.born && <p><strong>Born:</strong> {artistInfo.born}</p>}
-        {artistInfo.died && <p><strong>Died:</strong> {artistInfo.died}</p>}
-        {artistInfo.nationality && <p><strong>Nationality:</strong> {artistInfo.nationality}</p>}
-        {artistInfo.style && <p><strong>Style:</strong> {artistInfo.style}</p>}
-        {artistInfo.influences && <p><strong>Influences:</strong> {artistInfo.influences}</p>}
-      </div>
       
       {artistInfo.quote && (
         <blockquote class="artist-quote">
@@ -88,8 +78,10 @@ const bgColor = artist['Bkgd Color'] || '#ffa042';
         )}
         
         <div class="artwork-info">
-          <h4>About {artist['Artist Name']}</h4>
-          <div set:html={artist['Artist Information']} />
+          <h4>About this artist</h4>
+          <div class="about-artist">
+            {artistInfo.aboutLines.map((line: string) => <p>{line}</p>)}
+          </div>
           
           <h4>Notable Artwork: {artist['Artwork Title']}</h4>
           <div set:html={artist['Artwork Description']} />
@@ -119,6 +111,7 @@ const bgColor = artist['Bkgd Color'] || '#ffa042';
     
     .artist-name {
       font-size: 3rem;
+      margin-top: 0;
       margin-bottom: 0.5rem;
       color: #000;
     }
@@ -233,12 +226,62 @@ const bgColor = artist['Bkgd Color'] || '#ffa042';
 
     @media (max-width: 768px) {
       .artist-page {
-        padding: 1rem;
+        padding: 1rem 1.5rem;
       }
 
       .artwork-section {
         grid-template-columns: 1fr;
         gap: 1rem;
+        margin-top: 0;
+      }
+
+      .artist-name {
+        line-height: 1.2;
+      }
+
+      .wiki-link {
+        line-height: 20px;
+        overflow-wrap: anywhere;
+      }
+
+      .art-movement {
+        margin-bottom: 1.5rem;
+        line-height: 32px;
+      }
+
+      .artist-quote {
+        margin: 1.5rem 0;
+        padding-left: 20px;
+        line-height: 28px;
+      }
+
+      h2 {
+        margin: 1.5rem 0 1rem;
+        line-height: 1.2;
+      }
+
+      .artwork-title {
+        margin-bottom: 0;
+        line-height: 1.2;
+      }
+
+      .artwork-image img {
+        aspect-ratio: 358 / 270;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .artwork-info h4 {
+        margin-top: 1rem;
+        line-height: 25px;
+      }
+
+      .artwork-info p {
+        margin-bottom: 12px;
+      }
+
+      .artwork-info p:last-child {
+        margin-bottom: 0;
       }
       
       .artwork-image,

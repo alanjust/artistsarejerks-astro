@@ -1,0 +1,55 @@
+---
+interface Props {
+  fallback?: string;
+}
+
+const { fallback = '/art-wheel/' } = Astro.props;
+---
+
+<a class="page-back-button" href={fallback} data-back-navigation>← Back</a>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-back-navigation]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (document.referrer && new URL(document.referrer).origin === window.location.origin && window.history.length > 1) {
+        event.preventDefault();
+        window.history.back();
+      }
+    });
+  });
+</script>
+
+<style>
+  .page-back-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 0;
+    margin-bottom: 4px;
+    color: var(--color-gray-600);
+    font-family: 'Averia Sans Libre', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .page-back-button:hover {
+    color: var(--color-gray-800);
+    text-decoration: underline;
+  }
+
+  .page-back-button:focus-visible {
+    outline: 3px solid var(--color-purple);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.movements-page .site-header),
+    :global(.movement-detail-page .site-header),
+    :global(.artists-page .site-header),
+    :global(.artist-detail-page .site-header) {
+      border-bottom-width: 9px;
+    }
+  }
+</style>

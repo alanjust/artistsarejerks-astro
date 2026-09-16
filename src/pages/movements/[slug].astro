@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BackButton from '../../components/BackButton.astro';
 import artHistoryMovements from '../../data/art_history_movements.json';
 import artists from '../../data/artists.json';
 
@@ -24,6 +25,7 @@ const bgColor = movement['Bkgd Color'] || '#ffa042';
 <BaseLayout title={`${movement['Movement Name']} - Artists Are Jerks`} bodyClass="movement-detail-page">
   <div class="movement-page" style={`background-color: ${bgColor};`}>
     <div class="movement-container">
+      <BackButton fallback="/movements/" />
       <header class="movement-header">
         <h1 class="movement-name">{movement['Movement Name']}</h1>
         <p class="movement-tagline">{movement.Description}</p>
@@ -78,6 +80,7 @@ const bgColor = movement['Bkgd Color'] || '#ffa042';
 
     .movement-name {
       font-size: 3.5rem;
+      margin-top: 0;
       margin-bottom: 1rem;
       color: #000;
       font-weight: bold;
@@ -188,12 +191,51 @@ const bgColor = movement['Bkgd Color'] || '#ffa042';
     }
 
     @media (max-width: 768px) {
+      .movement-page {
+        padding: 1rem 1.5rem;
+      }
+
+      .movement-header,
+      .movement-content,
+      .movement-artists {
+        margin-bottom: 1.5rem;
+      }
+
       .movement-name {
         font-size: 2.5rem;
+        line-height: 1.2;
+      }
+
+      .movement-tagline {
+        margin: 0;
+      }
+
+      .movement-content h2,
+      .movement-artists h2 {
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .movement-description p:last-child {
+        margin-bottom: 0;
       }
 
       .artists-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .artist-info {
+        padding: 1rem;
+      }
+
+      .artist-info .artwork-title {
+        margin-bottom: 0;
+      }
+
+      .back-link {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
       }
     }
   </style>

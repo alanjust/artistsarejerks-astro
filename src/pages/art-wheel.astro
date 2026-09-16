@@ -10,11 +10,32 @@ import artists from '../data/artists.json';
             <h1>Art History Wheel</h1>
             <p class="art-wheel-subtitle">1960s to NOW</p>
             <p class="art-wheel-subtitle-secondary">Eras / Styles</p>
-            <p class="art-wheel-description">Explore the art that broke free from Abstract Expressionism with our Art
-                History Wheel. Journey from the Pop Art reaction of the 1960s to today's diverse styles. Discover 19 key
-                movements and 95 influential artists, each with a notable artwork example, tracing this exciting evolution.
+            <p class="art-wheel-description">
+                <span class="art-wheel-description-desktop">Explore the art that broke free from Abstract Expressionism with our Art
+                    History Wheel. Journey from the Pop Art reaction of the 1960s to today's diverse styles. Discover 19 key
+                    movements and 95 influential artists, each with a notable artwork example, tracing this exciting evolution.</span>
+                <span class="art-wheel-description-mobile">Swipe through 19 movements and meet the artists and artworks that changed contemporary culture.</span>
             </p>
         </div>
+
+        <section class="art-wheel-mobile" aria-label="Explore art movements">
+            <h2 class="mobile-timeline-title">ERAS / STYLES</h2>
+            <div class="mobile-timeline-viewport">
+                <div class="mobile-timeline" id="mobileTimeline" role="tablist" aria-label="Art movements"></div>
+            </div>
+            <p class="mobile-timeline-status" id="mobileTimelineStatus" aria-live="polite"></p>
+
+            <section class="mobile-artwork-gallery" aria-labelledby="mobileArtworkMeta">
+                <h3 class="mobile-artwork-meta" id="mobileArtworkMeta"></h3>
+                <p class="mobile-artwork-helper">Tap a thumbnail to open the artist and artwork.</p>
+                <div class="mobile-artwork-grid" id="mobileArtworkGallery"></div>
+            </section>
+
+            <div class="mobile-movement-controls" aria-label="Movement navigation">
+                <button class="mobile-movement-button mobile-movement-button-secondary" id="mobilePrevious" type="button">← Previous</button>
+                <button class="mobile-movement-button mobile-movement-button-primary" id="mobileNext" type="button">Next →</button>
+            </div>
+        </section>
 
         <div class="art-wheel-main-wrapper">
             <div class="art-wheel-main">
@@ -74,7 +95,7 @@ import artists from '../data/artists.json';
     overflow-y: auto !important;
     height: auto !important;
     min-height: 100vh;
-    background: var(--color-bkg-golden-yellow); /* Golden yellow background */
+    background: var(--color-stage);
   }
 
   :global(html.art-wheel-page) {

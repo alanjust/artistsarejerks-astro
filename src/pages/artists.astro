@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BackButton from '../components/BackButton.astro';
 import artists from '../data/artists.json';
 import artHistoryMovements from '../data/art_history_movements.json';
 
@@ -33,6 +34,7 @@ const sortedArtists = [...artists].sort((a, b) => {
 
 <BaseLayout title="Artists - Artists Are Jerks" bodyClass="artists-page">
   <div class="artists-container">
+    <BackButton />
     <header class="artists-header">
       <h1>Artists</h1>
       <p class="subtitle">1960s to NOW</p>
@@ -163,8 +165,38 @@ const sortedArtists = [...artists].sort((a, b) => {
     }
 
     @media (max-width: 768px) {
+      .artists-container {
+        padding: 1rem 1.5rem;
+      }
+
+      .artists-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .subtitle {
+        margin-bottom: 1rem;
+      }
+
+      .description {
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
       .artists-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .artist-info {
+        padding: 1rem;
+      }
+
+      .artist-movement {
+        margin-bottom: 0.5rem;
+      }
+
+      .artwork-title {
+        margin-bottom: 0;
       }
 
       .artists-header h1 {
@@ -178,7 +210,7 @@ const sortedArtists = [...artists].sort((a, b) => {
 
     @media (max-width: 480px) {
       .artists-container {
-        padding: 1rem;
+        padding: 1rem 1.5rem;
       }
 
       .artist-image {
@@ -187,4 +219,3 @@ const sortedArtists = [...artists].sort((a, b) => {
     }
   </style>
 </BaseLayout>
-
