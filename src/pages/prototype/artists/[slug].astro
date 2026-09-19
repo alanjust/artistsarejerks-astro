@@ -122,8 +122,8 @@ const showDates = show
   </div>
 
   <script>
-    import {applyVenueVisibility} from '../../../lib/venue-workspace';
-    applyVenueVisibility();
+    import {applyPublicVenueVisibility} from '../../../lib/prototype-venues';
+    applyPublicVenueVisibility();
     const viewer = document.querySelector<HTMLDialogElement>('#artwork-viewer');
     const artworkButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-enlarge-artwork]')];
     let activeArtwork = 0;

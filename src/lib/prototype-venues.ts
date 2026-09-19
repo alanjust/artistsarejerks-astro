@@ -15,3 +15,14 @@ export function seedLeo():VenueRecord {
  const venue=pilot.venues[0];return {id:venue.id,name:venue.name,type:venue.type,city:venue.city,address:venue.addressLine1,postalCode:venue.postalCode,description:'A fictional Medford brewpub and grill with rotating local artwork.',website:'',phone:'',hours:Object.entries(venue.hours).map(([day,time])=>`${day}: ${time}`).join('\n'),accessibility:'',instructions:'',contactName:'',email:'',opportunities:'We welcome local artists for rotating wall displays.',status:'draft',visible:true,available:true,memberIds:[],campaigns:[]};
 }
 export function venueProfileUrl(id:string){return id==='venue-leos-brewpub'?'/prototype/venues/leos-brewpub-and-grill/':`/prototype/venues/profile/?venue=${encodeURIComponent(id)}`}
+
+let watchingPublicVisibility=false;
+export function applyPublicVenueVisibility(){
+ if(!watchingPublicVisibility){watchingPublicVisibility=true;window.addEventListener('storage',event=>{if(event.key===VENUES_KEY)applyPublicVenueVisibility()})}
+ const hidden=new Set(readVenues().filter(venue=>!venue.visible).map(venue=>venue.id));
+ document.querySelectorAll<HTMLElement>('[data-public-venue]').forEach(element=>{
+  element.dataset.adminHidden=String(hidden.has(element.dataset.publicVenue||''));
+  element.hidden=element.dataset.adminHidden==='true';
+ });
+ window.dispatchEvent(new Event('aaj-showings-updated'));
+}

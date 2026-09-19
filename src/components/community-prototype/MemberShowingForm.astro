@@ -1,6 +1,7 @@
 ---
 import pilot from '../../data/community-pilot.json';
 const venue=pilot.venues[0];
+const onlineTest=import.meta.env.MODE==='online-test';
 ---
 <p class="notice">Saved in prototype storage. No venue notice is sent. Your artist page must be public before a showing can appear publicly.</p><p data-member-showing-status role="status"></p><a data-back-artist-setup href="/prototype/workspaces/">Back to your artist workspace →</a><div data-member-showing-content hidden>
 <h3>Your saved showings</h3><p>Edit a saved showing to update its venue, dates, or artwork. Use “Create a showing” only for a new listing.</p>
@@ -26,10 +27,10 @@ const venue=pilot.venues[0];
         <section class="show-preview" data-show-preview hidden aria-label="Preview showing">
           <p class="eyebrow">Public listing preview</p><div class="preview-card"><img data-preview-image alt=""/><div><h3 data-showing-artist-name></h3><p data-preview-city></p><p data-preview-dates></p><strong data-preview-place></strong><p data-preview-works></p></div></div>
           <p>This place and address will be public. Venue approval is not required. In the live service, the venue would receive a notice.</p>
-          <p><strong>Local prototype:</strong> Publishing updates the community’s prototype pages.</p>
-          <div class="actions"><button class="button light" type="button" data-edit-preview>← Edit showing</button><button class="button primary" type="button" data-publish-show>Publish to local preview</button></div>
+          <p><strong>{onlineTest?'Private online test:':'Local prototype:'}</strong> {onlineTest?'Publishing updates pages within this protected test site.':'Publishing updates the community’s prototype pages.'}</p>
+          <div class="actions"><button class="button light" type="button" data-edit-preview>← Edit showing</button><button class="button primary" type="button" data-publish-show>{onlineTest?'Publish to test site':'Publish to local preview'}</button></div>
         </section>
-        <div data-publish-result role="status" hidden><h3>Showing published to your local preview.</h3><p>It appears as current or upcoming based on the dates you entered. Expired listings are hidden automatically.</p><div class="published-links"><a href="/showing-now/">Community directory →</a><a data-showing-artist-link href="#">Artist page →</a><a data-published-venue>Venue map &amp; info →</a></div><button type="button" class="button light" data-create-another>Create another showing</button></div>
+        <div data-publish-result role="status" hidden><h3>{onlineTest?'Showing published to the protected test site.':'Showing published to your local preview.'}</h3><p>It appears as current or upcoming based on the dates you entered. Expired listings are hidden automatically.</p><div class="published-links"><a href="/showing-now/">Community directory →</a><a data-showing-artist-link href="#">Artist page →</a><a data-published-venue>Venue map &amp; info →</a></div><button type="button" class="button light" data-create-another>Create another showing</button></div>
       </details>
 
 </div><script>import {initMemberShowing} from '../../lib/member-showing';void initMemberShowing();</script>

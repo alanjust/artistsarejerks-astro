@@ -16,13 +16,14 @@ const upcoming = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDat
 const upcomingArtist = pilot.artists.find((item) => item.id === upcoming.artistId)!;
 const upcomingVenue = pilot.venues.find((item) => item.id === upcoming.venueId)!;
 const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featuredArtworkId)!;
+const onlineTest = import.meta.env.MODE === 'online-test';
 ---
 
 <BaseLayout title="Showing Now | Artists Are Jerks">
   <div class="directory" data-view="overview">
     <header><p class="eyebrow">Community art · Rogue Valley, Oregon</p><h1 id="community-heading">Showing Now</h1><p class="intro" id="community-intro">Find artwork you can see in person—in restaurants, brewpubs, galleries, and artists’ studios across the valley.</p></header>
     <p><a href="/prototype/venues/">Places to see art →</a> · <a href="/join/">Artists &amp; venues: join the community →</a></p>
-    <p class="notice"><strong>Local preview:</strong> All showings here are demonstrations. Alan has no confirmed physical showing. Leo’s Brewpub and Grill is fictional; other sample artists and venues are for testing.</p>
+    <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> All showings here are demonstrations. Alan has no confirmed physical showing. Leo’s Brewpub and Grill is fictional; other sample artists and venues are for testing.</p>
 
     <nav class="view-bar" aria-label="Community view">
       <button type="button" data-view-choice="overview" aria-pressed="true">Overview</button>
@@ -116,10 +117,9 @@ const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featu
     city?.addEventListener('change', filter); search?.addEventListener('input', filter);
     async function loadDirectoryData(){
       try {
-        const [{getStoredItem},{renderMemberDirectory},{applyVenueVisibility}]=await Promise.all([
-          import('../lib/community-storage'),import('../lib/member-artists'),import('../lib/venue-workspace')
+        const [{getStoredItem},{renderMemberDirectory}]=await Promise.all([
+          import('../lib/community-storage'),import('../lib/member-artists')
         ]);
-        applyVenueVisibility();
         await renderMemberDirectory();
     const realCard = document.querySelector<HTMLElement>('[data-show-id="exhibition-alan-at-leos-fall-2026"]');
     if (realCard) {
@@ -131,8 +131,8 @@ const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featu
       if (artwork && image) { image.src = artwork.image; image.alt = artwork.title; }
     }
         filter();
-      }catch{
-        const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='Shared directory updates could not be loaded. The view controls still work; reload to try again.';directory?.prepend(notice);
+      }catch(cause){
+        console.error('Could not refresh supplementary directory details.',cause);
       }
     }
     void loadDirectoryData();

@@ -67,6 +67,12 @@ Uploaded works now join the same showing controls as the six original works. Iri
 
 The public Showing Now projection reads saved, visible showings and their representative artwork. Venue and artist pages can refer to the same showing records. Demo-only fixtures remain labeled and are not presented as Alan's real plans.
 
+## End-to-end showing verification — September 19
+
+Alan's saved `Test Venue — Not Real.` draft was published inside the protected test site with Paul Missal Portrait, White Rabbit Contemplates Winemaking, Premium Products for Cidermaking, and Iris. The representative image is Paul Missal Portrait. The same dated showing was verified on Showing Now, Alan's artist page, and the venue page; Alan's artist page also listed all four assigned works, including Iris.
+
+Online-test wording now says `Publish to test site`, `protected test site`, and `Published showings` instead of describing shared records as browser-local. Showing Now no longer loads the venue workspace module merely to decorate public fixtures; that circular client initialization produced a misleading directory failure notice even while the saved listing rendered correctly. Public showing rendering remains handled by the dedicated public projection and `BrowserShowings` component.
+
 ## Regional direction
 
 The product is intended to begin in the Rogue Valley and expand nationally by adding regions as demand appears. Regions should be records with stable IDs rather than hard-coded city lists. Artists and venues attach to a region; directory views filter by region. A future chapter application can collect a proposed city or area, applicant details, local context, and intended role. Approval creates or activates the region without requiring every possible national market to be defined in advance. Portland–Vancouver and Santa Fe are useful future test cases, but the first launch can remain focused on the Rogue Valley.
