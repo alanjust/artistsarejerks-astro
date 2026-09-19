@@ -73,6 +73,12 @@ Alan's saved `Test Venue — Not Real.` draft was published inside the protected
 
 Online-test wording now says `Publish to test site`, `protected test site`, and `Published showings` instead of describing shared records as browser-local. Showing Now no longer loads the venue workspace module merely to decorate public fixtures; that circular client initialization produced a misleading directory failure notice even while the saved listing rendered correctly. Public showing rendering remains handled by the dedicated public projection and `BrowserShowings` component.
 
+## Account workspaces and test-directory cleanup — September 19
+
+The protected online Workspaces page is now an account portal. An artist sees only the artist workspace assigned to that account, a venue owner sees only the assigned venue workspace, and an administrator additionally sees application review and account-assignment tools. It does not list other members' private workspaces. The broad Alan, Leo's, and prototype navigation hub remains available only during local development.
+
+Showing Now no longer includes FPO cards, Lana Yost, or the fictional Alan-at-Leo's fixture in the online-test build. Those fixtures remain in local development for layout work. The protected directory now begins with saved test-site records, so its count and filters reflect the records being tested. Alan remains in Our Artists; future approved member records can join through the shared directory projection.
+
 ## Regional direction
 
 The product is intended to begin in the Rogue Valley and expand nationally by adding regions as demand appears. Regions should be records with stable IDs rather than hard-coded city lists. Artists and venues attach to a region; directory views filter by region. A future chapter application can collect a proposed city or area, applicant details, local context, and intended role. Approval creates or activates the region without requiring every possible national market to be defined in advance. Portland–Vancouver and Santa Fe are useful future test cases, but the first launch can remain focused on the Rogue Valley.

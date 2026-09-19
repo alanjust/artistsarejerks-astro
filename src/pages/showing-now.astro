@@ -11,19 +11,20 @@ const featured = artworks.find((work) => work.id === show.featuredArtworkId) ?? 
 const dateLabel = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 const placeholders = pilot.artworks.filter((work) => work.archiveStatus === 'active' && work.id !== featured.id).slice(0, 5);
 const cities = ['Ashland', 'Central Point', 'Grants Pass', 'Medford', 'Ashland'];
-const cards = [{ id: show.id, image: featured.image, alt: featured.title, name: artist.name, slug: artist.slug, city: venue.city, place: venue.name, dates: `${dateLabel(show.startDate)}–${dateLabel(show.endDate)}`, practice: artist.practice.join(' / '), fpo: false }, ...placeholders.map((work, i) => ({ id: `fpo-${i}`, image: work.image, alt: 'Placeholder artwork', name: `FPO Artist ${i + 2}`, slug: null, city: cities[i], place: 'FPO Rogue Valley venue', dates: 'Sample current dates', practice: work.medium, fpo: true }))];
 const upcoming = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDate === 'upcoming')!;
 const upcomingArtist = pilot.artists.find((item) => item.id === upcoming.artistId)!;
 const upcomingVenue = pilot.venues.find((item) => item.id === upcoming.venueId)!;
 const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featuredArtworkId)!;
 const onlineTest = import.meta.env.MODE === 'online-test';
+const cards = onlineTest ? [] : [{ id: show.id, image: featured.image, alt: featured.title, name: artist.name, slug: artist.slug, city: venue.city, place: venue.name, dates: `${dateLabel(show.startDate)}–${dateLabel(show.endDate)}`, practice: artist.practice.join(' / '), fpo: false }, ...placeholders.map((work, i) => ({ id: `fpo-${i}`, image: work.image, alt: 'Placeholder artwork', name: `FPO Artist ${i + 2}`, slug: null, city: cities[i], place: 'FPO Rogue Valley venue', dates: 'Sample current dates', practice: work.medium, fpo: true }))];
+const directoryArtists = pilot.artists.filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible' && (!onlineTest || member.id === 'artist-alan-just'));
 ---
 
 <BaseLayout title="Showing Now | Artists Are Jerks">
   <div class="directory" data-view="overview">
     <header><p class="eyebrow">Community art · Rogue Valley, Oregon</p><h1 id="community-heading">Showing Now</h1><p class="intro" id="community-intro">Find artwork you can see in person—in restaurants, brewpubs, galleries, and artists’ studios across the valley.</p></header>
     <p><a href="/prototype/venues/">Places to see art →</a> · <a href="/join/">Artists &amp; venues: join the community →</a></p>
-    <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> All showings here are demonstrations. Alan has no confirmed physical showing. Leo’s Brewpub and Grill is fictional; other sample artists and venues are for testing.</p>
+    <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> {onlineTest ? 'Listings come from records saved in the protected test site. Test listings do not represent confirmed public exhibitions.' : 'All showings here are demonstrations. Alan has no confirmed physical showing. Leo’s Brewpub and Grill is fictional; other sample artists and venues are for testing.'}</p>
 
     <nav class="view-bar" aria-label="Community view">
       <button type="button" data-view-choice="overview" aria-pressed="true">Overview</button>
@@ -40,7 +41,7 @@ const onlineTest = import.meta.env.MODE === 'online-test';
       <div id="search-popup" class="popup" popover><label>Artist, medium, or place<input id="search" type="search" placeholder="Search current showings" /></label><button type="button" popovertarget="search-popup" popovertargetaction="hide">Done</button></div>
     </section>
 
-    <div class="results-heading"><p id="result-count" aria-live="polite">6 showings</p></div>
+    <div class="results-heading"><p id="result-count" aria-live="polite">{cards.length} {cards.length === 1 ? 'showing' : 'showings'}</p></div>
     <div class="showing-grid">
       {cards.map((card, index) => (
         <article class="showing-card" data-public-venue={card.fpo ? undefined : venue.id} data-show-id={card.id} data-city={card.city} data-search={`${card.name} ${card.place} ${card.practice} ${card.city}`.toLowerCase()}>
@@ -52,13 +53,13 @@ const onlineTest = import.meta.env.MODE === 'online-test';
     <p id="no-results" class="empty" hidden>No current showings match. Try another city or clear your search.</p>
 
 <BrowserShowings context="directory"/>
-    <section class="coming-section" aria-labelledby="coming-heading">
+    <section class="coming-section" aria-labelledby="coming-heading" hidden={onlineTest}>
       <div class="results-heading"><h2 id="coming-heading">Artists to come</h2><p>Upcoming</p></div>
       <div class="coming-grid">
-        <article class="showing-card coming-card" data-public-venue={upcomingVenue.id}>
+        {!onlineTest && <article class="showing-card coming-card" data-public-venue={upcomingVenue.id}>
           <div class="artwork-frame"><img src={upcomingArtwork.image} alt="Preview artwork by Lana Yost" loading="lazy" /></div>
           <div class="copy"><p class="city-label">{upcomingVenue.city} · {upcomingArtist.practice.join(' / ')}</p><h3><a href={`/prototype/artists/${upcomingArtist.slug}/`}>{upcomingArtist.name}</a></h3><p class="dates">{dateLabel(upcoming.startDate)}–{dateLabel(upcoming.endDate)}</p><p><a class="venue-name" href="/prototype/venues/leos-brewpub-and-grill/">{upcomingVenue.name}</a></p><a class="card-link" href={`/prototype/artists/${upcomingArtist.slug}/`}>Meet {upcomingArtist.name} →</a></div>
-        </article>
+        </article>}
       </div>
     </section>
     </section>
@@ -66,12 +67,12 @@ const onlineTest = import.meta.env.MODE === 'online-test';
       <div class="artist-panel-heading"><h2 id="artists-heading">Our Artists</h2><button class="expand-button" type="button" data-view-choice="artists">Expand Our Artists ↗</button></div>
       <p class="roster-intro">Meet the community, whether or not their work is showing today.</p>
       <div class="member-grid">
-        {pilot.artists.filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible').sort((a, b) => a.name.split(' ').at(-1)!.localeCompare(b.name.split(' ').at(-1)!)).map((member) => {
+        {directoryArtists.sort((a, b) => a.name.split(' ').at(-1)!.localeCompare(b.name.split(' ').at(-1)!)).map((member) => {
           const work = pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')!;
           const showing = pilot.exhibitions.some((exhibition) => exhibition.artistId === member.id && exhibition.derivedStatusAsOfPilotDate === 'showing-now');
           return <a class="member-card" href={`/prototype/artists/${member.slug}/`}><img src={work.image} alt={`Artwork by ${member.name}`} loading="lazy" /><div><h3>{member.name}</h3><p>{member.homeCity}</p><p>{member.practice.join(' · ')}</p>{showing && <span class="member-status">Showing now</span>}</div></a>;
         })}
-        <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h3>FPO member artist</h3><p>Central Point</p><p>Drawing · Not showing now</p></div></article>
+        {!onlineTest && <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h3>FPO member artist</h3><p>Central Point</p><p>Drawing · Not showing now</p></div></article>}
       </div>
     </aside>
     </div>

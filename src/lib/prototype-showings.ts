@@ -87,6 +87,10 @@ export async function renderShowings(root: HTMLElement) {
     }
   }
   root.hidden = context === 'directory' || !matches.length;
+  if(context==='directory'){
+    const coming=document.querySelector<HTMLElement>('.coming-section');
+    if(coming)coming.hidden=!coming.querySelector('.showing-card');
+  }
   if (context === 'venue-preview') {
     const show = matches[0];
     const heading = document.querySelector('[data-preview-venue-title]');if(heading)heading.textContent = show?.venue || 'Venue preview unavailable';
