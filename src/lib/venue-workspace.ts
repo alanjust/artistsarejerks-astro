@@ -3,6 +3,7 @@ import {getMemberArtist} from './member-artists';
 import {readArtistApplications} from './artist-applications';
 import {readVenues,saveVenue,availableVenues,seedLeo,venueProfileUrl,VENUES_KEY,type VenueRecord} from './prototype-venues';
 import {readShowings,showingStatus,renderShowings} from './prototype-showings';
+import {populateRegionSelects} from './regions';
 const node=(tag:string,text='',className='')=>{const el=document.createElement(tag);el.textContent=text;el.className=className;return el};
 const anchor=(text:string,href:string)=>{const a=node('a',text) as HTMLAnchorElement;a.href=href;return a};
 const button=(text:string,action:()=>void)=>{const b=node('button',text) as HTMLButtonElement;b.type='button';b.addEventListener('click',action);return b};
@@ -10,12 +11,13 @@ const approvedMembers=[...pilot.artists.filter(a=>a.admission==='invited-and-app
 const opportunityMembers=approvedMembers.filter(a=>a.opportunities);
 export function initVenueWorkspace(){
  const formNode=document.querySelector<HTMLFormElement>('#venue-intake');if(!formNode)return;const form=formNode;
+ void populateRegionSelects(form);
  const ownedVenue=document.querySelector<HTMLElement>('[data-owned-venue]')?.dataset.ownedVenue;
  const selector=document.querySelector<HTMLSelectElement>('[data-working-venue]')!;
  const status=document.querySelector<HTMLElement>('[data-venue-status]')!;
  const tools=document.querySelector<HTMLElement>('[data-approved-tools]')!;
  const result=document.querySelector<HTMLElement>('[data-intake-result]')!;
- const fields=['name','type','city','address','postalCode','description','website','phone','hours','accessibility','instructions','contactName','email','opportunities'];
+ const fields=['name','type','regionId','city','address','postalCode','description','website','phone','hours','accessibility','instructions','contactName','email','opportunities'];
  let active:VenueRecord|null=null;let campaign:VenueRecord['campaigns'][number]|null=null;
  const value=(name:string)=>form.elements.namedItem(name) as HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement;
  function persist(record:VenueRecord){try{saveVenue(record);active=record;return true}catch{result.textContent='Browser storage is unavailable. Enable storage and try again.';return false}}
@@ -30,7 +32,7 @@ export function initVenueWorkspace(){
   const opportunity=document.querySelector<HTMLFormElement>('[data-opportunity-form]')!;(opportunity.elements.namedItem('subject') as HTMLInputElement).value=active?`${active.name} is available to host artists`:'';(opportunity.elements.namedItem('body') as HTMLTextAreaElement).value=active?.opportunities||'';
   const history=document.querySelector('[data-campaign-history]')!;history.replaceChildren();(active?.campaigns||[]).forEach(c=>history.append(node('p',`${c.subject} · ${c.recipients.length} simulated recipients · ${new Date(c.createdAt).toLocaleString()}`)));
  }
- function load(id:string){active=readVenues().find(v=>v.id===id)|| (id==='venue-leos-brewpub'?seedLeo():null);form.reset();fields.forEach(name=>{if(active)value(name).value=String(active[name as keyof VenueRecord]||'')});(value('available') as HTMLInputElement).checked=active?.available??true;result.textContent='';document.querySelector<HTMLElement>('[data-campaign-preview]')!.hidden=true;campaign=null;reflect();}
+ function load(id:string){active=readVenues().find(v=>v.id===id)|| (id==='venue-leos-brewpub'?seedLeo():null);form.reset();fields.forEach(name=>{if(active)value(name).value=String(active[name as keyof VenueRecord]||(name==='regionId'?'region-rogue-valley':''))});(value('available') as HTMLInputElement).checked=active?.available??true;result.textContent='';document.querySelector<HTMLElement>('[data-campaign-preview]')!.hidden=true;campaign=null;reflect();}
  function collect(statusValue:VenueRecord['status']):VenueRecord{
   const previous=active||{...seedLeo(),id:crypto.randomUUID(),name:'',memberIds:[],campaigns:[]};
   const record={...previous,status:statusValue,available:(value('available') as HTMLInputElement).checked};fields.forEach(name=>Object.assign(record,{[name]:value(name).value.trim()}));return record;

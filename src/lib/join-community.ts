@@ -1,11 +1,13 @@
 import {setStoredItem} from './community-storage';
 import {memberUrl,deleteMemberArtist} from './member-artists';
 import {readArtistApplications,saveArtistApplication,ARTIST_APPLICATIONS_KEY,type ArtistApplication} from './artist-applications';
+import {populateRegionSelects} from './regions';
 const element=(tag:string,text='',className='')=>{const node=document.createElement(tag);node.textContent=text;node.className=className;return node};
 const link=(text:string,url:string)=>{const node=element('a',text) as HTMLAnchorElement;node.href=url;return node};
 const action=(text:string,fn:()=>void)=>{const node=element('button',text) as HTMLButtonElement;node.type='button';node.addEventListener('click',fn);return node};
 export function initJoin(){
  const formNode=document.querySelector<HTMLFormElement>('[data-artist-application]');if(!formNode)return;const form=formNode;
+ void populateRegionSelects(form);
  const result=document.querySelector<HTMLElement>('[data-join-result]')!,choices=document.querySelector<HTMLElement>('[data-join-choices]')!,invite=document.querySelector<HTMLElement>('[data-invitation-panel]')!;
  function list(){const root=document.querySelector('[data-my-applications]')!;root.replaceChildren();readArtistApplications().forEach(a=>{const row=element('p',`${a.name}: ${a.status}${a.invitationAccepted?' · invitation accepted':''} `);if(a.status==='approved')row.append(link('Open sample invitation →',`/join/?invitation=${encodeURIComponent(a.id)}`));root.append(row)})}
  function open(){choices.hidden=true;form.hidden=false;result.hidden=true;form.scrollIntoView({block:'start',behavior:'smooth'})}
@@ -23,7 +25,7 @@ export function initJoin(){
  }
 
  const existing=readArtistApplications().find(a=>a.email.toLowerCase()===get('email').toLowerCase());if(existing){error.textContent=`This browser already has a ${existing.status} application for that email. Review its status below.`;return}
- const application:ArtistApplication={id:crypto.randomUUID(),name:get('name'),email:get('email'),city:get('city'),practice:get('practice'),portfolio,note:get('note'),status:'pending',invitationAccepted:false,opportunities:data.has('opportunities')};
+ const application:ArtistApplication={id:crypto.randomUUID(),name:get('name'),email:get('email'),regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio,note:get('note'),status:'pending',invitationAccepted:false,opportunities:data.has('opportunities')};
  try{saveArtistApplication(application)}catch{error.textContent='Unable to save in this browser. Allow local storage and try again.';return}
  form.hidden=true;result.hidden=false;result.replaceChildren(element('h2','Your request is ready for review'),element('p','In the live service, the administrator would review your work and contact you. Approval would be followed by an account invitation.'),element('p','Nothing has been emailed in this prototype.'),link('Review this sample application →','/prototype/admin/artists/'));list();
  });

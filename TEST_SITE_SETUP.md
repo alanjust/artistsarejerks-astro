@@ -5,7 +5,7 @@ Deployed September 18, 2026 at https://aaj-dev.alanjust.com. Localhost still use
 ## Deployment status
 
 - Cloudflare Access application: `0e8b3bea-f793-416e-9041-da6c3769d701`, team `hidden-grammar.cloudflareaccess.com`.
-- Test D1 database: `c910d001-5c95-4450-ae60-5dd483ad5a76`; all four migrations applied. Alan's administrator assignment is initialized; no local records imported.
+- Test D1 database: `c910d001-5c95-4450-ae60-5dd483ad5a76`; migrations through `0005_regions.sql` applied. Alan's administrator assignment is initialized; no local records imported.
 - Private R2 bucket: `aaj-artwork-test`.
 - Both test Workers deployed with public Worker URLs and previews disabled. Independent gateway secret and existing Clerk development credentials uploaded as runtime secrets.
 - Anonymous account, image and API requests redirect to Cloudflare Access. Signed-in workspace checks still require Alan to complete Access login.
@@ -87,6 +87,14 @@ Alan created an overlapping second showing at `Museum Test — Not Real` with Al
 
 The product is intended to begin in the Rogue Valley and expand nationally by adding regions as demand appears. Regions should be records with stable IDs rather than hard-coded city lists. Artists and venues attach to a region; directory views filter by region. A future chapter application can collect a proposed city or area, applicant details, local context, and intended role. Approval creates or activates the region without requiring every possible national market to be defined in advance. Portland–Vancouver and Santa Fe are useful future test cases, but the first launch can remain focused on the Rogue Valley.
 
+## Region proposal foundation — September 19
+
+Rogue Valley is now the first active region record. A signed-in person may propose an unlisted area even when the account has no artist, venue, or administrator assignment. The proposal records the core city, state, proposed coverage, local connection, intended role, and reason the area is ready. Applicants can see only their own proposals. Administrators can review every proposal; approval creates an active region immediately without a deployment, while workspace access remains a separate decision.
+
+Active regions populate the region choices in artist and venue onboarding. City remains free text so a newly approved area does not require another hard-coded city list. The public directory still presents the Rogue Valley view until a second real region is approved and the visitor-facing region switcher is designed.
+
+Validation covers unassigned-account submission, applicant isolation, duplicate-pending rejection, administrator-only review, approval, and public active-region retrieval. Community API type checking, the D1/R2 integration suite, local and online builds, and bundle secret scanning pass.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.
@@ -99,4 +107,4 @@ The product is intended to begin in the Rogue Valley and expand nationally by ad
 
 ## Next checkpoint
 
-Exercise one complete real-showing path: create a dated showing at a saved venue, select original and uploaded artwork, choose a representative image, save it, and verify the same result on Showing Now, the artist page, and the venue page. After that path is stable, design the region/chapter application and approval workflow without expanding the production scope prematurely.
+Exercise the region workflow on the protected test site: submit a clearly labeled Santa Fe test proposal, approve it as administrator, and confirm that Santa Fe becomes available in both artist and venue region menus. After that acceptance test, add a visitor-facing region switcher only when a second real community is ready to publish.

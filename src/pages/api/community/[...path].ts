@@ -8,13 +8,14 @@ export const ALL:APIRoute=async (context)=>{
  const {request,locals}=context;
  const fail=(error:string,status:number)=>Response.json({error},{status,headers:{'Cache-Control':'no-store'}});
  const url=new URL(request.url);
- if(request.method==='GET'&&(url.pathname==='/api/community/public/state'||/^\/api\/community\/public\/images\/[a-zA-Z0-9_-]{1,160}$/.test(url.pathname))){
+ if(request.method==='GET'&&(url.pathname==='/api/community/public/state'||url.pathname==='/api/community/public/regions'||/^\/api\/community\/public\/images\/[a-zA-Z0-9_-]{1,160}$/.test(url.pathname))){
   try{const response=await communityFetch(url.pathname,{signal:AbortSignal.timeout(15000)},locals);const headers=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});headers.set('Content-Type',response.headers.get('content-type')||'application/json');return new Response(response.body,{status:response.status,headers})}catch{return fail('Public directory storage unavailable.',503)}
  }
  const {isAuthenticated,userId}=locals.auth();
  if(!isAuthenticated||!userId)return fail('Sign in to access shared storage.',401);
  const access=await communityAccess(userId,locals);
- if(!access)return fail('This account has no assigned community access.',403);
+ const regionProposal=url.pathname==='/api/community/region-proposals';
+ if(!access&&!regionProposal)return fail('This account has no assigned community access.',403);
  const secret=gatewaySecret(locals);
  if(!secret)return fail('Shared storage authentication is not configured.',503);
  if(!['GET','PUT'].includes(request.method))return fail('Method not allowed.',405);
@@ -23,12 +24,12 @@ export const ALL:APIRoute=async (context)=>{
  if(reader)while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>10*1024*1024){await reader.cancel();return fail('Upload too large.',413)}chunks.push(value)}
  const body=new Uint8Array(size);let offset=0;for(const chunk of chunks){body.set(chunk,offset);offset+=chunk.length}
  if(url.pathname==='/api/community/memberships'){
-  if(!access.administrator)return fail('Administrator access required.',403);
+  if(!access?.administrator)return fail('Administrator access required.',403);
   if(request.method==='PUT'){
    try{const assignment=JSON.parse(new TextDecoder().decode(body));if(typeof assignment.userId!=='string'||!/^user_[a-zA-Z0-9]+$/.test(assignment.userId))return fail('Enter a valid Clerk user ID.',400);await clerkClient(context).users.getUser(assignment.userId)}catch{return fail('This user was not found in this project’s Clerk application.',400)}
   }
  }
- const capability=await signCapability(secret,{userId,administrator:access.administrator,artistId:access.artistId},request.method,url.pathname,body);
+ const capability=await signCapability(secret,{userId,administrator:access?.administrator??false,artistId:access?.artistId},request.method,url.pathname,body);
  try{
   const response=await communityFetch(url.pathname,{method:request.method,headers:{'x-aaj-prototype':'local','x-aaj-capability':capability.value,'x-aaj-signature':capability.signature,'Content-Type':request.headers.get('content-type')||'application/json'},body:request.method==='GET'?undefined:body,signal:AbortSignal.timeout(15000),redirect:'manual'},locals);
   if(response.status>=300&&response.status<400)throw new Error('Unexpected storage redirect');

@@ -5,6 +5,9 @@ const collections = new Set(['applications','artists','venues','showings','alan-
 const validId = (id:unknown):id is string => typeof id==='string' && /^[a-zA-Z0-9_-]{1,160}$/.test(id);
 const local = (host:string) => host==='localhost'||host==='127.0.0.1'||host==='[::1]';
 const json = (value:unknown,status=200) => Response.json(value,{status,headers:{'Cache-Control':'no-store'}});
+const shortText=(value:unknown,max=200)=>typeof value==='string'&&!!value.trim()&&value.trim().length<=max;
+const stateCode=(value:unknown)=>typeof value==='string'&&/^[A-Z]{2}$/.test(value);
+const regionSlug=(value:string)=>value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'region';
 async function boundedBody(request:Request,max:number):Promise<Uint8Array>{
   if(Number(request.headers.get('content-length'))>max)throw new Error('Too large');
   const reader=request.body?.getReader();if(!reader)return new Uint8Array();
@@ -29,6 +32,10 @@ export default {
     if(request.method!=='GET'&&request.headers.get('x-aaj-prototype')!=='local')return json({error:'Prototype request header required'},403);
     const loadRecords=async()=>{const {results}=await env.DB.prepare('SELECT collection,id,payload,revision FROM community_records').all<{collection:string;id:string;payload:string|null;revision:number}>();return results.map(row=>({...row,payload:row.payload===null?null:JSON.parse(row.payload)})) as PublicRecord[]};
     if(request.method==='GET'&&url.pathname==='/api/community/public/state')return json({records:publicRecords(await loadRecords())});
+    if(request.method==='GET'&&url.pathname==='/api/community/public/regions'){
+      const {results}=await env.DB.prepare("SELECT id,name,slug,core_city,state_code,country_code,coverage FROM community_regions WHERE status='active' ORDER BY name").all();
+      return json({regions:results});
+    }
     const publicImage=/^\/api\/community\/public\/images\/([a-zA-Z0-9_-]{1,160})$/.exec(url.pathname);
     if(request.method==='GET'&&publicImage){
       if(!publicImageKeys(await loadRecords()).has(publicImage[1]))return json({error:'Image unavailable'},404);
@@ -38,6 +45,46 @@ export default {
     const verified=await verifyCapability(request,env.COMMUNITY_GATEWAY_SECRET);
     const membership=verified?await env.DB.prepare('SELECT artist_id,venue_id,administrator FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null;venue_id:string|null;administrator:number}>():null;
     const principal=verified&&membership?{userId:verified.userId,administrator:membership.administrator===1,artistId:membership.artist_id||undefined,venueId:membership.venue_id||undefined}:null;
+    if(verified&&url.pathname==='/api/community/region-proposals'){
+     try{
+      const administrator=membership?.administrator===1;
+      if(request.method==='GET'){
+        const statement=administrator
+          ? env.DB.prepare('SELECT * FROM region_proposals ORDER BY created_at DESC')
+          : env.DB.prepare('SELECT * FROM region_proposals WHERE user_id=?1 ORDER BY created_at DESC').bind(verified.userId);
+        const {results}=await statement.all();return json({proposals:results});
+      }
+      if(request.method==='PUT'){
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,32768))) as Record<string,unknown>;
+        if(body.action==='review'){
+          if(!administrator)return json({error:'Administrator access required.'},403);
+          if(!validId(body.id)||!['approved','declined'].includes(String(body.status)))return json({error:'Invalid region review.'},400);
+          const proposal=await env.DB.prepare("SELECT * FROM region_proposals WHERE id=?1 AND status='pending'").bind(body.id).first<Record<string,string>>();
+          if(!proposal)return json({error:'This proposal is no longer pending.'},409);
+          if(body.status==='declined'){
+            await env.DB.prepare("UPDATE region_proposals SET status='declined',reviewed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1").bind(body.id).run();
+            return json({saved:true});
+          }
+          const existing=await env.DB.prepare("SELECT id FROM community_regions WHERE lower(name)=lower(?1) AND status='active'").bind(proposal.proposed_name).first();
+          if(existing)return json({error:'An active region already uses this name.'},409);
+          const regionId=`region-${regionSlug(proposal.proposed_name)}-${proposal.id.slice(0,8)}`;
+          const slug=`${regionSlug(proposal.proposed_name)}-${proposal.id.slice(0,8)}`;
+          await env.DB.batch([
+            env.DB.prepare("INSERT INTO community_regions(id,name,slug,core_city,state_code,country_code,coverage,status) VALUES(?1,?2,?3,?4,?5,?6,?7,'active')").bind(regionId,proposal.proposed_name,slug,proposal.core_city,proposal.state_code,proposal.country_code,proposal.coverage),
+            env.DB.prepare("UPDATE region_proposals SET status='approved',region_id=?1,reviewed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?2 AND status='pending'").bind(regionId,body.id)
+          ]);
+          return json({saved:true,regionId});
+        }
+        if(!shortText(body.proposedName,120)||!shortText(body.coreCity,120)||!stateCode(body.stateCode)||!shortText(body.coverage,500)||!shortText(body.localConnection,2000)||!shortText(body.intendedRole,120)||!shortText(body.rationale,2000))return json({error:'Complete every region proposal field.'},400);
+        const duplicate=await env.DB.prepare("SELECT id FROM region_proposals WHERE user_id=?1 AND lower(proposed_name)=lower(?2) AND status='pending'").bind(verified.userId,String(body.proposedName).trim()).first();
+        if(duplicate)return json({error:'You already have a pending proposal for this region.'},409);
+        const id=crypto.randomUUID();
+        await env.DB.prepare("INSERT INTO region_proposals(id,user_id,proposed_name,core_city,state_code,country_code,coverage,local_connection,intended_role,rationale) VALUES(?1,?2,?3,?4,?5,'US',?6,?7,?8,?9)").bind(id,verified.userId,String(body.proposedName).trim(),String(body.coreCity).trim(),String(body.stateCode),String(body.coverage).trim(),String(body.localConnection).trim(),String(body.intendedRole).trim(),String(body.rationale).trim()).run();
+        return json({saved:true,id});
+      }
+      return json({error:'Method not allowed'},405);
+     }catch(error){console.error(JSON.stringify({event:'region_proposal_error',message:error instanceof Error?error.message:String(error)}));return json({error:'Unable to process the region proposal.'},400)}
+    }
     if(!principal)return json({error:'Verified server request required.'},401);
     if(url.pathname==='/api/community/access'&&request.method==='GET')return json(principal);
     try{

@@ -1,0 +1,24 @@
+---
+export const prerender=false;
+const {isAuthenticated}=Astro.locals.auth();
+if(!isAuthenticated)return Astro.redirect('/sign-in/');
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/venue-workspace.css';
+Astro.response.headers.set('Cache-Control','private, no-store');
+---
+<BaseLayout title="Propose a new region | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Community expansion</p><h1>Bring Artists Are Jerks to your area</h1>
+<p>Tell us about a city or region where artists and places to see art could form a local community. Areas are added as people come forward; you do not need to wait for a national rollout plan.</p>
+<p class="notice">Approval adds the region to artist and venue onboarding. It does not automatically make you an administrator or create a public listing.</p>
+<form class="card" data-region-proposal><h2>Propose an area</h2><div class="fields">
+<label>Proposed region name<input name="proposedName" required maxlength="120" placeholder="Santa Fe area"/></label>
+<label>Core city<input name="coreCity" required maxlength="120" placeholder="Santa Fe"/></label>
+<label>State abbreviation<input name="stateCode" required maxlength="2" pattern="[A-Za-z]{2}" placeholder="NM"/></label>
+<label>Your intended role<select name="intendedRole" required><option value="">Choose one</option><option>Local organizer</option><option>Participating artist</option><option>Participating venue</option><option>Community supporter</option></select></label>
+<label class="full">Area this region should cover<textarea name="coverage" required maxlength="500" rows="3" placeholder="Santa Fe and nearby communities…"/></label>
+<label class="full">Your connection to the area<textarea name="localConnection" required maxlength="2000" rows="4" placeholder="Where you live or work, and who you already know locally"/></label>
+<label class="full">Why this area is ready<textarea name="rationale" required maxlength="2000" rows="4" placeholder="Artists, venues, or community activity that could get the chapter started"/></label>
+</div><div class="actions"><button>Submit for review</button><a class="button" href="/join/">Back to joining</a></div><p data-region-status role="status"></p></form>
+<section><h2>Your proposals</h2><div data-region-proposals></div></section>
+</main><script>import {initRegionProposal} from '../../lib/region-proposals';initRegionProposal();</script>
+</BaseLayout>

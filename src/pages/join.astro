@@ -2,22 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import pilot from '../data/community-pilot.json';
 import '../styles/venue-workspace.css';
+const onlineTest=import.meta.env.MODE==='online-test';
 ---
 <BaseLayout title="Join the Community | Artists Are Jerks" noindex>
 <main class="venue-workspace">
 <p>Rogue Valley · Artists Are Jerks</p><h1>Join the community</h1><p>Help people discover artwork they can see in person, and the places that show it.</p>
-<p class="notice"><strong>Local prototype:</strong> Applications and invitation acceptance are simulated in this browser. Nothing is emailed or published. Clerk sign-in comes later.</p>
+<p class="notice"><strong>{onlineTest?'Private online test':'Local prototype'}:</strong> Artist applications and invitation acceptance are still simulated in this browser. Region proposals save to {onlineTest?'the protected test site':'local development storage'}. Nothing is emailed or published.</p>
 <div class="public-grid" data-join-choices>
 <section class="card"><h2>I’m an artist</h2><p>For visual artists, including those showing in restaurants, studios, and other local spaces. This is an art community, rather than a crafts marketplace.</p><button type="button" data-open-artist>Request consideration →</button></section>
 <section class="card"><h2>I represent a venue</h2><p>Introduce your space and tell artists you are available to host their work. Administrator approval is required before recruitment tools become available.</p><a class="button" href="/prototype/venues/workspace/">Apply as a venue →</a></section>
+<section class="card"><h2>My area isn’t listed</h2><p>Propose a city or region where local artists and venues could start a new Artists Are Jerks community.</p><a class="button" href="/join/region/">Propose a region →</a></section>
 </div>
 <form class="card" data-artist-application hidden><h2>A little about your work</h2><p>No account or artwork upload is needed to request consideration.</p>
-<div class="fields"><label>Artist name<input name="name" required maxlength="150"/></label><label>Private contact email<input name="email" type="email" required/></label><label>Home city<select name="city">{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label><label>Practice or media<input name="practice" required placeholder="Painting, drawing, printmaking…" maxlength="200"/></label><label class="full">Website or portfolio <small>optional</small><input name="portfolio" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="yourwebsite.com"/></label><label class="full">Tell us about your work<textarea name="note" required rows="4" maxlength="2000" placeholder="What do you make, and where can it be seen? If you have no portfolio link, tell us how we can review examples."/></label></div>
+<div class="fields"><label>Artist name<input name="name" required maxlength="150"/></label><label>Private contact email<input name="email" type="email" required/></label><label>Region<select name="regionId" data-region-select><option value="region-rogue-valley">Rogue Valley · OR</option></select></label><label>Home city<input name="city" required list="rogue-valley-cities" maxlength="120"/><datalist id="rogue-valley-cities">{pilot.regions[0].cities.map(city=><option value={city}/>)}</datalist></label><label>Practice or media<input name="practice" required placeholder="Painting, drawing, printmaking…" maxlength="200"/></label><label class="full">Website or portfolio <small>optional</small><input name="portfolio" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="yourwebsite.com"/></label><label class="full">Tell us about your work<textarea name="note" required rows="4" maxlength="2000" placeholder="What do you make, and where can it be seen? If you have no portfolio link, tell us how we can review examples."/></label></div>
 <label class="check"><input name="opportunities" type="checkbox"/> After approval, I’d like to receive venue opportunity announcements.</label>
 <div class="actions"><button>Submit for consideration</button><button type="button" data-close-artist>Back to choices</button></div><p data-application-error role="status"></p></form>
 <section class="card" data-join-result hidden role="status"></section>
 <section class="card" data-invitation-panel hidden></section>
-<p>Already participating? Sign-in will be added when secure accounts are connected.</p>
+<p>Already participating? <a href="/sign-in/">Sign in to your account →</a></p>
 <details><summary>Prototype review tools</summary><p><a href="/prototype/admin/artists/">Review artist applications →</a> · <a href="/prototype/admin/venues/">Review venue applications →</a></p><div data-my-applications></div></details>
 </main>
 <script>

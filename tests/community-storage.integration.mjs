@@ -19,7 +19,19 @@ try{
  await db.exec("INSERT INTO community_memberships(user_id,administrator) VALUES('test-admin',1); INSERT INTO community_memberships(user_id,artist_id) VALUES('test-member','artist-owned');");
  await db.exec((await fs.readFile('community-api/migrations/0003_unique_owners.sql','utf8')).replace(/\n/g,' '));
  await db.exec((await fs.readFile('community-api/migrations/0004_image_owners.sql','utf8')).replace(/\n/g,' '));
+ await db.exec((await fs.readFile('community-api/migrations/0005_regions.sql','utf8')).replace(/\n/g,' '));
  const call=(path,method='GET',body,headers={},principal=admin)=>signed(path,method,body===undefined?undefined:JSON.stringify(body),{'Content-Type':'application/json',...headers},principal);
+ const initialRegions=await (await mf.dispatchFetch('http://localhost/api/community/public/regions')).json();assert.equal(initialRegions.regions.length,1);assert.equal(initialRegions.regions[0].name,'Rogue Valley');
+ const unassigned={userId:'region-applicant',administrator:false};
+ const proposal={proposedName:'Santa Fe area',coreCity:'Santa Fe',stateCode:'NM',coverage:'Santa Fe and nearby communities',localConnection:'I live and work in the area.',intendedRole:'Local organizer',rationale:'Artists and venues are ready to participate.'};
+ assert.equal((await call('region-proposals','PUT',proposal,{},unassigned)).status,200,'signed-in users without workspace assignments may propose regions');
+ assert.equal((await call('region-proposals','PUT',proposal,{},unassigned)).status,409,'duplicate pending proposals must be rejected');
+ const ownProposals=await (await call('region-proposals','GET',undefined,{},unassigned)).json();assert.equal(ownProposals.proposals.length,1);assert.equal(ownProposals.proposals[0].proposed_name,'Santa Fe area');
+ const otherProposals=await (await call('region-proposals','GET',undefined,{}, {userId:'different-applicant',administrator:false})).json();assert.equal(otherProposals.proposals.length,0,'applicants must see only their own proposals');
+ assert.equal((await call('region-proposals','PUT',{action:'review',id:ownProposals.proposals[0].id,status:'approved'},{},unassigned)).status,403);
+ const adminProposals=await (await call('region-proposals')).json();assert.equal(adminProposals.proposals.length,1);
+ assert.equal((await call('region-proposals','PUT',{action:'review',id:ownProposals.proposals[0].id,status:'approved'})).status,200);
+ const approvedRegions=await (await mf.dispatchFetch('http://localhost/api/community/public/regions')).json();assert.equal(approvedRegions.regions.length,2);assert.ok(approvedRegions.regions.some(region=>region.name==='Santa Fe area'));
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state')).status,401);
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state',{headers:{'x-aaj-capability':btoa(JSON.stringify({principal:admin})),'x-aaj-signature':'0'.repeat(64)}})).status,401);
 

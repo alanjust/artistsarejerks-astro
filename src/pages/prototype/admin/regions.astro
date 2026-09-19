@@ -1,0 +1,11 @@
+---
+export const prerender=false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied=await requireCommunityAccess(Astro,'administrator');if(denied)return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Region proposal review | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Administrator · Region expansion</p><h1>Review region proposals</h1><p>Approving a proposal makes that area available immediately in artist and venue onboarding. Workspace access remains a separate administrator decision.</p><p><a href="/prototype/workspaces/">Workspaces →</a> · <a href="/join/region/">Region proposal form →</a></p><p data-region-review-status role="status"></p><div data-region-review></div></main>
+<script>import {initRegionReview} from '../../../lib/region-proposals';initRegionReview();</script>
+</BaseLayout>

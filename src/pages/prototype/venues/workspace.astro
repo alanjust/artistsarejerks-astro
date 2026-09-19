@@ -8,12 +8,13 @@ const ownerVenue = access?.administrator ? '' : access?.venueId;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import pilot from '../../../data/community-pilot.json';
 import '../../../styles/venue-workspace.css';
+const onlineTest=import.meta.env.MODE==='online-test';
 ---
 <BaseLayout title="Venue intake & workspace | Artists Are Jerks" noindex>
 <main class="venue-workspace" data-owned-venue={ownerVenue}>
-<p>Venue intake · Local prototype</p><h1>Your venue workspace</h1>
+<p>Venue intake · {onlineTest?'Private online test':'Local prototype'}</p><h1>Your venue workspace</h1>
 <p>Introduce your space, find AAJ artists, and let the community know you are available to host their work.</p>
-<p class="notice"><strong>Local development:</strong> Changes save to shared storage on this Mac. Venue owners can update their venue information; approval and visibility remain controlled by administrators. No email is sent.</p>
+<p class="notice"><strong>{onlineTest?'Protected test site':'Local development'}:</strong> Changes save to {onlineTest?'private online test storage':'shared storage on this Mac'}. Venue owners can update their venue information; approval and visibility remain controlled by administrators. No email is sent.</p>
 <p><a href="/prototype/venues/">Places to see art</a>{access?.administrator && <> · <a href="/prototype/admin/venues/">Administrator review</a></>}</p>
 <label>Working venue<select data-working-venue><option value="new">Start a new application</option><option value="venue-leos-brewpub">Claim Leo’s sample listing</option></select></label>
 <p data-venue-status role="status"></p>
@@ -21,7 +22,7 @@ import '../../../styles/venue-workspace.css';
 <h2>Your venue’s information</h2><p>Required now: name, city, visitor address, and your private contact information. Everything else can be added later.</p>
 <div class="fields">
 <label>Venue name<input name="name" required maxlength="150"/></label><label>Type<select name="type"><option>Restaurant</option><option>Brewpub and restaurant</option><option>Gallery</option><option>Cooperative</option><option>Museum</option><option>Artist studio</option><option>Other art display space</option></select></label>
-<label>City<select name="city">{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label><label>Postal code<input name="postalCode" inputmode="numeric"/></label>
+<label>Region<select name="regionId" data-region-select><option value="region-rogue-valley">Rogue Valley · OR</option></select></label><label>City<input name="city" required list="venue-rogue-valley-cities" maxlength="120"/><datalist id="venue-rogue-valley-cities">{pilot.regions[0].cities.map(city=><option value={city}/>)}</datalist></label><label>Postal code<input name="postalCode" inputmode="numeric"/></label>
 <label class="full">Visitor street address<input name="address" required maxlength="250"/><small>Public when your listing is approved and visible.</small></label>
 <label class="full">About your space<textarea name="description" rows="3"/></label>
 <label>Venue website<input name="website" type="url" placeholder="https://"/></label><label>Public venue phone<input name="phone" type="tel"/></label>
