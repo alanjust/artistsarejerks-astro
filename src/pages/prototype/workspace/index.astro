@@ -1,0 +1,187 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'alan');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import pilot from '../../../data/community-pilot.json';
+const show = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDate === 'showing-now')!;
+const artist = pilot.artists.find((item) => item.id === show.artistId)!;
+const venue = pilot.venues.find((item) => item.id === show.venueId)!;
+const onlineTest = import.meta.env.MODE === 'online-test';
+const works = pilot.artworks.filter((work) => work.artistId === artist.id);
+const shownIds = new Set(show.artworkIds);
+const dates = `${new Date(`${show.startDate}T12:00:00`).toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${new Date(`${show.endDate}T12:00:00`).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+---
+<BaseLayout title="Alan’s Artist Workspace Prototype | Artists Are Jerks" noindex>
+  <div class="workspace" data-workspace>
+    <header class="hero">
+      <div><p class="eyebrow">Private artist workspace · Prototype</p><h1>Alan’s workspace</h1><p>Manage what visitors see, organize your artwork, and tell the community where it can be seen in person.</p></div>
+      <div class="hero-actions"><span class="live"><i></i> {onlineTest ? 'Artist page is visible in this test site' : 'Artist page is public'}</span><a class="button light" href={`/prototype/artists/${artist.slug}/`}>{onlineTest ? 'Preview artist page ↗' : 'Preview public page ↗'}</a></div>
+    </header>
+
+    <nav class="tabs" aria-label="Artist workspace">
+      {['Home','Profile','Artwork','Showing','Visibility'].map((label,index)=><button class:list={{active:index===0}} type="button" data-choice={label.toLowerCase()} aria-pressed={index===0}><span>0{index+1}</span> {label}</button>)}
+    </nav>
+    <p><a href="/prototype/venues/">Browse venues →</a> · <a href="/prototype/venues/workspace/">Venue intake &amp; workspace →</a></p>
+    <p class="prototype-note"><strong>Safe prototype:</strong> {onlineTest ? 'Changes save to this private online test site. Page and artwork visibility apply within the protected test site. Wait for the top banner to show Saved. Nothing is emailed or sent to a venue.' : 'Changes stay in this local prototype. Connected browsers save to shared storage on this Mac; the top banner shows save progress. Nothing is published online, emailed, or sent to a venue.'}</p>
+
+    <section class="panel active" data-panel="home">
+      <div class="heading"><div><p class="eyebrow">01 · Home</p><h2>What would you like to do?</h2></div><p>Your artist page is ready. You have no confirmed physical showing.</p></div>
+      <div class="task-grid">
+        <button class="task violet" data-go="artwork"><b data-artwork-total>{works.length}</b><strong>Manage artwork</strong><small>Manage all your artwork, visibility, and availability.</small><u>Open artwork →</u></button>
+        <button class="task green" data-go="showing"><em>Showing</em><strong>No confirmed showing</strong><small>Your artist page can stay public without an exhibition.</small><u>Plan a showing →</u></button>
+        <button class="task gold" data-go="profile"><b>1</b><strong>Public contact method</strong><small>You control each detail visitors can see.</small><u>Edit profile →</u></button>
+      </div>
+      <aside class="checklist"><div><p class="eyebrow">Public-page checklist</p><h3>Your page is in good shape.</h3></div><ul><li>Profile and location</li><li data-visible-artwork-count>{onlineTest ? 'Loading visible artwork count…' : 'Loading public artwork count…'}</li><li>Contact method</li><li>Showing is optional</li></ul></aside>
+    </section>
+
+    <section class="panel" data-panel="profile" hidden>
+      <div class="heading"><div><p class="eyebrow">02 · Profile</p><h2>Your public profile</h2></div><p>Choose the information that introduces you and the ways visitors may contact you.</p></div>
+      <form class="dark-card" id="profile-form">
+        <div class="form-grid">
+          <label>Artist name<input name="name" value={artist.name}/></label>
+          <label>Home city<select name="city"><option selected>Medford</option><option>Ashland</option><option>Central Point</option><option>Grants Pass</option></select></label>
+          <label class="full">Practice or media<input name="practice" value={artist.practice.join(', ')}/><small>Separate several practices with commas.</small></label>
+          <label class="full">Short biography<textarea name="bio" rows="5">{artist.bio}</textarea><small>About 2–4 sentences is plenty.</small></label>
+        </div>
+        <fieldset class="contacts"><legend>What may visitors use?</legend>
+          <label><input type="checkbox" name="contactForm" checked/><span><strong>Artists Are Jerks contact form</strong><small>Your email address stays hidden.</small></span></label>
+          <label><input type="checkbox" name="websiteVisible" checked/><span><strong>My website</strong><input name="website" type="url" value={artist.contactPreferences.website}/></span></label>
+          <label><input type="checkbox" name="emailVisible"/><span><strong>My email address</strong><input name="email" type="email" placeholder="alan@example.com"/></span></label>
+          <label><input type="checkbox" name="phoneVisible"/><span><strong>Calls or text messages</strong><input name="phone" type="tel" placeholder="(541) 555-0123"/></span></label>
+        </fieldset>
+        <div class="actions"><p data-status="profile"></p><button class="button primary">Save profile</button></div>
+      </form>
+    </section>
+
+    <section class="panel" data-panel="artwork" hidden>
+      <div class="heading split"><div><p class="eyebrow">03 · Artwork</p><h2>Your artwork</h2><p>{works.length} works · {works.length} public</p></div><a class="button primary" href="/prototype/onboarding/artwork/">+ Add artwork</a></div>
+      <div class="works">{works.map(work=>
+        <article class="work" data-work-id={work.id}>
+          <img src={work.image} alt={work.title}/>
+          <div class="work-copy"><div><h3>{work.title}</h3><p>{work.medium}{work.year ? ` · ${work.year}`:''}</p></div>
+            <div class="work-controls">
+              <label>On artist page<select data-visibility><option value="public" selected>Visible on artist page</option><option value="private">Private</option></select></label>
+              <label>Availability<select data-sale><option value="contact-for-price" selected={work.salePresentation==='contact-for-price'}>Contact for price</option><option value="public-price" selected={work.salePresentation==='public-price'}>Show a price</option><option value="private-price" selected={work.salePresentation==='private-price'}>Price kept private</option><option value="not-for-sale" selected={work.salePresentation==='not-for-sale'}>Not for sale</option><option value="sold" selected={work.salePresentation==='sold'}>Sold</option></select></label>
+            </div><small>Not in a confirmed showing</small>
+          </div>
+        </article>)}</div>
+      <div class="actions plain"><p data-status="artwork"></p><button class="button primary" type="button" data-save-artwork>Save artwork changes</button></div>
+    </section>
+
+    <section class="panel" data-panel="showing" hidden>
+      <div class="heading"><div><p class="eyebrow">04 · Showing</p><h2>Where your work can be seen</h2></div><p>You create the showing. The venue can receive an informational notice later; its confirmation is not required.</p></div>
+      <p class="prototype-note">No physical showing is confirmed. Create a dated showing when you have an actual place and dates.</p>
+      <details><summary>Optional demonstration: fictional Leo’s showing</summary><p>For testing only. These sample dates and venue do not represent Alan’s plans.</p><article class="show-card">
+        <div class="show-summary"><em>Demo only</em><h3>{venue.name}</h3><p>{venue.addressLine1}<br/>{venue.city}, {venue.state}</p><p><strong>{dates}</strong></p></div>
+        <div class="show-edit"><fieldset><legend>Artwork at this location</legend>{works.map(work=><label><input type="checkbox" value={work.id} checked={shownIds.has(work.id)} data-show-work/><img src={work.image} alt=""/><span>{work.title}</span></label>)}</fieldset>
+          <label class="representative">Showing Now representative artwork<select id="featured" data-show={show.id}>{works.map(work=><option value={work.id} selected={work.id===show.featuredArtworkId}>{work.title}</option>)}</select><small>This single image represents the showing in the community directory.</small></label>
+          <div class="actions"><p data-status="showing"></p><button class="button primary" type="button" data-save-showing>Save showing</button></div>
+        </div>
+      </article></details>
+      <details class="new-show" data-new-show><summary>+ Create a showing</summary>
+        <p>Choose a place, dates, and the artwork visitors can see there.</p>
+        <form id="new-show">
+          <div class="form-grid">
+            <label class="full">Place<select name="venueId"><option value={venue.id}>{venue.name} · {venue.city}</option><option value="new">+ Add a new venue or studio</option></select></label>
+            <fieldset class="full form-grid" data-new-venue hidden><legend>New venue details</legend>
+              <label class="full">Venue or studio name<input name="venue" placeholder="Where can people see your work?" maxlength="150"/></label>
+              <label class="full">Street address<input name="address" maxlength="250"/><small>Use the visitor entrance address. This will be public.</small></label>
+              <label>City<select name="city">{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label>
+              <label>Venue website <small>optional</small><input name="website" type="url" placeholder="https://"/></label>
+            </fieldset>
+            <p class="full" data-existing-venue>{venue.addressLine1} · {venue.city}, Oregon</p>
+            <label>First day<input name="start" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="First day, month/day/year" required/></label><label>Last day<input name="end" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" aria-label="Last day, month/day/year" required/><small>The listing ends after this day, in local time.</small></label>
+          </div>
+          <fieldset class="simple-checks"><legend>Artwork at this showing</legend>{works.map(work=><label><input type="checkbox" name="works" value={work.id}/> {work.title}</label>)}</fieldset>
+          <label class="representative">Showing Now featured artwork<select name="featuredArtworkId" required><option value="">Select artwork above first</option></select><small>One image represents this showing in the directory. All selected pieces are part of the showing.</small></label>
+          <div class="actions"><p data-status="new-show" role="status"></p><button class="button light" type="button" data-save-draft>Save draft</button><button class="button primary">Preview showing →</button></div>
+        </form>
+        <section class="show-preview" data-show-preview hidden aria-label="Preview showing">
+          <p class="eyebrow">Public listing preview</p><div class="preview-card"><img data-preview-image alt=""/><div><h3>{artist.name}</h3><p data-preview-city></p><p data-preview-dates></p><strong data-preview-place></strong><p data-preview-works></p></div></div>
+          <p>This place and address will be public. Venue approval is not required. In the live service, the venue would receive a notice.</p>
+          <p><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> {onlineTest ? 'Publishing updates previews within this protected test site.' : 'Publishing updates previews in the local prototype.'}</p>
+          <div class="actions"><button class="button light" type="button" data-edit-preview>← Edit showing</button><button class="button primary" type="button" data-publish-show>Publish to local preview</button></div>
+        </section>
+        <div data-publish-result role="status" hidden><h3>Showing published to your local preview.</h3><p>It appears as current or upcoming based on the dates you entered. Expired listings are hidden automatically.</p><div class="published-links"><a href="/showing-now/">Community directory →</a><a href={`/prototype/artists/${artist.slug}/`}>Artist page →</a><a data-published-venue>Venue map &amp; info →</a></div><button type="button" class="button light" data-create-another>Create another showing</button></div>
+      </details>
+      <section class="saved-showings" data-saved-showings aria-label="Your saved showings"></section>
+      <script type="application/json" data-showing-data is:inline set:html={JSON.stringify({artist,venue,works})}/>
+
+    </section>
+
+    <section class="panel" data-panel="visibility" hidden>
+      <div class="heading"><div><p class="eyebrow">05 · Visibility</p><h2>Your page and your data</h2></div><p>Take your public page offline whenever you need to. Your records remain in your workspace.</p></div>
+      <div class="setting-grid">
+        <article class="setting dark-card"><div><h3>Public artist page</h3><p>Allow visitors to find your page and public artwork.</p></div><label class="switch"><input id="page-visible" type="checkbox" checked/><span></span><b>Public</b></label></article>
+        <article class="setting dark-card"><div><h3>Export your information</h3><p>Download a copy of your profile, artwork list, contacts, and show records.</p></div><button class="button light" type="button" data-export>Download data</button></article>
+      </div>
+      <div class="offline" hidden><strong>Your page will be offline.</strong><p>Visitors will no longer see your profile or artwork. You can turn it back on here at any time.</p></div>
+      <div class="actions plain"><p data-status="visibility"></p><button class="button primary" type="button" data-save-visibility>Save visibility</button></div>
+    </section>
+  </div>
+
+  <script>
+    import {renderAlanUploads} from '../../../lib/alan-artwork';
+    await renderAlanUploads(true);
+    import {getStoredItem,setStoredItem} from '../../../lib/community-storage';
+    import { initShowingForm } from '../../../lib/showing-form';
+    import {readVenues} from '../../../lib/prototype-venues';
+    import {readShowings} from '../../../lib/prototype-showings';
+    const showingData=JSON.parse(document.querySelector('[data-showing-data]')?.textContent||'{}');
+    const storedForShowing=JSON.parse(getStoredItem('aaj-artist-workspace-prototype')||'{}');
+    const uploadedForShowing=(storedForShowing.uploadedWorks||[]).map((work:any)=>({id:work.id,title:work.title,image:work.sampleImage||`/api/community/images/${encodeURIComponent(work.imageKey)}`}));
+    showingData.works=[...showingData.works,...uploadedForShowing];
+    const demoFieldset=document.querySelector<HTMLElement>('.show-edit fieldset');
+    const demoSelect=document.querySelector<HTMLSelectElement>('#featured');
+    const labelTemplate=demoFieldset?.querySelector<HTMLLabelElement>('label');
+    const createFieldset=document.querySelector<HTMLElement>('#new-show fieldset.simple-checks');
+    const createLabelTemplate=createFieldset?.querySelector<HTMLLabelElement>('label');
+    for(const work of uploadedForShowing){
+      if(demoFieldset&&labelTemplate){const label=labelTemplate.cloneNode(true) as HTMLLabelElement,input=label.querySelector<HTMLInputElement>('input')!,image=label.querySelector<HTMLImageElement>('img')!,title=label.querySelector('span')!;input.value=work.id;input.checked=false;input.dataset.showWork='';image.src=work.image;image.alt='';title.textContent=work.title;demoFieldset.append(label)}
+      if(demoSelect)demoSelect.add(new Option(work.title,work.id));
+      if(createFieldset&&createLabelTemplate){const label=createLabelTemplate.cloneNode(true) as HTMLLabelElement,input=label.querySelector<HTMLInputElement>('input')!;input.value=work.id;input.checked=false;label.lastChild!.textContent=` ${work.title}`;createFieldset.append(label)}
+    }
+    initShowingForm(showingData);
+    const panels=[...document.querySelectorAll<HTMLElement>('[data-panel]')], choices=[...document.querySelectorAll<HTMLButtonElement>('[data-choice]')];
+    const key='aaj-artist-workspace-prototype'; let state:Record<string,any>={}; try{state=JSON.parse(getStoredItem(key)||'{}')}catch{}
+    function open(name:string){panels.forEach(p=>{const on=p.dataset.panel===name;p.hidden=!on;p.classList.toggle('active',on)});choices.forEach(b=>{const on=b.dataset.choice===name;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});history.replaceState(null,'',name==='home'?location.pathname:`#${name}`);document.querySelector('[data-workspace]')?.scrollIntoView({behavior:'smooth'})}
+    choices.forEach(b=>b.addEventListener('click',()=>open(b.dataset.choice||'home')));document.querySelectorAll<HTMLElement>('[data-go]').forEach(b=>b.addEventListener('click',()=>open(b.dataset.go||'home')));const requestedPanel=location.hash.slice(1);if(panels.some(panel=>panel.dataset.panel===requestedPanel))open(requestedPanel);
+    function save(next:Record<string,any>,target:string,message='Changes queued. Wait for the top banner to show Saved.'){state={...state,...next,updatedAt:new Date().toISOString()};setStoredItem(key,JSON.stringify(state));const node=document.querySelector<HTMLElement>(`[data-status="${target}"]`);if(node)node.textContent=message;if(target==='artwork')updateArtworkCounts()}
+    const profile=document.querySelector<HTMLFormElement>('#profile-form');if(state.profile&&profile)Object.entries(state.profile).forEach(([name,value])=>{const field=profile.elements.namedItem(name) as HTMLInputElement|null;if(!field)return;field.type==='checkbox'?field.checked=Boolean(value):field.value=String(value??'')});profile?.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(profile),result:any=Object.fromEntries(data.entries());['contactForm','websiteVisible','emailVisible','phoneVisible'].forEach(n=>result[n]=data.has(n));save({profile:result},'profile')});
+    if(state.artwork)state.artwork.forEach((item:any)=>{const card=document.querySelector<HTMLElement>(`[data-work-id="${item.id}"]`);if(card){card.querySelector<HTMLSelectElement>('[data-visibility]')!.value=item.visibility;card.querySelector<HTMLSelectElement>('[data-sale]')!.value=item.sale}});document.querySelector('[data-save-artwork]')?.addEventListener('click',()=>save({artwork:[...document.querySelectorAll<HTMLElement>('[data-work-id]')].map(card=>({id:card.dataset.workId,visibility:card.querySelector<HTMLSelectElement>('[data-visibility]')?.value,sale:card.querySelector<HTMLSelectElement>('[data-sale]')?.value})),uploadedWorks:(state.uploadedWorks||[]).map((work:any)=>{const card=[...document.querySelectorAll<HTMLElement>('[data-work-id]')].find(c=>c.dataset.workId===work.id);return {...work,visibility:card?.querySelector<HTMLSelectElement>('[data-visibility]')?.value||work.visibility,sale:card?.querySelector<HTMLSelectElement>('[data-sale]')?.value||work.sale}})},'artwork'));
+    function updateArtworkCounts(){
+      const cards=[...document.querySelectorAll<HTMLElement>('[data-work-id]')];
+      const total=cards.length,visible=cards.filter(card=>card.querySelector<HTMLSelectElement>('[data-visibility]')?.value==='public').length;
+      const totalNode=document.querySelector('[data-artwork-total]');if(totalNode)totalNode.textContent=String(total);
+      const heading=document.querySelector('[data-panel="artwork"] .heading p:last-child');if(heading)heading.textContent=`${total} works · ${visible} visible on artist page`;
+      const checklist=document.querySelector('[data-visible-artwork-count]');if(checklist)checklist.textContent=`${visible} ${visible===1?'artwork':'artworks'} visible on artist page`;
+    }
+    updateArtworkCounts();
+    const featured=document.querySelector<HTMLSelectElement>('#featured'),showChecks=[...document.querySelectorAll<HTMLInputElement>('[data-show-work]')];if(featured){const featureKey=`aaj-featured-${featured.dataset.show}`,saved=getStoredItem(featureKey);if(saved)featured.value=saved;const syncFeatured=()=>{[...featured.options].forEach(option=>option.disabled=!showChecks.some(input=>input.value===option.value&&input.checked));if(featured.selectedOptions[0]?.disabled)featured.value=showChecks.find(input=>input.checked)?.value||''};showChecks.forEach(input=>input.addEventListener('change',syncFeatured));syncFeatured();document.querySelector('[data-save-showing]')?.addEventListener('click',()=>{setStoredItem(featureKey,featured.value);save({currentShow:{featuredArtworkId:featured.value,artworkIds:showChecks.filter(i=>i.checked).map(i=>i.value)}},'showing','Showing saved. The directory preview now uses this artwork.')})}
+
+    const visible=document.querySelector<HTMLInputElement>('#page-visible'),offline=document.querySelector<HTMLElement>('.offline');if(visible&&typeof state.pageVisible==='boolean')visible.checked=state.pageVisible;function reflect(){if(!visible||!offline)return;offline.hidden=visible.checked;const label=visible.parentElement?.querySelector('b');if(label)label.textContent=visible.checked?'Public':'Offline'}visible?.addEventListener('change',reflect);reflect();document.querySelector('[data-save-visibility]')?.addEventListener('click',()=>{if(visible)save({pageVisible:visible.checked},'visibility',visible.checked?'Saved. Your page remains public.':'Saved in this prototype. Your page would now be offline.')});
+    document.querySelector('[data-export]')?.addEventListener('click',()=>{const blob=new Blob([JSON.stringify({artist:'Alan Just',prototypeChanges:state,showings:readShowings(),venues:readVenues()},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='alan-just-artists-are-jerks-export.json';a.click();URL.revokeObjectURL(a.href)});
+  </script>
+</BaseLayout>
+
+<style>
+  .workspace, .hero, .hero > div, .hero-actions, .panel, .work-copy, .work-controls, .show-edit { min-width: 0; max-width: 100%; }
+  .hero-actions { min-width: 0 !important; }
+  .workspace .button, .workspace h1, .workspace h2, .work-copy h3 { overflow-wrap: anywhere; }
+  .workspace input, .workspace select, .workspace textarea { min-width: 0; max-width: 100%; }
+  .workspace{width:min(1180px,100%);margin:auto;padding:var(--space-10) clamp(var(--space-5),4vw,var(--space-10)) var(--space-20)}.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;padding:2rem;border-radius:12px;background:#000;color:#fff;box-shadow:0 6px 18px #0003}.eyebrow{margin:0 0 .5rem;color:var(--color-green);font-family:var(--font-heading);font-size:.875rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;color:var(--color-gold);font-family:var(--font-display);font-size:clamp(2.5rem,5.5vw,4.6rem);font-weight:400;letter-spacing:var(--letter-spacing-display);line-height:.95}.hero p:last-child{max-width:700px;font-size:1.1rem}.hero-actions{display:flex;min-width:230px;flex-direction:column;align-items:flex-end;gap:.75rem}.live{font-weight:700}.live i{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:50%;background:var(--color-green)}
+  .button{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:0 1.25rem;border:2px solid currentColor;border-radius:8px;font-weight:700;cursor:pointer}.primary{border-color:#000;background:var(--color-purple);color:#fff}.light{border-color:#fff;background:#fff;color:#000}.tabs{display:grid;grid-template-columns:repeat(5,1fr);margin:1.5rem 0;border-radius:8px;background:#000;overflow:hidden}.tabs button{min-height:58px;padding:.75rem;border-right:1px solid #444;color:#ccc;font-family:var(--font-heading);font-weight:700;text-align:left}.tabs span{color:#777;font-size:.75rem}.tabs .active{background:var(--color-purple);color:#fff}.tabs .active span{color:var(--color-gold)}.prototype-note{margin-bottom:2rem;padding:.75rem 1rem;border-left:5px solid var(--color-purple);background:#fff8e8;font-size:.875rem}
+  .panel{animation:appear .2s ease}.panel[hidden]{display:none}.heading{display:grid;grid-template-columns:1fr minmax(240px,420px);gap:2rem;align-items:end;margin-bottom:2rem}.heading h2{margin:0;color:var(--color-purple);font-family:var(--font-display);font-size:clamp(2rem,4vw,3.5rem);font-weight:400;letter-spacing:var(--letter-spacing-display);line-height:1}.heading>p,.split p{margin:0}.split{display:flex;justify-content:space-between}.task-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}.task{display:flex;min-height:290px;flex-direction:column;align-items:flex-start;padding:1.5rem;border:0;border-radius:12px;color:#000;text-align:left;box-shadow:0 5px 14px #0002;cursor:pointer}.violet{background:#dcb5f2}.green{background:var(--color-green)}.gold{background:var(--color-gold)}.task b{font-family:var(--font-display);font-size:4rem;letter-spacing:var(--letter-spacing-display);line-height:1}.task em,.show-summary em{padding:5px 10px;border-radius:99px;background:#000;color:#fff;font-size:.75rem;font-style:normal;font-weight:700;text-transform:uppercase}.task strong{margin:auto 0 .5rem;font-size:1.5rem}.task small{font-size:1rem}.task u{margin-top:1.25rem;font-weight:700}.checklist{display:grid;grid-template-columns:1fr 1.4fr;gap:2rem;align-items:center;margin-top:1.5rem;padding:1.5rem;border-radius:12px;background:#000;color:#fff}.checklist ul{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;list-style:none}.checklist li:before{content:'✓';margin-right:.5rem;color:var(--color-green);font-weight:700}
+  [data-panel="home"] > .heading { grid-template-columns: 1fr; gap: var(--space-3); align-items: start; }
+  [data-panel="showing"] > .heading { grid-template-columns: 1fr; gap: var(--space-3); align-items: start; }
+  .dark-card,.show-card,.new-show{border-radius:12px;background:#000;color:#fff;box-shadow:0 5px 14px #0003}.dark-card{padding:clamp(1.25rem,5vw,2.5rem)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}.form-grid label,.representative{display:grid;gap:.5rem;font-family:var(--font-heading);font-weight:700}.full{grid-column:1/-1}.form-grid small,.representative small{color:#ccc;font-family:var(--font-body);font-weight:400}.form-grid input,.form-grid textarea,.form-grid select,.representative select,.contacts span input{width:100%;min-height:48px;padding:.75rem;border:2px solid #666;border-radius:8px;background:#181818;color:#fff}.contacts{margin-top:2rem;border:0}.contacts legend,.show-edit legend,.simple-checks legend{margin-bottom:.75rem;font-size:1.25rem;font-weight:700}.contacts>label{display:flex;gap:.75rem;padding:1rem;border-top:1px solid #444}.contacts>label>input{width:22px;height:22px;accent-color:var(--color-green)}.contacts span{display:grid;flex:1;gap:.5rem}.contacts small{color:#ccc}.contacts span input{max-width:470px;min-height:42px}.actions{display:flex;align-items:center;justify-content:flex-end;gap:1rem;margin-top:2rem;padding-top:1.25rem;border-top:1px solid #555}.actions p{margin:0;color:var(--color-green);font-weight:700}.plain{border-color:#000}
+  .works{display:grid;gap:1rem}.work{display:grid;grid-template-columns:170px 1fr;overflow:hidden;border-radius:12px;background:#000;color:#fff}.work>img{width:100%;height:100%;min-height:175px;padding:10px;background:#181818;object-fit:contain}.work-copy{display:grid;grid-template-columns:1fr 1.3fr;gap:1.25rem;align-items:center;padding:1.25rem}.work-copy h3{margin:0 0 .25rem}.work-copy p{margin:0;color:#ccc}.work-controls{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.work-controls label{font-size:.75rem;font-weight:700}.work-controls select{display:block;width:100%;min-height:42px;margin-top:.25rem;padding:.5rem;border:1px solid #666;border-radius:4px;background:#222;color:#fff}.work-copy>small{grid-column:1/-1;color:#ccc}
+  .show-card{display:grid;grid-template-columns:1fr 2fr;overflow:hidden}.show-summary{padding:2rem;background:var(--color-green);color:#000}.show-summary h3{margin:1.25rem 0 .75rem;font-size:1.875rem}.show-edit{padding:1.5rem}.show-edit fieldset{border:0}.show-edit fieldset label{display:grid;grid-template-columns:auto 54px 1fr;gap:.75rem;align-items:center;min-height:62px;padding:6px;border-top:1px solid #444}.show-edit fieldset input{width:20px;height:20px;accent-color:var(--color-green)}.show-edit fieldset img{width:52px;height:52px;object-fit:contain;background:#181818}.representative{margin-top:1.5rem}.new-show{margin-top:1.5rem;padding:1.5rem}.new-show summary{min-height:44px;color:var(--color-gold);font-size:1.25rem;font-weight:700;cursor:pointer}.new-show form{padding-top:1.25rem}.simple-checks{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.5rem;border:0}.simple-checks legend{grid-column:1/-1}.simple-checks label{padding:.5rem;border:1px solid #555}
+  .new-show [hidden]{display:none!important}.new-show fieldset.form-grid{padding:1rem;border:1px solid #666;margin:0}.show-preview{padding-top:1.5rem}.preview-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;padding:1.25rem;border-radius:12px;background:var(--color-green);color:#000}.preview-card img{width:100%;height:280px;object-fit:contain;background:#181818}.preview-card h3{font-size:1.5rem}.published-links{display:flex;flex-wrap:wrap;gap:1.25rem;margin-block:1.5rem}.published-links a{color:var(--color-gold);text-decoration:underline}.saved-showings{display:grid;gap:1rem;margin-top:1.5rem}.saved-showings article{padding:1.25rem;border-radius:12px;background:var(--color-gold);overflow-wrap:anywhere}.saved-showings button{margin:1rem .75rem 0 0}.saved-showings p{margin:0}.new-show .actions p{overflow-wrap:anywhere}.new-show .actions{flex-wrap:wrap}.show-preview h3{letter-spacing:var(--letter-spacing-display)}
+  @media(max-width:560px){.preview-card{grid-template-columns:1fr}.published-links{flex-direction:column}}
+  .setting-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}.setting{display:flex;min-height:220px;flex-direction:column;justify-content:space-between}.setting .button{align-self:flex-start}.switch{display:flex;align-items:center;gap:.75rem;cursor:pointer}.switch input{position:absolute;opacity:0}.switch span{position:relative;width:58px;height:32px;border-radius:99px;background:#666}.switch span:after{content:'';position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}.switch input:checked+span{background:var(--color-green)}.switch input:checked+span:after{transform:translateX(26px)}.offline{margin-top:1.25rem;padding:1.25rem;border:3px solid #000;background:#ffd0c7}.offline strong{font-size:1.25rem}@keyframes appear{from{opacity:.2;transform:translateY(5px)}}
+  @media(max-width:800px){.hero{align-items:flex-start;flex-direction:column}.hero-actions{align-items:flex-start}.tabs{grid-template-columns:repeat(5,minmax(86px,1fr));overflow-x:auto}.heading{grid-template-columns:1fr;gap:.75rem}.task-grid,.setting-grid{grid-template-columns:1fr}.task{min-height:220px}.checklist,.show-card{grid-template-columns:1fr}.work-copy{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  @media(max-width:560px){.workspace{padding:0 0 var(--space-16)!important}.hero{align-items:flex-start;padding:1.25rem;border-radius:0;box-shadow:none}.hero h1{font-size:2.0625rem;letter-spacing:var(--letter-spacing-wider)}.hero-actions{gap:.5rem}.tabs{grid-template-columns:repeat(5,minmax(0,1fr));margin:0;border-radius:0;overflow:hidden}.tabs button{min-width:0;min-height:50px;padding:.5rem .25rem;font-size:.875rem;text-align:center}.tabs span{display:none}.prototype-note{margin:0;padding:var(--space-3) var(--space-5);border-left:0}.panel{padding:var(--space-2) var(--space-6) 0}.task-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.task{min-height:220px;padding:1rem}.task strong{font-size:1.125rem}.task small{font-size:.875rem}.split{align-items:flex-start;flex-direction:column}.work{grid-template-columns:105px 1fr}.work>img{min-height:150px}.work-copy{gap:.75rem;padding:.75rem}.work-controls{grid-template-columns:1fr}.work-copy>small{grid-column:auto}.checklist ul,.simple-checks{grid-template-columns:1fr}.actions{align-items:stretch;flex-direction:column}.actions .button{width:100%}.contacts>label{padding-inline:0}}
+</style>

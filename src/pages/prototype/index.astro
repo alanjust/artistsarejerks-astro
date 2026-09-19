@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PrototypeBanner from '../../components/community-prototype/PrototypeBanner.astro';
+import ArtworkCard from '../../components/community-prototype/ArtworkCard.astro';
+import pilot from '../../data/community-pilot.json';
+
+const cities = pilot.regions[0].cities;
+const current = pilot.exhibitions.find((show) => show.derivedStatusAsOfPilotDate === 'showing-now')!;
+const upcoming = pilot.exhibitions.find((show) => show.derivedStatusAsOfPilotDate === 'upcoming')!;
+const venue = pilot.venues.find((item) => item.id === current.venueId)!;
+const artist = pilot.artists.find((item) => item.id === current.artistId)!;
+const currentArtworks = current.artworkIds.map((id) => pilot.artworks.find((work) => work.id === id)!);
+const upcomingArtist = pilot.artists.find((item) => item.id === upcoming.artistId)!;
+const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.artworkIds[0])!;
+---
+
+<BaseLayout title="Showing Now Prototype | Artists Are Jerks" noindex>
+  <PrototypeBanner step="showing" />
+  <div class="discovery-shell">
+    <header class="discovery-intro">
+      <p class="eyebrow">Rogue Valley art you can stand in front of</p>
+      <h1>Showing now</h1>
+      <p>A painting looks different when you meet it across a room. Here’s what is hanging nearby today.</p>
+    </header>
+
+    <section class="filter-bar" aria-labelledby="find-heading">
+      <div>
+        <label id="find-heading" for="art-search">Find art or an artist</label>
+        <input id="art-search" type="search" placeholder="Try Alan, portrait, or printmaking" />
+      </div>
+      <fieldset>
+        <legend>Choose a city</legend>
+        <div class="city-options">
+          <button class="city-filter selected" type="button" data-city="All">All Rogue Valley</button>
+          {cities.map((city) => <button class="city-filter" type="button" data-city={city}>{city}</button>)}
+        </div>
+      </fieldset>
+    </section>
+
+    <div class="discovery-grid">
+      <main>
+        <section class="show-block" data-show-city={venue.city} data-search={`${artist.name} ${currentArtworks.map((work) => `${work.title} ${work.medium}`).join(' ')}`.toLowerCase()}>
+          <div class="show-heading">
+            <div>
+              <p class="live-label"><span></span> Now through October 25</p>
+              <h2>{artist.name} at {venue.name}</h2>
+              <p>{venue.type} · {venue.city}, Oregon</p>
+            </div>
+            <a class="place-link" href="/prototype/venues/leos-brewpub-and-grill/">Map &amp; info</a>
+          </div>
+          <div class="artwork-grid">
+            {currentArtworks.map((work) => <ArtworkCard artwork={work} artistName={artist.name} artistSlug={artist.slug} />)}
+          </div>
+        </section>
+
+        <p id="empty-results" class="empty-results" hidden>No current shows match that city and search. Try all Rogue Valley.</p>
+
+        <section class="upcoming" aria-labelledby="upcoming-heading">
+          <div>
+            <p class="eyebrow">Coming to Medford</p>
+            <h2 id="upcoming-heading">{upcomingArtist.name} at {venue.name}</h2>
+            <p>November 5–December 31. Save the name now, then come back when the work is on the wall.</p>
+            <a href={`/prototype/artists/${upcomingArtist.slug}/`}>Meet {upcomingArtist.name}</a>
+          </div>
+          <img src={upcomingArtwork.image} alt={upcomingArtwork.title} loading="lazy" />
+        </section>
+      </main>
+
+      <aside class="discovery-sidebar">
+        <section>
+          <p class="eyebrow">A featured artist</p>
+          <img src={upcomingArtwork.image} alt={upcomingArtwork.title} />
+          <h2>{upcomingArtist.name}</h2>
+          <p>{upcomingArtist.practice.join(' · ')}<br />{upcomingArtist.homeCity}, Oregon</p>
+          <a class="button-link" href={`/prototype/artists/${upcomingArtist.slug}/`}>See the artist’s work</a>
+        </section>
+
+        <section id="venue" class="venue-card">
+          <p class="eyebrow">Where to see it</p>
+        <h2><a href="/prototype/venues/leos-brewpub-and-grill/">{venue.name}</a></h2>
+          <p>{venue.addressLine1}<br />{venue.city}, {venue.state} {venue.postalCode}</p>
+          <dl>
+            <div><dt>Today</dt><dd>11:30 AM–9:00 PM</dd></div>
+            <div><dt>Admission</dt><dd>Free</dd></div>
+          </dl>
+          <p class="fine-print">Prototype address and hours. The artist supplied this listing.</p>
+        </section>
+
+        <section class="learn-card">
+          <p class="eyebrow">From Artists Are Jerks</p>
+          <h2>Look longer</h2>
+          <a href="/how-art-works/">How art works</a>
+          <a href="/art-wheel/">Spin the Art History Wheel</a>
+          <a href="/thinking-like-an-artist/">Thinking like an artist</a>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const filters = [...document.querySelectorAll<HTMLButtonElement>('.city-filter')];
+    const search = document.querySelector<HTMLInputElement>('#art-search');
+    const show = document.querySelector<HTMLElement>('[data-show-city]');
+    const empty = document.querySelector<HTMLElement>('#empty-results');
+    let city = 'All';
+
+    function updateResults() {
+      if (!show) return;
+      const query = search?.value.trim().toLowerCase() ?? '';
+      const matchesCity = city === 'All' || show.dataset.showCity === city;
+      const matchesSearch = !query || show.dataset.search?.includes(query);
+      const visible = Boolean(matchesCity && matchesSearch);
+      show.hidden = !visible;
+      if (empty) empty.hidden = visible;
+    }
+
+    filters.forEach((button) => button.addEventListener('click', () => {
+      city = button.dataset.city ?? 'All';
+      filters.forEach((item) => item.classList.toggle('selected', item === button));
+      updateResults();
+    }));
+    search?.addEventListener('input', updateResults);
+  </script>
+</BaseLayout>
+
+<style>
+  .discovery-shell { max-width: var(--max-width-content); margin: 0 auto; padding: var(--space-10) clamp(var(--space-4), 4vw, var(--space-10)) var(--space-20); }
+  .discovery-intro { max-width: 760px; margin-bottom: var(--space-8); }
+  .eyebrow { margin: 0 0 var(--space-2); color: var(--color-purple); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { margin-bottom: var(--space-3); font-family: var(--font-display); font-size: clamp(3.5rem, 9vw, 7rem); font-weight: 400; letter-spacing: var(--letter-spacing-display); line-height: .9; color: var(--color-purple); }
+  .discovery-intro > p:last-child { font-family: var(--font-heading); font-size: clamp(1.15rem, 2vw, 1.5rem); }
+  .filter-bar { display: grid; grid-template-columns: minmax(260px, .75fr) 1.5fr; gap: var(--space-8); align-items: end; margin-bottom: var(--space-10); padding: var(--space-5); border: var(--border-base) solid var(--color-black); background: var(--color-gold); box-shadow: 6px 6px 0 var(--color-black); }
+  label, legend { display: block; margin-bottom: var(--space-2); font-family: var(--font-heading); font-weight: 700; }
+  input { width: 100%; min-height: 48px; padding: 0 var(--space-3); border: var(--border-base) solid var(--color-black); background: var(--color-white); }
+  fieldset { border: 0; }
+  .city-options { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .city-filter { min-height: 44px; padding: 0 var(--space-3); border: var(--border-base) solid var(--color-black); background: var(--color-white); font-weight: 700; }
+  .city-filter.selected { background: var(--color-black); color: var(--color-white); }
+  .discovery-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); gap: var(--space-10); align-items: start; }
+  .show-heading { display: flex; justify-content: space-between; gap: var(--space-6); align-items: end; margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: var(--border-thick) solid var(--color-black); }
+  .show-heading h2, .upcoming h2 { margin-bottom: var(--space-2); font-size: clamp(2rem, 4vw, 3.5rem); }
+  .live-label { font-weight: 700; color: #2f7510; }
+  .live-label span { display: inline-block; width: .7em; height: .7em; margin-right: .35em; border-radius: 50%; background: var(--color-green); }
+  .place-link, .upcoming a { min-height: 44px; display: inline-flex; align-items: center; color: var(--color-purple); font-family: var(--font-heading); font-weight: 700; text-decoration: underline; }
+  .artwork-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
+  .discovery-sidebar { display: grid; gap: var(--space-8); }
+  .discovery-sidebar section { padding: var(--space-5); border: var(--border-base) solid var(--color-black); background: var(--color-white); }
+  .discovery-sidebar img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: var(--space-4); }
+  .discovery-sidebar h2 { font-size: var(--font-size-2xl); }
+  .button-link { display: inline-flex; align-items: center; min-height: 46px; margin-top: var(--space-2); padding: 0 var(--space-4); background: var(--color-purple); color: var(--color-white); font-weight: 700; }
+  .venue-card { background: var(--color-green) !important; }
+  dl div { display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) 0; border-top: 1px solid var(--color-black); }
+  dt { font-weight: 700; } dd { text-align: right; }
+  .fine-print { margin-top: var(--space-4); font-size: var(--font-size-xs); }
+  .learn-card { display: grid; gap: var(--space-2); background: var(--color-black) !important; color: var(--color-white); }
+  .learn-card .eyebrow { color: var(--color-gold); }
+  .learn-card a { min-height: 44px; display: flex; align-items: center; border-top: 1px solid var(--color-gray-600); font-family: var(--font-heading); font-weight: 700; }
+  .upcoming { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-6); align-items: center; margin-top: var(--space-16); padding: var(--space-6); background: var(--color-gray-200); }
+  .upcoming img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .empty-results { padding: var(--space-10); border: var(--border-base) dashed var(--color-black); text-align: center; font-family: var(--font-heading); font-size: var(--font-size-xl); }
+  [hidden] { display: none !important; }
+  @media (max-width: 900px) { .discovery-grid { grid-template-columns: 1fr; } .discovery-sidebar { grid-template-columns: repeat(2, 1fr); } .learn-card { grid-column: 1 / -1; } }
+  @media (max-width: 650px) { .filter-bar, .artwork-grid, .upcoming, .discovery-sidebar { grid-template-columns: 1fr; } .show-heading { align-items: start; flex-direction: column; } .learn-card { grid-column: auto; } }
+</style>

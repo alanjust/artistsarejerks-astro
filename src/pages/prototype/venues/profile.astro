@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BrowserShowings from '../../../components/community-prototype/BrowserShowings.astro';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Venue profile | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Approved community venue · Local prototype</p><h1 data-venue-name>Venue profile</h1><div data-venue-profile></div><p data-venue-unavailable hidden>This venue is not available publicly in this browser.</p><BrowserShowings context="venue"/><a href="/prototype/venues/">Browse places to see art →</a></main>
+<script>import {initVenueProfile} from '../../../lib/venue-workspace';initVenueProfile();</script>
+</BaseLayout>

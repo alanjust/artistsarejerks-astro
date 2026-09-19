@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BrowserShowings from '../../../components/community-prototype/BrowserShowings.astro';
+---
+<BaseLayout title="Venue preview | Artists Are Jerks" noindex>
+  <main class="venue-preview">
+    <p>Local prototype · Venue details supplied by the artist</p>
+    <h1 data-preview-venue-title>Venue preview</h1>
+    <div data-preview-venue-info></div>
+    <p data-venue-missing>This venue preview is available only in the browser where its showing was published.</p>
+    <BrowserShowings context="venue-preview"/>
+    <a href="/showing-now/">See community showings →</a>
+  </main>
+</BaseLayout>
+<style>
+  .venue-preview{width:min(1100px,100%);margin:auto;padding:2rem 1.5rem;overflow-wrap:anywhere}
+  h1{font-family:var(--font-display);letter-spacing:var(--letter-spacing-display);font-size:clamp(2rem,4vw,3.5rem);color:var(--color-purple)}
+</style>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BrowserShowings from '../../../components/community-prototype/BrowserShowings.astro';
+import pilot from '../../../data/community-pilot.json';
+
+export function getStaticPaths() {
+  return pilot.venues.filter((venue) => venue.adminVisibility === 'visible').map((venue) => ({
+    params: { slug: venue.name.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') },
+    props: { venue },
+  }));
+}
+const { venue } = Astro.props;
+const exhibitions = pilot.exhibitions.filter((show) => show.venueId === venue.id && show.publicationStatus === 'published' && show.adminVisibility === 'visible');
+const dateLabel = (date: string, year = false) => new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', ...(year ? { year: 'numeric' } : {}) });
+const showCards = exhibitions.map((show) => ({ show, artist: pilot.artists.find((artist) => artist.id === show.artistId)!, artwork: pilot.artworks.find((artwork) => artwork.id === show.featuredArtworkId)! }));
+const days: [string, string][] = Object.entries(venue.hours).map(([day, hours]) => [`${day[0].toUpperCase()}${day.slice(1)}`, hours]);
+---
+
+<BaseLayout title={`${venue.name} | Artists Are Jerks`} noindex>
+  <main class="venue-shell" data-venue-page={venue.id}>
+    <p class="prototype-note"><strong>Prototype venue:</strong> Leo’s Brewpub and Grill and its address are fictional examples.</p>
+    <header class="venue-intro">
+      <div><p class="eyebrow">{venue.type} · {venue.city}, {venue.state}</p><h1 data-managed-venue-name>{venue.name}</h1><p class="lede" data-managed-description>See which artists are showing here now and who is coming next.</p></div>
+      <div class="venue-actions" data-managed-actions>{venue.website ? <a class="button primary" href={venue.website}>Venue website ↗</a> : <span class="website-note">Venue website not supplied</span>}<a class="button dark" href="#map">Map &amp; directions</a></div>
+    </header>
+
+    <div class="venue-layout">
+      <section class="shows" aria-labelledby="shows-heading">
+        <div class="section-heading"><p class="eyebrow">At this location</p><h2 id="shows-heading">Current and upcoming artists</h2></div>
+        <div class="show-list">
+          {showCards.map(({ show, artist, artwork }) => (
+            <article class:list={['show-card', { upcoming: show.derivedStatusAsOfPilotDate === 'upcoming' }]}>
+              <a class="show-image" href={`/prototype/artists/${artist.slug}/`}><img src={artwork.image} alt={artwork.title} /></a>
+              <div class="show-copy"><p class="status">{show.derivedStatusAsOfPilotDate === 'showing-now' ? 'Showing now' : 'Coming next'}</p><h3><a href={`/prototype/artists/${artist.slug}/`}>{artist.name}</a></h3><p>{artist.practice.join(' · ')}</p><p class="dates">{dateLabel(show.startDate)}–{dateLabel(show.endDate, true)}</p><a class="artist-link" href={`/prototype/artists/${artist.slug}/`}>See the artist and artwork →</a></div>
+            </article>
+          ))}
+        </div>
+<BrowserShowings context="venue" venue={venue.id}/>
+      </section>
+
+      <aside class="visit" aria-labelledby="visit-heading">
+        <section data-managed-visit><p class="eyebrow">Plan a visit</p><h2 id="visit-heading">Address &amp; hours</h2><address>{venue.addressLine1}<br />{venue.city}, {venue.state} {venue.postalCode}</address><dl>{days.map(([day, hours]) => <div><dt>{day}</dt><dd>{hours}</dd></div>)}</dl><p class="fine-print">These hours are sample information for the prototype.</p></section>
+        <section id="map" class="map-panel" aria-label={`Prototype map for ${venue.name}`}><div class="map-art" aria-hidden="true"><span class="road horizontal"></span><span class="road vertical"></span><span class="pin">●</span></div><div><p class="eyebrow">Location</p><h2>{venue.city}, Oregon</h2><p>This map is a placeholder because the prototype address is fictional.</p></div></section>
+        <section class="venue-role"><p class="eyebrow">How this listing works</p><h2>Artist supplied</h2><p>The artist initiated this showing. Artists Are Jerks displays the location and dates but does not manage artwork sales.</p></section>
+      </aside>
+    </div>
+  </main>
+<script>import {applyVenueVisibility,updatePilotVenue} from '../../../lib/venue-workspace';applyVenueVisibility();updatePilotVenue();</script>
+</BaseLayout>
+
+<style>
+  .venue-shell{width:min(1280px,100%);margin:auto;padding:var(--space-6) clamp(var(--space-4),4vw,var(--space-10)) var(--space-20)}.prototype-note{margin-bottom:var(--space-8);padding:var(--space-3) var(--space-4);border-left:4px solid var(--color-black);background:var(--color-gold);font-size:var(--font-size-sm)}.venue-intro{display:flex;justify-content:space-between;gap:var(--space-10);align-items:end;margin-bottom:var(--space-12)}.eyebrow{margin-bottom:var(--space-2);color:var(--color-purple);font-family:var(--font-heading);font-size:var(--font-size-sm);font-weight:700;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;max-width:850px;color:var(--color-pink);font-family:var(--font-display);font-size:clamp(2.8rem,6vw,4.8rem);font-weight:400;letter-spacing:var(--letter-spacing-display);line-height:.95}.lede{max-width:700px;margin-top:var(--space-4);font-family:var(--font-heading);font-size:var(--font-size-xl)}.venue-actions{display:flex;min-width:220px;flex-direction:column;align-items:stretch;gap:var(--space-3)}.button{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:0 var(--space-4);border-radius:var(--radius-base);font-weight:700}.primary{background:var(--color-purple);color:var(--color-white)}.dark{background:var(--color-black);color:var(--color-gold)}.website-note{color:var(--color-text-muted);font-size:var(--font-size-sm);text-align:center}
+  .venue-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:var(--space-10);align-items:start}.section-heading{margin-bottom:var(--space-6);padding-bottom:var(--space-4);border-bottom:2px solid var(--color-purple)}.section-heading h2{margin:0;font-family:var(--font-display);font-size:clamp(2rem,4vw,3.5rem);font-weight:400;letter-spacing:var(--letter-spacing-display)}.show-list,.visit{display:grid;gap:var(--space-6)}.show-card{display:grid;grid-template-columns:minmax(180px,.8fr) 1.2fr;min-width:0;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:var(--shadow-md)}.show-card.upcoming{background:var(--color-green);color:var(--color-black)}.show-image{min-height:300px;padding:12px;background:#181818}.show-image img{width:100%;height:100%;object-fit:contain}.show-copy{display:flex;min-width:0;flex-direction:column;align-items:flex-start;padding:var(--space-6)}.status{padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);background:var(--color-green);color:var(--color-black);font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase}.upcoming .status{background:var(--color-black);color:var(--color-white)}.show-copy h3{margin:var(--space-5) 0 var(--space-2);font-size:var(--font-size-3xl)}.dates{margin-top:var(--space-4);font-weight:700}.artist-link{display:flex;align-items:center;min-height:44px;margin-top:auto;color:var(--color-gold);font-weight:700}.upcoming .artist-link{color:var(--color-purple)}
+  .visit>section{padding:var(--space-5);border-radius:var(--radius-lg);background:var(--color-gold)}.visit h2{font-size:var(--font-size-2xl)}address{margin-bottom:var(--space-5);font-style:normal;font-weight:700}dl div{display:flex;justify-content:space-between;gap:var(--space-3);padding:var(--space-2) 0;border-top:1px solid var(--color-black)}dt{font-weight:700}dd{text-align:right}.fine-print{margin-top:var(--space-4);font-size:var(--font-size-xs)}.map-panel{background:var(--color-green)!important}.map-art{position:relative;height:190px;margin-bottom:var(--space-4);overflow:hidden;border:2px solid var(--color-black);background:#e7ddbf}.road{position:absolute;display:block;background:var(--color-white);border:2px solid var(--color-black)}.road.horizontal{top:76px;left:-10%;width:120%;height:34px;transform:rotate(-8deg)}.road.vertical{top:-10%;left:56%;width:30px;height:120%;transform:rotate(12deg)}.pin{position:absolute;top:65px;left:53%;z-index:2;color:var(--color-purple);font-size:3rem;line-height:1;text-shadow:2px 2px 0 var(--color-gold)}.venue-role{background:var(--color-black)!important;color:var(--color-white)}.venue-role .eyebrow{color:var(--color-green)}
+  @media(max-width:800px){.venue-intro{align-items:start;flex-direction:column}.venue-actions{width:100%}.venue-layout{grid-template-columns:1fr}}@media(max-width:560px){.venue-shell{padding-top:var(--space-4)}.prototype-note{margin-bottom:var(--space-6)}.show-card{grid-template-columns:1fr}.show-image{min-height:250px}.show-copy{min-height:260px}}
+</style>

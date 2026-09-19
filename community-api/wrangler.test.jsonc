@@ -1,0 +1,12 @@
+{
+ "$schema":"../node_modules/wrangler/config-schema.json",
+ "name":"aaj-community-test",
+ "main":"index.ts",
+ "compatibility_date":"2026-09-18",
+ "compatibility_flags":["nodejs_compat"],
+ "workers_dev":false,
+ "preview_urls":false,
+ "d1_databases":[{"binding":"DB","database_name":"aaj-community-test","database_id":"c910d001-5c95-4450-ae60-5dd483ad5a76","migrations_dir":"migrations"}],
+ "r2_buckets":[{"binding":"ARTWORK","bucket_name":"aaj-artwork-test"}],
+ "observability":{"enabled":true}
+}

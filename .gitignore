@@ -55,3 +55,16 @@ temp/
 
 # Local MCP config (machine-specific)
 .mcp.json
+
+# Local community database, R2 objects and development secrets
+.wrangler/
+.dev.vars
+community-api/.dev.vars
+
+# Separate Cloudflare test build
+dist-test/
+
+# Local editor and agent workspace state
+.remade/
+.claude/launch.json
+.claude/workflows/

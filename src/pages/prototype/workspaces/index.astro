@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/venue-workspace.css';
+const sections = [
+ {title:'Artist workspace',text:'Manage Alan’s real profile and artwork. Exhibition and venue examples are for testing.',links:[['Open Alan’s workspace →','/prototype/workspace/'],['Create a showing →','/prototype/workspace/#showing'],['Add artwork →','/prototype/onboarding/artwork/']]},
+ {title:'Venue workspace',text:'Apply as a venue, manage venue information, select AAJ members, and prepare invitation previews.',links:[['Open venue intake & workspace →','/prototype/venues/workspace/'],['Manage Leo’s sample venue →','/prototype/venues/workspace/?venue=venue-leos-brewpub']]},
+ {title:'Administrator review',text:'Try the application approval and invitation journeys. These screens are publicly accessible prototype tools.',links:[['Review artist applications →','/prototype/admin/artists/'],['Review venue applications →','/prototype/admin/venues/']]},
+ {title:'Community pages',text:'See what visitors see, or start a new membership request.',links:[['Join the Community →','/join/'],['Showing Now →','/showing-now/'],['Places to See Art →','/prototype/venues/'],['Alan’s public artist page →','/prototype/artists/alan-just/']]},
+];
+---
+<BaseLayout title="Prototype workspaces | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Community expansion · Local prototype</p><h1>Workspaces</h1><p>Choose a workspace or review the community’s public pages.</p><p class="notice">These are local demonstrations. Private workspaces and administrator screens will require sign-in when Clerk is implemented. No email is sent.</p><div class="public-grid">{sections.map(section=><section class="card"><h2>{section.title}</h2><p>{section.text}</p><ul>{section.links.map(([label,url])=><li><a href={url}>{label}</a></li>)}</ul></section>)}</div><section class="card"><h2>Your newly approved artists</h2><div data-new-artist-workspaces></div></section><p><a href="/prototype/storage/">Storage settings &amp; help →</a></p></main>
+</BaseLayout>
+<style>li{margin-block:.75rem}ul{padding-left:1.25rem}</style>
+
+<script>
+import {readArtistApplications} from '../../../lib/artist-applications';
+const root=document.querySelector('[data-new-artist-workspaces]')!;
+const artists=readArtistApplications().filter(a=>a.status==='approved'&&a.invitationAccepted);
+if(!artists.length)root.textContent='Accept an approved artist invitation to begin your own setup.';
+artists.forEach(artist=>{const row=document.createElement('p'),a=document.createElement('a');a.href=`/prototype/workspace/member/?artist=${encodeURIComponent(artist.id)}`;a.textContent=`${artist.name} — artist workspace →`;row.append(a);root.append(row)});
+</script>

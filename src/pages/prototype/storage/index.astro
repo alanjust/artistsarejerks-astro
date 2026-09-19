@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'administrator');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/venue-workspace.css';
+const onlineTest = import.meta.env.MODE === 'online-test';
+---
+<BaseLayout title="Storage settings | Artists Are Jerks" noindex>
+<main class="venue-workspace">
+<p>Administrator · {onlineTest ? 'Private online test' : 'Local prototype'}</p><h1>Storage settings</h1>
+<p class="notice" data-storage-mode role="status"></p>
+<section class="card"><h2>How to use this prototype</h2>
+<ol><li>Open a workspace to edit an artist, artwork, venue, or showing.</li><li>Save your changes and wait for the “Saved” message at the top of the page.</li><li>Open the community pages to review the result. Refresh another browser to see the latest changes.</li></ol>
+<p>{onlineTest ? 'This test site uses separate cloud storage for records and uploaded artwork images. Your Mac does not need to run the local prototype. Sign in from another browser and refresh to see saved changes.' : 'Shared storage keeps one common copy on this Mac. D1 stores the information; R2 stores uploaded artwork images. It does not sync with an online Cloudflare account. Your Mac’s local services must be running.'}</p>
+<a href="/prototype/workspaces/">Open workspaces →</a></section>
+<section class="card"><h2>Real information and demonstrations</h2><p>Alan Just’s profile and artwork are the information to preserve. Alan has no confirmed upcoming physical showing; his page can belong in Our Artists without a Showing Now listing.</p><p>Leo’s Brewpub and Grill, Lana Yost, Frank Stella’s test account, and sample exhibition dates are demonstrations. They help test the workflow and are not intended for the live community.</p></section>
+<section class="card"><h2>Record backup</h2><button type="button" data-export-browser>Download record backup</button><p>This download contains text and records, not image files. It is not a complete artwork backup.</p></section>
+<details class="card" data-storage-connection hidden={onlineTest}><summary>Connect a browser for the first time</summary><p data-connected-help></p><div data-storage-counts></div><p>If the information is already shared, connect this browser to load it. If this browser holds information that has never been copied, copy it first.</p><div class="actions"><button type="button" data-connect-shared>Connect to this Mac’s shared storage</button><button type="button" data-import-browser>Copy this browser’s records &amp; connect</button></div><p>Connecting keeps a backup of this browser’s records. Importing never overwrites conflicting shared records. Original uploaded images remain in the source browser.</p></details>
+<details class="card"><summary>Advanced recovery tools</summary><p>Use these only to resolve a save error or test an independent browser copy.</p><button type="button" data-reload-shared>Back up unsynced edits &amp; reload shared records</button><p hidden={onlineTest}><button type="button" data-disconnect-shared>Switch to a browser-only copy</button></p></details>
+<p data-storage-message role="status"></p>
+</main><script>import {initStorageManager} from '../../../lib/storage-manager';initStorageManager();</script>
+</BaseLayout>
+<style>li{margin-block:.75rem}summary{cursor:pointer;font-weight:700}details.card{margin-block:1rem}</style>

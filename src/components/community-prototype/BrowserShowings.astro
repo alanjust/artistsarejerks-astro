@@ -1,0 +1,24 @@
+---
+const { context, artist = '', venue = '' } = Astro.props;
+---
+<section class="browser-showings" data-browser-showings data-context={context} data-artist={artist} data-venue={venue} hidden aria-label="Showings published in this browser"></section>
+<script>
+  import { VENUES_KEY } from '../../lib/prototype-venues';
+  import { renderShowings, SHOWINGS_KEY } from '../../lib/prototype-showings';
+  const roots = [...document.querySelectorAll<HTMLElement>('[data-browser-showings]')];
+  const refresh = () => roots.forEach(renderShowings);
+  refresh();window.addEventListener('storage',e=>{if(e.key===SHOWINGS_KEY||e.key===VENUES_KEY)refresh()});
+</script>
+<style is:global>
+  .browser-showings{display:grid;gap:1.5rem;margin-block:2rem;min-width:0}
+  .browser-showings[hidden]{display:none}
+  .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);overflow:hidden;border-radius:12px;background:#000;color:#fff;min-width:0}
+  .browser-showing .artwork-frame{min-height:240px;padding:12px;background:#181818}
+  .browser-showing img{width:100%;height:260px;object-fit:contain}
+  .browser-showing .copy{padding:1.5rem;min-width:0;overflow-wrap:anywhere}
+  .browser-showing h3{color:var(--color-gold);font-size:1.5rem}
+  .browser-showing .venue-name,.browser-showing .card-link{color:var(--color-gold);text-decoration:underline;text-underline-offset:3px}
+  .browser-showing .card-link{display:inline-block;margin-top:1rem}
+  .browser-showing-artworks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.browser-showing-artworks img{width:100%;height:220px;object-fit:contain;background:#181818;border-radius:8px}.browser-showing-artworks figure{min-width:0;margin:0}.browser-showing-artworks figcaption{font-weight:700;overflow-wrap:anywhere}
+  @media(max-width:560px){.browser-showing{grid-template-columns:1fr}.browser-showing-artworks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>

@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BrowserShowings from '../components/community-prototype/BrowserShowings.astro';
+import pilot from '../data/community-pilot.json';
+
+const show = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDate === 'showing-now')!;
+const artist = pilot.artists.find((item) => item.id === show.artistId)!;
+const venue = pilot.venues.find((item) => item.id === show.venueId)!;
+const artworks = show.artworkIds.map((id) => pilot.artworks.find((work) => work.id === id)!).filter(Boolean);
+const featured = artworks.find((work) => work.id === show.featuredArtworkId) ?? artworks[0];
+const dateLabel = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const placeholders = pilot.artworks.filter((work) => work.archiveStatus === 'active' && work.id !== featured.id).slice(0, 5);
+const cities = ['Ashland', 'Central Point', 'Grants Pass', 'Medford', 'Ashland'];
+const cards = [{ id: show.id, image: featured.image, alt: featured.title, name: artist.name, slug: artist.slug, city: venue.city, place: venue.name, dates: `${dateLabel(show.startDate)}–${dateLabel(show.endDate)}`, practice: artist.practice.join(' / '), fpo: false }, ...placeholders.map((work, i) => ({ id: `fpo-${i}`, image: work.image, alt: 'Placeholder artwork', name: `FPO Artist ${i + 2}`, slug: null, city: cities[i], place: 'FPO Rogue Valley venue', dates: 'Sample current dates', practice: work.medium, fpo: true }))];
+const upcoming = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDate === 'upcoming')!;
+const upcomingArtist = pilot.artists.find((item) => item.id === upcoming.artistId)!;
+const upcomingVenue = pilot.venues.find((item) => item.id === upcoming.venueId)!;
+const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featuredArtworkId)!;
+---
+
+<BaseLayout title="Showing Now | Artists Are Jerks">
+  <div class="directory" data-view="overview">
+    <header><p class="eyebrow">Community art · Rogue Valley, Oregon</p><h1 id="community-heading">Showing Now</h1><p class="intro" id="community-intro">Find artwork you can see in person—in restaurants, brewpubs, galleries, and artists’ studios across the valley.</p></header>
+    <p><a href="/prototype/venues/">Places to see art →</a> · <a href="/join/">Artists &amp; venues: join the community →</a></p>
+    <p class="notice"><strong>Local preview:</strong> All showings here are demonstrations. Alan has no confirmed physical showing. Leo’s Brewpub and Grill is fictional; other sample artists and venues are for testing.</p>
+
+    <nav class="view-bar" aria-label="Community view">
+      <button type="button" data-view-choice="overview" aria-pressed="true">Overview</button>
+      <button type="button" data-view-choice="showings" aria-pressed="false" aria-controls="showings-panel">Showing Now</button>
+      <button type="button" data-view-choice="artists" aria-pressed="false" aria-controls="artists-panel">Our Artists</button>
+    </nav>
+    <div class="community-layout">
+    <section id="showings-panel" aria-label="Current and upcoming showings">
+    <button class="expand-button" type="button" data-view-choice="showings">Expand Showing Now ↗</button>
+    <section class="filters" aria-label="Find a showing">
+      <button type="button" popovertarget="city-popup" id="city-trigger"><span class="wide-label">City: <span data-city-label>All Rogue Valley</span> ▾</span><span class="compact-label">City ▾</span></button>
+      <button type="button" popovertarget="search-popup" id="search-trigger"><span class="wide-label" data-search-label>Search artist, medium, or place ▾</span><span class="compact-label">Search ▾</span></button>
+      <div id="city-popup" class="popup" popover><label>City<select id="city"><option value="">All Rogue Valley</option>{pilot.regions[0].cities.map((city) => <option value={city}>{city}</option>)}</select></label><button type="button" popovertarget="city-popup" popovertargetaction="hide">Done</button></div>
+      <div id="search-popup" class="popup" popover><label>Artist, medium, or place<input id="search" type="search" placeholder="Search current showings" /></label><button type="button" popovertarget="search-popup" popovertargetaction="hide">Done</button></div>
+    </section>
+
+    <div class="results-heading"><p id="result-count" aria-live="polite">6 showings</p></div>
+    <div class="showing-grid">
+      {cards.map((card, index) => (
+        <article class="showing-card" data-public-venue={card.fpo ? undefined : venue.id} data-show-id={card.id} data-city={card.city} data-search={`${card.name} ${card.place} ${card.practice} ${card.city}`.toLowerCase()}>
+          <div class="artwork-frame"><img src={card.image} alt={card.alt} loading={index ? 'lazy' : 'eager'} />{card.fpo && <span class="fpo">FPO</span>}{index === 0 && <script type="application/json" data-featured-options is:inline set:html={JSON.stringify(artworks)} />}</div>
+          <div class="copy"><p class="city-label">{card.city} · {card.practice}</p><h3>{card.slug ? <a href={`/prototype/artists/${card.slug}/`}>{card.name}</a> : card.name}</h3><p class="dates">{card.dates}</p><p>{card.fpo ? <span class="venue-name">{card.place}</span> : <a class="venue-name" href="/prototype/venues/leos-brewpub-and-grill/">{card.place}</a>}</p>{card.slug ? <a class="card-link" href={`/prototype/artists/${card.slug}/`}>Artist, artwork &amp; visit details →</a> : <span class="card-link disabled">Prototype listing</span>}</div>
+        </article>
+      ))}
+    </div>
+    <p id="no-results" class="empty" hidden>No current showings match. Try another city or clear your search.</p>
+
+<BrowserShowings context="directory"/>
+    <section class="coming-section" aria-labelledby="coming-heading">
+      <div class="results-heading"><h2 id="coming-heading">Artists to come</h2><p>Upcoming</p></div>
+      <div class="coming-grid">
+        <article class="showing-card coming-card" data-public-venue={upcomingVenue.id}>
+          <div class="artwork-frame"><img src={upcomingArtwork.image} alt="Preview artwork by Lana Yost" loading="lazy" /></div>
+          <div class="copy"><p class="city-label">{upcomingVenue.city} · {upcomingArtist.practice.join(' / ')}</p><h3><a href={`/prototype/artists/${upcomingArtist.slug}/`}>{upcomingArtist.name}</a></h3><p class="dates">{dateLabel(upcoming.startDate)}–{dateLabel(upcoming.endDate)}</p><p><a class="venue-name" href="/prototype/venues/leos-brewpub-and-grill/">{upcomingVenue.name}</a></p><a class="card-link" href={`/prototype/artists/${upcomingArtist.slug}/`}>Meet {upcomingArtist.name} →</a></div>
+        </article>
+      </div>
+    </section>
+    </section>
+    <aside id="artists-panel" aria-labelledby="artists-heading">
+      <div class="artist-panel-heading"><h2 id="artists-heading">Our Artists</h2><button class="expand-button" type="button" data-view-choice="artists">Expand Our Artists ↗</button></div>
+      <p class="roster-intro">Meet the community, whether or not their work is showing today.</p>
+      <div class="member-grid">
+        {pilot.artists.filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible').sort((a, b) => a.name.split(' ').at(-1)!.localeCompare(b.name.split(' ').at(-1)!)).map((member) => {
+          const work = pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')!;
+          const showing = pilot.exhibitions.some((exhibition) => exhibition.artistId === member.id && exhibition.derivedStatusAsOfPilotDate === 'showing-now');
+          return <a class="member-card" href={`/prototype/artists/${member.slug}/`}><img src={work.image} alt={`Artwork by ${member.name}`} loading="lazy" /><div><h3>{member.name}</h3><p>{member.homeCity}</p><p>{member.practice.join(' · ')}</p>{showing && <span class="member-status">Showing now</span>}</div></a>;
+        })}
+        <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h3>FPO member artist</h3><p>Central Point</p><p>Drawing · Not showing now</p></div></article>
+      </div>
+    </aside>
+    </div>
+    <footer><p>More artists and places will join this community directory. An artist’s work appears here during the dates of its physical showing.</p><p>Interested in a piece? Contact the artist directly. Artists Are Jerks does not handle sales.</p></footer>
+  </div>
+
+  <script>
+    const directory = document.querySelector<HTMLElement>('.directory');
+    const showingsPanel = document.querySelector<HTMLElement>('#showings-panel');
+    const artistsPanel = document.querySelector<HTMLElement>('#artists-panel');
+    const viewBar = document.querySelector<HTMLElement>('.view-bar');
+    document.querySelectorAll<HTMLButtonElement>('[data-view-choice]').forEach((button) => button.addEventListener('click', () => {
+      const view = button.dataset.viewChoice ?? 'overview';
+      if (directory) directory.dataset.view = view;
+      const heading = document.querySelector('#community-heading');
+      const intro = document.querySelector('#community-intro');
+      const title = view === 'artists' ? 'Our Artists' : 'Showing Now';
+      if (heading) heading.textContent = title;
+      if (intro) intro.textContent = view === 'artists'
+        ? 'Meet the artists of the Rogue Valley community and explore their work, whether or not they are showing today.'
+        : 'Find artwork you can see in person—in restaurants, brewpubs, galleries, and artists’ studios across the valley.';
+      document.title = `${title} | Artists Are Jerks`;
+      if (showingsPanel) showingsPanel.hidden = view === 'artists';
+      if (artistsPanel) artistsPanel.hidden = view === 'showings';
+      document.querySelectorAll<HTMLButtonElement>('.view-bar [data-view-choice]').forEach((tab) => tab.setAttribute('aria-pressed', String(tab.dataset.viewChoice === view)));
+      viewBar?.scrollIntoView({block: 'start', behavior: 'auto'});
+    }));
+    const city = document.querySelector<HTMLSelectElement>('#city');
+    const search = document.querySelector<HTMLInputElement>('#search');
+
+    function filter() {
+      const query = search?.value.trim().toLowerCase() ?? '';
+      let count = 0;
+      document.querySelectorAll<HTMLElement>('.showing-grid .showing-card').forEach((card) => { const match = card.dataset.adminHidden !== 'true' && (!city?.value || card.dataset.city === city.value) && (!query || card.dataset.search?.includes(query)); card.hidden = !match; if (match) count++; });
+      document.querySelector('#result-count')!.textContent = `${count} ${count === 1 ? 'showing' : 'showings'}`;
+      document.querySelector<HTMLElement>('#no-results')!.hidden = count > 0;
+      const cityLabel = document.querySelector<HTMLElement>('[data-city-label]');
+      const searchLabel = document.querySelector<HTMLElement>('[data-search-label]');
+      if (cityLabel) cityLabel.textContent = city?.value || 'All Rogue Valley';
+      if (searchLabel) searchLabel.textContent = query ? `Search: ${search?.value} ▾` : 'Search artist, medium, or place ▾';
+    }
+    window.addEventListener('aaj-showings-updated',filter);filter();
+    city?.addEventListener('change', filter); search?.addEventListener('input', filter);
+    async function loadDirectoryData(){
+      try {
+        const [{getStoredItem},{renderMemberDirectory},{applyVenueVisibility}]=await Promise.all([
+          import('../lib/community-storage'),import('../lib/member-artists'),import('../lib/venue-workspace')
+        ]);
+        applyVenueVisibility();
+        await renderMemberDirectory();
+    const realCard = document.querySelector<HTMLElement>('[data-show-id="exhibition-alan-at-leos-fall-2026"]');
+    if (realCard) {
+      let selected: string | null = null;
+      try { selected = getStoredItem(`aaj-featured-${realCard.dataset.showId}`); } catch {}
+      const options = JSON.parse(realCard.querySelector('[data-featured-options]')?.textContent ?? '[]') as {id:string;title:string;image:string}[];
+      const artwork = options.find((work) => work.id === selected);
+      const image = realCard.querySelector<HTMLImageElement>('img');
+      if (artwork && image) { image.src = artwork.image; image.alt = artwork.title; }
+    }
+        filter();
+      }catch{
+        const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='Shared directory updates could not be loaded. The view controls still work; reload to try again.';directory?.prepend(notice);
+      }
+    }
+    void loadDirectoryData();
+  </script>
+</BaseLayout>
+
+<style>
+  .directory { width: 100%; min-width: 0; }
+  .community-layout, .showing-grid, .coming-grid, .member-grid,
+:global(.artwork-frame), :global(.copy), :global(.member-card), :global(.member-card > div) { min-width: 0; }
+:global(.copy), :global(.member-card), :global(.expand-button), :global(.filters button) { overflow-wrap: anywhere; }
+  .filters button, .view-bar button { min-width: 0; max-width: 100%; white-space: normal; }
+  .filters { min-width: 0; }
+  .artwork-frame img { min-width: 0; }
+  .directory{max-width:1280px;margin:auto;padding:var(--space-10) clamp(var(--space-4),4vw,var(--space-10)) var(--space-16)} header{max-width:850px}.eyebrow,.city-label{color:var(--color-purple);font-family:var(--font-heading);font-weight:700}.eyebrow{text-transform:uppercase;letter-spacing:.06em}h1{color:var(--color-pink);font-family:var(--font-display);font-size:clamp(2.5rem,6vw,4.8rem);font-weight:400;letter-spacing:var(--letter-spacing-display);line-height:1}.intro{font-family:var(--font-heading);font-size:var(--font-size-xl);line-height:1.5}.notice{margin:var(--space-6) 0;padding:var(--space-3) var(--space-4);border-left:4px solid var(--color-black);background:var(--color-gold);font-size:var(--font-size-sm)}
+  .compact-label{display:none}
+  .filters{display:flex;flex-wrap:wrap;gap:var(--space-3)}.filters button,.popup button{min-height:44px;padding:var(--space-2) var(--space-4);border-radius:var(--radius-base);background:var(--color-purple);color:var(--color-white);font-family:var(--font-heading);font-weight:700}.popup{position:fixed;inset:25% auto auto 50%;transform:translateX(-50%);width:min(380px,calc(100vw - 2rem));padding:var(--space-5);border:0;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:0 5px 14px #0005}.popup::backdrop{background:#0004}.popup label{display:grid;gap:var(--space-2);font-weight:700}.popup select,.popup input{min-height:48px;width:100%;padding:var(--space-3);border:0;border-radius:var(--radius-base)}.popup button{margin-top:var(--space-4)}
+:global(.results-heading){display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-4);margin:var(--space-10) 0 var(--space-5)}:global(.results-heading h2){margin:0;font-size:var(--font-size-3xl)}:global(.showing-grid){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6)}:global(.showing-card){display:flex;min-width:0;flex-direction:column;padding:12px;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:0 5px 14px #0003}:global(.artwork-frame){position:relative;display:grid;place-items:center;aspect-ratio:4/5;overflow:hidden;border-radius:var(--radius-base);background:#181818}:global(.artwork-frame img){width:100%;height:100%;padding:10px;object-fit:contain}:global(.fpo){position:absolute;top:var(--space-3);left:var(--space-3);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:700}:global(.copy){display:flex;flex:1;flex-direction:column;padding:var(--space-4) var(--space-2) var(--space-2)}:global(.copy .city-label){margin-bottom:var(--space-2);color:var(--color-title);font-size:var(--font-size-sm)}:global(.copy h3){margin-bottom:var(--space-2);color:var(--color-white);font-size:var(--font-size-2xl)}:global(.copy p){margin-bottom:var(--space-2)}:global(.dates){color:var(--color-gray-300);font-weight:700}:global(.card-link){display:flex;align-items:center;min-height:44px;margin-top:auto;padding-top:var(--space-3);color:var(--color-gold);font-weight:700}:global(.disabled){color:var(--color-gray-400)}
+:global(.venue-name){font-weight:700}:global(.coming-section){margin-top:var(--space-16)}:global(.coming-grid){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6)}:global(.coming-card){background:var(--color-green);color:var(--color-black)}:global(.coming-card .copy h3),:global(.coming-card .copy h3 a){color:var(--color-black)}:global(.coming-card .city-label){color:var(--color-purple)}:global(.coming-card .dates){color:var(--color-gray-800)}:global(.coming-card .card-link){color:var(--color-purple)}:global(.empty){padding:var(--space-8);border:2px dashed var(--color-black)}:global(footer){max-width:800px;margin-top:var(--space-12);font-size:var(--font-size-sm)}:global([hidden]){display:none!important}
+  a.venue-name{text-decoration:underline;text-underline-offset:3px}
+  @media(max-width:700px){:global(.showing-grid),:global(.coming-grid){grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}:global(.showing-card){padding:8px}:global(.copy){padding:var(--space-3) var(--space-1) var(--space-1)}:global(.copy h3){font-size:var(--font-size-lg)}:global(.copy p),:global(.card-link){font-size:var(--font-size-xs)}:global(.filters button){text-align:left}}
+  .view-bar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-3) 0; margin-bottom: var(--space-5); background: var(--color-stage); border-bottom: 2px solid var(--color-purple); }
+  .view-bar button { min-height: 48px; padding: var(--space-3) var(--space-5); border: 2px solid var(--color-purple); border-radius: var(--radius-base); color: var(--color-purple); font-family: var(--font-heading); font-weight: 700; }
+  .view-bar button[aria-pressed="true"] { background: var(--color-purple); color: var(--color-white); }
+  .community-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr); gap: var(--space-8); align-items: start; }
+  #showings-panel, #artists-panel { min-width: 0; }
+  #artists-panel { padding: var(--space-5); background: var(--color-gold); border-radius: var(--radius-lg); }
+  #artists-heading { margin-bottom: var(--space-3); font-size: var(--font-size-3xl); }
+  .roster-intro { font-size: var(--font-size-sm); }
+  .expand-button { min-height: 44px; margin-bottom: var(--space-3); color: var(--color-purple); font-weight: 700; text-decoration: underline; }
+  .member-grid { display: grid; gap: var(--space-5); }
+:global(.member-card) { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-purple); }
+:global(.member-card img) { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; border-radius: var(--radius-base); background: var(--color-black); }
+:global(.member-card h3) { font-size: var(--font-size-xl); margin-bottom: var(--space-2); }
+:global(.member-card p) { font-size: var(--font-size-sm); margin-bottom: var(--space-1); }
+:global(.member-status) { display: inline-block; padding: var(--space-1) var(--space-2); margin-top: var(--space-2); border-radius: var(--radius-base); background: var(--color-green); font-size: var(--font-size-xs); font-weight: 700; }
+  .directory[data-view="showings"] .community-layout, .directory[data-view="artists"] .community-layout { grid-template-columns: 1fr; }
+  .directory[data-view="artists"] .member-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+:global(.directory[data-view="artists"] .member-card) { display: flex; flex-direction: column; padding: 12px; border: 0; border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
+:global(.directory[data-view="artists"] .member-card img) { padding: 10px; }
+:global(.directory[data-view="artists"] .member-card h3) { margin-top: var(--space-3); }
+:global(.directory[data-view="artists"] .member-status) { color: var(--color-black); }
+  .directory[data-view="artists"] #artists-panel { padding: 0; background: transparent; }
+  .directory[data-view="artists"] #artists-heading, .directory[data-view="artists"] #artists-panel .expand-button, .directory[data-view="showings"] #showings-panel > .expand-button { display: none; }
+  @media(max-width:950px) { .community-layout { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--space-4); } }
+  @media(max-width:700px) { .directory[data-view="artists"] .member-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap:12px; } .view-bar button { padding: var(--space-2) var(--space-3); } }
+  @media(max-width:700px) {
+    .directory { padding-top: var(--space-6); }
+    .notice, #showings-panel > .expand-button, .results-heading { display: none; }
+    .view-bar { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+    .view-bar button { width: 100%; padding-inline: 8px; }
+    .filters { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .filters button { width: 100%; text-align: center; }
+    .wide-label { display: none; }
+    .compact-label { display: inline; }
+    .directory[data-view="overview"] .community-layout { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 10px; }
+    .directory[data-view="overview"] .showing-grid, .directory[data-view="overview"] .coming-grid { grid-template-columns: minmax(0, 1fr); }
+    .directory[data-view="overview"] #artists-panel { padding: 8px; }
+:global(.directory[data-view="overview"] .member-card) { grid-template-columns: minmax(0,1fr); gap: 8px; }
+:global(.directory[data-view="overview"] .member-card h3) { font-size: var(--font-size-base); }
+:global(.directory[data-view="overview"] .member-card p) { font-size: var(--font-size-xs); }
+    .directory[data-view="overview"] .member-grid { gap: var(--space-4); }
+    .directory[data-view="overview"] .results-heading { flex-direction: column; gap: 4px; align-items: flex-start; }
+    .directory[data-view="overview"] .results-heading h2, .directory[data-view="overview"] #artists-heading { font-size: var(--font-size-lg); }
+    .directory[data-view="overview"] .roster-intro { font-size: var(--font-size-xs); }
+    .directory[data-view="overview"] .expand-button { font-size: var(--font-size-xs); text-align: left; }
+    .directory[data-view="overview"] .filters button { max-width: 100%; padding: 8px; font-size: var(--font-size-xs); }
+  }
+</style>

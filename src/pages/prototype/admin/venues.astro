@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'administrator');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Venue approval prototype | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Administrator · Local prototype</p><h1>Review venues</h1><p class="notice">This is a simulated administrator screen, publicly accessible on localhost. Production approval will require administrator authentication.</p><p><a href="/prototype/admin/artists/">Review artist requests →</a> · <a href="/prototype/venues/workspace/">Venue intake &amp; workspace →</a></p><div data-admin-venues></div><p data-admin-result role="status"></p></main>
+<script>
+import {initVenueAdmin} from '../../../lib/venue-workspace';initVenueAdmin();
+</script>
+</BaseLayout>

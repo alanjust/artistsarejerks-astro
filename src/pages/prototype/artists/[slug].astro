@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArtworkCard from '../../../components/community-prototype/ArtworkCard.astro';
+import BrowserShowings from '../../../components/community-prototype/BrowserShowings.astro';
+import pilot from '../../../data/community-pilot.json';
+
+export const prerender = false;
+import {communityFetch} from '../../../lib/community-transport';
+const artist=pilot.artists.find(item=>item.slug===Astro.params.slug);
+if(!artist)return new Response('Artist page unavailable.',{status:404});
+let uploads:any[]=[];
+let previewError='';
+let previewReady=artist.slug!=='alan-just';
+let hiddenArtworkIds=new Set<string>();
+if(artist.slug==='alan-just'){
+ try {
+  const response=await communityFetch('/api/community/public/state',{signal:AbortSignal.timeout(15000)},Astro.locals);
+  if(!response.ok)throw new Error('Preview storage unavailable');
+  const data=await response.json() as {records:{collection:string;payload:any}[]};
+  const workspace=data.records.find(row=>row.collection==='alan-workspace')?.payload;
+  previewReady=true;
+  hiddenArtworkIds=new Set(workspace?.hiddenArtworkIds||[]);
+  if(workspace?.pageVisible===false)return new Response('This artist page is offline.',{headers:{'Cache-Control':'private, no-store'}});
+  uploads=(workspace?.uploadedWorks||[]).filter((work:any)=>work.visibility==='public').map((work:any)=>({id:work.id,title:work.title,medium:work.medium,year:work.year||null,dimensions:null,image:work.sampleImage||`/api/community/public/images/${encodeURIComponent(work.imageKey)}`,salePresentation:work.sale,publicPrice:work.sale==='public-price'?{amount:Number(work.price),currency:'USD'}:null}));
+ }catch{previewError='Artwork visibility could not be loaded. Please reload this preview to try again.'}
+}
+Astro.response.headers.set('Cache-Control','private, no-store');
+const artworks = pilot.artworks.filter((work) => previewReady && !hiddenArtworkIds.has(work.id) && artist.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active');
+const shows = (import.meta.env.MODE==='online-test'&&artist.slug==='alan-just'?[]:pilot.exhibitions).filter((show) => show.artistId === artist.id && show.publicationStatus === 'published');
+const currentShow = shows.find((show) => show.derivedStatusAsOfPilotDate === 'showing-now');
+const upcomingShow = shows.find((show) => show.derivedStatusAsOfPilotDate === 'upcoming');
+const show = currentShow ?? upcomingShow;
+const venue = show ? pilot.venues.find((item) => item.id === show.venueId) : null;
+const showArtIds = new Set(show?.artworkIds ?? []);
+const showArtworks = artworks.filter((work) => showArtIds.has(work.id));
+const otherArtworks = artworks.filter((work) => !showArtIds.has(work.id));
+const showDates = show
+  ? `${new Date(`${show.startDate}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}–${new Date(`${show.endDate}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+  : '';
+---
+
+<BaseLayout title={`${artist.name} Prototype | Artists Are Jerks`} noindex>
+  <div class="artist-shell">
+    <p class="sample-notice"><strong>Public-page prototype:</strong> {artist.slug === 'alan-just' ? "Alan’s profile and artwork are real. The exhibition, venue, prices, and availability below are demonstrations; no physical showing is confirmed." : "This artist, exhibition, and venue are demonstrations; images are temporary layout assets."}</p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/showing-now/">Showing now</a><span>/</span><span>{artist.name}</span></nav>
+
+    <header class="artist-intro">
+      <div>
+        <p class="eyebrow">{artist.homeCity}, Oregon</p>
+        <h1>{artist.name}</h1>
+        <p class="practice">{artist.practice.join(' · ')}</p>
+        <p class="bio">{artist.bio}</p>
+        <div class="contact-actions">
+          {artist.contactPreferences.aajContactForm && <button type="button" data-open-contact>Contact {artist.name.split(' ')[0]}</button>}
+          {artist.contactPreferences.publicWebsite && artist.contactPreferences.website && <a href={artist.contactPreferences.website}>Visit artist’s website</a>}
+        </div>
+      </div>
+      <aside>
+        <p class="page-address">Permanent artist address</p>
+        <strong>{artist.slug}.artistsarejerks.com</strong>
+        <p>This prototype uses a local route. The public page keeps the artist’s name at the front.</p>
+      </aside>
+    </header>
+
+    {show && venue && (
+      <section data-public-venue={venue.id} class:list={['show-callout', { upcoming: !currentShow }]}>
+        <div>
+          <p class="eyebrow">{currentShow ? 'Showing now' : 'Coming soon'}</p>
+          <h2>{venue.name}</h2>
+          <p>{showDates} · {venue.city}, Oregon</p>
+        </div>
+        <a href="/prototype/venues/leos-brewpub-and-grill/">Map &amp; info</a>
+      </section>
+    )}
+
+
+<BrowserShowings context="artist" artist={artist.id}/>
+    {showArtworks.length > 0 && (
+      <section class="work-section" data-public-venue={venue?.id} aria-labelledby="at-show-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">On the wall</p><h2 id="at-show-heading">Work at {venue?.name}</h2></div>
+          <p>These are the pieces the artist assigned to this dated show.</p>
+        </div>
+        <div class="artwork-grid">{showArtworks.map((work) => <ArtworkCard artwork={work} />)}</div>
+      </section>
+    )}
+
+    {(otherArtworks.length > 0 || artist.slug==='alan-just') && (
+      <section class="work-section" aria-labelledby="more-work-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">More by {artist.name.split(' ')[0]}</p><h2 id="more-work-heading">Selected work</h2></div>
+          <p>Public on this artist page, though not assigned to the current show.</p>
+        </div>
+        <p role="status">{previewError}</p>
+        <div class="artwork-grid" data-selected-artwork>{[...otherArtworks,...uploads].map((work) => <ArtworkCard artwork={work} />)}</div>
+      </section>
+    )}
+
+    <dialog id="artwork-viewer" aria-label="Enlarged artwork">
+      <button class="viewer-close" type="button" aria-label="Close artwork viewer">×</button>
+      <div class="viewer-stage">
+        <img id="viewer-image" alt="" />
+        <button class="viewer-edge previous" type="button" aria-label="Previous artwork"><span>‹</span></button>
+        <button class="viewer-edge next" type="button" aria-label="Next artwork"><span>›</span></button>
+      </div>
+      <p id="viewer-caption" aria-live="polite"></p>
+    </dialog>
+
+    <dialog id="contact-dialog">
+      <form method="dialog" class="dialog-card">
+        <button class="close" value="cancel" aria-label="Close contact form">×</button>
+        <p class="eyebrow">Sent through Artists Are Jerks</p>
+        <h2>Contact {artist.name}</h2>
+        <p>The artist can reply directly. Their private email address stays private.</p>
+        <label>Your name<input name="name" autocomplete="name" /></label>
+        <label>Your email<input name="email" type="email" autocomplete="email" /></label>
+        <label>Message<textarea name="message" rows="5" placeholder="I’m interested in…"></textarea></label>
+        <button class="send" value="cancel" data-demo-send>Preview sending a message</button>
+        <p class="demo-status" aria-live="polite"></p>
+      </form>
+    </dialog>
+  </div>
+
+  <script>
+    import {applyVenueVisibility} from '../../../lib/venue-workspace';
+    applyVenueVisibility();
+    const viewer = document.querySelector<HTMLDialogElement>('#artwork-viewer');
+    const artworkButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-enlarge-artwork]')];
+    let activeArtwork = 0;
+    function displayArtwork(index: number) {
+      activeArtwork = (index + artworkButtons.length) % artworkButtons.length;
+      const artwork = artworkButtons[activeArtwork];
+      const image = document.querySelector<HTMLImageElement>('#viewer-image');
+      const caption = document.querySelector('#viewer-caption');
+      if (image && artwork) { image.src = artwork.dataset.image ?? ''; image.alt = artwork.dataset.title ?? ''; }
+      if (caption) caption.textContent = `${artwork.dataset.title} · ${activeArtwork + 1} of ${artworkButtons.length}`;
+    }
+    artworkButtons.forEach((button, index) => button.addEventListener('click', () => {
+      displayArtwork(index);
+      viewer?.showModal();
+      document.body.classList.add('artwork-viewer-open');
+    }));
+    viewer?.querySelector('.previous')?.addEventListener('click', () => displayArtwork(activeArtwork - 1));
+    viewer?.querySelector('.next')?.addEventListener('click', () => displayArtwork(activeArtwork + 1));
+    viewer?.querySelector('.viewer-close')?.addEventListener('click', () => viewer.close());
+    viewer?.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); displayArtwork(activeArtwork - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); displayArtwork(activeArtwork + 1); }
+    });
+    viewer?.addEventListener('close', () => document.body.classList.remove('artwork-viewer-open'));
+    viewer?.addEventListener('click', (event) => {
+      const bounds = viewer.getBoundingClientRect();
+      if (event.target === viewer && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) viewer.close();
+    });
+    const dialog = document.querySelector<HTMLDialogElement>('#contact-dialog');
+    document.querySelector('[data-open-contact]')?.addEventListener('click', () => dialog?.showModal());
+    document.querySelector('[data-demo-send]')?.addEventListener('click', (event) => {
+      event.preventDefault();
+      const status = document.querySelector<HTMLElement>('.demo-status');
+      if (status) status.textContent = 'Prototype only—the message was not sent.';
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .sample-notice { margin-bottom: var(--space-8); padding: var(--space-3) var(--space-4); border-left: 4px solid var(--color-black); background: var(--color-gold); font-size: var(--font-size-sm); }
+  .artist-shell { max-width: var(--max-width-content); margin: 0 auto; padding: var(--space-8) clamp(var(--space-4), 4vw, var(--space-10)) var(--space-20); }
+  .breadcrumbs { display: flex; gap: var(--space-2); margin-bottom: var(--space-10); color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+  .breadcrumbs a { text-decoration: underline; }
+  .artist-intro { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--space-12); align-items: end; }
+  .eyebrow { margin: 0 0 var(--space-2); color: var(--color-purple); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { margin: 0; color: var(--color-pink); font-family: var(--font-display); font-size: clamp(2.4rem, 6vw, 4.8rem); font-weight: 400; letter-spacing: var(--letter-spacing-display); line-height: .9; }
+  .practice { margin: var(--space-3) 0; font-family: var(--font-heading); font-size: var(--font-size-2xl); font-weight: 700; }
+  .bio { max-width: 700px; font-size: var(--font-size-lg); line-height: var(--line-height-relaxed); }
+  .artist-intro aside { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); box-shadow: 0 5px 14px rgb(0 0 0 / .16); }
+  .artist-intro aside strong { display: block; margin-bottom: var(--space-3); overflow-wrap: anywhere; color: var(--color-gold); }
+  .page-address { margin-bottom: var(--space-1); font-size: var(--font-size-sm); font-weight: 700; }
+  .contact-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+  .contact-actions button, .contact-actions a, .show-callout a, .send { min-height: 48px; display: inline-flex; align-items: center; padding: 0 var(--space-5); border-radius: var(--radius-base); background: var(--color-purple); color: var(--color-white); font-weight: 700; }
+  .contact-actions a { background: var(--color-black); color: var(--color-gold); }
+  .show-callout { display: flex; justify-content: space-between; gap: var(--space-6); align-items: center; margin: var(--space-12) 0; padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-green); box-shadow: 0 5px 14px rgb(0 0 0 / .16); }
+  .show-callout.upcoming { background: var(--color-gold); }
+  .show-callout h2 { margin-bottom: var(--space-2); font-size: var(--font-size-3xl); }
+  .show-callout a { background: var(--color-black); }
+  .work-section { margin-top: var(--space-16); }
+  .section-heading { display: flex; justify-content: space-between; gap: var(--space-8); align-items: end; margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 2px solid var(--color-purple); }
+  .section-heading h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); }
+  .section-heading > p { max-width: 390px; color: var(--color-text-secondary); }
+  .artwork-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-8); }
+  dialog { width: min(620px, calc(100% - 2rem)); max-height: calc(100vh - 2rem); margin: auto; border: var(--border-thick) solid var(--color-black); box-shadow: 10px 10px 0 var(--color-black); }
+  dialog::backdrop { background: rgb(0 0 0 / .65); }
+  .dialog-card { position: relative; display: grid; gap: var(--space-4); padding: var(--space-8); }
+  .dialog-card h2 { margin: 0; font-size: var(--font-size-4xl); }
+  .dialog-card label { display: grid; gap: var(--space-2); font-weight: 700; }
+  .dialog-card input, .dialog-card textarea { width: 100%; padding: var(--space-3); border: var(--border-base) solid var(--color-black); background: var(--color-gray-100); }
+  .close { position: absolute; top: var(--space-3); right: var(--space-3); width: 44px; height: 44px; font-size: 2rem; }
+  .send { justify-content: center; }
+  .demo-status { color: var(--color-purple); font-weight: 700; }
+  :global(body.artwork-viewer-open) { overflow: hidden !important; }
+  #artwork-viewer { width: min(1200px, 96vw); height: 92dvh; max-height: 92dvh; padding: 58px 20px 16px; border: 0; border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); box-shadow: 0 10px 40px rgb(0 0 0 / .4); }
+  #artwork-viewer[open] { display: flex; flex-direction: column; }
+  #artwork-viewer::backdrop { background: rgb(0 0 0 / .88); }
+  .viewer-close { position: absolute; top: 8px; right: 12px; width: 44px; height: 44px; border-radius: var(--radius-full); color: var(--color-white); font-size: 2rem; }
+  .viewer-stage { position: relative; flex: 1; min-height: 0; }
+  #viewer-image { width: 100%; height: 100%; object-fit: contain; }
+  .viewer-edge { position: absolute; top: 0; bottom: 0; width: 25%; min-width: 44px; display: flex; align-items: center; color: var(--color-white); }
+  .viewer-edge.previous { left: 0; justify-content: flex-start; }
+  .viewer-edge.next { right: 0; justify-content: flex-end; }
+  .viewer-edge span { display: grid; place-items: center; width: 48px; height: 64px; border-radius: var(--radius-base); background: rgb(0 0 0 / .65); font-size: 3rem; opacity: 0; transition: opacity 150ms ease; }
+  .viewer-edge:hover span, .viewer-edge:focus-visible span { opacity: 1; }
+  #viewer-caption { margin: 14px 0 0; text-align: center; font-family: var(--font-heading); }
+  @media (max-width: 900px) { .artwork-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) {
+    .artist-shell { padding: 0 0 var(--space-16) !important; }
+    .breadcrumbs, .artist-intro aside { display: none; }
+    .artist-intro { grid-template-columns: 1fr; padding: var(--space-6); }
+    .artist-intro h1 { font-size: 2.625rem; letter-spacing: var(--letter-spacing-wider); }
+    .practice { margin-bottom: var(--space-1); font-size: var(--font-size-base); }
+    .bio { margin-top: 0; font-size: var(--font-size-base); line-height: 1.2; }
+    .contact-actions { display: grid; grid-template-columns: 140px minmax(0,1fr); gap: 8px; margin-top: var(--space-4); }
+    .contact-actions button, .contact-actions a { justify-content: center; min-width: 0; padding-inline: 8px; }
+    .show-callout { align-items: start; flex-direction: column; gap: 6px; margin: 0; padding: var(--space-6); border-radius: 0; box-shadow: none; }
+    .show-callout a { min-width: 170px; justify-content: center; padding-inline: 8px; }
+    .work-section { margin-top: 0; padding: var(--space-6); }
+    .section-heading { align-items: start; flex-direction: column; gap: 0; border-bottom: 0; }
+    .section-heading > p { display: none; }
+    .section-heading h2 { font-size: var(--font-size-3xl); }
+    .artwork-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .viewer-edge span { display: none !important; }
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+const { step = '' } = Astro.props;
+---
+
+<aside class="prototype-banner" aria-label="Prototype notice">
+  <div>
+    <strong>Working prototype</strong>
+    <span>Sample artists, invented show details, and no live publishing.</span>
+  </div>
+  <nav aria-label="Prototype screens">
+    <a href="/prototype/" aria-current={step === 'showing' ? 'page' : undefined}>Showing now</a>
+    <a href="/prototype/artists/alan-just/" aria-current={step === 'artist' ? 'page' : undefined}>Artist page</a>
+    <a href="/prototype/workspace/" aria-current={step === 'workspace' ? 'page' : undefined}>Artist workspace</a>
+    <a href="/prototype/onboarding/artwork/" aria-current={step === 'upload' ? 'page' : undefined}>First upload</a>
+  </nav>
+</aside>
+
+<style>
+  .prototype-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-3) clamp(var(--space-4), 4vw, var(--space-8));
+    background: var(--color-black);
+    color: var(--color-white);
+    font-size: var(--font-size-sm);
+  }
+
+  .prototype-banner div,
+  .prototype-banner nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .prototype-banner strong { color: var(--color-gold); }
+
+  .prototype-banner a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    border-bottom: 3px solid transparent;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .prototype-banner a[aria-current="page"] { border-color: var(--color-green); }
+
+  @media (max-width: 760px) {
+    .prototype-banner,
+    .prototype-banner div { align-items: flex-start; flex-direction: column; }
+    .prototype-banner { gap: var(--space-2); }
+    .prototype-banner div { gap: 0; }
+    .prototype-banner nav { width: 100%; overflow-x: auto; }
+    .prototype-banner nav a { white-space: nowrap; }
+  }
+</style>

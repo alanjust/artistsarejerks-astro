@@ -1,0 +1,14 @@
+{
+ "$schema":"./node_modules/wrangler/config-schema.json",
+ "name":"aaj-site-test",
+ "main":"dist-test/_worker.js/index.js",
+ "compatibility_date":"2026-09-18",
+ "compatibility_flags":["nodejs_compat"],
+ "workers_dev":false,
+ "preview_urls":false,
+ "routes":[{"pattern":"aaj-dev.alanjust.com","custom_domain":true}],
+ "vars":{"TEST_ACCESS_TEAM":"https://hidden-grammar.cloudflareaccess.com","TEST_ACCESS_AUD":"03e614cfcc0558239cd3b9554d07af1fa942bf5c2f87159b955d72be0df6e814"},
+ "assets":{"directory":"dist-test","binding":"ASSETS","run_worker_first":true},
+ "services":[{"binding":"COMMUNITY","service":"aaj-community-test"}],
+ "observability":{"enabled":true}
+}

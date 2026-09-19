@@ -1,0 +1,10 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'artist');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import MemberShowingForm from '../../../components/community-prototype/MemberShowingForm.astro';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Create your showing | Artists Are Jerks" noindex><main class="venue-workspace"><p>Your artist workspace · Local prototype</p><h1>Create a showing</h1><MemberShowingForm/></main></BaseLayout>

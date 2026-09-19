@@ -1,0 +1,357 @@
+{
+  "meta": {
+    "pilotOnly": true,
+    "asOfDate": "2026-09-16",
+    "launchRegion": "Rogue Valley",
+    "notes": [
+      "This fixture exists for onboarding, directory, and Figma prototypes.",
+      "Alan Just artwork titles and images come from /Users/alanjust/alanjust-site.",
+      "Lana Yost, her artwork titles, and her metadata are fictional. Her images are reused from the Alan Just gallery as temporary layout assets.",
+      "Leo's Brewpub and Grill and its address are fictional.",
+      "No prices, availability states, exhibition dates, or venue details in this fixture should be treated as factual."
+    ]
+  },
+  "regions": [
+    {
+      "id": "rogue-valley",
+      "name": "Rogue Valley",
+      "state": "Oregon",
+      "cities": [
+        "Ashland",
+        "Central Point",
+        "Grants Pass",
+        "Medford"
+      ]
+    }
+  ],
+  "artists": [
+    {
+      "id": "artist-alan-just",
+      "name": "Alan Just",
+      "slug": "alan-just",
+      "publicUrl": "https://alan-just.artistsarejerks.com",
+      "homeRegion": "rogue-valley",
+      "homeCity": "Medford",
+      "practice": [
+        "Painting",
+        "Illustration"
+      ],
+      "bio": "Alan Just is a Rogue Valley artist, illustrator, retired designer, museum docent, and art educator.",
+      "admission": "invited-and-approved",
+      "artistVisibility": "public",
+      "adminVisibility": "visible",
+      "lastUpdated": "2026-09-16",
+      "contactPreferences": {
+        "aajContactForm": true,
+        "publicEmail": false,
+        "publicPhoneOrText": false,
+        "publicWebsite": true,
+        "website": "https://alanjust.com"
+      },
+      "artworkIds": [
+        "alan-self-portrait",
+        "alan-connie",
+        "alan-pete-ihrig",
+        "alan-paul-missal",
+        "alan-white-rabbit",
+        "alan-cidermaking"
+      ]
+    },
+    {
+      "id": "artist-lana-yost",
+      "name": "Lana Yost",
+      "slug": "lana-yost",
+      "publicUrl": "https://lana-yost.artistsarejerks.com",
+      "homeRegion": "rogue-valley",
+      "homeCity": "Ashland",
+      "practice": [
+        "Painting",
+        "Mixed media",
+        "Printmaking"
+      ],
+      "bio": "Lana Yost is a fictional Rogue Valley artist created for the Artists Are Jerks pilot.",
+      "admission": "invited-and-approved",
+      "artistVisibility": "public",
+      "adminVisibility": "visible",
+      "lastUpdated": "2026-09-03",
+      "contactPreferences": {
+        "aajContactForm": true,
+        "publicEmail": false,
+        "publicPhoneOrText": false,
+        "publicWebsite": false,
+        "website": null
+      },
+      "artworkIds": [
+        "lana-ivy-field",
+        "lana-seventy-five-characters",
+        "lana-black-horse-study",
+        "lana-small-animal-constellation"
+      ]
+    }
+  ],
+  "artworks": [
+    {
+      "id": "alan-self-portrait",
+      "artistId": "artist-alan-just",
+      "title": "Alan Just Self Portrait",
+      "medium": "Mixed media on panel",
+      "year": null,
+      "dimensions": "40 \u00d7 60 in.",
+      "image": "/images/community-pilot/alan-just/self-portrait.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "contact-for-price",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "Alan Just Self Portrait",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "alan-just-self-portrait"
+      }
+    },
+    {
+      "id": "alan-connie",
+      "artistId": "artist-alan-just",
+      "title": "My Big Sister Connie",
+      "medium": "Painting",
+      "year": null,
+      "dimensions": null,
+      "image": "/images/community-pilot/alan-just/my-big-sister-connie.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "not-for-sale",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "My Big Sister Connie",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "connie-portrait"
+      }
+    },
+    {
+      "id": "alan-pete-ihrig",
+      "artistId": "artist-alan-just",
+      "title": "Portrait of Pete Ihrig",
+      "medium": "Acrylic, diner vinyl, wood, and sculpted cushion foam",
+      "year": null,
+      "dimensions": "60 \u00d7 40 in.",
+      "image": "/images/community-pilot/alan-just/portrait-of-pete-ihrig.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "public-price",
+      "publicPrice": {
+        "amount": 4800,
+        "currency": "USD"
+      },
+      "source": {
+        "originalTitle": "Portrait of Pete Ihrig",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "petes-head"
+      }
+    },
+    {
+      "id": "alan-paul-missal",
+      "artistId": "artist-alan-just",
+      "title": "Paul Missal Portrait",
+      "medium": "Painting",
+      "year": null,
+      "dimensions": null,
+      "image": "/images/community-pilot/alan-just/paul-missal-portrait.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "sold",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "Paul Missal Portrait",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "paul-missal-portrait"
+      }
+    },
+    {
+      "id": "alan-white-rabbit",
+      "artistId": "artist-alan-just",
+      "title": "White Rabbit Contemplates Winemaking",
+      "medium": "Digital illustration",
+      "year": "2023",
+      "dimensions": null,
+      "image": "/images/community-pilot/alan-just/white-rabbit.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "public-price",
+      "publicPrice": {
+        "amount": 1250,
+        "currency": "USD"
+      },
+      "source": {
+        "originalTitle": "Scott Laboratories 2023 Winemaking Handbook Cover",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "2023-winemaking-handbook-cover"
+      }
+    },
+    {
+      "id": "alan-cidermaking",
+      "artistId": "artist-alan-just",
+      "title": "Premium Products for Cidermaking",
+      "medium": "Digital illustration",
+      "year": "2022",
+      "dimensions": null,
+      "image": "/images/community-pilot/alan-just/premium-products-for-cidermaking.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "private-price",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "Premium Products for Cidermaking",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "2022-cidermaking-handbook"
+      }
+    },
+    {
+      "id": "lana-ivy-field",
+      "artistId": "artist-lana-yost",
+      "title": "Ivy Field",
+      "medium": "Digital print",
+      "year": "2025",
+      "dimensions": "24 \u00d7 18 in.",
+      "image": "/images/community-pilot/lana-yost/ivy-field.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "contact-for-price",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "Old Style Beer Cubs Ivy Can",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "old-style-beer-cubs-ivy-can",
+        "usage": "temporary pilot image"
+      }
+    },
+    {
+      "id": "lana-seventy-five-characters",
+      "artistId": "artist-lana-yost",
+      "title": "Seventy-Five Characters",
+      "medium": "Mixed media",
+      "year": "2026",
+      "dimensions": "30 \u00d7 22 in.",
+      "image": "/images/community-pilot/lana-yost/seventy-five-characters.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "public-price",
+      "publicPrice": {
+        "amount": 900,
+        "currency": "USD"
+      },
+      "source": {
+        "originalTitle": "Scott Lab Fermentation Handbook Celebrating 75 Years of Character",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "scott-lab-fermentation-handbook-celebrating-75-years-of-character",
+        "usage": "temporary pilot image"
+      }
+    },
+    {
+      "id": "lana-black-horse-study",
+      "artistId": "artist-lana-yost",
+      "title": "Black Horse Study",
+      "medium": "Pigment print",
+      "year": "2024",
+      "dimensions": "20 \u00d7 16 in.",
+      "image": "/images/community-pilot/lana-yost/black-horse-study.webp",
+      "profileVisibility": "public",
+      "archiveStatus": "active",
+      "salePresentation": "not-for-sale",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "Colt Premium Beer Identity",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "colt-premium-beer-identity",
+        "usage": "temporary pilot image"
+      }
+    },
+    {
+      "id": "lana-small-animal-constellation",
+      "artistId": "artist-lana-yost",
+      "title": "Small Animal Constellation",
+      "medium": "Paper collage",
+      "year": "2023",
+      "dimensions": "12 \u00d7 18 in.",
+      "image": "/images/community-pilot/lana-yost/small-animal-constellation.webp",
+      "profileVisibility": "private",
+      "archiveStatus": "archived",
+      "salePresentation": "sold",
+      "publicPrice": null,
+      "source": {
+        "originalTitle": "PetSmart Gift Card & Carrier Sets",
+        "sourceRepo": "/Users/alanjust/alanjust-site",
+        "sourceSlug": "petsmart-gift-card-carrier-sets",
+        "usage": "temporary pilot image"
+      }
+    }
+  ],
+  "venues": [
+    {
+      "id": "venue-leos-brewpub",
+      "name": "Leo's Brewpub and Grill",
+      "type": "Brewpub and restaurant",
+      "region": "rogue-valley",
+      "city": "Medford",
+      "state": "Oregon",
+      "postalCode": "97501",
+      "addressLine1": "101 Prototype Way",
+      "addressIsFictional": true,
+      "website": null,
+      "phone": null,
+      "hours": {
+        "monday": "Closed",
+        "tuesday": "11:30 AM\u20139:00 PM",
+        "wednesday": "11:30 AM\u20139:00 PM",
+        "thursday": "11:30 AM\u20139:00 PM",
+        "friday": "11:30 AM\u201310:00 PM",
+        "saturday": "11:30 AM\u201310:00 PM",
+        "sunday": "11:30 AM\u20138:00 PM"
+      },
+      "participation": "artist-supplied-reference",
+      "adminVisibility": "visible",
+      "canInitiateExhibitions": false
+    }
+  ],
+  "exhibitions": [
+    {
+      "id": "exhibition-alan-at-leos-fall-2026",
+      "title": "Alan Just at Leo's",
+      "artistId": "artist-alan-just",
+      "venueId": "venue-leos-brewpub",
+      "initiatedBy": "artist-alan-just",
+      "startDate": "2026-09-05",
+      "endDate": "2026-10-25",
+      "derivedStatusAsOfPilotDate": "showing-now",
+      "publicationStatus": "published",
+      "adminVisibility": "visible",
+      "venueConfirmationRequired": false,
+      "venueParticipationAtPublication": "not-joined",
+      "artworkIds": [
+        "alan-self-portrait",
+        "alan-connie",
+        "alan-pete-ihrig",
+        "alan-white-rabbit"
+      ],
+      "featuredArtworkId": "alan-self-portrait"
+    },
+    {
+      "id": "exhibition-lana-at-leos-winter-2026",
+      "title": "Lana Yost at Leo's",
+      "artistId": "artist-lana-yost",
+      "venueId": "venue-leos-brewpub",
+      "initiatedBy": "artist-lana-yost",
+      "startDate": "2026-11-05",
+      "endDate": "2026-12-31",
+      "derivedStatusAsOfPilotDate": "upcoming",
+      "publicationStatus": "published",
+      "adminVisibility": "visible",
+      "venueConfirmationRequired": false,
+      "venueParticipationAtPublication": "not-joined",
+      "artworkIds": [
+        "lana-ivy-field",
+        "lana-seventy-five-characters",
+        "lana-black-horse-study"
+      ],
+      "featuredArtworkId": "lana-ivy-field"
+    }
+  ]
+}

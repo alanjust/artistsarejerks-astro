@@ -15,6 +15,7 @@
   --color-purple-dark: #5a0488;      /* Darker purple for hover states */
   --color-gold: #f9b749;             /* Title text, accents (same as bkg-golden-yellow) */
   --color-green: #75c83c;            /* Navigation links (same as art wheel green) */
+  --color-pink: #ff2d55;             /* Community and artist page display headings */
   --color-orange: #F5A623;           /* Stage/background */
   --color-black: #000000;            /* Footer, borders */
 
@@ -125,6 +126,7 @@
   --letter-spacing-wide: 0.025em;
   --letter-spacing-wider: 0.05em;
   --letter-spacing-widest: 0.1em;
+  --letter-spacing-display: 0.05em; /* Default tracking for Spicy Rice display type */
 
   /* ============================================
      SPACING
@@ -156,6 +158,7 @@
   /* Max Widths */
   --max-width-content: 1440px;
   --max-width-text: 800px;
+  --page-gutter-mobile: 1.5rem;
   --max-width-reading: 65ch;
 
   /* Header & Footer Dimensions */

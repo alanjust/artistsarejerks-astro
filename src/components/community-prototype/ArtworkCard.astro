@@ -1,0 +1,87 @@
+---
+interface Artwork {
+  id: string;
+  title: string;
+  medium: string;
+  year: string | null;
+  dimensions: string | null;
+  image: string;
+  salePresentation: string;
+  publicPrice: { amount: number; currency: string } | null;
+}
+
+interface Props {
+  artwork: Artwork;
+  artistName?: string;
+  artistSlug?: string;
+  compact?: boolean;
+}
+
+const { artwork, artistName, artistSlug, compact = false } = Astro.props;
+
+const saleLabels: Record<string, string> = {
+  'contact-for-price': 'Contact artist for price',
+  'not-for-sale': 'Not for sale',
+  'private-price': 'Price shared privately',
+  'sold': 'Sold',
+};
+
+const saleLabel = artwork.salePresentation === 'public-price' && artwork.publicPrice
+  ? new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.publicPrice.currency, maximumFractionDigits: 0 }).format(artwork.publicPrice.amount)
+  : saleLabels[artwork.salePresentation] ?? 'Ask the artist';
+---
+
+<article class:list={['artwork-card', { compact }]} data-artwork-card>
+  {artistSlug ? (
+    <a class="artwork-image" href={`/prototype/artists/${artistSlug}/`} aria-label={`${artwork.title}${artistName ? ` by ${artistName}` : ''}`}>
+      <img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" />
+    </a>
+  ) : (
+    <button class="artwork-image" type="button" data-enlarge-artwork data-image={artwork.image} data-title={artwork.title} aria-label={`Enlarge ${artwork.title}`} aria-haspopup="dialog"><img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" /></button>
+  )}
+  <div class="artwork-copy">
+    {artistName && artistSlug && <a class="artist-name" href={`/prototype/artists/${artistSlug}/`}>{artistName}</a>}
+    <h3>{artwork.title}</h3>
+    <p class="details">{artwork.medium}{artwork.year ? `, ${artwork.year}` : ''}{artwork.dimensions ? ` · ${artwork.dimensions}` : ''}</p>
+    <p class:list={['sale-state', artwork.salePresentation]}>{saleLabel}</p>
+  </div>
+</article>
+
+<style>
+  .artwork-card {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-black);
+    color: var(--color-white);
+    box-shadow: 0 5px 14px rgb(0 0 0 / .16);
+  }
+
+  .artwork-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    padding: 10px;
+    background: #181818;
+  }
+
+  .artwork-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 180ms ease;
+  }
+
+  .artwork-image:hover img { transform: scale(1.02); }
+  .artwork-copy { padding: var(--space-4); }
+  .artist-name { color: var(--color-gold); font-family: var(--font-heading); font-weight: 700; }
+  h3 { margin: var(--space-1) 0 var(--space-2); font-size: var(--font-size-xl); }
+  p { margin: 0; }
+  .details { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .sale-state { margin-top: var(--space-3); font-weight: 700; }
+  .public-price { color: var(--color-green); }
+  .sold { color: var(--color-gray-400); }
+  .compact .artwork-copy { padding: var(--space-3); }
+  .compact h3 { font-size: var(--font-size-lg); }
+</style>

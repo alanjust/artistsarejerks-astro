@@ -1,0 +1,12 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'administrator');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Artist application review | Artists Are Jerks" noindex>
+<main class="venue-workspace"><p>Administrator · Local prototype</p><h1>Review artists</h1><p class="notice">Approval and invitation emails are simulated. This screen is not protected by authentication yet.</p><p><a href="/join/">Join the community →</a> · <a href="/prototype/admin/venues/">Venue review →</a></p><div data-artist-review></div><p data-artist-review-status role="status"></p></main>
+<script>import {initArtistReview} from '../../../lib/join-community';initArtistReview();</script>
+</BaseLayout>

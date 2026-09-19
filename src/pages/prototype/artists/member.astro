@@ -1,0 +1,25 @@
+---
+import BrowserShowings from '../../../components/community-prototype/BrowserShowings.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/community-artists.css';
+---
+<BaseLayout title="Community artist | Artists Are Jerks" noindex>
+<main class="artist-shell member-artist-page">
+<p class="sample-notice" data-member-page-notice>Public-page prototype · Community artist</p>
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/showing-now/">Showing now</a><span>/</span><span data-member-breadcrumb>Artist</span></nav>
+<header class="artist-intro"><div><p class="eyebrow" data-member-city></p><h1 data-member-name>Artist page</h1><div data-member-public-profile></div></div><aside><p class="page-address">Community artist page</p><strong data-member-address-name></strong><p>Artwork, contact details, and places to see this artist’s work in person.</p></aside></header>
+<BrowserShowings context="artist"/>
+<section class="work-section"><div class="section-heading"><div><p class="eyebrow">From the artist’s studio</p><h2>Selected work</h2></div></div><div class="artwork-grid" data-member-public-works></div></section>
+<p data-member-page-status role="status"></p><p>Interested in artwork? Contact the artist directly. Artists Are Jerks does not handle sales.</p><a href="/showing-now/">Back to the community →</a></main>
+<dialog data-member-viewer><button type="button" data-close-viewer aria-label="Close enlarged artwork">×</button><div class="viewer-stage"><img data-viewer-image alt=""/><button type="button" class="edge previous" data-viewer-previous aria-label="Previous artwork"><span>‹</span></button><button type="button" class="edge next" data-viewer-next aria-label="Next artwork"><span>›</span></button></div><p data-viewer-caption></p></dialog>
+<script>import {initMemberPublicPage} from '../../../lib/member-setup';initMemberPublicPage();</script>
+<style is:global>
+
+[data-member-viewer]{width:min(94vw,1100px);max-height:94dvh;padding:1rem;border:0;border-radius:12px;background:#000;color:#fff}
+[data-member-viewer]::backdrop{background:#000c}[data-close-viewer]{position:absolute;right:1rem;top:.5rem;z-index:3;color:#fff;font-size:2rem}
+[data-member-viewer] .viewer-stage{position:relative;height:78dvh;margin-top:1.5rem}[data-viewer-image]{width:100%;height:100%;object-fit:contain}
+[data-member-viewer] .edge{position:absolute;top:0;bottom:0;width:25%;background:transparent;color:#fff;cursor:pointer;border:0;font-size:3rem}
+[data-member-viewer] .previous{left:0}[data-member-viewer] .next{right:0}[data-member-viewer] .edge span{opacity:0;background:#0009;padding:.5rem;border-radius:8px}
+@media(hover:hover) and (pointer:fine){[data-member-viewer] .viewer-stage:hover .edge span{opacity:1}}
+</style>
+</BaseLayout>

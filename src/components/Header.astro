@@ -2,6 +2,13 @@
 // Menu structure with dropdowns for all items
 const menuItems = [
     {
+        identifier: "showing-now",
+        name: "Showing Now",
+        url: "/showing-now/",
+        hasDropdown: false,
+        dropdownItems: []
+    },
+    {
         identifier: "whats-a-jerk",
         name: "What's a Jerk?",
         url: "/whats-a-jerk/",
@@ -88,6 +95,13 @@ const menuItems = [
         </nav>
     </div>
     
+    <nav class="community-access" aria-label="Community participation">
+        <a href="/join/">Join the Community</a>
+        <a href="/prototype/workspaces/">Workspaces · Prototype</a>
+        <a href="/prototype/venues/">Places to See Art</a>
+        <a href="/account/">Your account / Sign in</a>
+    </nav>
+
     <!-- Mobile menu overlay -->
     <div class="mobile-menu">
         <ul class="mobile-nav-list">
@@ -114,6 +128,15 @@ const menuItems = [
 </header>
 
 <style>
+.community-access {
+    display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px 24px;
+    max-width:1440px;margin:0 auto;padding:8px clamp(1rem,4vw,2rem);
+    background:#000;font-family:var(--font-heading);font-size:14px;font-weight:700;
+}
+.community-access a {color:var(--color-gold);text-decoration:none;min-height:32px;display:inline-flex;align-items:center}
+.community-access a:hover,.community-access a:focus-visible {text-decoration:underline;text-underline-offset:4px}
+@media(max-width:600px){.community-access{justify-content:flex-start;gap:4px 16px;font-size:13px}}
+
 .site-header {
     width: 100%;
     background: #7205aa;
@@ -134,6 +157,7 @@ const menuItems = [
 
 .site-title a {
     font-family: 'Spicy Rice', serif;
+    letter-spacing: var(--letter-spacing-display);
     font-size: clamp(18px, 3vw, 24px);
     color: #f9b749;
     text-decoration: none;

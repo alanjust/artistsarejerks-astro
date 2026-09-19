@@ -1,0 +1,210 @@
+---
+export const prerender = false;
+import {requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'alan');
+if (denied) return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PrototypeBanner from '../../../components/community-prototype/PrototypeBanner.astro';
+import pilot from '../../../data/community-pilot.json';
+
+const onlineTest = import.meta.env.MODE === 'online-test';
+const sampleImage = pilot.artworks.find((work) => work.id === 'alan-self-portrait')!;
+---
+
+<BaseLayout title="First Artwork Upload Prototype | Artists Are Jerks" noindex>
+  <PrototypeBanner step="upload" />
+  <div class="upload-shell">
+    <header>
+      <p class="step-label">Alan’s private workspace · First artwork</p>
+      <h1>Start with the picture.</h1>
+      <p class="lede">You can add the useful details now, or come back after the artwork is safely in your studio.</p>
+    </header>
+
+    <ol class="progress" aria-label="Upload progress">
+      <li class="active"><span>1</span> Picture</li>
+      <li><span>2</span> Basics</li>
+      <li><span>3</span> Visibility</li>
+      <li><span>4</span> Done</li>
+    </ol>
+
+    <p id="upload-status" role="status"></p>
+    <form id="artwork-form" class="upload-card">
+      <section class="form-step active" data-step="1">
+        <div class="drop-area">
+          <img id="image-preview" src={sampleImage.image} alt="Selected artwork preview" />
+          <div>
+            <h2>Choose the artwork image</h2>
+            <p>A clear phone photo is enough to begin. You can replace it later.</p>
+            <label class="file-button">Choose another image<input id="artwork-image" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+            <button class="text-button" type="button" data-next>Use this sample image</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-step" data-step="2" hidden>
+        <p class="small-step">The basics</p>
+        <h2>What would you call it?</h2>
+        <p>Only the picture is required for a private draft. “Untitled” works perfectly well.</p>
+        <div class="field-grid">
+          <label class="wide">Title <span>optional</span><input id="title" name="title" placeholder="Untitled" /></label>
+          <label>Medium <span>optional</span><input id="medium" name="medium" list="mediums" placeholder="Oil on canvas" /></label>
+          <datalist id="mediums"><option value="Oil on canvas"></option><option value="Acrylic on panel"></option><option value="Mixed media"></option><option value="Photography"></option><option value="Digital illustration"></option></datalist>
+          <label>Year <span>optional</span><input id="year" name="year" inputmode="numeric" placeholder="2026" /></label>
+          <label>Width <span>optional</span><input name="width" inputmode="decimal" placeholder="24" /></label>
+          <label>Height <span>optional</span><input name="height" inputmode="decimal" placeholder="18" /></label>
+        </div>
+        <details>
+          <summary>Add a description</summary>
+          <label class="description">Description<textarea name="description" rows="5" placeholder="What do you want a visitor to know?"></textarea></label>
+        </details>
+        <div class="step-actions"><button type="button" class="secondary" data-back>Back</button><button type="button" class="primary" data-next>Choose visibility</button></div>
+      </section>
+
+      <section class="form-step" data-step="3" hidden>
+        <p class="small-step">Visibility and availability</p>
+        <h2>Who can see this?</h2>
+        <fieldset class="choice-list">
+          <legend>Artwork visibility</legend>
+          <label><input type="radio" name="visibility" value="private" checked /><span><strong>Private draft</strong><small>Only you and the site administrator can see it.</small></span></label>
+          <label><input type="radio" name="visibility" value="public" /><span><strong>{onlineTest ? 'Visible on my artist page in this test site' : 'Public on my artist page'}</strong><small>Showing the artwork does not create a physical exhibition.</small></span></label>
+        </fieldset>
+        <fieldset class="choice-list">
+          <legend>Sale information</legend>
+          <label><input type="radio" name="sale" value="contact" checked /><span><strong>Contact me for price</strong></span></label>
+          <label><input type="radio" name="sale" value="price" /><span><strong>Show a price</strong></span></label>
+          <label><input type="radio" name="sale" value="private-price" /><span><strong>Keep price private</strong></span></label>
+          <label><input type="radio" name="sale" value="not-for-sale" /><span><strong>Not for sale</strong></span></label>
+          <label><input type="radio" name="sale" value="sold" /><span><strong>Sold</strong></span></label>
+        </fieldset>
+        <label id="price-field" class="price-field" hidden>Public price<input name="price" type="number" min="0" inputmode="decimal" placeholder="900" /></label>
+        <p class="reassurance">Artists Are Jerks does not process a sale. A buyer contacts you and the rest stays between you.</p>
+        <div class="step-actions"><button type="button" class="secondary" data-back>Back</button><button type="submit" class="primary">Save artwork</button></div>
+      </section>
+
+      <section class="form-step success" data-step="4" hidden>
+        <div class="success-mark">✓</div>
+        <p class="small-step" id="save-confirmation">Saved</p>
+        <h2><span id="saved-title">Untitled</span> is in your studio.</h2>
+        <p id="saved-state">It is a private draft. Nothing was published or sent anywhere.</p>
+        <div class="success-actions">
+          <a class="primary" href="/prototype/artists/alan-just/">Preview my artist page</a>
+          <a class="secondary" href="/prototype/workspace/#artwork">Open artwork workspace</a>
+          <button type="button" class="text-button" data-reset>Add another artwork</button>
+        </div>
+      </section>
+    </form>
+  </div>
+
+  <script>
+    import {getStoredItem,setStoredItem,waitForSharedSave,sharedStorageEnabled} from '../../../lib/community-storage';
+    import {saveImage} from '../../../lib/member-artists';
+    let selected:File|null=null;
+    const steps = [...document.querySelectorAll<HTMLElement>('.form-step')];
+    const progress = [...document.querySelectorAll<HTMLElement>('.progress li')];
+    const form = document.querySelector<HTMLFormElement>('#artwork-form');
+    let current = 1;
+
+    function showStep(next: number) {
+      current = Math.max(1, Math.min(4, next));
+      steps.forEach((step) => {
+        const active = Number(step.dataset.step) === current;
+        step.hidden = !active;
+        step.classList.toggle('active', active);
+      });
+      progress.forEach((item, index) => item.classList.toggle('active', index < current));
+      document.querySelector('.upload-shell')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showStep(current + 1)));
+    document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => showStep(current - 1)));
+
+    document.querySelector<HTMLInputElement>('#artwork-image')?.addEventListener('change', (event) => {
+      const input = event.currentTarget as HTMLInputElement;
+      const file = input.files?.[0];
+      const preview = document.querySelector<HTMLImageElement>('#image-preview');
+      if (file && preview) {
+        if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){document.querySelector('#upload-status')!.textContent='Choose a JPEG, PNG, or WebP up to 10 MB.';input.value='';selected=null;return}
+        selected=file;
+        preview.src = URL.createObjectURL(file);
+        showStep(2);
+      }
+    });
+
+    document.querySelectorAll<HTMLInputElement>('input[name="sale"]').forEach((input) => input.addEventListener('change', () => {
+      const price = document.querySelector<HTMLElement>('#price-field');
+      if (price) price.hidden = input.value !== 'price';
+    }));
+
+    let uploadId=crypto.randomUUID(),imageKey=crypto.randomUUID();
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button=form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const status=document.querySelector('#upload-status')!;
+      button.disabled=true;status.textContent='Saving artwork and image…';
+      try {
+        const data=new FormData(form),title=String(data.get('title')||'').trim()||'Untitled';
+        if(selected)await saveImage(imageKey,selected);
+        const key='aaj-artist-workspace-prototype',state=JSON.parse(getStoredItem(key)||'{}');
+        const saleMap:Record<string,string>={contact:'contact-for-price',price:'public-price','private-price':'private-price','not-for-sale':'not-for-sale',sold:'sold'};
+        const work={id:uploadId,title,medium:String(data.get('medium')||''),year:String(data.get('year')||''),width:String(data.get('width')||''),height:String(data.get('height')||''),description:String(data.get('description')||''),visibility:String(data.get('visibility')),sale:saleMap[String(data.get('sale'))],price:String(data.get('price')||''),imageKey:selected?imageKey:'',sampleImage:selected?'':document.querySelector<HTMLImageElement>('#image-preview')!.getAttribute('src')};
+        state.uploadedWorks=[...(state.uploadedWorks||[]).filter((w:{id:string})=>w.id!==uploadId),work];
+        setStoredItem(key,JSON.stringify(state));
+        await waitForSharedSave();
+        document.querySelector('#saved-title')!.textContent=title;
+        document.querySelector('#save-confirmation')!.textContent=sharedStorageEnabled()?'Artwork and image saved to shared storage':'Artwork and image saved in this browser';
+        document.querySelector('#saved-state')!.textContent=work.visibility==='public'?'It is selected for display on your artist page in this prototype. No exhibition was created and no notice was sent.':'It is a private draft. No exhibition was created and no notice was sent.';
+        status.textContent='';showStep(4);
+      } catch(cause) {status.textContent=(cause as Error).message+' Your entries remain here. The upload is not confirmed.'}
+      finally {button.disabled=false}
+    });
+    document.querySelector('[data-reset]')?.addEventListener('click',()=>{form?.reset();selected=null;uploadId=crypto.randomUUID();imageKey=crypto.randomUUID();location.reload()});
+  </script>
+</BaseLayout>
+
+<style>
+  .upload-shell { max-width: 980px; margin: 0 auto; padding: var(--space-10) clamp(var(--space-4), 4vw, var(--space-10)) var(--space-20); }
+  header { max-width: 800px; }
+  .step-label, .small-step { margin-bottom: var(--space-2); color: var(--color-purple); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { margin-bottom: var(--space-3); color: var(--color-purple); font-family: var(--font-display); font-size: clamp(3.5rem, 9vw, 7rem); font-weight: 400; letter-spacing: var(--letter-spacing-display); line-height: .92; }
+  .lede { font-family: var(--font-heading); font-size: clamp(1.1rem, 2vw, 1.4rem); }
+  .progress { display: grid; grid-template-columns: repeat(4, 1fr); margin: var(--space-10) 0 var(--space-6); list-style: none; }
+  .progress li { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); border-bottom: 4px solid var(--color-gray-300); color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; }
+  .progress li.active { border-color: var(--color-purple); color: var(--color-black); }
+  .progress span { display: grid; place-items: center; width: 28px; height: 28px; border: 2px solid currentColor; border-radius: 50%; }
+  .upload-card { min-height: 470px; padding: clamp(var(--space-5), 5vw, var(--space-10)); border: var(--border-thick) solid var(--color-black); background: var(--color-white); box-shadow: 8px 8px 0 var(--color-black); }
+  .form-step h2 { font-size: clamp(2rem, 5vw, 3.5rem); }
+  .drop-area { display: grid; grid-template-columns: minmax(260px, 1fr) 1fr; gap: var(--space-8); align-items: center; }
+  .drop-area img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: var(--border-base) solid var(--color-black); background: var(--color-gray-200); }
+  .file-button, .primary, .secondary { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; padding: 0 var(--space-5); border: var(--border-base) solid var(--color-black); font-weight: 700; cursor: pointer; }
+  .file-button, .primary { background: var(--color-purple); color: var(--color-white); }
+  .file-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .text-button { min-height: 44px; display: block; margin-top: var(--space-3); color: var(--color-purple); font-weight: 700; text-decoration: underline; }
+  .secondary { background: var(--color-white); color: var(--color-black); }
+  .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); margin: var(--space-8) 0; }
+  .field-grid label, .description, .price-field { display: grid; gap: var(--space-2); font-family: var(--font-heading); font-weight: 700; }
+  label span { color: var(--color-text-muted); font-family: var(--font-body); font-size: var(--font-size-xs); font-weight: 400; }
+  .wide { grid-column: 1 / -1; }
+  input[type="text"], input:not([type]), input[type="number"], textarea { width: 100%; padding: var(--space-3); border: var(--border-base) solid var(--color-black); background: var(--color-gray-100); }
+  summary { min-height: 44px; display: flex; align-items: center; color: var(--color-purple); font-weight: 700; cursor: pointer; }
+  .description { margin-top: var(--space-3); }
+  .step-actions { display: flex; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-8); padding-top: var(--space-5); border-top: 1px solid var(--color-gray-300); }
+  .choice-list { margin: var(--space-6) 0; border: 0; }
+  .choice-list legend { margin-bottom: var(--space-3); font-family: var(--font-heading); font-size: var(--font-size-xl); font-weight: 700; }
+  .choice-list label { min-height: 54px; display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--color-gray-300); cursor: pointer; }
+  .choice-list label + label { border-top: 0; }
+  .choice-list input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--color-purple); }
+  .choice-list span { color: inherit; font-size: inherit; }
+  .choice-list strong, .choice-list small { display: block; }
+  .choice-list small { margin-top: var(--space-1); color: var(--color-text-secondary); font-weight: 400; }
+  .price-field { max-width: 300px; margin: var(--space-4) 0; }
+  .reassurance { padding: var(--space-4); border-left: 5px solid var(--color-green); background: var(--color-gray-100); }
+  .success { text-align: center; }
+  .success-mark { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto var(--space-5); border: var(--border-thick) solid var(--color-black); border-radius: 50%; background: var(--color-green); font-size: 2.5rem; font-weight: 700; }
+  .success-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+  .success-actions .text-button { margin: 0; padding: 0 var(--space-3); }
+  .show-assignment { margin-top: var(--space-8); padding: var(--space-5); border: var(--border-base) solid var(--color-black); background: var(--color-gold); text-align: left; }
+  .show-assignment .primary { margin-top: var(--space-2); background: var(--color-black); }
+  .assignment-status { margin-top: var(--space-3); font-weight: 700; }
+  [hidden] { display: none !important; }
+  @media (max-width: 680px) { .progress li { align-items: flex-start; flex-direction: column; padding-inline: var(--space-1); } .drop-area, .field-grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } .step-actions > * { flex: 1; } }
+</style>

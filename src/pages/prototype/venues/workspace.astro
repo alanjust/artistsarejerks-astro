@@ -1,0 +1,56 @@
+---
+export const prerender = false;
+import {communityAccess,requireCommunityAccess} from '../../../lib/community-access';
+const denied = await requireCommunityAccess(Astro, 'venue');
+if (denied) return denied;
+const access = await communityAccess(Astro.locals.auth().userId,Astro.locals);
+const ownerVenue = access?.administrator ? '' : access?.venueId;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import pilot from '../../../data/community-pilot.json';
+import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Venue intake & workspace | Artists Are Jerks" noindex>
+<main class="venue-workspace" data-owned-venue={ownerVenue}>
+<p>Venue intake · Local prototype</p><h1>Your venue workspace</h1>
+<p>Introduce your space, find AAJ artists, and let the community know you are available to host their work.</p>
+<p class="notice"><strong>Local development:</strong> Changes save to shared storage on this Mac. Venue owners can update their venue information; approval and visibility remain controlled by administrators. No email is sent.</p>
+<p><a href="/prototype/venues/">Places to see art</a>{access?.administrator && <> · <a href="/prototype/admin/venues/">Administrator review</a></>}</p>
+<label>Working venue<select data-working-venue><option value="new">Start a new application</option><option value="venue-leos-brewpub">Claim Leo’s sample listing</option></select></label>
+<p data-venue-status role="status"></p>
+<form id="venue-intake" class="card">
+<h2>Your venue’s information</h2><p>Required now: name, city, visitor address, and your private contact information. Everything else can be added later.</p>
+<div class="fields">
+<label>Venue name<input name="name" required maxlength="150"/></label><label>Type<select name="type"><option>Restaurant</option><option>Brewpub and restaurant</option><option>Gallery</option><option>Cooperative</option><option>Museum</option><option>Artist studio</option><option>Other art display space</option></select></label>
+<label>City<select name="city">{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label><label>Postal code<input name="postalCode" inputmode="numeric"/></label>
+<label class="full">Visitor street address<input name="address" required maxlength="250"/><small>Public when your listing is approved and visible.</small></label>
+<label class="full">About your space<textarea name="description" rows="3"/></label>
+<label>Venue website<input name="website" type="url" placeholder="https://"/></label><label>Public venue phone<input name="phone" type="tel"/></label>
+<label class="full">Hours<textarea name="hours" rows="4" placeholder="Tuesday–Sunday, 11:30 AM–9 PM"/></label>
+<label class="full">Accessibility<textarea name="accessibility" rows="2" placeholder="Step-free entrance, seating, accessible restroom…"/></label>
+<label class="full">Visitor instructions<textarea name="instructions" rows="2" placeholder="Where to enter or find the artwork"/></label>
+<label>Contact person<input name="contactName" required/><small>Private; for administrator communication.</small></label><label>Contact email<input name="email" type="email" required/><small>Private; never shown on your venue page.</small></label>
+<label class="full">Hosting opportunities<textarea name="opportunities" rows="3" placeholder="Wall space, suitable media, available dates, and how artists can express interest"/></label>
+</div>
+<label class="check"><input name="available" type="checkbox" checked/> We are available to host AAJ artists.</label>
+<div class="actions"><button type="button" data-venue-draft>Save draft</button><button type="submit" data-venue-submit>Submit for administrator approval</button></div>
+<p data-intake-result role="status"></p>
+</form>
+<section class="card" data-approved-tools hidden><h2>Approved venue tools</h2>
+<p>You can update your venue details and invite artists. The artist creates each dated showing and chooses its artwork.</p>
+<a data-public-venue>Preview public venue page →</a>
+<h3>Your AAJ artist list</h3><p>Add approved members you are coordinating with. This list is private and does not create a public showing.</p>
+<div data-venue-members></div><button type="button" data-save-members>Save artist list</button><p data-member-result role="status"></p>
+<h3>Announce a hosting opportunity</h3><p>Prepare an announcement for members who choose to receive venue opportunities.</p>
+<p class="notice">Sample audience: Alan Just and Lana Yost. These are prototype opt-in examples, not actual subscriptions.</p>
+<form data-opportunity-form><label>Subject<input name="subject" required maxlength="180"/></label><label>Your announcement<textarea name="body" required rows="5"/></label><div class="actions"><button>Preview member announcement</button></div></form>
+<h3>Invite outside artists to apply</h3><p>Invite artists to review AAJ and apply. An invitation does not approve membership or add them to your artist list.</p>
+<form data-invitation-form><label>Email addresses<textarea name="emails" required rows="3" placeholder="One address per line"/><small>For this prototype, use example addresses. Nothing will be sent.</small></label><label>Your introduction<textarea name="body" required rows="4"/></label><div class="actions"><button>Preview invitations</button></div><p data-invite-error role="status"></p></form>
+<section data-campaign-preview hidden><h3>Email preview</h3><p data-campaign-audience></p><strong data-campaign-subject></strong><pre data-campaign-body></pre><div class="actions"><button type="button" data-campaign-cancel>Back to editing</button><button type="button" data-campaign-confirm>Simulate sending</button></div><p data-campaign-result role="status"></p></section>
+<details><summary>Simulated email history</summary><div data-campaign-history></div></details>
+</section>
+</main>
+<script>
+import {initVenueWorkspace} from '../../../lib/venue-workspace';
+initVenueWorkspace();
+</script>
+</BaseLayout>
