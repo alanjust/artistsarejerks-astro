@@ -59,9 +59,9 @@ export default {
       const administrator=membership?.administrator===1;
       if(request.method==='GET'){
        const ownerFilter=administrator?'':" AND json_extract(payload,'$.submittedBy')=?1";
-       const statement=env.DB.prepare("SELECT collection,id,payload,revision,updated_at FROM community_records WHERE payload IS NOT NULL AND collection IN ('applications','venues') AND json_extract(payload,'$.submittedBy') IS NOT NULL"+ownerFilter+" ORDER BY updated_at DESC");
-       const {results}=await (administrator?statement:statement.bind(verified.userId)).all<{collection:string;id:string;payload:string;revision:number;updated_at:string}>();
-       const applications=results.map(row=>({kind:row.collection==='venues'?'venue':'artist',id:row.id,userId:JSON.parse(row.payload).submittedBy,payload:JSON.parse(row.payload),revision:row.revision,updatedAt:row.updated_at}));
+       const statement=env.DB.prepare("SELECT r.collection,r.id,r.payload,r.revision,r.updated_at,m.artist_id,m.venue_id FROM community_records r LEFT JOIN community_memberships m ON m.user_id=json_extract(r.payload,'$.submittedBy') WHERE r.payload IS NOT NULL AND r.collection IN ('applications','venues') AND json_extract(r.payload,'$.submittedBy') IS NOT NULL"+ownerFilter+" ORDER BY r.updated_at DESC");
+       const {results}=await (administrator?statement:statement.bind(verified.userId)).all<{collection:string;id:string;payload:string;revision:number;updated_at:string;artist_id:string|null;venue_id:string|null}>();
+       const applications=results.map(row=>({kind:row.collection==='venues'?'venue':'artist',id:row.id,userId:JSON.parse(row.payload).submittedBy,payload:JSON.parse(row.payload),revision:row.revision,updatedAt:row.updated_at,assignedArtistId:row.artist_id,assignedVenueId:row.venue_id}));
        const notifications=administrator?(await env.DB.prepare('SELECT * FROM admin_notifications ORDER BY created_at DESC LIMIT 100').all()).results:[];
        const notificationEnv=env as NotificationEnv;
        return json({applications,notifications,emailConfigured:!!(notificationEnv.ADMIN_EMAIL&&notificationEnv.ADMIN_NOTIFICATION_TO&&notificationEnv.ADMIN_NOTIFICATION_FROM)});

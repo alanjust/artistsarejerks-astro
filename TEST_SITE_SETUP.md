@@ -103,6 +103,8 @@ Every submission also creates an administrator-notification record. The inbox re
 
 Live verification confirmed that the unified inbox preserves and displays the existing Santa Fe proposal, that the approved region appears alongside Rogue Valley in the venue application menu, and that the signed-in venue intake page loads with no existing venue applications for Alan's account.
 
+Application ownership follows the Clerk account that is signed in when the form is submitted. The private contact email is correspondence information; entering a different address does not create or switch accounts. The administrator inbox withholds workspace assignment until an approved artist accepts the invitation, and it warns when that applicant account already owns a different artist workspace.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.
