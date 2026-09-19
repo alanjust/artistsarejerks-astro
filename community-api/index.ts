@@ -8,6 +8,15 @@ const json = (value:unknown,status=200) => Response.json(value,{status,headers:{
 const shortText=(value:unknown,max=200)=>typeof value==='string'&&!!value.trim()&&value.trim().length<=max;
 const stateCode=(value:unknown)=>typeof value==='string'&&/^[A-Z]{2}$/.test(value);
 const regionSlug=(value:string)=>value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'region';
+const safeOptionalUrl=(value:unknown)=>{if(value===undefined||value===null||value==='')return true;if(typeof value!=='string'||value.length>500)return false;try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password}catch{return false}};
+type NotificationEnv=Env&{ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
+const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
+async function queueAdminNotification(env:NotificationEnv,ctx:ExecutionContext,kind:'artist'|'venue'|'region',subjectId:string,title:string){
+ const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO admin_notifications(id,kind,subject_id,title,delivery_status) VALUES(?1,?2,?3,?4,'pending')").bind(id,kind,subjectId,title).run();
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_TO||!env.ADMIN_NOTIFICATION_FROM){await env.DB.prepare("UPDATE admin_notifications SET delivery_status='not_configured' WHERE id=?1").bind(id).run();return}
+ const url=`${env.ADMIN_BASE_URL||'https://aaj-dev.alanjust.com'}/prototype/admin/inbox/`,safeTitle=escapeHtml(title),label=kind[0].toUpperCase()+kind.slice(1);
+ ctx.waitUntil((async()=>{try{await env.ADMIN_EMAIL!.send({to:env.ADMIN_NOTIFICATION_TO!,from:{email:env.ADMIN_NOTIFICATION_FROM!,name:'Artists Are Jerks'},subject:`New ${kind} application: ${title}`,text:`A new ${kind} application is ready for review: ${title}\n\nReview it: ${url}`,html:`<p>A new ${label.toLowerCase()} application is ready for review: <strong>${safeTitle}</strong></p><p><a href="${url}">Open the administrator inbox</a></p>`});await env.DB.prepare("UPDATE admin_notifications SET delivery_status='sent',delivered_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1").bind(id).run()}catch(error){await env.DB.prepare("UPDATE admin_notifications SET delivery_status='failed',error=?1 WHERE id=?2").bind(String(error).slice(0,500),id).run()}})());
+}
 async function boundedBody(request:Request,max:number):Promise<Uint8Array>{
   if(Number(request.headers.get('content-length'))>max)throw new Error('Too large');
   const reader=request.body?.getReader();if(!reader)return new Uint8Array();
@@ -22,7 +31,7 @@ function imageType(bytes:Uint8Array){
   return null;
 }
 export default {
-  async fetch(request:Request,env:Env):Promise<Response>{
+  async fetch(request:Request,env:Env,ctx:ExecutionContext):Promise<Response>{
     const url=new URL(request.url);
     // Keep the local deployment guard until the online environment is reviewed. This API is inaccessible
     // on public hostnames, even if someone accidentally deploys the Worker.
@@ -45,6 +54,49 @@ export default {
     const verified=await verifyCapability(request,env.COMMUNITY_GATEWAY_SECRET);
     const membership=verified?await env.DB.prepare('SELECT artist_id,venue_id,administrator FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null;venue_id:string|null;administrator:number}>():null;
     const principal=verified&&membership?{userId:verified.userId,administrator:membership.administrator===1,artistId:membership.artist_id||undefined,venueId:membership.venue_id||undefined}:null;
+    if(verified&&url.pathname==='/api/community/applications'){
+     try{
+      const administrator=membership?.administrator===1;
+      if(request.method==='GET'){
+       const ownerFilter=administrator?'':" AND json_extract(payload,'$.submittedBy')=?1";
+       const statement=env.DB.prepare("SELECT collection,id,payload,revision,updated_at FROM community_records WHERE payload IS NOT NULL AND collection IN ('applications','venues') AND json_extract(payload,'$.submittedBy') IS NOT NULL"+ownerFilter+" ORDER BY updated_at DESC");
+       const {results}=await (administrator?statement:statement.bind(verified.userId)).all<{collection:string;id:string;payload:string;revision:number;updated_at:string}>();
+       const applications=results.map(row=>({kind:row.collection==='venues'?'venue':'artist',id:row.id,userId:JSON.parse(row.payload).submittedBy,payload:JSON.parse(row.payload),revision:row.revision,updatedAt:row.updated_at}));
+       const notifications=administrator?(await env.DB.prepare('SELECT * FROM admin_notifications ORDER BY created_at DESC LIMIT 100').all()).results:[];
+       const notificationEnv=env as NotificationEnv;
+       return json({applications,notifications,emailConfigured:!!(notificationEnv.ADMIN_EMAIL&&notificationEnv.ADMIN_NOTIFICATION_TO&&notificationEnv.ADMIN_NOTIFICATION_FROM)});
+      }
+      if(request.method==='PUT'){
+       const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,32768))) as Record<string,unknown>;
+       if(body.action==='review'){
+        if(!administrator)return json({error:'Administrator access required.'},403);
+        if(!validId(body.id)||!['artist','venue'].includes(String(body.kind))||!['approved','declined'].includes(String(body.status)))return json({error:'Invalid application review.'},400);
+        const collection=body.kind==='venue'?'venues':'applications';
+        const row=await env.DB.prepare('SELECT payload,revision FROM community_records WHERE collection=?1 AND id=?2 AND payload IS NOT NULL').bind(collection,body.id).first<{payload:string;revision:number}>();
+        if(!row)return json({error:'Application not found.'},404);const payload=JSON.parse(row.payload);
+        if(!payload.submittedBy)return json({error:'This record is not an intake application.'},400);
+        payload.status=body.status;if(collection==='venues')payload.visible=body.status==='approved';
+        await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3").bind(JSON.stringify(payload),collection,body.id).run();return json({saved:true});
+       }
+       if(body.action==='accept'){
+        if(!validId(body.id))return json({error:'Invalid invitation.'},400);
+        const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();if(!row)return json({error:'Invitation not found.'},404);const payload=JSON.parse(row.payload);
+        if(payload.submittedBy!==verified.userId||payload.status!=='approved')return json({error:'This invitation is not available to this account.'},403);
+        payload.invitationAccepted=true;await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id).run();return json({saved:true});
+       }
+       const kind=String(body.kind),payload=body.payload as Record<string,unknown>;
+       if(!['artist','venue'].includes(kind)||!payload||typeof payload!=='object')return json({error:'Invalid application.'},400);
+       const required=kind==='artist'?['name','email','regionId','city','practice','note']:['name','type','regionId','city','address','contactName','email'];
+       if(required.some(field=>!shortText(payload[field],field==='note'?2000:250))||!/^\S+@\S+\.\S+$/.test(String(payload.email))||!validId(payload.regionId)||!safeOptionalUrl(kind==='artist'?payload.portfolio:payload.website))return json({error:'Complete every required application field with a valid website address.'},400);
+       const region=await env.DB.prepare("SELECT id FROM community_regions WHERE id=?1 AND status='active'").bind(payload.regionId).first();if(!region)return json({error:'Choose an active region.'},400);
+       const collection=kind==='venue'?'venues':'applications';
+       const duplicate=await env.DB.prepare("SELECT id FROM community_records WHERE collection=?1 AND payload IS NOT NULL AND json_extract(payload,'$.submittedBy')=?2 AND json_extract(payload,'$.status')='pending'").bind(collection,verified.userId).first();if(duplicate)return json({error:`You already have a pending ${kind} application.`},409);
+       const id=crypto.randomUUID(),stored=kind==='artist'?{id,name:String(payload.name).trim(),email:String(payload.email).trim(),regionId:payload.regionId,city:String(payload.city).trim(),practice:String(payload.practice).trim(),portfolio:String(payload.portfolio||'').trim(),note:String(payload.note).trim(),opportunities:!!payload.opportunities,status:'pending',invitationAccepted:false,submittedBy:verified.userId}:{id,name:String(payload.name).trim(),type:String(payload.type).trim(),regionId:payload.regionId,city:String(payload.city).trim(),address:String(payload.address).trim(),postalCode:String(payload.postalCode||'').trim(),description:String(payload.description||'').trim(),website:String(payload.website||'').trim(),phone:String(payload.phone||'').trim(),hours:String(payload.hours||'').trim(),accessibility:String(payload.accessibility||'').trim(),instructions:String(payload.instructions||'').trim(),contactName:String(payload.contactName).trim(),email:String(payload.email).trim(),opportunities:String(payload.opportunities||'').trim(),status:'pending',visible:false,available:!!payload.available,memberIds:[],campaigns:[],submittedBy:verified.userId};
+       await env.DB.prepare('INSERT INTO community_records(collection,id,payload,revision) VALUES(?1,?2,?3,1)').bind(collection,id,JSON.stringify(stored)).run();await queueAdminNotification(env as NotificationEnv,ctx,kind as 'artist'|'venue',id,String(payload.name).trim());return json({saved:true,id});
+      }
+      return json({error:'Method not allowed'},405);
+     }catch(error){console.error(JSON.stringify({event:'application_intake_error',message:error instanceof Error?error.message:String(error)}));return json({error:'Unable to process the application.'},400)}
+    }
     if(verified&&url.pathname==='/api/community/region-proposals'){
      try{
       const administrator=membership?.administrator===1;
@@ -80,6 +132,7 @@ export default {
         if(duplicate)return json({error:'You already have a pending proposal for this region.'},409);
         const id=crypto.randomUUID();
         await env.DB.prepare("INSERT INTO region_proposals(id,user_id,proposed_name,core_city,state_code,country_code,coverage,local_connection,intended_role,rationale) VALUES(?1,?2,?3,?4,?5,'US',?6,?7,?8,?9)").bind(id,verified.userId,String(body.proposedName).trim(),String(body.coreCity).trim(),String(body.stateCode),String(body.coverage).trim(),String(body.localConnection).trim(),String(body.intendedRole).trim(),String(body.rationale).trim()).run();
+        await queueAdminNotification(env as NotificationEnv,ctx,'region',id,String(body.proposedName).trim());
         return json({saved:true,id});
       }
       return json({error:'Method not allowed'},405);

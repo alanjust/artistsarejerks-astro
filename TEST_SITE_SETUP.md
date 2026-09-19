@@ -5,7 +5,7 @@ Deployed September 18, 2026 at https://aaj-dev.alanjust.com. Localhost still use
 ## Deployment status
 
 - Cloudflare Access application: `0e8b3bea-f793-416e-9041-da6c3769d701`, team `hidden-grammar.cloudflareaccess.com`.
-- Test D1 database: `c910d001-5c95-4450-ae60-5dd483ad5a76`; migrations through `0005_regions.sql` applied. Alan's administrator assignment is initialized; no local records imported.
+- Test D1 database: `c910d001-5c95-4450-ae60-5dd483ad5a76`; migrations through `0006_admin_notifications.sql` applied. Alan's administrator assignment is initialized; no local records imported.
 - Private R2 bucket: `aaj-artwork-test`.
 - Both test Workers deployed with public Worker URLs and previews disabled. Independent gateway secret and existing Clerk development credentials uploaded as runtime secrets.
 - Anonymous account, image and API requests redirect to Cloudflare Access. Signed-in workspace checks still require Alan to complete Access login.
@@ -95,6 +95,14 @@ Active regions populate the region choices in artist and venue onboarding. City 
 
 Validation covers unassigned-account submission, applicant isolation, duplicate-pending rejection, administrator-only review, approval, and public active-region retrieval. Community API type checking, the D1/R2 integration suite, local and online builds, and bundle secret scanning pass.
 
+## Shared application intake and administrator inbox — September 19
+
+Artist and venue applications now use the same shared D1 service as region proposals. Each submission belongs to the signed-in account; applicants can see only their own records. The administrator Workspaces page links to one inbox that combines artist, venue, and region applications, shows pending totals, and supports approval or rejection. Artist approval is followed by applicant acceptance, while approved venues are immediately eligible for account assignment. Approval alone does not grant administrator privileges or assign a workspace.
+
+Every submission also creates an administrator-notification record. The inbox remains the authoritative alert channel if email delivery ever fails. Transactional alerts are active through Cloudflare Email Service using the isolated `aaj-mail.alanjust.com` sending subdomain. The Worker binding is restricted to `applications@aaj-mail.alanjust.com`; the administrator recipient is stored as a Worker secret. A direct activation message was accepted by Cloudflare for delivery to the administrator address.
+
+Live verification confirmed that the unified inbox preserves and displays the existing Santa Fe proposal, that the approved region appears alongside Rogue Valley in the venue application menu, and that the signed-in venue intake page loads with no existing venue applications for Alan's account.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.
@@ -107,4 +115,4 @@ Validation covers unassigned-account submission, applicant isolation, duplicate-
 
 ## Next checkpoint
 
-Exercise the region workflow on the protected test site: submit a clearly labeled Santa Fe test proposal, approve it as administrator, and confirm that Santa Fe becomes available in both artist and venue region menus. After that acceptance test, add a visitor-facing region switcher only when a second real community is ready to publish.
+Submit one clearly labeled artist or venue test application from a non-administrator account, confirm that its email alert arrives, verify account isolation, and review it from the administrator account. A visitor-facing region switcher is needed only when a second real community is ready to publish.

@@ -1,7 +1,8 @@
 import {setStoredItem} from './community-storage';
-import {memberUrl,deleteMemberArtist} from './member-artists';
-import {readArtistApplications,saveArtistApplication,ARTIST_APPLICATIONS_KEY,type ArtistApplication} from './artist-applications';
+import {deleteMemberArtist} from './member-artists';
+import {readArtistApplications,saveArtistApplication,ARTIST_APPLICATIONS_KEY} from './artist-applications';
 import {populateRegionSelects} from './regions';
+import {applicationApi,type SharedApplication} from './shared-applications';
 const element=(tag:string,text='',className='')=>{const node=document.createElement(tag);node.textContent=text;node.className=className;return node};
 const link=(text:string,url:string)=>{const node=element('a',text) as HTMLAnchorElement;node.href=url;return node};
 const action=(text:string,fn:()=>void)=>{const node=element('button',text) as HTMLButtonElement;node.type='button';node.addEventListener('click',fn);return node};
@@ -9,10 +10,11 @@ export function initJoin(){
  const formNode=document.querySelector<HTMLFormElement>('[data-artist-application]');if(!formNode)return;const form=formNode;
  void populateRegionSelects(form);
  const result=document.querySelector<HTMLElement>('[data-join-result]')!,choices=document.querySelector<HTMLElement>('[data-join-choices]')!,invite=document.querySelector<HTMLElement>('[data-invitation-panel]')!;
- function list(){const root=document.querySelector('[data-my-applications]')!;root.replaceChildren();readArtistApplications().forEach(a=>{const row=element('p',`${a.name}: ${a.status}${a.invitationAccepted?' · invitation accepted':''} `);if(a.status==='approved')row.append(link('Open sample invitation →',`/join/?invitation=${encodeURIComponent(a.id)}`));root.append(row)})}
+ let own:SharedApplication[]=[];
+ async function list(){const root=document.querySelector('[data-my-applications]')!;try{own=(await applicationApi()).applications.filter(entry=>entry.kind==='artist');root.replaceChildren();if(!own.length)root.append(element('p','You have not submitted an artist application.'));own.forEach(({id,payload:a})=>{const row=element('p',`${a.name}: ${a.status}${a.invitationAccepted?' · invitation accepted':''} `);if(a.status==='approved'&&!a.invitationAccepted)row.append(link('Accept invitation →',`/join/?invitation=${encodeURIComponent(id)}`));root.append(row)})}catch(error){root.replaceChildren(element('p',error instanceof Error?error.message:'Sign in to submit and review an application.'))}}
  function open(){choices.hidden=true;form.hidden=false;result.hidden=true;form.scrollIntoView({block:'start',behavior:'smooth'})}
  document.querySelector('[data-open-artist]')?.addEventListener('click',open);document.querySelector('[data-close-artist]')?.addEventListener('click',()=>{form.hidden=true;choices.hidden=false});
- form.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(form),get=(name:string)=>String(data.get(name)||'').trim();const error=document.querySelector('[data-application-error]')!;
+ form.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(form),get=(name:string)=>String(data.get(name)||'').trim();const error=document.querySelector('[data-application-error]')!;
  if(['name','practice','note'].some(name=>!get(name))){error.textContent='Please enter your name, media, and a short description of your work.';return}
  let portfolio='';
  if(get('portfolio')){
@@ -24,17 +26,16 @@ export function initJoin(){
   }catch{error.textContent='Enter a website address such as yourwebsite.com, or leave it blank.';return}
  }
 
- const existing=readArtistApplications().find(a=>a.email.toLowerCase()===get('email').toLowerCase());if(existing){error.textContent=`This browser already has a ${existing.status} application for that email. Review its status below.`;return}
- const application:ArtistApplication={id:crypto.randomUUID(),name:get('name'),email:get('email'),regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio,note:get('note'),status:'pending',invitationAccepted:false,opportunities:data.has('opportunities')};
- try{saveArtistApplication(application)}catch{error.textContent='Unable to save in this browser. Allow local storage and try again.';return}
- form.hidden=true;result.hidden=false;result.replaceChildren(element('h2','Your request is ready for review'),element('p','In the live service, the administrator would review your work and contact you. Approval would be followed by an account invitation.'),element('p','Nothing has been emailed in this prototype.'),link('Review this sample application →','/prototype/admin/artists/'));list();
+ const payload={name:get('name'),email:get('email'),regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio,note:get('note'),opportunities:data.has('opportunities')};
+ try{await applicationApi({kind:'artist',payload})}catch(cause){error.textContent=cause instanceof Error?cause.message:'Unable to submit this application.';return}
+ form.hidden=true;result.hidden=false;result.replaceChildren(element('h2','Your request is awaiting review'),element('p','The application is saved to your signed-in account. An administrator can now review it in the application inbox.'));await list();
  });
- function invitation(){const id=new URLSearchParams(location.search).get('invitation');if(!id)return;invite.hidden=false;choices.hidden=true;form.hidden=true;invite.replaceChildren();const application=readArtistApplications().find(a=>a.id===id&&a.status==='approved');if(!application){invite.append(element('h2','Invitation unavailable'),element('p','Sample invitations require an approved application in this browser.'));return}
+ async function invitation(){const id=new URLSearchParams(location.search).get('invitation');if(!id)return;invite.hidden=false;choices.hidden=true;form.hidden=true;invite.replaceChildren();if(!own.length)await list();const entry=own.find(application=>application.id===id&&application.payload.status==='approved');if(!entry){invite.append(element('h2','Invitation unavailable'),element('p','This invitation must belong to the signed-in applicant and have administrator approval.'));return}const application=entry.payload;
  invite.append(element('h2',application.invitationAccepted?'Welcome to the community':`You’re invited, ${application.name}`),element('p',`${application.practice} · ${application.city}`));
- if(application.invitationAccepted){invite.append(element('p','Invitation accepted in this browser. You are now selectable in the venue’s AAJ member list. Your public artist page and artwork will come after profile and upload setup.'),link('Open your artist workspace →',`/prototype/workspace/member/?artist=${encodeURIComponent(application.id)}`),link('Preview your page →',memberUrl(application.id,true)));return}
- invite.append(element('p','This simulates accepting the invitation after administrator approval. It does not create a login or publish a page.'),action('Accept sample invitation',()=>{saveArtistApplication({...application,invitationAccepted:true});invitation();list()}));
+ if(application.invitationAccepted){invite.append(element('p','Invitation accepted. An administrator can now assign your artist workspace to this account.'));return}
+ invite.append(element('p','Accepting confirms that this signed-in account belongs to the approved applicant.'),action('Accept invitation',()=>void (async()=>{try{await applicationApi({action:'accept',id});await list();await invitation()}catch(error){invite.append(element('p',error instanceof Error?error.message:'Unable to accept this invitation.'))}})()));
  }
- list();invitation();if(new URLSearchParams(location.search).get('kind')==='artist'&&!new URLSearchParams(location.search).has('invitation'))open();window.addEventListener('storage',e=>{if(e.key===ARTIST_APPLICATIONS_KEY){list();invitation()}});
+ void (async()=>{await list();await invitation()})();if(new URLSearchParams(location.search).get('kind')==='artist'&&!new URLSearchParams(location.search).has('invitation'))open();
 }
 export function initArtistReview(){
  const root=document.querySelector('[data-artist-review]');if(!root)return;

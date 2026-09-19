@@ -20,6 +20,7 @@ try{
  await db.exec((await fs.readFile('community-api/migrations/0003_unique_owners.sql','utf8')).replace(/\n/g,' '));
  await db.exec((await fs.readFile('community-api/migrations/0004_image_owners.sql','utf8')).replace(/\n/g,' '));
  await db.exec((await fs.readFile('community-api/migrations/0005_regions.sql','utf8')).replace(/\n/g,' '));
+ await db.exec((await fs.readFile('community-api/migrations/0006_admin_notifications.sql','utf8')).replace(/\n/g,' '));
  const call=(path,method='GET',body,headers={},principal=admin)=>signed(path,method,body===undefined?undefined:JSON.stringify(body),{'Content-Type':'application/json',...headers},principal);
  const initialRegions=await (await mf.dispatchFetch('http://localhost/api/community/public/regions')).json();assert.equal(initialRegions.regions.length,1);assert.equal(initialRegions.regions[0].name,'Rogue Valley');
  const unassigned={userId:'region-applicant',administrator:false};
@@ -32,12 +33,26 @@ try{
  const adminProposals=await (await call('region-proposals')).json();assert.equal(adminProposals.proposals.length,1);
  assert.equal((await call('region-proposals','PUT',{action:'review',id:ownProposals.proposals[0].id,status:'approved'})).status,200);
  const approvedRegions=await (await mf.dispatchFetch('http://localhost/api/community/public/regions')).json();assert.equal(approvedRegions.regions.length,2);assert.ok(approvedRegions.regions.some(region=>region.name==='Santa Fe area'));
+ const applicant={userId:'new-applicant',administrator:false};
+ const artistApplication={kind:'artist',payload:{name:'New Artist',email:'artist@example.test',regionId:'region-rogue-valley',city:'Medford',practice:'Painting',portfolio:'',note:'Local painter seeking membership.',opportunities:true}};
+ const artistSubmission=await call('applications','PUT',artistApplication,{},applicant);assert.equal(artistSubmission.status,200);const artistApplicationId=(await artistSubmission.json()).id;
+ assert.equal((await call('applications','PUT',artistApplication,{},applicant)).status,409,'an applicant may not create duplicate pending artist applications');
+ const ownApplications=await (await call('applications','GET',undefined,{},applicant)).json();assert.equal(ownApplications.applications.length,1);assert.equal(ownApplications.applications[0].payload.name,'New Artist');
+ const strangerApplications=await (await call('applications','GET',undefined,{}, {userId:'application-stranger',administrator:false})).json();assert.equal(strangerApplications.applications.length,0,'applicants must see only their own applications');
+ assert.equal((await call('applications','PUT',{action:'review',kind:'artist',id:artistApplicationId,status:'approved'},{},applicant)).status,403);
+ assert.equal((await call('applications','PUT',{action:'review',kind:'artist',id:artistApplicationId,status:'approved'})).status,200);
+ assert.equal((await call('applications','PUT',{action:'accept',id:artistApplicationId},{},applicant)).status,200);
+ const acceptedApplication=(await (await call('applications','GET',undefined,{},applicant)).json()).applications[0];assert.equal(acceptedApplication.payload.invitationAccepted,true);
+ const venueApplication={kind:'venue',payload:{name:'Applicant Venue',type:'Gallery',regionId:'region-rogue-valley',city:'Ashland',address:'1 Test Street',postalCode:'97520',description:'Test gallery',website:'',phone:'',hours:'',accessibility:'',instructions:'',contactName:'Venue Owner',email:'venue@example.test',opportunities:'Wall space',available:true}};
+ const venueSubmission=await call('applications','PUT',venueApplication,{},applicant);assert.equal(venueSubmission.status,200);const venueApplicationId=(await venueSubmission.json()).id;
+ assert.equal((await call('applications','PUT',{action:'review',kind:'venue',id:venueApplicationId,status:'approved'})).status,200);
+ const inbox=await (await call('applications')).json();assert.equal(inbox.applications.length,2);assert.equal(inbox.notifications.length,3);assert.ok(inbox.notifications.every(notification=>notification.delivery_status==='not_configured'));
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state')).status,401);
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state',{headers:{'x-aaj-capability':btoa(JSON.stringify({principal:admin})),'x-aaj-signature':'0'.repeat(64)}})).status,401);
 
  const artist={collection:'artists',id:'artist-test',payload:{id:'artist-test',name:'Test artist'},revision:0};
  assert.equal((await call('record','PUT',artist)).status,200);
- let state=await (await call('state')).json();assert.equal(state.records[0].payload.name,'Test artist');assert.equal(state.records[0].revision,1);
+ let state=await (await call('state')).json();const storedArtist=state.records.find(record=>record.id==='artist-test');assert.equal(storedArtist.payload.name,'Test artist');assert.equal(storedArtist.revision,1);
  assert.equal((await call('record','PUT',{...artist,payload:{id:'artist-test',name:'Updated'},revision:1})).status,200);
  assert.equal((await call('record','PUT',{...artist,revision:1})).status,409,'stale edits must not overwrite another browser');
  assert.equal((await call('record','PUT',{...artist,payload:null,revision:2})).status,200);

@@ -1,0 +1,18 @@
+---
+export const prerender=false;
+const {isAuthenticated}=Astro.locals.auth();if(!isAuthenticated)return Astro.redirect('/sign-in/');
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import pilot from '../../data/community-pilot.json';
+import '../../styles/venue-workspace.css';
+Astro.response.headers.set('Cache-Control','private, no-store');
+---
+<BaseLayout title="Apply as a venue | Artists Are Jerks" noindex><main class="venue-workspace"><p>Community venue application</p><h1>Introduce your place</h1><p>Tell us where people can see art and who we should contact privately. Approval makes the venue eligible for a workspace; public visibility remains under administrator control.</p>
+<form class="card" data-venue-application><h2>Venue information</h2><div class="fields">
+<label>Venue name<input name="name" required maxlength="150"/></label><label>Type<select name="type"><option>Restaurant</option><option>Brewpub and restaurant</option><option>Gallery</option><option>Cooperative</option><option>Museum</option><option>Artist studio</option><option>Other art display space</option></select></label>
+<label>Region<select name="regionId" data-region-select><option value="region-rogue-valley">Rogue Valley · OR</option></select></label><label>City<input name="city" required list="venue-application-cities" maxlength="120"/><datalist id="venue-application-cities">{pilot.regions[0].cities.map(city=><option value={city}/>)}</datalist></label>
+<label class="full">Visitor street address<input name="address" required maxlength="250"/></label><label>Postal code<input name="postalCode" maxlength="20"/></label><label>Venue website<input name="website" type="url" placeholder="https://"/></label>
+<label class="full">About the space<textarea name="description" rows="3" maxlength="2000"/></label><label>Public phone<input name="phone" type="tel"/></label><label>Hours<textarea name="hours" rows="3"/></label><label class="full">Accessibility<textarea name="accessibility" rows="2"/></label><label class="full">Visitor instructions<textarea name="instructions" rows="2"/></label>
+<label>Private contact person<input name="contactName" required maxlength="150"/></label><label>Private contact email<input name="email" type="email" required/></label><label class="full">Hosting opportunities<textarea name="opportunities" rows="3" maxlength="2000"/></label>
+</div><label class="check"><input name="available" type="checkbox" checked/> We are interested in hosting AAJ artists.</label><div class="actions"><button>Submit for review</button><a class="button" href="/join/">Back to joining</a></div><p data-venue-application-status role="status"></p></form>
+<section><h2>Your venue applications</h2><div data-my-venue-applications></div></section></main>
+<script>import {initVenueApplication} from '../../lib/shared-applications';import {populateRegionSelects} from '../../lib/regions';void populateRegionSelects();initVenueApplication();</script></BaseLayout>

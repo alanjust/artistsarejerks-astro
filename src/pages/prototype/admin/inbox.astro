@@ -1,0 +1,6 @@
+---
+export const prerender=false;
+import {requireCommunityAccess} from '../../../lib/community-access';const denied=await requireCommunityAccess(Astro,'administrator');if(denied)return denied;
+import BaseLayout from '../../../layouts/BaseLayout.astro';import '../../../styles/venue-workspace.css';
+---
+<BaseLayout title="Administrator inbox | Artists Are Jerks" noindex><main class="venue-workspace"><p>Administrator</p><h1>Application inbox</h1><p data-inbox-counts class="notice">Loading pending applications…</p><p data-notification-status></p><p><a href="/prototype/workspaces/">Workspaces →</a> · <a href="/prototype/admin/accounts/">Account assignments →</a></p><p data-inbox-status role="status"></p><div data-admin-inbox></div></main><script>import {initAdminInbox} from '../../../lib/shared-applications';initAdminInbox();</script></BaseLayout>

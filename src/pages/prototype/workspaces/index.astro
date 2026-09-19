@@ -13,7 +13,7 @@ const sections:{title:string;text:string;links:[string,string][]}[]=[];
 if(onlineTest){
  if(artistWorkspace)sections.push({title:'Your artist workspace',text:'Manage your profile, artwork, visibility, and physical showings.',links:[['Open your artist workspace →',artistWorkspace]]});
  if(access?.venueId)sections.push({title:'Your venue workspace',text:'Manage the information for the venue assigned to your account.',links:[['Open your venue workspace →',`/prototype/venues/workspace/?venue=${encodeURIComponent(access.venueId)}`]]});
- if(access?.administrator)sections.push({title:'Administrator tools',text:'Review applications, approve regions, and assign approved artists and venues to their accounts.',links:[['Assign account access →','/prototype/admin/accounts/'],['Review artist applications →','/prototype/admin/artists/'],['Review venue applications →','/prototype/admin/venues/'],['Review region proposals →','/prototype/admin/regions/']]});
+ if(access?.administrator)sections.push({title:'Administrator tools',text:'Review all applications in one inbox and assign approved artists and venues to their accounts.',links:[['Open application inbox →','/prototype/admin/inbox/'],['Assign account access →','/prototype/admin/accounts/']]});
  const communityLinks:[string,string][]=[['Showing Now →','/showing-now/'],['Places to See Art →','/prototype/venues/']];
  if(access?.artistId)communityLinks.push(['View your artist page →',access.artistId==='artist-alan-just'?'/prototype/artists/alan-just/':`/prototype/artists/member/?artist=${encodeURIComponent(access.artistId)}`]);
  sections.push({title:'Community pages',text:'Review what visitors see inside this protected test site.',links:communityLinks});

@@ -14,8 +14,8 @@ export const ALL:APIRoute=async (context)=>{
  const {isAuthenticated,userId}=locals.auth();
  if(!isAuthenticated||!userId)return fail('Sign in to access shared storage.',401);
  const access=await communityAccess(userId,locals);
- const regionProposal=url.pathname==='/api/community/region-proposals';
- if(!access&&!regionProposal)return fail('This account has no assigned community access.',403);
+ const openIntake=url.pathname==='/api/community/region-proposals'||url.pathname==='/api/community/applications';
+ if(!access&&!openIntake)return fail('This account has no assigned community access.',403);
  const secret=gatewaySecret(locals);
  if(!secret)return fail('Shared storage authentication is not configured.',503);
  if(!['GET','PUT'].includes(request.method))return fail('Method not allowed.',405);
