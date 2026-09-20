@@ -7,7 +7,7 @@ const onlineTest=import.meta.env.MODE==='online-test';
 <BaseLayout title="Join the Community | Artists Are Jerks" noindex>
 <main class="venue-workspace">
 <p>Rogue Valley · Artists Are Jerks</p><h1>Join the community</h1><p>Help people discover artwork they can see in person, and the places that show it.</p>
-<p class="notice"><strong>{onlineTest?'Private online test':'Local prototype'}:</strong> Artist, venue, and region applications save to {onlineTest?'the protected test site':'local development storage'} under the signed-in account. Approval does not publish a page or create workspace access.</p>
+<p class="notice"><strong>{onlineTest?'Private online test':'Local prototype'}:</strong> Artist, venue, and region applications save to {onlineTest?'the protected test site':'local development storage'} under the signed-in account. An approved artist receives a private workspace after accepting the invitation; publishing the artist page remains a separate choice.</p>
 <div class="public-grid" data-join-choices>
 <section class="card"><h2>I’m an artist</h2><p>For visual artists, including those showing in restaurants, studios, and other local spaces. This is an art community, rather than a crafts marketplace.</p><button type="button" data-open-artist>Request consideration →</button></section>
 <section class="card"><h2>I represent a venue</h2><p>Introduce your space and tell artists you are available to host their work. Administrator approval is required before a workspace becomes available.</p><a class="button" href="/join/venue/">Apply as a venue →</a></section>
@@ -19,7 +19,7 @@ const onlineTest=import.meta.env.MODE==='online-test';
 <div class="actions"><button>Submit for consideration</button><button type="button" data-close-artist>Back to choices</button></div><p data-application-error role="status"></p></form>
 <section class="card" data-join-result hidden role="status"></section>
 <section class="card" data-invitation-panel hidden></section>
-<p>Already participating? <a href="/sign-in/">Sign in to your account →</a></p>
+<p data-sign-in-prompt>Already participating? <a href="/sign-in/">Sign in to your account →</a></p>
 <details open><summary>Your artist applications</summary><div data-my-applications></div></details>
 </main>
 <script>
