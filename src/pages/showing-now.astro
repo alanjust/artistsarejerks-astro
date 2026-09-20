@@ -80,6 +80,8 @@ const directoryArtists = pilot.artists.filter((member) => member.artistVisibilit
   </div>
 
   <script>
+    import {getStoredItem} from '../lib/community-storage';
+    import {renderMemberDirectory} from '../lib/member-artists';
     const directory = document.querySelector<HTMLElement>('.directory');
     const showingsPanel = document.querySelector<HTMLElement>('#showings-panel');
     const artistsPanel = document.querySelector<HTMLElement>('#artists-panel');
@@ -118,9 +120,6 @@ const directoryArtists = pilot.artists.filter((member) => member.artistVisibilit
     city?.addEventListener('change', filter); search?.addEventListener('input', filter);
     async function loadDirectoryData(){
       try {
-        const [{getStoredItem},{renderMemberDirectory}]=await Promise.all([
-          import('../lib/community-storage'),import('../lib/member-artists')
-        ]);
         await renderMemberDirectory();
     const realCard = document.querySelector<HTMLElement>('[data-show-id="exhibition-alan-at-leos-fall-2026"]');
     if (realCard) {
