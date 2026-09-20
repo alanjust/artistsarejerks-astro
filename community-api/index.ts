@@ -82,7 +82,16 @@ export default {
         if(!validId(body.id))return json({error:'Invalid invitation.'},400);
         const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();if(!row)return json({error:'Invitation not found.'},404);const payload=JSON.parse(row.payload);
         if(payload.submittedBy!==verified.userId||payload.status!=='approved')return json({error:'This invitation is not available to this account.'},403);
-        payload.invitationAccepted=true;await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id).run();return json({saved:true});
+        const existing=await env.DB.prepare('SELECT artist_id FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null}>();
+        if(existing?.artist_id&&existing.artist_id!==body.id)return json({error:'This account already has a different artist workspace.'},409);
+        payload.invitationAccepted=true;
+        try{
+         await env.DB.batch([
+          env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id),
+          env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL OR community_memberships.artist_id=excluded.artist_id').bind(verified.userId,body.id)
+         ]);
+        }catch{return json({error:'This workspace could not be assigned to the applicant account.'},409)}
+        return json({saved:true,assigned:true});
        }
        const kind=String(body.kind),payload=body.payload as Record<string,unknown>;
        if(!['artist','venue'].includes(kind)||!payload||typeof payload!=='object')return json({error:'Invalid application.'},400);

@@ -113,6 +113,12 @@ The Alan Russell Just test submission demonstrated that an application's private
 
 Private account and workspace screens now show a labeled identity panel with the current Clerk name and sign-in email, assigned roles, artist workspace, and an explicit `Sign out of AAJ` control. Signing out of AAJ/Clerk is separate from the outer Cloudflare Access login.
 
+## Artist acceptance and workspace assignment — September 20
+
+Alan completed a clean two-account test: `alan@alanjust.com` remains the administrator and Alan Just artist account, while `alanjust@gmail.com` is a separate Clerk applicant account for Alan Russell Just. The application notification email arrived, the administrator approved the application, and the Gmail applicant accepted the invitation.
+
+The original flow then required the administrator to return and assign the workspace manually, leaving the accepted applicant on a page with no useful next action. Approved artist acceptance now automatically assigns that application as the account's artist workspace when the account has no other artist workspace. The acceptance page says `Your artist workspace is ready` and links directly to it. Accounts that already own a different artist workspace are rejected instead of silently replacing the assignment.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.

@@ -43,6 +43,8 @@ try{
  assert.equal((await call('applications','PUT',{action:'review',kind:'artist',id:artistApplicationId,status:'approved'})).status,200);
  assert.equal((await call('applications','PUT',{action:'accept',id:artistApplicationId},{},applicant)).status,200);
  const acceptedApplication=(await (await call('applications','GET',undefined,{},applicant)).json()).applications[0];assert.equal(acceptedApplication.payload.invitationAccepted,true);
+ assert.equal(acceptedApplication.assignedArtistId,artistApplicationId,'acceptance should automatically assign the approved artist workspace');
+ const applicantAccess=await db.prepare("SELECT artist_id,administrator FROM community_memberships WHERE user_id='new-applicant'").first();assert.equal(applicantAccess.artist_id,artistApplicationId);assert.equal(applicantAccess.administrator,0);
  const venueApplication={kind:'venue',payload:{name:'Applicant Venue',type:'Gallery',regionId:'region-rogue-valley',city:'Ashland',address:'1 Test Street',postalCode:'97520',description:'Test gallery',website:'',phone:'',hours:'',accessibility:'',instructions:'',contactName:'Venue Owner',email:'venue@example.test',opportunities:'Wall space',available:true}};
  const venueSubmission=await call('applications','PUT',venueApplication,{},applicant);assert.equal(venueSubmission.status,200);const venueApplicationId=(await venueSubmission.json()).id;
  assert.equal((await call('applications','PUT',{action:'review',kind:'venue',id:venueApplicationId,status:'approved'})).status,200);
