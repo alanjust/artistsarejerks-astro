@@ -105,6 +105,14 @@ Live verification confirmed that the unified inbox preserves and displays the ex
 
 Application ownership follows the Clerk account that is signed in when the form is submitted. The private contact email is correspondence information; entering a different address does not create or switch accounts. The administrator inbox withholds workspace assignment until an approved artist accepts the invitation, and it warns when that applicant account already owns a different artist workspace.
 
+## Account identity checkpoint — September 19
+
+Alan's current Clerk user has two roles: administrator and artist. That single account owns one artist workspace, `artist-alan-just` (Alan Just). Administrator access is a permission on the account; it is not another workspace.
+
+The approved Alan Russell Just item is an application attached to that same Clerk user. It is not a second Clerk account and has no workspace. Its private contact address does not determine account ownership. Do not assign it to Alan's existing user because doing so would replace the `artist-alan-just` assignment.
+
+Private account and workspace screens now show a labeled identity panel with the current Clerk name and sign-in email, assigned roles, artist workspace, and an explicit `Sign out of AAJ` control. Signing out of AAJ/Clerk is separate from the outer Cloudflare Access login.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.
@@ -117,4 +125,4 @@ Application ownership follows the Clerk account that is signed in when the form 
 
 ## Next checkpoint
 
-Submit one clearly labeled artist or venue test application from a non-administrator account, confirm that its email alert arrives, verify account isolation, and review it from the administrator account. A visitor-facing region switcher is needed only when a second real community is ready to publish.
+Archive or otherwise retire the Alan Russell Just test application before beginning another account-isolation test. A future second-artist test must begin by signing out of AAJ/Clerk and signing in with a genuinely separate Clerk account; changing an application's private contact email is insufficient. A visitor-facing region switcher is needed only when a second real community is ready to publish.

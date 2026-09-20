@@ -1,0 +1,43 @@
+---
+import {SignOutButton} from '@clerk/astro/components';
+import {clerkClient} from '@clerk/astro/server';
+import {communityAccess} from '../lib/community-access';
+
+const {isAuthenticated,userId}=Astro.locals.auth();
+let name='';
+let email='';
+const access=isAuthenticated&&userId?await communityAccess(userId,Astro.locals):null;
+
+if(isAuthenticated&&userId){
+ try{
+  const user=await clerkClient(Astro).users.getUser(userId);
+  name=user.fullName||[user.firstName,user.lastName].filter(Boolean).join(' ')||'Signed-in member';
+  email=user.emailAddresses.find(item=>item.id===user.primaryEmailAddressId)?.emailAddress||user.emailAddresses[0]?.emailAddress||'';
+ }catch{
+  name='Signed-in member';
+ }
+}
+
+const roles=[];
+if(access?.administrator)roles.push('Administrator');
+if(access?.artistId)roles.push('Artist');
+if(access?.venueId)roles.push('Venue');
+const artistWorkspace=access?.artistId==='artist-alan-just'?'Alan Just':access?.artistId||'';
+---
+{isAuthenticated&&<aside class="account-identity" aria-label="Current account">
+ <div>
+  <strong>Signed in as {name}</strong>
+  {email&&<span>{email}</span>}
+ </div>
+ <dl>
+  <div><dt>Roles</dt><dd>{roles.length?roles.join(' · '):'No assigned role'}</dd></div>
+  <div><dt>Artist workspace</dt><dd>{artistWorkspace||'None assigned'}</dd></div>
+ </dl>
+ <div class="account-actions"><a href="/account/">Account details</a><SignOutButton redirectUrl="/sign-in/">Sign out of AAJ</SignOutButton></div>
+</aside>}
+
+<style>
+.account-identity{display:grid;grid-template-columns:minmax(180px,1fr) minmax(240px,1.4fr) auto;align-items:center;gap:12px 24px;width:min(1360px,calc(100% - 2rem));margin:12px auto 0;padding:12px 16px;border:3px solid #000;border-radius:10px;background:var(--color-gold);color:#000;font-family:var(--font-body)}
+.account-identity>div:first-child{display:grid;gap:2px}.account-identity span{font-size:.9rem}.account-identity dl{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0}.account-identity dl div{display:grid;gap:1px}.account-identity dt{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.account-identity dd{margin:0;font-weight:700}.account-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.account-actions a,.account-actions button{min-height:44px;display:inline-flex;align-items:center;padding:.55rem .8rem;border:2px solid #000;border-radius:7px;background:#000;color:var(--color-gold);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.account-actions a:hover,.account-actions a:focus-visible,.account-actions button:hover,.account-actions button:focus-visible{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:850px){.account-identity{grid-template-columns:1fr}.account-actions{justify-content:flex-start}}
+</style>
