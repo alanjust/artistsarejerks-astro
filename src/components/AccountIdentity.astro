@@ -1,20 +1,22 @@
 ---
 import {SignOutButton} from '@clerk/astro/components';
 import {clerkClient} from '@clerk/astro/server';
-import {communityAccess} from '../lib/community-access';
+import {communityAccess,communityApplications} from '../lib/community-access';
 
 const {isAuthenticated,userId}=Astro.locals.auth();
 let name='';
 let email='';
 const access=isAuthenticated&&userId?await communityAccess(userId,Astro.locals):null;
+const applications=isAuthenticated&&userId&&access?.artistId?await communityApplications(userId,Astro.locals):[];
+const artistApplication=applications.find(item=>item.kind==='artist'&&item.id===access?.artistId);
 
 if(isAuthenticated&&userId){
  try{
   const user=await clerkClient(Astro).users.getUser(userId);
-  name=user.fullName||[user.firstName,user.lastName].filter(Boolean).join(' ')||'Signed-in member';
+  name=user.fullName||[user.firstName,user.lastName].filter(Boolean).join(' ')||String(artistApplication?.payload.name||'Signed-in member');
   email=user.emailAddresses.find(item=>item.id===user.primaryEmailAddressId)?.emailAddress||user.emailAddresses[0]?.emailAddress||'';
- }catch{
-  name='Signed-in member';
+}catch{
+  name=String(artistApplication?.payload.name||'Signed-in member');
  }
 }
 
@@ -22,7 +24,7 @@ const roles=[];
 if(access?.administrator)roles.push('Administrator');
 if(access?.artistId)roles.push('Artist');
 if(access?.venueId)roles.push('Venue');
-const artistWorkspace=access?.artistId==='artist-alan-just'?'Alan Just':access?.artistId||'';
+const artistWorkspace=access?.artistId==='artist-alan-just'?'Alan Just':String(artistApplication?.payload.name||access?.artistId||'');
 ---
 {isAuthenticated&&<aside class="account-identity" aria-label="Current account">
  <div>

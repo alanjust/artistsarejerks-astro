@@ -1,20 +1,23 @@
 ---
 export const prerender = false;
 import {requireCommunityAccess} from '../../../lib/community-access';
-const denied = await requireCommunityAccess(Astro, 'artist');
-if (denied) return denied;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import MemberShowingForm from '../../../components/community-prototype/MemberShowingForm.astro';
-const {workspaceMode=false}=Astro.props;
 import pilot from '../../../data/community-pilot.json';
 import '../../../styles/venue-workspace.css';
+const denied = await requireCommunityAccess(Astro, 'artist');
+if (denied) return denied;
+const {workspaceMode=false}=Astro.props;
+const onlineTest=import.meta.env.MODE==='online-test';
+const workspaceTabs=[['home','Home'],['profile','Profile'],['artwork','Artwork'],['showing','Showings'],['visibility','Visibility']];
 ---
 <BaseLayout title="Artist workspace | Artists Are Jerks" noindex>
 <main class="venue-workspace artist-member-workspace" data-regular-workspace={workspaceMode}>
-<p>{workspaceMode ? "Private artist workspace · Local prototype" : "New artist · First visit"}</p><h1 data-setup-title>Make yourself at home</h1><p class="notice">Local prototype · Your page and artwork are saved in prototype storage. Access is limited to your assigned workspace.</p>
+{workspaceMode&&<p class="workspace-return"><a href="/prototype/workspaces/">← Your workspaces</a></p>}
+<p>{workspaceMode ? `Private artist workspace · ${onlineTest?'Online test':'Local prototype'}` : "New artist · First visit"}</p><h1 data-setup-title>Make yourself at home</h1><p class="notice">{onlineTest?'Your profile and artwork are saved in private test storage.':'Your page and artwork are saved in prototype storage.'} Access is limited to your assigned workspace.</p>
 <p data-setup-message role="status"></p><p data-setup-unavailable hidden>Please accept an approved artist invitation first. <a href="/join/">Open Join the Community →</a></p>
 <div data-setup-content hidden>
-{workspaceMode && <><nav class="member-tabs" aria-label="Artist workspace">{['Home','Profile','Artwork','Showing','Visibility'].map((name,index)=><button type="button" data-workspace-tab={name.toLowerCase()} aria-pressed="false">0{index+1} {name}</button>)}</nav><section class="card" data-workspace-home hidden><h2>What would you like to do?</h2><p data-workspace-overview></p><div class="actions"><button type="button" data-workspace-action="profile">Edit profile &amp; contact</button><button type="button" data-workspace-action="artwork">Manage artwork</button><button type="button" data-workspace-action="showing">Manage showings</button><button type="button" data-workspace-action="visibility">Preview &amp; visibility</button></div><p><button type="button" data-resume-guide>Walk me through setup →</button></p></section><section data-workspace-showing hidden><h2>Where your work can be seen</h2><MemberShowingForm/></section></>}
+{workspaceMode && <><nav class="member-tabs" aria-label="Artist workspace">{workspaceTabs.map(([value,name],index)=><button type="button" data-workspace-tab={value} aria-pressed="false">0{index+1} {name}</button>)}</nav><section class="card" data-workspace-home hidden><h2>What would you like to do?</h2><p data-workspace-overview></p><div class="actions"><button type="button" data-workspace-action="artwork">Manage artwork</button><button type="button" data-workspace-action="profile">Edit profile &amp; contact</button><button type="button" data-workspace-action="showing">Manage showings</button><button type="button" data-workspace-action="visibility">Preview &amp; visibility</button></div><p><button type="button" data-resume-guide>Walk me through setup →</button></p></section><section data-workspace-showing hidden><h2>Where your work can be seen</h2><MemberShowingForm/></section></>}
 <nav class="actions" data-guided-nav aria-label="Artist setup steps">{['Profile','Contact','Artwork','Preview'].map((name,index)=><button type="button" data-setup-step={index} aria-pressed="false">{index+1} · {name}</button>)}</nav>
 <form class="card" data-setup-profile><h2>Your introduction</h2><p>Your name, city, and media come from your application. Change them if needed.</p><div class="fields"><label>Artist name<input name="name" required maxlength="150"/></label><label>Home city<select name="city">{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label><label class="full">Practice or media<input name="practice" required maxlength="200"/></label><label class="full">Short biography <small>optional</small><textarea name="bio" rows="4" maxlength="2000" placeholder="A few sentences about you and your work"/></label></div><div class="actions"><button>Save profile</button></div></form>
 <form class="card" data-setup-contact hidden><h2>How may visitors contact you?</h2><p>Each detail stays private unless you choose to show it. Direct sales remain between you and the buyer.</p><div class="fields"><label class="full">Website<input name="website" type="url" placeholder="https://"/></label><label>Contact email<input name="email" type="email"/></label><label>Phone or text number<input name="phone" type="tel"/></label></div><label class="check"><input name="publicWebsite" type="checkbox"/> Show my website publicly</label><label class="check"><input name="publicEmail" type="checkbox"/> Show my email publicly</label><label class="check"><input name="publicPhone" type="checkbox"/> Show my phone number publicly for calls or texts</label><p>A private contact form can be connected later. You can publish without public contact details.</p><div class="actions"><button>Save contact information</button></div></form>
@@ -28,6 +31,6 @@ import '../../../styles/venue-workspace.css';
 </BaseLayout>
 
 <style>
-.member-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-block:1.5rem;background:#000;border-radius:8px;overflow:hidden}.member-tabs button{border:0;border-radius:0;text-align:left;background:#000;font-size:.875rem}.member-tabs button[aria-pressed="true"]{background:var(--color-purple)}.artist-member-workspace [hidden]{display:none!important}.artist-member-workspace [data-workspace-home] h2,.artist-member-workspace [data-workspace-showing]>h2{font-size:clamp(1.6rem,3vw,2.4rem)}
+.workspace-return{margin-bottom:.5rem}.workspace-return a{font-weight:700}.member-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-block:1.5rem;background:#000;border-radius:8px;overflow:hidden;position:sticky;top:0;z-index:5}.member-tabs button{border:0;border-radius:0;text-align:left;background:#000;font-size:.875rem}.member-tabs button[aria-pressed="true"]{background:var(--color-purple)}.artist-member-workspace [hidden]{display:none!important}.artist-member-workspace [data-workspace-home] h2,.artist-member-workspace [data-workspace-showing]>h2{font-size:clamp(1.6rem,3vw,2.4rem)}
 @media(max-width:650px){.member-tabs{display:flex;overflow-x:auto}.member-tabs button{flex:0 0 auto}}
 </style>

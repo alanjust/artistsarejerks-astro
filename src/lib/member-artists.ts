@@ -5,7 +5,16 @@ export interface MemberWork {id:string;title:string;medium:string;year:string;sa
 export interface MemberArtist {id:string;name:string;city:string;practice:string;bio:string;website:string;email:string;phone:string;publicWebsite:boolean;publicEmail:boolean;publicPhone:boolean;published:boolean;step:number;works:MemberWork[]}
 export function readMemberArtists():MemberArtist[]{try{const data=JSON.parse(getStoredItem(MEMBER_ARTISTS_KEY)||'[]');return Array.isArray(data)?data:[]}catch{return []}}
 export function saveMemberArtist(artist:MemberArtist){setStoredItem(MEMBER_ARTISTS_KEY,JSON.stringify([...readMemberArtists().filter(a=>a.id!==artist.id),artist]))}
-export function getMemberArtist(id:string){const app=readArtistApplications().find(a=>a.id===id&&a.status==='approved'&&a.invitationAccepted);if(!app)return null;return readMemberArtists().find(a=>a.id===id)||{id,name:app.name,city:app.city,practice:app.practice,bio:'',website:app.portfolio,email:app.email,phone:'',publicWebsite:false,publicEmail:false,publicPhone:false,published:false,step:0,works:[]};}
+export function getMemberArtist(id:string){
+ const saved=readMemberArtists().find(a=>a.id===id);
+ // The protected server route has already checked workspace ownership. Once a
+ // profile exists, it is the durable workspace record and must not depend on a
+ // second, browser-local copy of the accepted application.
+ if(saved)return saved;
+ const app=readArtistApplications().find(a=>a.id===id&&a.status==='approved'&&a.invitationAccepted);
+ if(!app)return null;
+ return {id,name:app.name,city:app.city,practice:app.practice,bio:'',website:app.portfolio,email:app.email,phone:'',publicWebsite:false,publicEmail:false,publicPhone:false,published:false,step:0,works:[]};
+}
 export function memberUrl(id:string,preview=false){return `/prototype/artists/member/?artist=${encodeURIComponent(id)}${preview?'&preview=1':''}`}
 async function imageDatabase(){return new Promise<IDBDatabase>((resolve,reject)=>{const request=indexedDB.open('aaj-artwork-images-prototype',1);request.onupgradeneeded=()=>request.result.createObjectStore('images');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)})}
 export async function saveImage(key:string,blob:Blob){if(sharedStorageRequired()&&!sharedStorageEnabled())throw new Error('Shared storage is unavailable. Reload before uploading.');if(sharedStorageEnabled()){await api(`images/${encodeURIComponent(key)}`,{method:'PUT',body:blob});return}const db=await imageDatabase();try{await new Promise<void>((resolve,reject)=>{const transaction=db.transaction('images','readwrite');transaction.objectStore('images').put(blob,key);transaction.oncomplete=()=>resolve();transaction.onerror=()=>reject(transaction.error);transaction.onabort=()=>reject(transaction.error)})}finally{db.close()}}

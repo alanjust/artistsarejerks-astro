@@ -119,6 +119,14 @@ Alan completed a clean two-account test: `alan@alanjust.com` remains the adminis
 
 The original flow then required the administrator to return and assign the workspace manually, leaving the accepted applicant on a page with no useful next action. Approved artist acceptance now automatically assigns that application as the account's artist workspace when the account has no other artist workspace. The acceptance page says `Your artist workspace is ready` and links directly to it. Accounts that already own a different artist workspace are rejected instead of silently replacing the assignment.
 
+## Second-artist workspace handoff — September 20
+
+Alan Russell Just's assigned workspace and five uploaded JPEGs were confirmed in shared D1/R2 storage. Opening the workspace still showed an invitation warning because the client required an accepted application in an older browser cache before it would read the durable artist record. The workspace now treats its saved artist record as authoritative after the protected server route verifies ownership. The five saved works remain intact and appear under Artwork.
+
+The workspace adds a direct return link to Your Workspaces, keeps Home, Profile, Artwork, Showings, and Visibility available as persistent tabs, and shows the artwork count on the Home action. The account identity panel displays the application name instead of a raw workspace UUID when Clerk has no profile name. Online copy identifies private test storage rather than a local prototype.
+
+Validation includes a regression proving that a saved assigned artist loads without a browser-local application copy, the D1/R2 integration suite, API type checking, the online test build, and the bundle secret scan.
+
 ## Confirmed product behavior
 
 - Artist and venue data persist in the private online test site.
@@ -131,4 +139,4 @@ The original flow then required the administrator to return and assign the works
 
 ## Next checkpoint
 
-A future second-artist test must begin by signing out of AAJ/Clerk and signing in with a genuinely separate Clerk account; changing an application's private contact email is insufficient. A visitor-facing region switcher is needed only when a second real community is ready to publish.
+Verify the repaired Alan Russell Just workspace in Safari: Home should report five artworks, Artwork should display all five images, and the account panel should name Alan Russell Just. A visitor-facing region switcher is needed only when a second real community is ready to publish.
