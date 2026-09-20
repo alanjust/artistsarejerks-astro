@@ -109,7 +109,7 @@ Application ownership follows the Clerk account that is signed in when the form 
 
 Alan's current Clerk user has two roles: administrator and artist. That single account owns one artist workspace, `artist-alan-just` (Alan Just). Administrator access is a permission on the account; it is not another workspace.
 
-The approved Alan Russell Just item is an application attached to that same Clerk user. It is not a second Clerk account and has no workspace. Its private contact address does not determine account ownership. Do not assign it to Alan's existing user because doing so would replace the `artist-alan-just` assignment.
+The Alan Russell Just test submission demonstrated that an application's private contact address does not determine account ownership. It was attached to Alan's existing Clerk user, approved, accepted, and deliberately never assigned because assignment would have replaced `artist-alan-just`. Alan requested a clean restart, so the test application and its matching administrator-notification record were permanently deleted from the private test database on September 19. It is no longer an active application, account, or workspace. The Santa Fe region proposal remains.
 
 Private account and workspace screens now show a labeled identity panel with the current Clerk name and sign-in email, assigned roles, artist workspace, and an explicit `Sign out of AAJ` control. Signing out of AAJ/Clerk is separate from the outer Cloudflare Access login.
 
@@ -125,4 +125,4 @@ Private account and workspace screens now show a labeled identity panel with the
 
 ## Next checkpoint
 
-Archive or otherwise retire the Alan Russell Just test application before beginning another account-isolation test. A future second-artist test must begin by signing out of AAJ/Clerk and signing in with a genuinely separate Clerk account; changing an application's private contact email is insufficient. A visitor-facing region switcher is needed only when a second real community is ready to publish.
+A future second-artist test must begin by signing out of AAJ/Clerk and signing in with a genuinely separate Clerk account; changing an application's private contact email is insufficient. A visitor-facing region switcher is needed only when a second real community is ready to publish.
