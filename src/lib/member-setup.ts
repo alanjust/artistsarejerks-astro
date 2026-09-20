@@ -3,7 +3,7 @@ import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings} from './prototype-showings';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 export async function initMemberSetup(){
- const id=new URLSearchParams(location.search).get('artist')||'';const initial=getMemberArtist(id);if(!initial){document.querySelector<HTMLElement>('[data-setup-unavailable]')!.hidden=false;return}let artist:MemberArtist=initial;
+ const id=new URLSearchParams(location.search).get('artist')||'',root=document.querySelector<HTMLElement>('[data-regular-workspace]');let serverInitial:MemberArtist|null=null;try{serverInitial=JSON.parse(root?.dataset.initialArtist||'null') as MemberArtist|null}catch{}const initial=getMemberArtist(id)||(serverInitial?.id===id?serverInitial:null);if(!initial){document.querySelector<HTMLElement>('[data-setup-unavailable]')!.hidden=false;return}let artist:MemberArtist=initial;
  document.querySelector<HTMLElement>('[data-setup-content]')!.hidden=false;document.querySelector('[data-setup-title]')!.textContent=document.querySelector('[data-regular-workspace="true"]')?`${artist.name}’s workspace`:`Welcome, ${artist.name}`;document.title=`${artist.name}’s workspace | Artists Are Jerks`;
  const message=document.querySelector('[data-setup-message]')!;
  const profile=document.querySelector<HTMLFormElement>('[data-setup-profile]')!,contact=document.querySelector<HTMLFormElement>('[data-setup-contact]')!,upload=document.querySelector<HTMLFormElement>('[data-member-upload]')!;

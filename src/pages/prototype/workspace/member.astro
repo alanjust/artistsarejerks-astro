@@ -1,8 +1,11 @@
 ---
 export const prerender = false;
-import {requireCommunityAccess} from '../../../lib/community-access';
+import {requireCommunityAccess,communityArtistRecord} from '../../../lib/community-access';
 const denied = await requireCommunityAccess(Astro, 'artist');
 if (denied) return denied;
 import ArtistWorkspace from '../onboarding/artist.astro';
+const {userId}=Astro.locals.auth();
+const artistId=Astro.url.searchParams.get('artist');
+const initialArtist=await communityArtistRecord(userId,artistId,Astro.locals);
 ---
-<ArtistWorkspace workspaceMode={true}/>
+<ArtistWorkspace workspaceMode={true} initialArtist={initialArtist}/>

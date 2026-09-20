@@ -121,7 +121,7 @@ The original flow then required the administrator to return and assign the works
 
 ## Second-artist workspace handoff — September 20
 
-Alan Russell Just's assigned workspace and five uploaded JPEGs were confirmed in shared D1/R2 storage. Opening the workspace still showed an invitation warning because the client required an accepted application in an older browser cache before it would read the durable artist record. The workspace now treats its saved artist record as authoritative after the protected server route verifies ownership. The five saved works remain intact and appear under Artwork.
+Alan Russell Just's assigned workspace and five uploaded JPEGs were confirmed in shared D1/R2 storage. Opening the workspace still showed an invitation warning because the client required an accepted application in an older browser cache before it would read the durable artist record. The workspace now treats its saved artist record as authoritative after the protected server route verifies ownership, and the server supplies that record directly to the page so rendering does not depend on browser-cache timing. The five saved works remain intact and appear under Artwork.
 
 The workspace adds a direct return link to Your Workspaces, keeps Home, Profile, Artwork, Showings, and Visibility available as persistent tabs, and shows the artwork count on the Home action. The account identity panel displays the application name instead of a raw workspace UUID when Clerk has no profile name. Online copy identifies private test storage rather than a local prototype.
 

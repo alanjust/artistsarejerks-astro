@@ -7,12 +7,12 @@ import pilot from '../../../data/community-pilot.json';
 import '../../../styles/venue-workspace.css';
 const denied = await requireCommunityAccess(Astro, 'artist');
 if (denied) return denied;
-const {workspaceMode=false}=Astro.props;
+const {workspaceMode=false,initialArtist=null}=Astro.props;
 const onlineTest=import.meta.env.MODE==='online-test';
 const workspaceTabs=[['home','Home'],['profile','Profile'],['artwork','Artwork'],['showing','Showings'],['visibility','Visibility']];
 ---
 <BaseLayout title="Artist workspace | Artists Are Jerks" noindex>
-<main class="venue-workspace artist-member-workspace" data-regular-workspace={workspaceMode}>
+<main class="venue-workspace artist-member-workspace" data-regular-workspace={workspaceMode} data-initial-artist={initialArtist?JSON.stringify(initialArtist):undefined}>
 {workspaceMode&&<p class="workspace-return"><a href="/prototype/workspaces/">← Your workspaces</a></p>}
 <p>{workspaceMode ? `Private artist workspace · ${onlineTest?'Online test':'Local prototype'}` : "New artist · First visit"}</p><h1 data-setup-title>Make yourself at home</h1><p class="notice">{onlineTest?'Your profile and artwork are saved in private test storage.':'Your page and artwork are saved in prototype storage.'} Access is limited to your assigned workspace.</p>
 <p data-setup-message role="status"></p><p data-setup-unavailable hidden>Please accept an approved artist invitation first. <a href="/join/">Open Join the Community →</a></p>
