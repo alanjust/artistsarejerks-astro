@@ -1,7 +1,9 @@
 ---
+export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BrowserShowings from '../components/community-prototype/BrowserShowings.astro';
 import pilot from '../data/community-pilot.json';
+import {communityFetch} from '../lib/community-transport';
 
 const show = pilot.exhibitions.find((item) => item.derivedStatusAsOfPilotDate === 'showing-now')!;
 const artist = pilot.artists.find((item) => item.id === show.artistId)!;
@@ -16,6 +18,18 @@ const upcomingArtist = pilot.artists.find((item) => item.id === upcoming.artistI
 const upcomingVenue = pilot.venues.find((item) => item.id === upcoming.venueId)!;
 const upcomingArtwork = pilot.artworks.find((work) => work.id === upcoming.featuredArtworkId)!;
 const onlineTest = import.meta.env.MODE === 'online-test';
+type PublicMember={id:string;name:string;city:string;practice:string;works:{title:string;imageKey:string;sampleImage?:string}[]};
+let publicMembers:PublicMember[]=[];
+if(onlineTest){
+  try{
+    const response=await communityFetch('/api/community/public/state',{cache:'no-store'},Astro.locals);
+    if(response.ok){
+      const body=await response.json() as {records?:{collection:string;payload:PublicMember|null}[]};
+      publicMembers=(body.records||[]).filter(record=>record.collection==='artists'&&record.payload).map(record=>record.payload!);
+    }
+  }catch{}
+  Astro.response.headers.set('Cache-Control','private, no-store');
+}
 const cards = onlineTest ? [] : [{ id: show.id, image: featured.image, alt: featured.title, name: artist.name, slug: artist.slug, city: venue.city, place: venue.name, dates: `${dateLabel(show.startDate)}–${dateLabel(show.endDate)}`, practice: artist.practice.join(' / '), fpo: false }, ...placeholders.map((work, i) => ({ id: `fpo-${i}`, image: work.image, alt: 'Placeholder artwork', name: `FPO Artist ${i + 2}`, slug: null, city: cities[i], place: 'FPO Rogue Valley venue', dates: 'Sample current dates', practice: work.medium, fpo: true }))];
 const directoryArtists = pilot.artists.filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible' && (!onlineTest || member.id === 'artist-alan-just'));
 ---
@@ -66,12 +80,13 @@ const directoryArtists = pilot.artists.filter((member) => member.artistVisibilit
     <aside id="artists-panel" aria-labelledby="artists-heading">
       <div class="artist-panel-heading"><h2 id="artists-heading">Our Artists</h2><button class="expand-button" type="button" data-view-choice="artists">Expand Our Artists ↗</button></div>
       <p class="roster-intro">Meet the community, whether or not their work is showing today.</p>
-      <div class="member-grid">
+      <div class="member-grid" data-server-members={onlineTest?true:undefined}>
         {directoryArtists.sort((a, b) => a.name.split(' ').at(-1)!.localeCompare(b.name.split(' ').at(-1)!)).map((member) => {
           const work = pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')!;
           const showing = pilot.exhibitions.some((exhibition) => exhibition.artistId === member.id && exhibition.derivedStatusAsOfPilotDate === 'showing-now');
           return <a class="member-card" href={`/prototype/artists/${member.slug}/`}><img src={work.image} alt={`Artwork by ${member.name}`} loading="lazy" /><div><h3>{member.name}</h3><p>{member.homeCity}</p><p>{member.practice.join(' · ')}</p>{showing && <span class="member-status">Showing now</span>}</div></a>;
         })}
+        {publicMembers.map((member)=>{const work=member.works[0];if(!work)return null;return <a class="member-card" data-member-profile={member.id} href={`/prototype/artists/member/?artist=${encodeURIComponent(member.id)}`}><img src={work.sampleImage||`/api/community/public/images/${encodeURIComponent(work.imageKey)}`} alt={`Artwork by ${member.name}`} loading="lazy"/><div><h3>{member.name}</h3><p>{member.city}</p><p>{member.practice}</p></div></a>})}
         {!onlineTest && <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h3>FPO member artist</h3><p>Central Point</p><p>Drawing · Not showing now</p></div></article>}
       </div>
     </aside>
@@ -120,7 +135,7 @@ const directoryArtists = pilot.artists.filter((member) => member.artistVisibilit
     city?.addEventListener('change', filter); search?.addEventListener('input', filter);
     async function loadDirectoryData(){
       try {
-        await renderMemberDirectory();
+        if(!document.querySelector('.member-grid')?.hasAttribute('data-server-members'))await renderMemberDirectory();
     const realCard = document.querySelector<HTMLElement>('[data-show-id="exhibition-alan-at-leos-fall-2026"]');
     if (realCard) {
       let selected: string | null = null;
