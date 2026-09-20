@@ -1,21 +1,23 @@
 ---
 export const prerender = false;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import {communityAccess} from '../../../lib/community-access';
+import {communityAccess,communityArtistRecord} from '../../../lib/community-access';
 import '../../../styles/venue-workspace.css';
 
 const onlineTest = import.meta.env.MODE === 'online-test';
 const {isAuthenticated,userId}=Astro.locals.auth();
 const access=isAuthenticated?await communityAccess(userId,Astro.locals):null;
+const memberArtist=access?.artistId&&access.artistId!=='artist-alan-just'?await communityArtistRecord(userId,access.artistId,Astro.locals):null;
+const memberPublished=Boolean(memberArtist?.published);
 const artistWorkspace=access?.artistId==='artist-alan-just'?'/prototype/workspace/':access?.artistId?`/prototype/workspace/member/?artist=${encodeURIComponent(access.artistId)}`:'';
 const sections:{title:string;text:string;links:[string,string][]}[]=[];
 
 if(onlineTest){
- if(artistWorkspace)sections.push({title:'Your artist workspace',text:'Manage your profile, artwork, visibility, and physical showings.',links:[['Open your artist workspace →',artistWorkspace]]});
+ if(artistWorkspace)sections.push({title:'Your artist workspace',text:access?.artistId==='artist-alan-just'?'Manage your profile, artwork, visibility, and physical showings.':`Manage your profile, artwork, visibility, and physical showings. Your artist page is currently ${memberPublished?'published':'offline'}.`,links:[['Open your artist workspace →',artistWorkspace]]});
  if(access?.venueId)sections.push({title:'Your venue workspace',text:'Manage the information for the venue assigned to your account.',links:[['Open your venue workspace →',`/prototype/venues/workspace/?venue=${encodeURIComponent(access.venueId)}`]]});
  if(access?.administrator)sections.push({title:'Administrator tools',text:'Review all applications in one inbox and assign approved artists and venues to their accounts.',links:[['Open application inbox →','/prototype/admin/inbox/'],['Assign account access →','/prototype/admin/accounts/']]});
  const communityLinks:[string,string][]=[['Showing Now →','/showing-now/'],['Places to See Art →','/prototype/venues/']];
- if(access?.artistId)communityLinks.push(['View your artist page →',access.artistId==='artist-alan-just'?'/prototype/artists/alan-just/':`/prototype/artists/member/?artist=${encodeURIComponent(access.artistId)}`]);
+ if(access?.artistId)communityLinks.push([access.artistId==='artist-alan-just'||memberPublished?'View your artist page →':'Preview your offline artist page →',access.artistId==='artist-alan-just'?'/prototype/artists/alan-just/':`/prototype/artists/member/?artist=${encodeURIComponent(access.artistId)}${memberPublished?'':'&preview=1'}`]);
  sections.push({title:'Community pages',text:'Review what visitors see inside this protected test site.',links:communityLinks});
 }else{
  sections.push(
