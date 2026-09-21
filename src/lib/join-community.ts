@@ -1,11 +1,7 @@
-import {setStoredItem} from './community-storage';
-import {deleteMemberArtist} from './member-artists';
-import {readArtistApplications,saveArtistApplication,ARTIST_APPLICATIONS_KEY} from './artist-applications';
 import {populateRegionSelects} from './regions';
 import {applicationApi,type SharedApplication} from './shared-applications';
 const element=(tag:string,text='',className='')=>{const node=document.createElement(tag);node.textContent=text;node.className=className;return node};
 const link=(text:string,url:string)=>{const node=element('a',text) as HTMLAnchorElement;node.href=url;return node};
-const action=(text:string,fn:()=>void)=>{const node=element('button',text) as HTMLButtonElement;node.type='button';node.addEventListener('click',fn);return node};
 const workspaceUrl=(id:string)=>`/prototype/workspace/member/?artist=${encodeURIComponent(id)}`;
 // A "where can we see your work" answer that is just a web address doubles as the portfolio link.
 function portfolioFrom(answer:string){
@@ -63,14 +59,4 @@ export function initJoin(){
   const entry=invited?own.find(item=>item.id===invited):undefined;
   if(entry)showExisting(entry);else if(params.get('kind')==='artist')open();
  })();
-}
-export function initArtistReview(){
- const root=document.querySelector('[data-artist-review]');if(!root)return;
- function render(){root!.replaceChildren();const records=readArtistApplications();if(!records.length)root!.append(element('p','No artist requests yet. Submit a sample request from Join the Community.'));
- records.forEach(a=>{const card=element('article','','card');card.append(element('h2',a.name),element('p',`${a.status} · ${a.city} · ${a.practice}`),element('p',`Private contact: ${a.email}`),element('p',a.note),element('p',a.opportunities?'Opted into venue opportunities after approval':'No venue opportunity emails requested'));if(a.portfolio&&/^https?:\/\//i.test(a.portfolio))card.append(link('Review portfolio ↗',a.portfolio));
- const actions=element('div','','actions');if(a.status!=='approved'){actions.append(action('Approve & preview invitation',()=>{saveArtistApplication({...a,status:'approved'});render()}));if(a.status!=='declined')actions.append(action('Decline request',()=>{saveArtistApplication({...a,status:'declined'});render()}))}
- if(a.status==='approved'){const url=`/join/?invitation=${encodeURIComponent(a.id)}`;card.append(element('h3','Sample account invitation'),element('p',`To: ${a.email}`),element('p',`Hello ${a.name}, your request to join Artists Are Jerks has been approved. Accept your invitation to begin setting up your artist profile.`),link('Open sample acceptance page →',url));actions.append(action('Simulate sending invitation',()=>{document.querySelector('[data-artist-review-status]')!.textContent=`Invitation simulated for ${a.name}. No email was sent.`}))}
- actions.append(action('Delete sample request',()=>{setStoredItem(ARTIST_APPLICATIONS_KEY,JSON.stringify(readArtistApplications().filter(item=>item.id!==a.id)));void deleteMemberArtist(a.id).catch(()=>{});render()}));card.append(actions);root!.append(card)});
- }
- render();window.addEventListener('storage',e=>{if(e.key===ARTIST_APPLICATIONS_KEY)render()});
 }

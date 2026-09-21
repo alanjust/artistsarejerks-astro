@@ -83,7 +83,7 @@ const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
         }
 
         @media (max-width: 768px) {
-            .main-content > :not(.home-stage):not(.prototype-banner) {
+            .main-content > :not(.home-stage):not(.prototype-banner):not(.account-identity):not([data-community-storage-status]) {
                 padding-left: var(--page-gutter-mobile) !important;
                 padding-right: var(--page-gutter-mobile) !important;
             }
@@ -125,9 +125,8 @@ const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
 </head>
 <body class:list={[bodyClass, { 'figma-mobile-capture': figmaMobileCapture }]}>
     <Header />
-    {showAccountIdentity && <AccountIdentity />}
-
     <main class="main-content">
+        {showAccountIdentity && <AccountIdentity />}
         {showAutomaticBackButton && <div class="global-back-navigation"><BackButton fallback="/" /></div>}
         <slot />
     </main>

@@ -34,9 +34,6 @@ const current = (url: string) => (path === url ? 'page' : undefined);
         <nav class="main-navigation" aria-label="Site">
             <ul class="nav-menu">
                 {seeArt.map((link) => <li class="nav-item"><a href={link.url} class="nav-link" aria-current={current(link.url)}>{link.name}</a></li>)}
-                        ))}
-                    </ul>
-                </li>
             </ul>
         </nav>
 
@@ -138,6 +135,8 @@ const current = (url: string) => (path === url ? 'page' : undefined);
     .community-access { position: absolute; top: calc(100% + var(--header-border)); right: clamp(var(--space-4), 4vw, var(--space-8)); display: flex; font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
     .community-access a { display: inline-flex; align-items: center; min-height: 32px; color: var(--color-purple-dark); text-decoration: none; }
     .community-access a:hover, .community-access a:focus-visible, .community-access a[aria-current] { text-decoration: underline; text-underline-offset: var(--underline-offset); }
+    /* Pages with the account panel already show who is signed in and a sign-out button. */
+    :global(body:has(.account-identity)) .community-access { display: none; }
 }
 </style>
 
