@@ -3,55 +3,163 @@ import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
+const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
+// A web address typed without https:// still counts.
+function normalizeWebsite(value:string){
+ if(!value)return '';
+ try{const url=new URL(/^[a-z][a-z0-9+.-]*:/i.test(value)?value:`https://${value}`);return ['http:','https:'].includes(url.protocol)&&url.hostname.includes('.')&&!url.username&&!url.password?url.href:null}catch{return null}
+}
 export async function initMemberSetup(){
- const id=new URLSearchParams(location.search).get('artist')||'',root=document.querySelector<HTMLElement>('[data-regular-workspace]');let serverInitial:MemberArtist|null=null;try{serverInitial=JSON.parse(root?.dataset.initialArtist||'null') as MemberArtist|null}catch{}const initial=getMemberArtist(id)||(serverInitial?.id===id?serverInitial:null);if(!initial){document.querySelector<HTMLElement>('[data-setup-unavailable]')!.hidden=false;return}let artist:MemberArtist=initial;
- document.querySelector<HTMLElement>('[data-setup-content]')!.hidden=false;document.querySelector('[data-setup-title]')!.textContent=document.querySelector('[data-regular-workspace="true"]')?`${artist.name}’s workspace`:`Welcome, ${artist.name}`;document.title=`${artist.name}’s workspace | Artists Are Jerks`;
- const message=document.querySelector('[data-setup-message]')!;
+ const id=new URLSearchParams(location.search).get('artist')||'',root=document.querySelector<HTMLElement>('[data-regular-workspace]');
+ let serverInitial:MemberArtist|null=null;try{serverInitial=JSON.parse(root?.dataset.initialArtist||'null') as MemberArtist|null}catch{}
+ const initial=getMemberArtist(id)||(serverInitial?.id===id?serverInitial:null);
+ if(!initial){$('[data-setup-unavailable]').hidden=false;return}
+ let artist:MemberArtist=initial;
+ $('[data-setup-content]').hidden=false;
+ const setTitle=()=>{$('[data-setup-title]').textContent=`${artist.name}’s page`;document.title=`${artist.name}’s page | Artists Are Jerks`};setTitle();
+ const message=$('[data-setup-message]');
+
  // Applicants build privately while they wait; publishing opens once approved.
  const application=readArtistApplications().find(a=>a.id===id);
  const approved=!application||application.status==='approved';
  const approval=document.querySelector<HTMLElement>('[data-approval-status]');
  if(approval&&application){approval.hidden=false;approval.textContent=approved?'You’re approved. Your page can go public whenever you publish it.':'Your request is with us. Go ahead and build your page. It goes public once you’re approved.'}
- const profile=document.querySelector<HTMLFormElement>('[data-setup-profile]')!,contact=document.querySelector<HTMLFormElement>('[data-setup-contact]')!,upload=document.querySelector<HTMLFormElement>('[data-member-upload]')!;
- const panels=[profile,contact,document.querySelector<HTMLElement>('[data-setup-artwork]')!,document.querySelector<HTMLElement>('[data-setup-preview]')!];
- const steps=[...document.querySelectorAll<HTMLButtonElement>('[data-setup-step]')];
- let selected:File|null=null,sample=false,previewUrl='',editingWorkId='';
- function persist(next:MemberArtist){try{saveMemberArtist(next);artist=next;message.textContent='Changes queued for shared storage; check the top banner for confirmation.';return true}catch{message.textContent='Unable to save. Browser storage may be full or blocked. Your current entries are still available here.';return false}}
- function summary(){const publicWorks=artist.works.filter(w=>w.public).length,root=document.querySelector('[data-setup-summary]')!;root.replaceChildren(el('p',`${artist.name} · ${artist.city} · ${artist.practice}`),el('p',`${artist.works.length} artworks · ${publicWorks} ${artist.published?'visible on your artist page':'ready for your artist page'}`),el('p',artist.published?'Your artist page is published and appears in Our Artists.':'Your artist page is offline. Publish it here to appear in Our Artists.'));document.querySelector<HTMLAnchorElement>('[data-member-preview]')!.href=memberUrl(id,true);document.querySelector<HTMLAnchorElement>('[data-member-create-showing]')!.href=`/prototype/onboarding/showing/?artist=${encodeURIComponent(id)}`;document.querySelector<HTMLButtonElement>('[data-offline-member]')!.hidden=!artist.published;document.querySelector<HTMLButtonElement>('[data-publish-member]')!.hidden=artist.published;const publicationStatus=document.querySelector<HTMLElement>('[data-artwork-publication-status]');if(publicationStatus)publicationStatus.textContent=artist.published?'Your artist page is published. Changes to included artwork will appear on it after you save.':`${publicWorks} ${publicWorks===1?'artwork is':'artworks are'} ready, but your artist page is offline. Open Visibility to preview and publish it.`;const artworkAction=document.querySelector<HTMLButtonElement>('[data-workspace-action="artwork"]');if(artworkAction)artworkAction.textContent=`Manage artwork (${artist.works.length})`;const visibilityAction=document.querySelector<HTMLButtonElement>('[data-workspace-action="visibility"]');if(visibilityAction)visibilityAction.textContent=artist.published?'Preview & visibility':'Publish artist page';}
- const regular=Boolean(document.querySelector('[data-regular-workspace="true"]'));let guided=!regular;
- const tabs=[...document.querySelectorAll<HTMLButtonElement>('[data-workspace-tab]')];
- function workspace(tab:string){
-  if(tab==='showing'&&location.hash!=='#showing'){location.hash='showing';location.reload();return}
-  guided=false;document.querySelector<HTMLElement>('[data-guided-nav]')!.hidden=true;
-  panels.forEach((panel,index)=>panel.hidden=!(tab==='profile'&&index<2||tab==='artwork'&&index===2||tab==='visibility'&&index===3));
-  document.querySelector<HTMLElement>('[data-workspace-home]')!.hidden=tab!=='home';document.querySelector<HTMLElement>('[data-workspace-showing]')!.hidden=tab!=='showing';
-  tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspaceTab===tab)));
-  history.replaceState(null,'',`#${tab}`);summary();
-  document.querySelector('[data-workspace-overview]')!.textContent=`Your page is ${artist.published?'public':'offline'}. ${artist.works.length} artworks and ${readShowings().filter(s=>s.artistId===id).length} saved showings.`;
+
+ function persist(next:MemberArtist){try{saveMemberArtist(next);artist=next;message.textContent='';return true}catch{message.textContent='We couldn’t save that. Check your connection and try again; your entries are still here.';return false}}
+ const showingCount=()=>readShowings().filter(s=>s.artistId===id).length;
+ const panels=[...document.querySelectorAll<HTMLElement>('[data-panel]')],tabs=[...document.querySelectorAll<HTMLButtonElement>('[data-workspace-tab]')];
+ let firstPiece=false;
+
+ // Home says where things stand and offers the single most useful next step.
+ function renderHome(){
+  const works=artist.works.length,shows=showingCount();
+  const [headline,detail,label,target]=!works?['Let’s put up your first piece','Start with one photo. Everything else can wait.','Add your first piece →','first']
+   :!artist.published?[approved?'Your page is ready to publish':'Your page is taking shape',`${works} ${works===1?'piece':'pieces'} so far. ${approved?'Take a look, and publish it when you’re ready.':'It goes public once you’re approved.'}`,'See your page →','page']
+   :!shows?['Your page is live','Next: tell visitors where they can see your work in person.','Add a showing →','showing']
+   :['Your page is live',`${works} ${works===1?'piece':'pieces'} · ${shows} ${shows===1?'showing':'showings'}`,'Add another piece →','artwork'];
+  $('[data-home-headline]').textContent=headline;$('[data-home-detail]').textContent=detail;
+  const action=$<HTMLButtonElement>('[data-home-action]');action.textContent=label;action.onclick=()=>target==='first'?openFirstPiece():show(target);
+  const publicLink=$<HTMLAnchorElement>('[data-home-public]');publicLink.hidden=!artist.published;publicLink.href=memberUrl(id);
  }
- tabs.forEach(button=>button.addEventListener('click',()=>workspace(button.dataset.workspaceTab!)));
- document.querySelectorAll<HTMLButtonElement>('[data-workspace-action]').forEach(button=>button.addEventListener('click',()=>workspace(button.dataset.workspaceAction!)));
- document.querySelector('[data-resume-guide]')?.addEventListener('click',()=>{guided=true;document.querySelector<HTMLElement>('[data-workspace-home]')!.hidden=true;document.querySelector<HTMLElement>('[data-workspace-showing]')!.hidden=true;document.querySelector<HTMLElement>('[data-guided-nav]')!.hidden=false;tabs.forEach(b=>b.setAttribute('aria-pressed','false'));go(artist.works.length?3:0)});
- function go(step:number){if(regular&&!guided){workspace(step<2?'profile':step===2?'artwork':'visibility');return}if(step!==artist.step)persist({...artist,step});panels.forEach((panel,index)=>panel.hidden=index!==step);steps.forEach((button,index)=>button.setAttribute('aria-pressed',String(index===step)));summary()}
- for(const form of [profile,contact])for(const [name,value] of Object.entries(artist)){const field=form.elements.namedItem(name) as HTMLInputElement|null;if(!field)continue;if(field.type==='checkbox')field.checked=Boolean(value);else field.value=String(value)}
- steps.forEach((button,index)=>button.addEventListener('click',()=>go(index)));
- profile.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(profile);const name=String(data.get('name')).trim(),practice=String(data.get('practice')).trim();if(!name||!practice){message.textContent='Please enter your name and media.';return}if(persist({...artist,name,practice,city:String(data.get('city')),bio:String(data.get('bio')).trim()}))go(1)});
- contact.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(contact);const website=String(data.get('website')).trim(),email=String(data.get('email')).trim(),phone=String(data.get('phone')).trim();if(website&&!/^https?:\/\//i.test(website)){message.textContent='Use an http:// or https:// website address.';return}if((data.has('publicEmail')&&!email)||(data.has('publicPhone')&&!phone)||(data.has('publicWebsite')&&!website)){message.textContent='Enter a value for each contact method you want to show.';return}if(persist({...artist,website,email,phone,publicEmail:data.has('publicEmail'),publicWebsite:data.has('publicWebsite'),publicPhone:data.has('publicPhone')}))go(2)});
- const image=document.querySelector<HTMLImageElement>('[data-upload-preview]')!,uploadMessage=document.querySelector('[data-upload-message]')!;
- const input=upload.elements.namedItem('image') as HTMLInputElement;
- input.addEventListener('change',async()=>{selected=null;sample=false;if(previewUrl)URL.revokeObjectURL(previewUrl);image.hidden=true;const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){uploadMessage.textContent='Choose a JPEG, PNG, or WebP up to 10 MB.';input.value='';return}try{const decoded=await createImageBitmap(file);decoded.close()}catch{uploadMessage.textContent='This file could not be read as an image.';input.value='';return}selected=file;previewUrl=URL.createObjectURL(file);image.src=previewUrl;image.hidden=false;uploadMessage.textContent='Image selected. Add details and save when ready.'});
- document.querySelector('[data-use-sample]')?.addEventListener('click',()=>{sample=true;selected=null;input.value='';image.src=pilot.artworks[0].image;image.hidden=false;(upload.elements.namedItem('title') as HTMLInputElement).value='Sample artwork — for layout only';uploadMessage.textContent='Sample image borrowed from Alan’s gallery for this prototype.'});
- const sale=upload.elements.namedItem('sale') as HTMLSelectElement,price=upload.elements.namedItem('price') as HTMLInputElement;
- sale.addEventListener('change',()=>{document.querySelector<HTMLElement>('[data-member-price]')!.hidden=sale.value!=='price';price.required=sale.value==='price'});
- const formTitle=document.querySelector<HTMLElement>('[data-artwork-form-title]')!,saveButton=document.querySelector<HTMLButtonElement>('[data-save-artwork]')!,cancelEdit=document.querySelector<HTMLButtonElement>('[data-cancel-artwork-edit]')!;
- function clearArtworkForm(){editingWorkId='';upload.reset();selected=null;sample=false;if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}image.hidden=true;formTitle.textContent='Add artwork';saveButton.textContent='Save artwork';cancelEdit.hidden=true;document.querySelector<HTMLElement>('[data-member-price]')!.hidden=true;price.required=false}
- async function editWork(work:MemberWork){editingWorkId=work.id;selected=null;sample=false;if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}(upload.elements.namedItem('title') as HTMLInputElement).value=work.title;(upload.elements.namedItem('medium') as HTMLInputElement).value=work.medium||'';(upload.elements.namedItem('year') as HTMLInputElement).value=work.year||'';sale.value=work.sale||'contact';price.value=work.price||'';(upload.elements.namedItem('public') as HTMLInputElement).checked=work.public;document.querySelector<HTMLElement>('[data-member-price]')!.hidden=sale.value!=='price';price.required=sale.value==='price';image.src=await imageUrl(work);image.hidden=false;formTitle.textContent=`Edit ${work.title}`;saveButton.textContent='Save changes';cancelEdit.hidden=false;uploadMessage.textContent='Change the details below. Choose a new image only if you want to replace the current one.';upload.scrollIntoView({behavior:'smooth',block:'start'})}
- cancelEdit.addEventListener('click',()=>{clearArtworkForm();uploadMessage.textContent='Editing canceled. Your saved artwork was not changed.'});
- async function works(){const root=document.querySelector('[data-member-works]')!;root.replaceChildren();for(const work of artist.works){const row=el('article');row.className='card';const img=document.createElement('img');img.src=await imageUrl(work);img.alt=work.title;img.style.cssText='width:100%;height:180px;object-fit:contain;background:#181818';const copy=document.createElement('div'),details=[work.medium,work.year].filter(Boolean).join(' · ');copy.append(el('h3',work.title));if(details)copy.append(el('p',details));copy.append(el('p',work.public?(artist.published?'Visible on your published artist page':'Included when your artist page is published'):'Private artwork'));const actions=document.createElement('div');actions.className='actions';const edit=document.createElement('button');edit.type='button';edit.textContent='Edit artwork';edit.addEventListener('click',()=>void editWork(work));const toggle=document.createElement('button');toggle.type='button';toggle.textContent=work.public?'Exclude from artist page':'Include on artist page';toggle.addEventListener('click',()=>{const updated=artist.works.map(w=>w.id===work.id?{...w,public:!w.public}:w);if(persist({...artist,works:updated,published:artist.published&&updated.some(w=>w.public)})){void works();summary()}});actions.append(edit,toggle);copy.append(actions);row.append(img,copy);root.append(row)}}
- upload.addEventListener('submit',async e=>{e.preventDefault();const existing=editingWorkId?artist.works.find(work=>work.id===editingWorkId):undefined;if(!existing&&!sample&&!selected){uploadMessage.textContent='Choose an artwork image, or use the labeled sample.';return}saveButton.disabled=true;const data=new FormData(upload),replacement=Boolean(sample||selected),imageKey=replacement?crypto.randomUUID():existing?.imageKey||crypto.randomUUID();const work:MemberWork={id:existing?.id||crypto.randomUUID(),title:String(data.get('title')||'').trim()||'Untitled',medium:String(data.get('medium')||'').trim(),year:String(data.get('year')||''),sale:String(data.get('sale')),price:sale.value==='price'?price.value:'',public:data.has('public'),imageKey,sampleImage:sample?pilot.artworks[0].image:replacement?'':existing?.sampleImage||''};try{if(selected)await saveImage(work.imageKey,selected);const updated=existing?artist.works.map(item=>item.id===existing.id?work:item):[...artist.works,work];if(persist({...artist,works:updated})){const wasEditing=Boolean(existing);clearArtworkForm();uploadMessage.textContent=wasEditing?'Artwork changes saved.':'Artwork saved. Add another piece or preview your page.';await works();summary()}}catch{uploadMessage.textContent='Image could not be saved. Allow browser storage and try again.'}finally{saveButton.disabled=false}});
- document.querySelector('[data-go-preview]')?.addEventListener('click',()=>go(3));document.querySelector('[data-publish-member]')?.addEventListener('click',()=>{if(!approved){document.querySelector('[data-publication-message]')!.textContent='Your page is ready to go. It can be published the moment you’re approved.';return}if(!artist.name.trim()||!artist.practice.trim()){document.querySelector('[data-publication-message]')!.textContent='Save your name and media in Profile before publishing.';return}if(!artist.works.some(w=>w.public)){document.querySelector('[data-publication-message]')!.textContent='Add at least one artwork and include it on your artist page first.';return}if(persist({...artist,published:true})){summary();const root=document.querySelector('[data-publication-message]')!;root.replaceChildren(el('span','Your artist page is published and now appears in Our Artists. '));const link=document.createElement('a');link.href=memberUrl(id);link.textContent='View public page →';root.append(link)}});
- document.querySelector('[data-offline-member]')?.addEventListener('click',()=>{if(persist({...artist,published:false})){summary();document.querySelector('[data-publication-message]')!.textContent='Your page is offline. Your profile and artwork remain saved.'}});
- await works();if(regular){workspace(['home','profile','artwork','showing','visibility'].includes(location.hash.slice(1))?location.hash.slice(1):'home')}else go(Math.min(3,Math.max(0,artist.step)));window.addEventListener('pagehide',()=>{if(previewUrl)URL.revokeObjectURL(previewUrl)});
+ function show(tab:string){
+  // Showings still load their form on page load; Phase 3 removes this reload.
+  if(tab==='showing'&&location.hash!=='#showing'){location.hash='showing';location.reload();return}
+  firstPiece=false;
+  panels.forEach(panel=>panel.hidden=panel.dataset.panel!==tab);
+  tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspaceTab===tab)));
+  history.replaceState(null,'',`#${tab}`);
+  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();
+  artworkMode();
+ }
+ function openFirstPiece(){show('artwork');firstPiece=true;artworkMode()}
+ tabs.forEach(button=>button.addEventListener('click',()=>show(button.dataset.workspaceTab!)));
+ document.querySelectorAll<HTMLButtonElement>('[data-go]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.go!)));
+
+ // Artwork: one form for the first piece and for adding or editing later ones.
+ const upload=$<HTMLFormElement>('[data-member-upload]'),image=$<HTMLImageElement>('[data-upload-preview]'),prompt=$('[data-drop-prompt]'),uploadMessage=$('[data-upload-message]');
+ const input=upload.elements.namedItem('image') as HTMLInputElement,sale=upload.elements.namedItem('sale') as HTMLSelectElement,price=upload.elements.namedItem('price') as HTMLInputElement;
+ const saveButton=$<HTMLButtonElement>('[data-save-artwork]'),cancelEdit=$<HTMLButtonElement>('[data-cancel-artwork-edit]'),formTitle=$('[data-artwork-form-title]');
+ let selected:File|null=null,sample=false,previewUrl='',editingWorkId='';
+ const showPreview=(src:string)=>{image.src=src;image.hidden=false;prompt.hidden=true};
+ function artworkMode(){
+  const editing=Boolean(editingWorkId);
+  formTitle.textContent=editing?'Edit this piece':firstPiece?'Your first piece':'Add a piece';
+  saveButton.textContent=editing?'Save changes':firstPiece?'Next: see your page →':'Save this piece';
+  cancelEdit.hidden=!editing;
+  $('[data-artwork-list]').hidden=firstPiece||!artist.works.length;
+ }
+ function clearArtworkForm(){editingWorkId='';upload.reset();selected=null;sample=false;if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}image.hidden=true;prompt.hidden=false;$('[data-member-price]').hidden=true;price.required=false;artworkMode()}
+ input.addEventListener('change',async()=>{
+  selected=null;sample=false;if(previewUrl)URL.revokeObjectURL(previewUrl);
+  const file=input.files?.[0];if(!file)return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){uploadMessage.textContent='Choose a JPEG, PNG, or WebP up to 10 MB.';input.value='';return}
+  try{const decoded=await createImageBitmap(file);decoded.close()}catch{uploadMessage.textContent='That file couldn’t be read as an image.';input.value='';return}
+  selected=file;previewUrl=URL.createObjectURL(file);showPreview(previewUrl);uploadMessage.textContent='';
+ });
+ $('[data-use-sample]').addEventListener('click',()=>{sample=true;selected=null;input.value='';showPreview(pilot.artworks[0].image);(upload.elements.namedItem('title') as HTMLInputElement).value='Sample artwork, for layout only';uploadMessage.textContent='A labeled sample image from Alan’s gallery, for trying things out.'});
+ sale.addEventListener('change',()=>{$('[data-member-price]').hidden=sale.value!=='price';price.required=sale.value==='price'});
+ async function editWork(work:MemberWork){
+  editingWorkId=work.id;selected=null;sample=false;if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}
+  (upload.elements.namedItem('title') as HTMLInputElement).value=work.title;(upload.elements.namedItem('medium') as HTMLInputElement).value=work.medium||'';(upload.elements.namedItem('year') as HTMLInputElement).value=work.year||'';
+  sale.value=work.sale||'contact';price.value=work.price||'';(upload.elements.namedItem('public') as HTMLInputElement).checked=work.public;
+  $('[data-member-price]').hidden=sale.value!=='price';price.required=sale.value==='price';
+  showPreview(await imageUrl(work));artworkMode();uploadMessage.textContent='Choose a new photo only if you want to replace this one.';upload.scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ cancelEdit.addEventListener('click',()=>{clearArtworkForm();uploadMessage.textContent='Nothing changed.'});
+ async function works(){
+  const list=$('[data-member-works]');list.replaceChildren();
+  for(const work of artist.works){
+   const row=el('article');row.className='card';const img=document.createElement('img');img.src=await imageUrl(work);img.alt=work.title;
+   const copy=document.createElement('div'),details=[work.medium,work.year].filter(Boolean).join(' · ');copy.append(el('h3',work.title));if(details)copy.append(el('p',details));
+   copy.append(el('p',work.public?(artist.published?'On your public page':'Will show when your page is published'):'Private'));
+   const actions=document.createElement('div');actions.className='actions';
+   const edit=document.createElement('button');edit.type='button';edit.textContent='Edit';edit.addEventListener('click',()=>void editWork(work));
+   const toggle=document.createElement('button');toggle.type='button';toggle.textContent=work.public?'Make private':'Show on my page';
+   toggle.addEventListener('click',()=>{const updated=artist.works.map(w=>w.id===work.id?{...w,public:!w.public}:w);if(persist({...artist,works:updated,published:artist.published&&updated.some(w=>w.public)}))void works()});
+   actions.append(edit,toggle);copy.append(actions);row.append(img,copy);list.append(row);
+  }
+  artworkMode();
+ }
+ upload.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const existing=editingWorkId?artist.works.find(work=>work.id===editingWorkId):undefined;
+  if(!existing&&!sample&&!selected){uploadMessage.textContent='Choose a photo of your work first.';return}
+  saveButton.disabled=true;uploadMessage.textContent='Saving…';
+  const data=new FormData(upload),replacement=Boolean(sample||selected),imageKey=replacement?crypto.randomUUID():existing?.imageKey||crypto.randomUUID();
+  const work:MemberWork={id:existing?.id||crypto.randomUUID(),title:String(data.get('title')||'').trim()||'Untitled',medium:String(data.get('medium')||'').trim(),year:String(data.get('year')||''),sale:String(data.get('sale')),price:sale.value==='price'?price.value:'',public:data.has('public'),imageKey,sampleImage:sample?pilot.artworks[0].image:replacement?'':existing?.sampleImage||''};
+  try{
+   if(selected)await saveImage(work.imageKey,selected);
+   const updated=existing?artist.works.map(item=>item.id===existing.id?work:item):[...artist.works,work];
+   if(persist({...artist,works:updated})){
+    const wasFirst=firstPiece,wasEditing=Boolean(existing);clearArtworkForm();await works();
+    if(wasFirst){uploadMessage.textContent='';show('page');return}
+    uploadMessage.textContent=wasEditing?'Saved.':'Saved. Add another, or see your page.';
+   }
+  }catch{uploadMessage.textContent='That photo couldn’t be saved. Check your connection and try again.'}
+  finally{saveButton.disabled=false}
+ });
+
+ // Your page: the visitor view, how people reach the artist, and publishing.
+ const publishForm=$<HTMLFormElement>('[data-publish-form]'),publication=$('[data-publication-message]');
+ const reachChoice=()=>String(new FormData(publishForm).get('reach')||'none');
+ const syncReach=()=>{$('[data-reach-website]').hidden=reachChoice()!=='website'};
+ publishForm.querySelectorAll('input[name="reach"]').forEach(radio=>radio.addEventListener('change',syncReach));
+ function renderPage(){
+  const preview=$<HTMLIFrameElement>('[data-page-preview]'),url=memberUrl(id,true);
+  preview.src=`${url}&v=${Date.now()}`;$<HTMLAnchorElement>('[data-member-preview]').href=url;
+  const reach=artist.publicWebsite?'website':artist.publicEmail?'email':'none';
+  publishForm.querySelectorAll<HTMLInputElement>('input[name="reach"]').forEach(radio=>radio.checked=radio.value===reach);
+  (publishForm.elements.namedItem('website') as HTMLInputElement).value=artist.website||'';
+  $('[data-reach-email]').textContent=artist.email||'your account email';syncReach();
+  $('[data-rights-field]').hidden=Boolean(artist.rightsConfirmedAt);$('[data-rights-done]').hidden=!artist.rightsConfirmedAt;
+  $('[data-publish-member]').textContent=artist.published?'Save changes':'Publish my page';$('[data-keep-private]').hidden=artist.published;$('[data-offline-member]').hidden=!artist.published;
+  $('[data-live-next]').hidden=!artist.published;
+ }
+ publishForm.addEventListener('submit',event=>{
+  event.preventDefault();
+  const reach=reachChoice(),website=normalizeWebsite(String(new FormData(publishForm).get('website')||'').trim());
+  if(reach==='website'&&!website){publication.textContent='Enter your website, like yourwebsite.com.';return}
+  if(reach==='email'&&!artist.email){publication.textContent='Add an email in Profile first, or choose another option.';return}
+  const confirmed=artist.rightsConfirmedAt||((publishForm.elements.namedItem('rights') as HTMLInputElement).checked?new Date().toISOString():'');
+  if(!confirmed){publication.textContent='Please confirm that you made this work.';return}
+  if(!artist.works.some(w=>w.public)){publication.textContent='Add at least one piece that shows on your page first.';return}
+  const next={...artist,website:reach==='website'?website!:artist.website,publicWebsite:reach==='website',publicEmail:reach==='email',rightsConfirmedAt:confirmed};
+  if(!approved){if(persist(next)){renderPage();publication.textContent='Saved. Your page can go public the moment you’re approved.'}return}
+  const wasPublished=artist.published;if(persist({...next,published:true})){renderPage();publication.textContent=wasPublished?'Saved.':'Your page is public now, and you’re on Our Artists.'}
+ });
+ $('[data-keep-private]').addEventListener('click',()=>show('home'));
+ $('[data-offline-member]').addEventListener('click',()=>{if(persist({...artist,published:false})){renderPage();publication.textContent='Your page is offline. Your artwork and details are still saved here.'}});
+
+ // Profile and contact details.
+ const profile=$<HTMLFormElement>('[data-setup-profile]'),contact=$<HTMLFormElement>('[data-setup-contact]');
+ function fillProfile(){for(const form of [profile,contact])for(const [name,value] of Object.entries(artist)){const field=form.elements.namedItem(name) as HTMLInputElement|null;if(!field)continue;if(field.type==='checkbox')field.checked=Boolean(value);else field.value=String(value??'')}}
+ profile.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(profile),name=String(data.get('name')).trim(),practice=String(data.get('practice')).trim();if(!name||!practice){message.textContent='Please enter your name and what you make.';return}if(persist({...artist,name,practice,city:String(data.get('city')||'').trim(),bio:String(data.get('bio')||'').trim()})){setTitle();message.textContent='Saved.'}});
+ contact.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(contact),website=normalizeWebsite(String(data.get('website')).trim()),email=String(data.get('email')).trim(),phone=String(data.get('phone')).trim();if(website===null){message.textContent='That website address doesn’t look right.';return}if((data.has('publicEmail')&&!email)||(data.has('publicPhone')&&!phone)||(data.has('publicWebsite')&&!website)){message.textContent='Fill in each contact detail you want to show.';return}if(persist({...artist,website,email,phone,publicEmail:data.has('publicEmail'),publicWebsite:data.has('publicWebsite'),publicPhone:data.has('publicPhone')}))message.textContent='Saved.'});
+
+ await works();
+ const start=location.hash.slice(1);
+ if(['home','artwork','showing','profile','page'].includes(start))show(start);else if(!artist.works.length)openFirstPiece();else show('home');
+ window.addEventListener('pagehide',()=>{if(previewUrl)URL.revokeObjectURL(previewUrl)});
 }
 export async function initMemberPublicPage(){
  const id=new URLSearchParams(location.search).get('artist')||'',preview=new URLSearchParams(location.search).get('preview')==='1',artist=getMemberArtist(id);

@@ -1,11 +1,14 @@
 ---
 export const prerender = false;
 import {requireCommunityAccess,communityArtistRecord} from '../../../lib/community-access';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArtistWorkspace from '../../../components/community-prototype/ArtistWorkspace.astro';
 const denied = await requireCommunityAccess(Astro, 'artist');
 if (denied) return denied;
-import ArtistWorkspace from '../onboarding/artist.astro';
 const {userId}=Astro.locals.auth();
 const artistId=Astro.url.searchParams.get('artist');
 const initialArtist=await communityArtistRecord(userId,artistId,Astro.locals);
 ---
-<ArtistWorkspace workspaceMode={true} initialArtist={initialArtist}/>
+<BaseLayout title="Your page | Artists Are Jerks" noindex>
+  <ArtistWorkspace initialArtist={initialArtist}/>
+</BaseLayout>
