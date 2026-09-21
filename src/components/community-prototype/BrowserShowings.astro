@@ -10,15 +10,42 @@ const { context, artist = '', venue = '' } = Astro.props;
   refresh();window.addEventListener('storage',e=>{if(e.key===SHOWINGS_KEY||e.key===VENUES_KEY)refresh()});
 </script>
 <style is:global>
-  .browser-showings{display:grid;gap:1.5rem;margin-block:2rem;min-width:0}
+  /* The one definition of a showing card. .showing-card is the directory tile on
+     Showing Now; .browser-showing is the wider card on artist and venue pages.
+     Every rule is namespaced so these generic class names can't leak elsewhere. */
+  .browser-showings{display:grid;gap:var(--space-6);margin-block:var(--space-8);min-width:0}
   .browser-showings[hidden]{display:none}
-  .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);overflow:hidden;border-radius:12px;background:#000;color:#fff;min-width:0}
-  .browser-showing .artwork-frame{min-height:240px;padding:12px;background:#181818}
-  .browser-showing img{width:100%;height:260px;object-fit:contain}
-  .browser-showing .copy{padding:1.5rem;min-width:0;overflow-wrap:anywhere}
-  .browser-showing h3{color:var(--color-gold);font-size:1.5rem}
-  .browser-showing .venue-name,.browser-showing .card-link{color:var(--color-gold);text-decoration:underline;text-underline-offset:3px}
-  .browser-showing .card-link{display:inline-block;margin-top:1rem}
-  .browser-showing-artworks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.browser-showing-artworks img{width:100%;height:220px;object-fit:contain;background:#181818;border-radius:8px}.browser-showing-artworks figure{min-width:0;margin:0}.browser-showing-artworks figcaption{font-weight:700;overflow-wrap:anywhere}
+  .showing-card{display:flex;flex-direction:column;min-width:0;padding:var(--space-3);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:var(--shadow-card)}
+  .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);min-width:0;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white)}
+  :is(.showing-card,.browser-showing) .artwork-frame{position:relative;display:grid;place-items:center;aspect-ratio:4/5;min-width:0;overflow:hidden;border-radius:var(--radius-base);background:var(--color-artwork-mat)}
+  .browser-showing .artwork-frame{min-height:240px;padding:var(--space-3)}
+  :is(.showing-card,.browser-showing) .artwork-frame img{width:100%;height:100%;min-width:0;padding:var(--space-mat);object-fit:contain}
+  :is(.showing-card,.browser-showing) .fpo{position:absolute;top:var(--space-3);left:var(--space-3);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold)}
+  :is(.showing-card,.browser-showing) .copy{display:flex;flex:1;flex-direction:column;min-width:0;padding:var(--space-4) var(--space-2) var(--space-2);overflow-wrap:anywhere}
+  .browser-showing .copy{padding:var(--space-6)}
+  :is(.showing-card,.browser-showing) .city-label{margin-bottom:var(--space-2);color:var(--color-title);font-family:var(--font-heading);font-size:var(--font-size-sm);font-weight:var(--font-weight-bold)}
+  :is(.showing-card,.browser-showing) h3{margin-bottom:var(--space-2);color:var(--color-white);font-size:var(--font-size-2xl)}
+  :is(.showing-card,.browser-showing) .copy p{margin-bottom:var(--space-2)}
+  :is(.showing-card,.browser-showing) .dates{color:var(--color-gray-300);font-weight:var(--font-weight-bold)}
+  :is(.showing-card,.browser-showing) .venue-name{font-weight:var(--font-weight-bold)}
+  :is(.showing-card,.browser-showing) a.venue-name{text-decoration:underline;text-underline-offset:var(--underline-offset)}
+  .browser-showing a.venue-name{color:var(--color-gold)}
+  :is(.showing-card,.browser-showing) .card-link{display:flex;align-items:center;min-height:44px;margin-top:auto;padding-top:var(--space-3);color:var(--color-gold);font-weight:var(--font-weight-bold)}
+  .browser-showing .card-link{display:inline-block;margin-top:var(--space-4);text-decoration:underline;text-underline-offset:var(--underline-offset)}
+  :is(.showing-card,.browser-showing) .card-link.disabled{color:var(--color-gray-400)}
+  .showing-card.coming-card{background:var(--color-green);color:var(--color-black)}
+  .coming-card h3,.coming-card h3 a{color:var(--color-black)}
+  .coming-card .city-label,.coming-card .card-link{color:var(--color-purple)}
+  .coming-card .dates{color:var(--color-gray-800)}
+  .browser-showing-artworks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+  .browser-showing-artworks img{width:100%;height:220px;object-fit:contain;background:var(--color-artwork-mat);border-radius:var(--radius-base)}
+  .browser-showing-artworks figure{min-width:0;margin:0}
+  .browser-showing-artworks figcaption{font-weight:var(--font-weight-bold);overflow-wrap:anywhere}
+  @media(max-width:700px){
+    .showing-card{padding:var(--space-2)}
+    .showing-card .copy{padding:var(--space-3) var(--space-1) var(--space-1)}
+    :is(.showing-card,.browser-showing) h3{font-size:var(--font-size-lg)}
+    :is(.showing-card,.browser-showing) .copy p,:is(.showing-card,.browser-showing) .card-link{font-size:var(--font-size-xs)}
+  }
   @media(max-width:560px){.browser-showing{grid-template-columns:1fr}.browser-showing-artworks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>

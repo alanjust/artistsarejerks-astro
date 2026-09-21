@@ -13,6 +13,9 @@ export function publicRecords(rows:PublicRecord[]):PublicRecord[]{
  }
  for(const [id,v] of venues)if(v.status==='approved'&&v.visible)emit('venues',id,{id,name:v.name,type:v.type,regionId:v.regionId||'region-rogue-valley',city:v.city,address:v.address,postalCode:v.postalCode,description:v.description,website:v.website,phone:v.phone,hours:v.hours,accessibility:v.accessibility,instructions:v.instructions,opportunities:v.opportunities,status:'approved',visible:true,available:!!v.available});
  const alan=rows.find(r=>r.collection==='alan-workspace'&&r.payload);
+ // Decision (Alan, 2026-09-21): the artist vouches for the place. A published showing
+ // stays public even when its venue is pending, declined, or artist-entered; only a
+ // venue an admin has explicitly hidden removes it.
  for(const r of rows){const s=r.payload;if(r.collection!=='showings'||!s||s.status!=='published')continue;
   const a=artists.get(s.artistId),v=venues.get(s.venueId);
   const alanArtist=s.artistId==='artist-alan-just'&&alan?.payload?.pageVisible!==false;

@@ -1,5 +1,6 @@
 import {getStoredItem,setStoredItem} from './community-storage';
 import pilot from '../data/community-pilot.json';
+import {venueProfileUrl} from './showing-display';
 export const VENUES_KEY='aaj-venues-prototype';
 export interface VenueRecord {
   id:string; name:string; type:string; regionId?:string; city:string; address:string; postalCode:string;
@@ -14,7 +15,7 @@ export function availableVenues(){return readVenues().filter(v=>v.status==='appr
 export function seedLeo():VenueRecord {
  const venue=pilot.venues[0];return {id:venue.id,name:venue.name,type:venue.type,regionId:'region-rogue-valley',city:venue.city,address:venue.addressLine1,postalCode:venue.postalCode,description:'A fictional Medford brewpub and grill with rotating local artwork.',website:'',phone:'',hours:Object.entries(venue.hours).map(([day,time])=>`${day}: ${time}`).join('\n'),accessibility:'',instructions:'',contactName:'',email:'',opportunities:'We welcome local artists for rotating wall displays.',status:'draft',visible:true,available:true,memberIds:[],campaigns:[]};
 }
-export function venueProfileUrl(id:string){return id==='venue-leos-brewpub'?'/prototype/venues/leos-brewpub-and-grill/':`/prototype/venues/profile/?venue=${encodeURIComponent(id)}`}
+export {venueProfileUrl} from './showing-display';
 
 let watchingPublicVisibility=false;
 export function applyPublicVenueVisibility(){

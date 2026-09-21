@@ -140,6 +140,12 @@ select {
   }
 }
 
+/* The hidden attribute always wins over component display rules. This used to
+   leak from the Showing Now page; it is now a deliberate site-wide reset. */
+[hidden] {
+  display: none !important;
+}
+
 /* Screen reader only content */
 .sr-only {
   position: absolute;

@@ -74,6 +74,8 @@
      ============================================ */
 
   --color-white: #ffffff;
+  --color-artwork-mat: #181818;      /* Dark mat behind artwork in showing cards */
+  --color-backdrop: rgba(0, 0, 0, 0.27); /* Dimmed page behind popups */
   --color-gray-100: #f5f5f5;
   --color-gray-200: #e5e5e5;
   --color-gray-300: #d4d4d4;
@@ -115,6 +117,8 @@
   --line-height-normal: 1.4;
   --line-height-relaxed: 1.6;
   --line-height-loose: 1.8;
+  --line-height-none: 1;
+  --line-height-comfortable: 1.5;
 
   /* Font Weights */
   --font-weight-normal: 400;
@@ -134,6 +138,7 @@
      ============================================ */
 
   --space-1: 0.25rem;   /* 4px */
+  --space-mat: 0.625rem; /* 10px: breathing room between an artwork and its dark mat */
   --space-2: 0.5rem;    /* 8px */
   --space-3: 0.75rem;   /* 12px */
   --space-4: 1rem;      /* 16px */
@@ -181,6 +186,7 @@
   --border-thin: 1px;
   --border-base: 2px;
   --border-thick: 4px;
+  --underline-offset: 3px;
   --border-heavy: var(--header-border);
 
   /* ============================================
@@ -192,6 +198,8 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 5px 14px rgba(0, 0, 0, 0.2);
+  --shadow-popup: 0 5px 14px rgba(0, 0, 0, 0.33);
 
   /* ============================================
      TRANSITIONS & ANIMATIONS
