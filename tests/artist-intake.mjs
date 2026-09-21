@@ -41,6 +41,8 @@ try{
  assert.equal((await call('applications','PUT',{action:'review',kind:'artist',id,status:'approved'})).status,200,'an administrator can approve');
  const approved=await db.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1").bind(id).first();
  assert.equal(JSON.parse(approved.payload).invitationAccepted,true,'approval needs no acceptance step');
+ assert.equal(JSON.parse(approved.payload).approvalEmail,'not_configured','approval records whether the email could be sent');
+ assert.equal((await call('applications','PUT',{action:'resend-approval',id},applicant)).status,403,'only an administrator can resend the approval email');
  assert.ok((await publicState()).some(record=>record.collection==='artists'&&record.id===id),'an approved, published page is public');
 
  const second={userId:'user_second',administrator:false};

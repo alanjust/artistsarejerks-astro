@@ -9,13 +9,26 @@ const shortText=(value:unknown,max=200)=>typeof value==='string'&&!!value.trim()
 const stateCode=(value:unknown)=>typeof value==='string'&&/^[A-Z]{2}$/.test(value);
 const regionSlug=(value:string)=>value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'region';
 const safeOptionalUrl=(value:unknown)=>{if(value===undefined||value===null||value==='')return true;if(typeof value!=='string'||value.length>500)return false;try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password}catch{return false}};
-type NotificationEnv=Env&{ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
+type NotificationEnv=Env&{ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string;replyTo?:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
 async function queueAdminNotification(env:NotificationEnv,ctx:ExecutionContext,kind:'artist'|'venue'|'region',subjectId:string,title:string){
  const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO admin_notifications(id,kind,subject_id,title,delivery_status) VALUES(?1,?2,?3,?4,'pending')").bind(id,kind,subjectId,title).run();
  if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_TO||!env.ADMIN_NOTIFICATION_FROM){await env.DB.prepare("UPDATE admin_notifications SET delivery_status='not_configured' WHERE id=?1").bind(id).run();return}
  const url=`${env.ADMIN_BASE_URL||'https://aaj-dev.alanjust.com'}/prototype/admin/inbox/`,safeTitle=escapeHtml(title),label=kind[0].toUpperCase()+kind.slice(1);
  ctx.waitUntil((async()=>{try{await env.ADMIN_EMAIL!.send({to:env.ADMIN_NOTIFICATION_TO!,from:{email:env.ADMIN_NOTIFICATION_FROM!,name:'Artists Are Jerks'},subject:`New ${kind} application: ${title}`,text:`A new ${kind} application is ready for review: ${title}\n\nReview it: ${url}`,html:`<p>A new ${label.toLowerCase()} application is ready for review: <strong>${safeTitle}</strong></p><p><a href="${url}">Open the administrator inbox</a></p>`});await env.DB.prepare("UPDATE admin_notifications SET delivery_status='sent',delivered_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1").bind(id).run()}catch(error){await env.DB.prepare("UPDATE admin_notifications SET delivery_status='failed',error=?1 WHERE id=?2").bind(String(error).slice(0,500),id).run()}})());
+}
+// Tells an artist their request was approved. Returns the delivery status that the
+// admin inbox shows, so a missed email is visible rather than silent.
+async function sendApprovalEmail(env:NotificationEnv,application:Record<string,unknown>):Promise<'sent'|'failed'|'not_configured'>{
+ const to=String(application.email||'');
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM||!/^\S+@\S+\.\S+$/.test(to))return 'not_configured';
+ const name=String(application.name||'there'),url=`${env.ADMIN_BASE_URL||'https://aaj-dev.alanjust.com'}/prototype/workspace/member/?artist=${encodeURIComponent(String(application.id))}`;
+ const text=`Hi ${name},\n\nGood news: your request to join Artists Are Jerks has been approved.\n\nYour page is ready whenever you are. Publish it, and you'll show up on Our Artists. Add a showing, and people can find your work on a wall near them.\n\nOpen your page: ${url}\n\nQuestions? Just reply to this email.\n\n—Artists Are Jerks`;
+ const html=`<p>Hi ${escapeHtml(name)},</p><p>Good news: your request to join Artists Are Jerks has been approved.</p><p>Your page is ready whenever you are. Publish it, and you’ll show up on Our Artists. Add a showing, and people can find your work on a wall near them.</p><p><a href="${escapeHtml(url)}">Open your page</a></p><p>Questions? Just reply to this email.</p><p>—Artists Are Jerks</p>`;
+ try{
+  await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:'You’re in: your Artists Are Jerks page is approved',text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});
+  return 'sent';
+ }catch(error){console.error(JSON.stringify({event:'approval_email_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
 }
 async function boundedBody(request:Request,max:number):Promise<Uint8Array>{
   if(Number(request.headers.get('content-length'))>max)throw new Error('Too large');
@@ -79,12 +92,23 @@ export default {
         // Artists: approval no longer waits for an acceptance step, and a decline
         // closes the private workspace the applicant opened when they applied.
         if(collection==='applications')payload.invitationAccepted=body.status==='approved';
+        if(collection==='applications'&&body.status==='approved')payload.approvalEmail=await sendApprovalEmail(env as NotificationEnv,payload);
         const update=env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3").bind(JSON.stringify(payload),collection,body.id);
         const workspace=collection!=='applications'?[]:body.status==='approved'
           ?[env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(payload.submittedBy,body.id)]
           :[env.DB.prepare('UPDATE community_memberships SET artist_id=NULL WHERE artist_id=?1').bind(body.id)];
         try{await env.DB.batch([update,...workspace])}catch{await update.run()}
         return json({saved:true});
+       }
+       if(body.action==='resend-approval'){
+        if(!administrator)return json({error:'Administrator access required.'},403);
+        if(!validId(body.id))return json({error:'Invalid application.'},400);
+        const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();
+        const payload=row?JSON.parse(row.payload):null;
+        if(payload?.status!=='approved')return json({error:'Only approved artists get an approval email.'},400);
+        payload.approvalEmail=await sendApprovalEmail(env as NotificationEnv,payload);
+        await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id).run();
+        return json({saved:true,approvalEmail:payload.approvalEmail});
        }
        if(body.action==='accept'){
         if(!validId(body.id))return json({error:'Invalid invitation.'},400);
