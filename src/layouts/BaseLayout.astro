@@ -16,7 +16,7 @@ interface Props {
 const { title, bodyClass = '', noindex = false } = Astro.props;
 const pathname = Astro.url.pathname;
 const figmaMobileCapture = Astro.url.searchParams.get('figma-mobile') === '1';
-const hasPageBackButton = pathname === '/artists/' || pathname.startsWith('/artists/') || pathname === '/movements/' || pathname.startsWith('/movements/');
+const hasPageBackButton = pathname === '/showing-now/regions/' || pathname === '/artists/' || pathname.startsWith('/artists/') || pathname === '/movements/' || pathname.startsWith('/movements/');
 const showAutomaticBackButton = pathname !== '/' && pathname !== '/showing-now/' && !hasPageBackButton;
 const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
     pathname === '/account/' ||

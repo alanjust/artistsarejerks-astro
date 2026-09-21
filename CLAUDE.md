@@ -29,7 +29,7 @@ Read:
 - Utilities: `src/styles/utilities.css`
 - Shared layout: `src/layouts/BaseLayout.astro`
 - Prefer scoped component styles and existing design tokens.
-- Use desktop-first responsive design and retain 44px minimum touch targets at tablet and phone sizes.
+- Use mobile-first responsive design: style for phones first, then add layout for wider screens with min-width queries. Retain 44px minimum touch targets.
 - Keep the community system's D1/R2 model separate from the archived Art Lab schema.
 - Do not treat prototype fixtures, demo showings, or the protected test site as production data.
 - Preserve server-side public projections: private artwork, private prices, private contact details, and offline artist pages must stay out of public responses.

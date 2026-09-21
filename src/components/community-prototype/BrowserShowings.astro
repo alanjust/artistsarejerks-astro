@@ -10,42 +10,54 @@ const { context, artist = '', venue = '' } = Astro.props;
   refresh();window.addEventListener('storage',e=>{if(e.key===SHOWINGS_KEY||e.key===VENUES_KEY)refresh()});
 </script>
 <style is:global>
-  /* The one definition of a showing card. .showing-card is the directory tile on
-     Showing Now; .browser-showing is the wider card on artist and venue pages.
-     Every rule is namespaced so these generic class names can't leak elsewhere. */
+  /* Showing cards. .showing-card is the Showing Now tile (a row when it is a
+     .coming-card); .browser-showing is the wider card on artist and venue pages.
+     Every rule is namespaced so these class names can't leak elsewhere. */
   .browser-showings{display:grid;gap:var(--space-6);margin-block:var(--space-8);min-width:0}
   .browser-showings[hidden]{display:none}
-  .showing-card{display:flex;flex-direction:column;min-width:0;padding:var(--space-3);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:var(--shadow-card)}
-  .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);min-width:0;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white)}
-  :is(.showing-card,.browser-showing) .artwork-frame{position:relative;display:grid;place-items:center;aspect-ratio:4/5;min-width:0;overflow:hidden;border-radius:var(--radius-base);background:var(--color-artwork-mat)}
-  .browser-showing .artwork-frame{min-height:240px;padding:var(--space-3)}
-  :is(.showing-card,.browser-showing) .artwork-frame img{width:100%;height:100%;min-width:0;padding:var(--space-mat);object-fit:contain}
-  :is(.showing-card,.browser-showing) .fpo{position:absolute;top:var(--space-3);left:var(--space-3);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold)}
-  :is(.showing-card,.browser-showing) .copy{display:flex;flex:1;flex-direction:column;min-width:0;padding:var(--space-4) var(--space-2) var(--space-2);overflow-wrap:anywhere}
-  .browser-showing .copy{padding:var(--space-6)}
-  :is(.showing-card,.browser-showing) .city-label{margin-bottom:var(--space-2);color:var(--color-title);font-family:var(--font-heading);font-size:var(--font-size-sm);font-weight:var(--font-weight-bold)}
-  :is(.showing-card,.browser-showing) h3{margin-bottom:var(--space-2);color:var(--color-white);font-size:var(--font-size-2xl)}
-  :is(.showing-card,.browser-showing) .copy p{margin-bottom:var(--space-2)}
-  :is(.showing-card,.browser-showing) .dates{color:var(--color-gray-300);font-weight:var(--font-weight-bold)}
-  :is(.showing-card,.browser-showing) .venue-name{font-weight:var(--font-weight-bold)}
-  :is(.showing-card,.browser-showing) a.venue-name{text-decoration:underline;text-underline-offset:var(--underline-offset)}
-  .browser-showing a.venue-name{color:var(--color-gold)}
-  :is(.showing-card,.browser-showing) .card-link{display:flex;align-items:center;min-height:44px;margin-top:auto;padding-top:var(--space-3);color:var(--color-gold);font-weight:var(--font-weight-bold)}
-  .browser-showing .card-link{display:inline-block;margin-top:var(--space-4);text-decoration:underline;text-underline-offset:var(--underline-offset)}
-  :is(.showing-card,.browser-showing) .card-link.disabled{color:var(--color-gray-400)}
-  .showing-card.coming-card{background:var(--color-green);color:var(--color-black)}
-  .coming-card h3,.coming-card h3 a{color:var(--color-black)}
-  .coming-card .city-label,.coming-card .card-link{color:var(--color-purple)}
+
+  .showing-card{position:relative;display:flex;flex-direction:column;gap:var(--space-2);min-width:0;padding:var(--space-2);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:var(--shadow-card)}
+  .showing-card:focus-within{outline:var(--border-thick) solid var(--color-gold);outline-offset:var(--border-base)}
+  .showing-card .artwork-frame{position:relative;display:grid;place-items:center;aspect-ratio:4/5;min-width:0;overflow:hidden;border-radius:var(--radius-base);background:var(--color-artwork-mat)}
+  .showing-card .artwork-frame img{width:100%;height:100%;min-width:0;padding:var(--space-2);object-fit:contain}
+  .showing-card .fpo{position:absolute;top:var(--space-2);left:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);line-height:var(--line-height-none)}
+  .showing-card .copy{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding:0 var(--space-1) var(--space-1);overflow-wrap:anywhere}
+  .showing-card h3{margin:0;color:inherit;font-size:var(--font-size-lg);line-height:var(--line-height-tight)}
+  .showing-card .card-title{color:inherit;text-decoration:none}
+  /* The artist link covers the whole card, so the entire tile is one tap target. */
+  .showing-card .card-title::after{content:'';position:absolute;inset:0;border-radius:inherit}
+  .showing-card .card-title:focus-visible{outline:none}
+  .showing-card .venue-line{margin:0;font-size:var(--font-size-sm);font-weight:var(--font-weight-bold)}
+  .showing-card .dates{margin:0;color:var(--color-gray-300);font-size:var(--font-size-sm)}
+  .showing-card .showing-tag{align-self:flex-start;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);line-height:var(--line-height-none)}
+  .showing-card .tag-ending{background:var(--color-pink);color:var(--color-black)}
+  .showing-card .tag-new{background:var(--color-green);color:var(--color-black)}
+  .showing-card .tag-opens{background:var(--color-black);color:var(--color-green)}
+
+  .showing-card.coming-card{flex-direction:row;gap:var(--space-3);padding:var(--space-3);background:var(--color-green);color:var(--color-black)}
+  .coming-card .artwork-frame{width:96px;flex-shrink:0;align-self:flex-start}
+  .coming-card .artwork-frame img{padding:var(--space-1)}
+  .coming-card .copy{justify-content:center;padding:0}
+  .coming-card h3{font-size:var(--font-size-xl)}
   .coming-card .dates{color:var(--color-gray-800)}
+
+  .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);min-width:0;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white)}
+  .browser-showing .artwork-frame{position:relative;display:grid;place-items:center;aspect-ratio:4/5;min-width:0;min-height:240px;overflow:hidden;padding:var(--space-3);border-radius:var(--radius-base);background:var(--color-artwork-mat)}
+  .browser-showing .artwork-frame img{width:100%;height:100%;min-width:0;padding:var(--space-mat);object-fit:contain}
+  .browser-showing .copy{display:flex;flex:1;flex-direction:column;min-width:0;padding:var(--space-6);overflow-wrap:anywhere}
+  .browser-showing .city-label{margin-bottom:var(--space-2);color:var(--color-title);font-family:var(--font-heading);font-size:var(--font-size-sm);font-weight:var(--font-weight-bold)}
+  .browser-showing h3{margin-bottom:var(--space-2);color:var(--color-white);font-size:var(--font-size-2xl)}
+  .browser-showing .copy p{margin-bottom:var(--space-2)}
+  .browser-showing .dates{color:var(--color-gray-300);font-weight:var(--font-weight-bold)}
+  .browser-showing .venue-name{color:var(--color-gold);font-weight:var(--font-weight-bold);text-decoration:underline;text-underline-offset:var(--underline-offset)}
+  .browser-showing .card-link{display:inline-block;min-height:44px;margin-top:var(--space-4);padding-top:var(--space-3);color:var(--color-gold);font-weight:var(--font-weight-bold);text-decoration:underline;text-underline-offset:var(--underline-offset)}
   .browser-showing-artworks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
   .browser-showing-artworks img{width:100%;height:220px;object-fit:contain;background:var(--color-artwork-mat);border-radius:var(--radius-base)}
   .browser-showing-artworks figure{min-width:0;margin:0}
   .browser-showing-artworks figcaption{font-weight:var(--font-weight-bold);overflow-wrap:anywhere}
   @media(max-width:700px){
-    .showing-card{padding:var(--space-2)}
-    .showing-card .copy{padding:var(--space-3) var(--space-1) var(--space-1)}
-    :is(.showing-card,.browser-showing) h3{font-size:var(--font-size-lg)}
-    :is(.showing-card,.browser-showing) .copy p,:is(.showing-card,.browser-showing) .card-link{font-size:var(--font-size-xs)}
+    .browser-showing h3{font-size:var(--font-size-lg)}
+    .browser-showing .copy p,.browser-showing .card-link{font-size:var(--font-size-xs)}
   }
   @media(max-width:560px){.browser-showing{grid-template-columns:1fr}.browser-showing-artworks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>

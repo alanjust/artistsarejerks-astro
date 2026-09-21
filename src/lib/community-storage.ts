@@ -9,7 +9,7 @@ type Operation=SharedRecord;
 const onlineTest=import.meta.env.MODE==='online-test';
 const loopback=typeof location!=='undefined'&&['127.0.0.1','localhost','[::1]'].includes(location.hostname);
 const privatePreview=(loopback||onlineTest)&&location.pathname.startsWith('/prototype/artists/member')&&new URLSearchParams(location.search).get('preview')==='1';
-const publicView=(loopback||onlineTest)&&!privatePreview&&(location.pathname==='/showing-now/'||location.pathname.startsWith('/prototype/artists/')||location.pathname==='/prototype/venues/'||location.pathname.startsWith('/prototype/venues/')&&!location.pathname.startsWith('/prototype/venues/workspace'));
+const publicView=(loopback||onlineTest)&&!privatePreview&&(location.pathname==='/showing-now/'||location.pathname==='/our-artists/'||location.pathname.startsWith('/prototype/artists/')||location.pathname==='/prototype/venues/'||location.pathname.startsWith('/prototype/venues/')&&!location.pathname.startsWith('/prototype/venues/workspace'));
 const CACHE_OWNER_KEY='aaj-shared-cache-owner';
 const protectedWorkspace=(loopback||onlineTest)&&(privatePreview||/\/prototype\/(workspace|admin|onboarding|storage)(\/|$)/.test(location.pathname)||location.pathname.startsWith('/prototype/venues/workspace'));
 const publicCache=new Map<string,string>();

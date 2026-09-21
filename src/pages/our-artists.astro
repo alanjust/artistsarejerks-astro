@@ -1,0 +1,118 @@
+---
+export const prerender = false;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import pilot from '../data/community-pilot.json';
+import {communityFetch} from '../lib/community-transport';
+import {artistSortKey, regionDay, showingStatus} from '../lib/showing-display';
+
+const onlineTest = import.meta.env.MODE === 'online-test';
+const today = regionDay();
+const region = pilot.regions[0];
+
+type PublicMember = {id: string; name: string; city: string; practice: string; works: {title: string; imageKey: string; sampleImage?: string}[]};
+type PublicShowing = {artistId: string; start: string; end: string};
+let publicMembers: PublicMember[] = [];
+let membersUnavailable = false;
+const showingIds = new Set<string>();
+if (onlineTest) {
+  try {
+    const response = await communityFetch('/api/community/public/state', {cache: 'no-store'}, Astro.locals);
+    if (!response.ok) throw new Error(`Public state unavailable (${response.status})`);
+    const body = await response.json() as {records?: {collection: string; payload: unknown}[]};
+    const records = body.records || [];
+    publicMembers = records.filter((record) => record.collection === 'artists' && record.payload).map((record) => record.payload as PublicMember);
+    records.filter((record) => record.collection === 'showings' && record.payload).map((record) => record.payload as PublicShowing)
+      .filter((show) => showingStatus(show, today) === 'showing-now').forEach((show) => showingIds.add(show.artistId));
+  } catch (cause) {
+    membersUnavailable = true;
+    console.error('Our Artists could not load published member artists.', cause);
+  }
+  Astro.response.headers.set('Cache-Control', 'private, no-store');
+} else {
+  pilot.exhibitions.filter((show) => show.publicationStatus === 'published' && showingStatus({start: show.startDate, end: show.endDate}, today) === 'showing-now').forEach((show) => showingIds.add(show.artistId));
+}
+const pilotArtists = pilot.artists
+  .filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible' && (!onlineTest || member.id === 'artist-alan-just'))
+  .map((member) => ({member, work: pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')}))
+  .filter((entry) => entry.work !== undefined);
+const cards = [
+  ...pilotArtists.map(({member, work}) => ({id: member.id, attr: 'artist', name: member.name, city: member.homeCity, practice: member.practice.join(' · '), image: work!.image, href: `/prototype/artists/${member.slug}/`})),
+  ...publicMembers.filter((member) => member.works[0]).map((member) => ({id: member.id, attr: 'member', name: member.name, city: member.city, practice: member.practice, image: member.works[0].sampleImage || `/api/community/public/images/${encodeURIComponent(member.works[0].imageKey)}`, href: `/prototype/artists/member/?artist=${encodeURIComponent(member.id)}`})),
+].sort((a, b) => artistSortKey(a.name).localeCompare(artistSortKey(b.name)));
+---
+
+<BaseLayout title="Our Artists | Artists Are Jerks">
+  <div class="roster">
+    <header>
+      <p class="eyebrow">{region ? `${region.name}, ${region.state}` : 'Rogue Valley, Oregon'}</p>
+      <h1>Our Artists</h1>
+      <p class="intro">The people behind the work, whether or not something of theirs is on a wall this week.</p>
+    </header>
+    <div class="member-grid" data-server-members={onlineTest ? true : undefined}>
+      {cards.map((card) => (
+        <a class="member-card" data-artist-id={card.attr === 'artist' ? card.id : undefined} data-member-profile={card.attr === 'member' ? card.id : undefined} href={card.href}>
+          <img src={card.image} alt={`Artwork by ${card.name}`} loading="lazy" />
+          <div><h2>{card.name}</h2><p>{card.city}</p><p>{card.practice}</p>{showingIds.has(card.id) && <span class="member-status">Showing now</span>}</div>
+        </a>
+      ))}
+      {!onlineTest && <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h2>FPO member artist</h2><p>Central Point</p><p>Drawing</p></div></article>}
+    </div>
+    {membersUnavailable && <p class="members-unavailable" role="status">We couldn’t load the whole artist list just now. Reload the page to try again.</p>}
+    <nav class="roster-links" aria-label="More from the community">
+      <a href="/showing-now/">See what’s showing now →</a>
+      <a href="/join/?kind=artist">Artists: join the community →</a>
+    </nav>
+  </div>
+
+  <script>
+    // Local prototype only: member artists live in browser-side storage, so they
+    // are added here. The online test renders them on the server instead.
+    import {artistSortKey} from '../lib/showing-display';
+    async function loadMembers() {
+      const grid = document.querySelector<HTMLElement>('.member-grid');
+      if (!grid || grid.hasAttribute('data-server-members')) return;
+      try {
+        const [{renderMemberDirectory}, {readShowings, showingStatus}] = await Promise.all([import('../lib/member-artists'), import('../lib/prototype-showings')]);
+        await renderMemberDirectory();
+        // Keep the whole roster A–Z by last name once browser-side members arrive; samples stay last.
+        const key = (card: HTMLElement) => card.classList.contains('member-card-fpo') ? 'zzz' : artistSortKey(card.querySelector('h2')?.textContent ?? '');
+        [...grid.querySelectorAll<HTMLElement>(':scope > .member-card')].sort((a, b) => key(a).localeCompare(key(b))).forEach((card) => grid.append(card));
+        const showing = new Set(readShowings().filter((show) => show.status === 'published' && showingStatus(show) === 'showing-now').map((show) => show.artistId));
+        grid.querySelectorAll<HTMLElement>('[data-member-profile]').forEach((card) => {
+          if (showing.has(card.dataset.memberProfile ?? '') && !card.querySelector('.member-status')) {
+            const badge = document.createElement('span'); badge.className = 'member-status'; badge.textContent = 'Showing now'; card.querySelector('div')?.append(badge);
+          }
+        });
+      } catch (cause) {
+        console.error('Could not load member artists.', cause);
+      }
+    }
+    void loadMembers();
+  </script>
+</BaseLayout>
+
+<style>
+  .roster { width: 100%; min-width: 0; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: var(--space-4) var(--space-4) var(--space-16); }
+  header { max-width: 850px; margin-bottom: var(--space-6); }
+  .eyebrow { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
+  h1 { margin: var(--space-2) 0 0; color: var(--color-purple); font-family: var(--font-display); font-size: clamp(2.75rem, 8vw, 4.8rem); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-none); }
+  .intro { margin: var(--space-2) 0 0; font-family: var(--font-heading); font-size: var(--font-size-lg); line-height: var(--line-height-normal); }
+  .member-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-mat); min-width: 0; }
+  /* Member cards added by script are reached with :global. */
+  .roster :global(.member-card) { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; padding: var(--space-2); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); text-decoration: none; box-shadow: var(--shadow-card); overflow-wrap: anywhere; }
+  .roster :global(.member-card:focus-visible) { outline: var(--border-thick) solid var(--color-gold); outline-offset: var(--border-base); }
+  .roster :global(.member-card img) { width: 100%; aspect-ratio: 4 / 5; box-sizing: border-box; padding: var(--space-2); object-fit: contain; border-radius: var(--radius-base); background: var(--color-artwork-mat); }
+  .roster :global(.member-card > div) { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; padding: 0 var(--space-1) var(--space-1); }
+  .roster :global(.member-card h2) { margin: 0; color: inherit; font-size: var(--font-size-lg); line-height: var(--line-height-tight); }
+  .roster :global(.member-card p) { margin: 0; color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .roster :global(.member-status) { align-self: flex-start; margin-top: var(--space-1); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--color-green); color: var(--color-black); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: var(--line-height-none); }
+  .members-unavailable { margin-top: var(--space-4); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+  .roster-links { display: flex; flex-direction: column; margin-top: var(--space-8); }
+  .roster-links a { display: flex; align-items: center; min-height: 44px; color: var(--color-purple-dark); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  @media (min-width: 700px) {
+    .roster { padding: var(--space-8) clamp(var(--space-6), 4vw, var(--space-10)) var(--space-16); }
+    .intro { font-size: var(--font-size-xl); }
+    .member-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  }
+  @media (min-width: 1100px) { .member-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+</style>

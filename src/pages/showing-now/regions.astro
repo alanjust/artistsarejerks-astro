@@ -1,0 +1,73 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import pilot from '../../data/community-pilot.json';
+import {communityFetch} from '../../lib/community-transport';
+
+type Region = {id: string; name: string; state: string; coverage: string; current: boolean};
+// Showing Now covers the Rogue Valley today; other active regions are listed
+// so visitors can see the community growing, and open once their listings do.
+const currentSlug = 'rogue-valley';
+const fallback: Region[] = pilot.regions.map((region) => ({id: region.id, name: region.name, state: region.state, coverage: `${region.cities.join(', ')}, and nearby`, current: region.id === currentSlug}));
+let regions = fallback;
+try {
+  const response = await communityFetch('/api/community/public/regions', {headers: {Accept: 'application/json'}, signal: AbortSignal.timeout(5000)}, Astro.locals);
+  if (response.ok) {
+    const body = await response.json() as {regions?: {id: string; name: string; slug: string; state_code: string; coverage: string}[]};
+    if (body.regions?.length) regions = body.regions.map((region) => ({id: region.id, name: region.name, state: region.state_code, coverage: region.coverage, current: region.slug === currentSlug}));
+  }
+} catch {}
+regions = [...regions].sort((a, b) => Number(b.current) - Number(a.current) || a.name.localeCompare(b.name));
+---
+
+<BaseLayout title="Choose a Region | Artists Are Jerks">
+  <div class="regions">
+    <a class="back" href="/showing-now/">← Back to Showing Now</a>
+    <h1>Where are you looking for art?</h1>
+    <label class="finder">City, town, or region<input id="region-search" type="search" placeholder="Try Portland or Bend" autocomplete="off" /></label>
+    <section aria-labelledby="regions-heading">
+      <h2 id="regions-heading">Places we’re in</h2>
+      <ul class="region-list">
+        {regions.map((region) => (
+          <li data-region-search={`${region.name} ${region.state} ${region.coverage}`.toLowerCase()}>
+            {region.current
+              ? <a class="region" href="/showing-now/"><span class="region-name">{region.name}, {region.state}<span class="here">You’re here</span></span><span class="coverage">{region.coverage}</span></a>
+              : <div class="region"><span class="region-name">{region.name}, {region.state}</span><span class="coverage">{region.coverage}</span><span class="soon">Listings open soon</span></div>}
+          </li>
+        ))}
+      </ul>
+      <p id="region-empty" class="empty" role="status" hidden>No match yet. If you’d like Showing Now there, propose it below.</p>
+    </section>
+    <p class="young">We’re a young community. New regions start when local artists ask for one.</p>
+    <a class="propose" href="/join/region/">Not listed? Propose your area →</a>
+  </div>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('#region-search');
+    input?.addEventListener('input', () => {
+      const query = input.value.trim().toLowerCase();
+      let shown = 0;
+      document.querySelectorAll<HTMLElement>('[data-region-search]').forEach((item) => { item.hidden = Boolean(query) && !item.dataset.regionSearch?.includes(query); if (!item.hidden) shown++; });
+      const empty = document.querySelector<HTMLElement>('#region-empty');
+      if (empty) empty.hidden = shown > 0;
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .regions { width: 100%; max-width: 640px; box-sizing: border-box; margin: 0 auto; padding: var(--space-2) var(--space-4) var(--space-16); display: flex; flex-direction: column; gap: var(--space-4); }
+  .back, .propose { display: flex; align-items: center; min-height: 44px; color: var(--color-purple-dark); font-weight: var(--font-weight-bold); }
+  .back { text-decoration: none; }
+  .propose { font-size: var(--font-size-lg); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  h1 { margin: 0; color: var(--color-purple); font-family: var(--font-display); font-size: clamp(2.1rem, 7vw, 3.4rem); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-tight); }
+  .finder { display: flex; flex-direction: column; gap: var(--space-2); font-weight: var(--font-weight-bold); }
+  .finder input { min-height: 48px; box-sizing: border-box; padding: 0 var(--space-4); border: var(--border-base) solid var(--color-purple); border-radius: var(--radius-base); background: var(--color-white); font-family: inherit; font-size: var(--font-size-lg); }
+  h2 { margin: var(--space-2) 0 var(--space-3); font-size: var(--font-size-2xl); }
+  .region-list { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+  .region { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); text-decoration: none; }
+  a.region:focus-visible { outline: var(--border-thick) solid var(--color-gold); outline-offset: var(--border-base); }
+  .region-name { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-2); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+  .here, .soon { color: var(--color-gold); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+  .coverage { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .empty { margin: var(--space-3) 0 0; padding: var(--space-4); border: var(--border-base) dashed var(--color-black); }
+  .young { margin: var(--space-2) 0 0; line-height: var(--line-height-normal); }
+</style>

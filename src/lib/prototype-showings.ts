@@ -2,7 +2,7 @@ import {getStoredItem,setStoredItem,publicStorageMode} from './community-storage
 import pilot from '../data/community-pilot.json';
 import {getMemberArtist,imageUrl,memberUrl} from './member-artists';
 import {readVenues,venueProfileUrl} from './prototype-venues';
-import {showingStatus,dates,datesLine} from './showing-display';
+import {showingStatus,dates,datesLine,shortDates,showingTag,artistSortKey} from './showing-display';
 export {showingStatus,dates};
 export const SHOWINGS_KEY = 'aaj-showings-prototype';
 export interface Showing {
@@ -55,7 +55,20 @@ export async function renderShowings(root: HTMLElement) {
       const info=create('div');info.append(create('p',upcoming?'Coming soon':'Showing now','eyebrow'),create('h2',show.venue),create('p',`${dates(show)} · ${show.city}, Oregon`));
       callout.append(info,link('Map & info',venueUrl(show)));built.push({node:callout,destination:root});continue;
     }
-    const card = create('article', '', context === 'directory' ? `showing-card${upcoming ? ' coming-card' : ''}` : 'browser-showing');
+    if(context==='directory'){
+      // Same markup as the server-rendered cards on Showing Now.
+      const card=create('article','',`showing-card${upcoming?' coming-card':''}`);
+      Object.assign(card.dataset,{browserShow:show.id,showId:show.id,artistId:show.artistId,city:show.city,sort:artistSortKey(artist.name),start:show.start,search:`${artist.name} ${show.venue} ${artist.practice.join(' ')} ${show.city} ${artwork.title} ${artwork.medium ?? ''}`.toLowerCase()});
+      const frame=create('div','','artwork-frame');const image=document.createElement('img');image.src=artwork.image;image.alt=artwork.title;image.loading='lazy';frame.append(image);
+      const copy=create('div','','copy');const tag=showingTag(show);
+      if(tag)copy.append(create('span',tag.label,`showing-tag tag-${tag.kind}`));
+      const heading=create('h3');heading.append(link(artist.name,artistHref,'card-title'));
+      copy.append(heading,create('p',`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
+      card.append(frame,copy);
+      built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':'.showing-grid')});
+      continue;
+    }
+    const card = create('article', '', 'browser-showing');
     card.dataset.browserShow = show.id;card.dataset.city = show.city;
     card.dataset.search = `${artist.name} ${show.venue} ${artist.practice.join(' ')} ${show.city} ${artwork.title} ${artwork.medium ?? ''}`.toLowerCase();
     card.dataset.artistId = show.artistId;
@@ -64,7 +77,7 @@ export async function renderShowings(root: HTMLElement) {
     copy.append(create('p',`${show.city} · ${artist.practice.join(' / ')}`,'city-label'),heading,create('p',datesLine(show),'dates'));
     const place = create('p');place.append(link(show.venue,venueUrl(show),'venue-name'));
     copy.append(place,link('Artist, artwork & visit details →',artistHref,'card-link'));card.append(frame,copy);
-    built.push({node:card,destination:context === 'directory' ? document.querySelector(upcoming ? '.coming-grid' : '.showing-grid') : root});
+    built.push({node:card,destination:root});
     if(context==='artist') {
       const gallery=create('div','','browser-showing-artworks');gallery.dataset.browserShow=show.id;
       for(const id of show.artworkIds){

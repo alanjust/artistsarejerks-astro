@@ -1,440 +1,170 @@
 ---
-// Menu structure with dropdowns for all items
-const menuItems = [
-    {
-        identifier: "showing-now",
-        name: "Showing Now",
-        url: "/showing-now/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
-    {
-        identifier: "whats-a-jerk",
-        name: "What's a Jerk?",
-        url: "/whats-a-jerk/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
-    {
-        identifier: "how-art-works",
-        name: "How Art Works",
-        url: "/how-art-works/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
-    {
-        identifier: "art-wheel",
-        name: "Art History Wheel",
-        url: "/art-wheel/",
-        hasDropdown: true,
-        dropdownItems: [
-            { name: "Movements", url: "/movements/" },
-            { name: "Artists", url: "/artists/" },
-            { name: "Benjamin Wheel", url: "/benjamin-wheel/" }
-        ]
-    },
-    {
-        identifier: "thinking",
-        name: "Thinking Like an Artist",
-        url: "/thinking-like-an-artist/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
-    {
-        identifier: "gatekeepers",
-        name: "Gatekeepers",
-        url: "/gatekeepers/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
-    {
-        identifier: "about",
-        name: "About",
-        url: "/about/",
-        hasDropdown: false,
-        dropdownItems: []
-    },
+// Two parts: See Art (the point of the site) and Artist Tools (the lessons).
+type Link = {name: string; url: string; children?: Link[]};
+const seeArt: Link[] = [
+    {name: 'Showing Now', url: '/showing-now/'},
+    {name: 'Places to See Art', url: '/prototype/venues/'},
+    {name: 'Our Artists', url: '/our-artists/'},
 ];
+const artistTools: Link[] = [
+    {name: "What's a Jerk?", url: '/whats-a-jerk/'},
+    {name: 'How Art Works', url: '/how-art-works/'},
+    {name: 'Art History Wheel', url: '/art-wheel/', children: [
+        {name: 'Movements', url: '/movements/'},
+        {name: 'Artists in History', url: '/artists/'},
+        {name: 'Benjamin Wheel', url: '/benjamin-wheel/'},
+    ]},
+    {name: 'Thinking Like an Artist', url: '/thinking-like-an-artist/'},
+    {name: 'Gatekeepers', url: '/gatekeepers/'},
+];
+const utility: Link[] = [
+    {name: 'Join as an artist or venue', url: '/join/'},
+    {name: 'Workspaces · Prototype', url: '/prototype/workspaces/'},
+    {name: 'Your account / Sign in', url: '/account/'},
+    {name: 'About', url: '/about/'},
+];
+const path = Astro.url.pathname;
+const current = (url: string) => (path === url ? 'page' : undefined);
+const toolsActive = artistTools.some((link) => path.startsWith(link.url) || link.children?.some((child) => path.startsWith(child.url)));
 ---
 
 <header class="site-header">
     <div class="header-content">
-        <div class="site-title">
-            <a href="/">Artists Are Jerks</a>
-        </div>
-        
-        <!-- Mobile hamburger button -->
-        <button class="hamburger-menu" aria-label="Toggle menu">
+        <div class="site-title"><a href="/">Artists Are Jerks</a></div>
+
+        <nav class="main-navigation" aria-label="Site">
+            <ul class="nav-menu">
+                {seeArt.map((link) => <li class="nav-item"><a href={link.url} class="nav-link" aria-current={current(link.url)}>{link.name}</a></li>)}
+                <li class="nav-item nav-tools">
+                    <button type="button" class="nav-link nav-button" aria-haspopup="true" data-active={toolsActive ? 'true' : undefined}>Artist Tools ▾</button>
+                    <ul class="dropdown-menu">
+                        {artistTools.map((link) => (
+                            <li>
+                                <a href={link.url} class="dropdown-link" aria-current={current(link.url)}>{link.name}</a>
+                                {link.children && <ul class="dropdown-children">{link.children.map((child) => <li><a href={child.url} class="dropdown-link dropdown-child" aria-current={current(child.url)}>{child.name}</a></li>)}</ul>}
+                            </li>
+                        ))}
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <a href="/showing-now/" class="quick-link" aria-current={current('/showing-now/')}>Showing Now</a>
+        <button class="hamburger-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
-        
-        <!-- Desktop navigation -->
-        <nav class="main-navigation">
-            <ul class="nav-menu">
-                {menuItems.map((item) => (
-                    <li class="nav-item">
-                        <a href={item.url} class="nav-link">
-                            {item.name}
-                        </a>
-                        {item.hasDropdown && (
-                            <ul class="dropdown-menu">
-                                {item.dropdownItems.map((dropdownItem) => (
-                                    <li class="dropdown-item">
-                                        <a href={dropdownItem.url} class="dropdown-link">
-                                            {dropdownItem.name}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </li>
-                ))}
-            </ul>
-        </nav>
     </div>
-    
+
     <nav class="community-access" aria-label="Community participation">
-        <a href="/join/">Join the Community</a>
-        <a href="/prototype/workspaces/">Workspaces · Prototype</a>
-        <a href="/prototype/venues/">Places to See Art</a>
-        <a href="/account/">Your account / Sign in</a>
+        {utility.map((link) => <a href={link.url} aria-current={current(link.url)}>{link.name}</a>)}
     </nav>
 
-    <!-- Mobile menu overlay -->
-    <div class="mobile-menu">
-        <ul class="mobile-nav-list">
-            {menuItems.map((item) => (
-                <li class="mobile-nav-item">
-                    <a href={item.url} class="mobile-nav-link">
-                        {item.name}
-                    </a>
-                    {item.hasDropdown && (
-                        <ul class="mobile-dropdown-menu">
-                            {item.dropdownItems.map((dropdownItem) => (
-                                <li class="mobile-dropdown-item">
-                                    <a href={dropdownItem.url} class="mobile-dropdown-link">
-                                        {dropdownItem.name}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </li>
-            ))}
-        </ul>
+    <div class="mobile-menu" id="site-menu">
+        <nav class="menu-panel" aria-label="Site menu">
+            <section class="menu-group">
+                <h2 class="menu-heading">See Art</h2>
+                <p class="menu-note">Where to stand in front of the real thing.</p>
+                <ul class="menu-list">
+                    {seeArt.map((link) => <li><a href={link.url} class="mobile-nav-link see-art-link" aria-current={current(link.url)}>{link.name}{current(link.url) && <span class="here">You’re here</span>}</a></li>)}
+                </ul>
+            </section>
+            <section class="menu-group">
+                <h2 class="menu-heading tools-heading">Artist Tools</h2>
+                <p class="menu-note">Short lessons on making, seeing, and showing art.</p>
+                <ul class="menu-list">
+                    {artistTools.map((link) => (
+                        <li>
+                            <a href={link.url} class="mobile-nav-link" aria-current={current(link.url)}>{link.name}</a>
+                            {link.children && <ul class="menu-children">{link.children.map((child) => <li><a href={child.url} class="mobile-nav-link menu-child" aria-current={current(child.url)}>{child.name}</a></li>)}</ul>}
+                        </li>
+                    ))}
+                </ul>
+            </section>
+            <ul class="menu-utility">
+                {utility.map((link, index) => <li><a href={link.url} class:list={['mobile-nav-link', {'utility-primary': index === 0}]} aria-current={current(link.url)}>{link.name}</a></li>)}
+            </ul>
+        </nav>
     </div>
 </header>
 
 <style>
-.community-access {
-    display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px 24px;
-    max-width:1440px;margin:0 auto;padding:8px clamp(1rem,4vw,2rem);
-    background:#000;font-family:var(--font-heading);font-size:14px;font-weight:700;
-}
-.community-access a {color:var(--color-gold);text-decoration:none;min-height:32px;display:inline-flex;align-items:center}
-.community-access a:hover,.community-access a:focus-visible {text-decoration:underline;text-underline-offset:4px}
-@media(max-width:600px){.community-access{justify-content:flex-start;gap:4px 16px;font-size:13px}}
+.site-header { position: relative; z-index: var(--z-header); width: 100%; background: var(--color-purple); border-bottom: var(--header-border) solid var(--color-black); }
+.header-content { display: flex; align-items: center; gap: var(--space-2); height: var(--header-height); max-width: var(--max-width-content); margin: 0 auto; padding: 0 var(--space-2) 0 var(--space-4); box-sizing: border-box; }
+.site-title { flex-grow: 1; min-width: 0; }
+.site-title a { font-family: var(--font-display); font-size: clamp(1.25rem, 3vw, 1.5rem); letter-spacing: var(--letter-spacing-display); color: var(--color-gold); text-decoration: none; white-space: nowrap; }
 
-.site-header {
-    width: 100%;
-    background: #7205aa;
-    border-bottom: 18px solid #000;
-    position: relative;
-    z-index: 1000;
-}
+/* Phone and tablet: title, a Showing Now shortcut, and the menu button. */
+.quick-link { display: flex; align-items: center; min-height: 44px; padding: 0 var(--space-2); color: var(--color-gold); font-family: var(--font-heading); font-weight: var(--font-weight-bold); white-space: nowrap; text-decoration: none; }
+.quick-link[aria-current] { text-decoration: underline; text-underline-offset: var(--underline-offset); }
+.hamburger-menu { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-1); width: 44px; height: 44px; padding: 0; background: none; border: 0; cursor: pointer; }
+.hamburger-line { width: 26px; height: 3px; border-radius: var(--radius-sm); background: var(--color-gold); transition: var(--transition-transform), var(--transition-opacity); }
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(2) { opacity: 0; }
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.main-navigation { display: none; }
+/* On phones the utility links live inside the menu, not in a strip under the header. */
+.community-access { display: none; }
 
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 50px;
-    padding: 0 clamp(1rem, 4vw, 2rem);
-    max-width: 1440px;
-    margin: 0 auto;
-}
+.mobile-menu { position: fixed; top: var(--header-height); left: 0; right: 0; bottom: 0; z-index: var(--z-mobile-menu); overflow-y: auto; background: var(--color-black); color: var(--color-white); opacity: 0; visibility: hidden; transition: var(--transition-opacity), visibility var(--duration-base); }
+.mobile-menu.active { opacity: 1; visibility: visible; }
+.menu-panel { display: flex; flex-direction: column; gap: var(--space-6); max-width: 560px; margin: 0 auto; padding: var(--space-5) var(--space-5) var(--space-8); }
+.menu-heading { margin: 0; color: var(--color-gold); font-family: var(--font-display); font-size: var(--font-size-3xl); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); }
+.tools-heading { color: var(--color-green); }
+.menu-note { margin: var(--space-1) 0 var(--space-2); color: var(--color-gray-300); font-size: var(--font-size-sm); }
+.menu-list, .menu-children, .menu-utility { margin: 0; padding: 0; list-style: none; }
+.menu-list > li { border-bottom: var(--border-thin) solid var(--color-gray-700); }
+.menu-list > li:last-child { border-bottom: 0; }
+.mobile-nav-link { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); min-height: 44px; color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-lg); text-decoration: none; }
+.see-art-link { min-height: 48px; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+.mobile-nav-link:hover, .mobile-nav-link:focus-visible { color: var(--color-gold); }
+.here { color: var(--color-gold); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); }
+.menu-children { display: flex; flex-wrap: wrap; column-gap: var(--space-4); padding: 0 0 var(--space-2) var(--space-4); }
+.menu-child { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+.menu-utility { display: flex; flex-wrap: wrap; column-gap: var(--space-5); padding-top: var(--space-3); border-top: var(--border-thin) solid var(--color-gray-700); }
+.menu-utility .mobile-nav-link { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+.menu-utility .utility-primary { color: var(--color-gold); font-weight: var(--font-weight-bold); }
 
-.site-title a {
-    font-family: 'Spicy Rice', serif;
-    letter-spacing: var(--letter-spacing-display);
-    font-size: clamp(18px, 3vw, 24px);
-    color: #f9b749;
-    text-decoration: none;
-    letter-spacing: 1px;
-    white-space: nowrap;
-}
-
-.site-title a:hover {
-    opacity: 0.9;
-}
-
-/* Hamburger menu - hidden on desktop */
-.hamburger-menu {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    z-index: 1001;
-}
-
-.hamburger-line {
-    width: 28px;
-    height: 3px;
-    background: #f9b749;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-}
-
-.hamburger-menu.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg) translate(7px, 7px);
-}
-
-.hamburger-menu.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger-menu.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
-}
-
-/* Desktop navigation */
-.main-navigation {
-    display: flex;
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 0;
-    align-items: center;
-}
-
-.nav-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.nav-item:not(:last-child)::after {
-    content: '';
-    width: 1px;
-    height: 20px;
-    background: #fff;
-    margin: 0 clamp(0.5rem, 1vw, 1rem);
-}
-
-.nav-link {
-    font-family: 'Averia Sans Libre', serif;
-    font-weight: 700;
-    font-size: clamp(14px, 1.5vw, 18px);
-    color: #75c83c;
-    text-decoration: none;
-    padding: 4px 0;
-    white-space: nowrap;
-    transition: opacity 0.2s ease;
-}
-
-.nav-link:hover {
-    opacity: 0.8;
-}
-
-/* Dropdown menu styling */
-.dropdown-menu {
-    position: absolute;
-    top: calc(100% + 18px);
-    left: 0;
-    background: #000;
-    list-style: none;
-    margin: 0;
-    padding: 8px 0;
-    min-width: 150px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 1001;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.nav-item:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.dropdown-item {
-    margin: 0;
-}
-
-.dropdown-link {
-    display: block;
-    padding: 8px 16px;
-    font-family: 'Averia Sans Libre', serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: #75c83c;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-.dropdown-link:hover {
-    background-color: rgba(117, 200, 60, 0.1);
-}
-
-/* Mobile menu - hidden by default */
-.mobile-menu {
-    position: fixed;
-    top: 50px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 999;
-    overflow-y: auto;
-}
-
-.mobile-menu.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.mobile-nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 2rem 1.5rem;
-}
-
-.mobile-nav-item {
-    margin-bottom: 1rem;
-}
-
-.mobile-nav-link {
-    font-family: 'Averia Sans Libre', serif;
-    font-weight: 700;
-    font-size: 20px;
-    color: #75c83c;
-    text-decoration: none;
-    display: block;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(117, 200, 60, 0.2);
-    transition: all 0.2s ease;
-}
-
-.mobile-nav-link:hover {
-    color: #f9b749;
-    padding-left: 8px;
-}
-
-/* Mobile dropdown styling */
-.mobile-dropdown-menu {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    margin-top: 8px;
-    margin-left: 16px;
-}
-
-.mobile-dropdown-item {
-    margin-bottom: 0.5rem;
-}
-
-.mobile-dropdown-link {
-    font-family: 'Averia Sans Libre', serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: #75c83c;
-    text-decoration: none;
-    display: block;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(117, 200, 60, 0.2);
-    transition: all 0.2s ease;
-}
-
-.mobile-dropdown-link:hover {
-    color: #f9b749;
-    padding-left: 8px;
-}
-
-/* Mobile/Tablet breakpoint */
-@media (max-width: 1200px) {
-    .hamburger-menu {
-        display: flex;
-    }
-    
-    .main-navigation {
-        display: none;
-    }
-}
-
-/* Extra small mobile adjustments */
-@media (max-width: 480px) {
-    .header-content {
-        padding: 0 1rem;
-        height: 46px;
-    }
-    
-    .mobile-menu {
-        top: 46px;
-    }
+/* Desktop: See Art links, an Artist Tools menu, and the utility strip below. */
+@media (min-width: 1100px) {
+    .header-content { padding: 0 clamp(var(--space-4), 4vw, var(--space-8)); }
+    .quick-link, .hamburger-menu, .mobile-menu { display: none; }
+    .main-navigation { display: flex; }
+    .nav-menu { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
+    .nav-item { position: relative; display: flex; align-items: center; }
+    .nav-item:not(:last-child)::after { content: ''; width: var(--border-thin); height: var(--space-5); margin: 0 var(--space-4); background: var(--color-white); }
+    .nav-link { padding: var(--space-1) 0; color: var(--color-green); font-family: var(--font-heading); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); white-space: nowrap; text-decoration: none; }
+    .nav-link[aria-current], .nav-link[data-active] { color: var(--color-gold); }
+    .nav-link:hover { color: var(--color-gold); }
+    .nav-button { min-height: 44px; border: 0; background: none; cursor: pointer; }
+    .dropdown-menu { position: absolute; top: calc(100% + var(--header-border)); right: 0; z-index: var(--z-dropdown); min-width: 240px; margin: 0; padding: var(--space-2) 0; list-style: none; background: var(--color-black); box-shadow: var(--shadow-md); opacity: 0; visibility: hidden; transform: translateY(calc(-1 * var(--space-2))); transition: var(--transition-opacity), var(--transition-transform), visibility var(--duration-base); }
+    .nav-tools:hover .dropdown-menu, .nav-tools:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: none; }
+    .dropdown-children { margin: 0; padding: 0; list-style: none; }
+    .dropdown-link { display: block; padding: var(--space-2) var(--space-4); color: var(--color-green); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-decoration: none; }
+    .dropdown-child { padding-left: var(--space-8); color: var(--color-gray-300); }
+    .dropdown-link:hover, .dropdown-link:focus-visible, .dropdown-link[aria-current] { color: var(--color-gold); }
+    .community-access { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2) var(--space-6); max-width: var(--max-width-content); margin: 0 auto; padding: var(--space-2) clamp(var(--space-4), 4vw, var(--space-8)); box-sizing: border-box; background: var(--color-black); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+    .community-access a { display: inline-flex; align-items: center; min-height: 32px; color: var(--color-gold); text-decoration: none; }
+    .community-access a:hover, .community-access a:focus-visible, .community-access a[aria-current] { text-decoration: underline; text-underline-offset: var(--underline-offset); }
 }
 </style>
 
 <script>
-// Hamburger menu toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const hamburger = document.querySelector('.hamburger-menu');
-    const mobileMenu = document.querySelector('.mobile-menu');
-
-    if (hamburger && mobileMenu) {
-        // Toggle menu on hamburger click
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            
-            // Prevent body scroll when menu is open
-            if (mobileMenu.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close menu when clicking a link
-        const allMobileLinks = document.querySelectorAll('.mobile-nav-link, .mobile-dropdown-link');
-        allMobileLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-        
-        // Close menu when clicking outside
-        mobileMenu.addEventListener('click', function(e) {
-            if (e.target === mobileMenu) {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close menu on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    }
-});
+const hamburger = document.querySelector<HTMLButtonElement>('.hamburger-menu');
+const mobileMenu = document.querySelector<HTMLElement>('.mobile-menu');
+if (hamburger && mobileMenu) {
+    const setOpen = (open: boolean) => {
+        hamburger.setAttribute('aria-expanded', String(open));
+        hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        mobileMenu.classList.toggle('active', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+    };
+    hamburger.addEventListener('click', () => setOpen(hamburger.getAttribute('aria-expanded') !== 'true'));
+    mobileMenu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+    mobileMenu.addEventListener('click', (event) => { if (event.target === mobileMenu) setOpen(false); });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileMenu.classList.contains('active')) { setOpen(false); hamburger.focus(); }
+    });
+}
 </script>
