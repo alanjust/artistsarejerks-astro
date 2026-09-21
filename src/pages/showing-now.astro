@@ -163,7 +163,8 @@ if (onlineTest) Astro.response.headers.set('Cache-Control', 'private, no-store')
 <style>
   /* Phone first; wider screens add columns. Card styles live in BrowserShowings.astro. */
   .directory { width: 100%; min-width: 0; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: var(--space-2) var(--space-4) var(--space-16); }
-  header { max-width: 850px; }
+  /* The intro and the notice share one reading width. */
+  header, .notice { max-width: 850px; box-sizing: border-box; }
   .region-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-2); }
   .eyebrow { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
   .region-change { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-black); font-size: var(--font-size-base); text-decoration: underline; text-underline-offset: var(--underline-offset); }

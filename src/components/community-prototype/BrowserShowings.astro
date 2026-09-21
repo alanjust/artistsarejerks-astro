@@ -59,5 +59,11 @@ const { context, artist = '', venue = '' } = Astro.props;
     .browser-showing h3{font-size:var(--font-size-lg)}
     .browser-showing .copy p,.browser-showing .card-link{font-size:var(--font-size-xs)}
   }
+  /* Larger tiles on big screens get larger type, so names don't look tiny under the art. */
+  @media(min-width:1100px){
+    .showing-card h3{font-size:var(--font-size-xl)}
+    .showing-card .venue-line,.showing-card .dates{font-size:var(--font-size-base)}
+    .showing-card .showing-tag{font-size:var(--font-size-sm)}
+  }
   @media(max-width:560px){.browser-showing{grid-template-columns:1fr}.browser-showing-artworks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
