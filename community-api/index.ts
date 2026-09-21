@@ -76,7 +76,15 @@ export default {
         if(!row)return json({error:'Application not found.'},404);const payload=JSON.parse(row.payload);
         if(!payload.submittedBy)return json({error:'This record is not an intake application.'},400);
         payload.status=body.status;if(collection==='venues')payload.visible=body.status==='approved';
-        await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3").bind(JSON.stringify(payload),collection,body.id).run();return json({saved:true});
+        // Artists: approval no longer waits for an acceptance step, and a decline
+        // closes the private workspace the applicant opened when they applied.
+        if(collection==='applications')payload.invitationAccepted=body.status==='approved';
+        const update=env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3").bind(JSON.stringify(payload),collection,body.id);
+        const workspace=collection!=='applications'?[]:body.status==='approved'
+          ?[env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(payload.submittedBy,body.id)]
+          :[env.DB.prepare('UPDATE community_memberships SET artist_id=NULL WHERE artist_id=?1').bind(body.id)];
+        try{await env.DB.batch([update,...workspace])}catch{await update.run()}
+        return json({saved:true});
        }
        if(body.action==='accept'){
         if(!validId(body.id))return json({error:'Invalid invitation.'},400);
@@ -101,6 +109,21 @@ export default {
        const collection=kind==='venue'?'venues':'applications';
        const duplicate=await env.DB.prepare("SELECT id FROM community_records WHERE collection=?1 AND payload IS NOT NULL AND json_extract(payload,'$.submittedBy')=?2 AND json_extract(payload,'$.status')='pending'").bind(collection,verified.userId).first();if(duplicate)return json({error:`You already have a pending ${kind} application.`},409);
        const id=crypto.randomUUID(),stored=kind==='artist'?{id,name:String(payload.name).trim(),email:String(payload.email).trim(),regionId:payload.regionId,city:String(payload.city).trim(),practice:String(payload.practice).trim(),portfolio:String(payload.portfolio||'').trim(),note:String(payload.note).trim(),opportunities:!!payload.opportunities,status:'pending',invitationAccepted:false,submittedBy:verified.userId}:{id,name:String(payload.name).trim(),type:String(payload.type).trim(),regionId:payload.regionId,city:String(payload.city).trim(),address:String(payload.address).trim(),postalCode:String(payload.postalCode||'').trim(),description:String(payload.description||'').trim(),website:String(payload.website||'').trim(),phone:String(payload.phone||'').trim(),hours:String(payload.hours||'').trim(),accessibility:String(payload.accessibility||'').trim(),instructions:String(payload.instructions||'').trim(),contactName:String(payload.contactName).trim(),email:String(payload.email).trim(),opportunities:String(payload.opportunities||'').trim(),status:'pending',visible:false,available:!!payload.available,memberIds:[],campaigns:[],submittedBy:verified.userId};
+       if(kind==='artist'){
+        // The applicant can start building a private page right away. Nothing
+        // becomes public until an administrator approves the application.
+        const existing=await env.DB.prepare('SELECT artist_id FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null}>();
+        if(existing?.artist_id)return json({error:'This account already has an artist workspace. Open it from Your account.'},409);
+        const artist={id,name:stored.name,regionId:stored.regionId,city:stored.city,practice:(stored as {practice:string}).practice,bio:'',website:(stored as {portfolio:string}).portfolio,email:stored.email,phone:'',publicWebsite:false,publicEmail:false,publicPhone:false,published:false,step:0,works:[]};
+        try{
+         await env.DB.batch([
+          env.DB.prepare('INSERT INTO community_records(collection,id,payload,revision) VALUES(?1,?2,?3,1)').bind('applications',id,JSON.stringify(stored)),
+          env.DB.prepare('INSERT INTO community_records(collection,id,payload,revision) VALUES(?1,?2,?3,1)').bind('artists',id,JSON.stringify(artist)),
+          env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(verified.userId,id)
+         ]);
+        }catch{return json({error:'Your workspace could not be opened. Please try again.'},409)}
+        await queueAdminNotification(env as NotificationEnv,ctx,'artist',id,stored.name);return json({saved:true,id,workspace:true});
+       }
        await env.DB.prepare('INSERT INTO community_records(collection,id,payload,revision) VALUES(?1,?2,?3,1)').bind(collection,id,JSON.stringify(stored)).run();await queueAdminNotification(env as NotificationEnv,ctx,kind as 'artist'|'venue',id,String(payload.name).trim());return json({saved:true,id});
       }
       return json({error:'Method not allowed'},405);

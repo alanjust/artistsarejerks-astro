@@ -6,36 +6,63 @@ import {applicationApi,type SharedApplication} from './shared-applications';
 const element=(tag:string,text='',className='')=>{const node=document.createElement(tag);node.textContent=text;node.className=className;return node};
 const link=(text:string,url:string)=>{const node=element('a',text) as HTMLAnchorElement;node.href=url;return node};
 const action=(text:string,fn:()=>void)=>{const node=element('button',text) as HTMLButtonElement;node.type='button';node.addEventListener('click',fn);return node};
+const workspaceUrl=(id:string)=>`/prototype/workspace/member/?artist=${encodeURIComponent(id)}`;
+// A "where can we see your work" answer that is just a web address doubles as the portfolio link.
+function portfolioFrom(answer:string){
+ if(/\s/.test(answer)||!answer.includes('.'))return '';
+ try{const url=new URL(/^[a-z][a-z0-9+.-]*:/i.test(answer)?answer:`https://${answer}`);return ['http:','https:'].includes(url.protocol)&&url.hostname.includes('.')&&!url.username&&!url.password?url.href:''}catch{return ''}
+}
 export function initJoin(){
- const formNode=document.querySelector<HTMLFormElement>('[data-artist-application]');if(!formNode)return;const form=formNode;
- void populateRegionSelects(form);
- const result=document.querySelector<HTMLElement>('[data-join-result]')!,choices=document.querySelector<HTMLElement>('[data-join-choices]')!,invite=document.querySelector<HTMLElement>('[data-invitation-panel]')!;
+ const choices=document.querySelector<HTMLElement>('[data-join-choices]'),form=document.querySelector<HTMLFormElement>('[data-artist-application]'),prompt=document.querySelector<HTMLElement>('[data-signup-prompt]');
+ const result=document.querySelector<HTMLElement>('[data-join-result]'),existing=document.querySelector<HTMLElement>('[data-existing-application]'),listRoot=document.querySelector<HTMLElement>('[data-my-applications]');
+ if(!choices)return;
  let own:SharedApplication[]=[];
- async function list(){const root=document.querySelector('[data-my-applications]')!;try{own=(await applicationApi()).applications.filter(entry=>entry.kind==='artist');document.querySelector<HTMLElement>('[data-sign-in-prompt]')!.hidden=true;root.replaceChildren();if(!own.length)root.append(element('p','You have not submitted an artist application.'));own.forEach(({id,payload:a,assignedArtistId})=>{const row=element('p',`${a.name}: ${a.status}${assignedArtistId===id?' · workspace ready':a.invitationAccepted?' · invitation accepted':''} `);if(a.status==='approved'&&!a.invitationAccepted)row.append(link('Accept invitation →',`/join/?invitation=${encodeURIComponent(id)}`));if(assignedArtistId===id)row.append(link('Open workspace →',`/prototype/workspace/member/?artist=${encodeURIComponent(id)}`));root.append(row)})}catch(error){root.replaceChildren(element('p',error instanceof Error?error.message:'Sign in to submit and review an application.'))}}
- function open(){choices.hidden=true;form.hidden=false;result.hidden=true;form.scrollIntoView({block:'start',behavior:'smooth'})}
- document.querySelector('[data-open-artist]')?.addEventListener('click',open);document.querySelector('[data-close-artist]')?.addEventListener('click',()=>{form.hidden=true;choices.hidden=false});
- form.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(form),get=(name:string)=>String(data.get(name)||'').trim();const error=document.querySelector('[data-application-error]')!;
- if(['name','practice','note'].some(name=>!get(name))){error.textContent='Please enter your name, media, and a short description of your work.';return}
- let portfolio='';
- if(get('portfolio')){
+ const active=()=>own.find(entry=>entry.payload.status!=='declined');
+ const show=(panel:HTMLElement|null)=>{for(const node of [choices,form,prompt,result,existing])if(node)node.hidden=node!==panel;panel?.scrollIntoView({block:'start',behavior:'smooth'})};
+ function describe(entry:SharedApplication){
+  const status=String(entry.payload.status);
+  return status==='approved'?'You’re approved. Your page can go live whenever you publish it.':'Your request is with us. While you wait, your page is open, and you can start putting work in it. Nothing goes public until you’re approved.';
+ }
+ function showExisting(entry:SharedApplication){
+  if(!existing)return;
+  existing.replaceChildren(element('h2',entry.payload.status==='approved'?`Welcome, ${entry.payload.name}`:'You’ve already asked'),element('p',describe(entry)));
+  if(entry.assignedArtistId===entry.id)existing.append(link('Open your page →',workspaceUrl(entry.id)));
+  show(existing);
+ }
+ async function list(){
+  if(!form)return;
   try{
-   const entered=get('portfolio');
-   const url=new URL(/^[a-z][a-z0-9+.-]*:/i.test(entered)?entered:`https://${entered}`);
-   if(!['http:','https:'].includes(url.protocol)||!url.hostname.includes('.')||url.username||url.password||/\s/.test(entered))throw new Error('Invalid website');
-   portfolio=url.href;
-  }catch{error.textContent='Enter a website address such as yourwebsite.com, or leave it blank.';return}
+   own=(await applicationApi()).applications.filter(entry=>entry.kind==='artist');
+   listRoot?.replaceChildren();
+   if(!own.length)listRoot?.append(element('p','You haven’t sent an artist request yet.'));
+   own.forEach(entry=>{const row=element('p',`${entry.payload.name}: ${entry.payload.status} `);if(entry.assignedArtistId===entry.id)row.append(link('Open your page →',workspaceUrl(entry.id)));listRoot?.append(row)});
+  }catch(error){listRoot?.replaceChildren(element('p',error instanceof Error?error.message:'Unable to load your requests.'))}
  }
-
- const payload={name:get('name'),email:get('email'),regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio,note:get('note'),opportunities:data.has('opportunities')};
- try{await applicationApi({kind:'artist',payload})}catch(cause){error.textContent=cause instanceof Error?cause.message:'Unable to submit this application.';return}
- form.hidden=true;result.hidden=false;result.replaceChildren(element('h2','Your request is awaiting review'),element('p','The application is saved to your signed-in account. An administrator can now review it in the application inbox.'));await list();
- });
- async function invitation(){const id=new URLSearchParams(location.search).get('invitation');if(!id)return;invite.hidden=false;choices.hidden=true;form.hidden=true;invite.replaceChildren();if(!own.length)await list();const entry=own.find(application=>application.id===id&&application.payload.status==='approved');if(!entry){invite.append(element('h2','Invitation unavailable'),element('p','This invitation must belong to the signed-in applicant and have administrator approval.'));return}const application=entry.payload;
- invite.append(element('h2',application.invitationAccepted?'Welcome to the community':`You’re invited, ${application.name}`),element('p',`${application.practice} · ${application.city}`));
- if(application.invitationAccepted){if(entry.assignedArtistId===id)invite.append(element('p','Your artist workspace is ready.'),link('Open your workspace →',`/prototype/workspace/member/?artist=${encodeURIComponent(id)}`));else invite.append(element('p','Your invitation is accepted. An administrator needs to finish assigning your workspace.'));return}
- invite.append(element('p','Accepting confirms that this signed-in account belongs to the approved applicant.'),action('Accept invitation',()=>void (async()=>{try{await applicationApi({action:'accept',id});await list();await invitation()}catch(error){invite.append(element('p',error instanceof Error?error.message:'Unable to accept this invitation.'))}})()));
+ function open(){const current=active();if(current)showExisting(current);else show(form??prompt)}
+ document.querySelector('[data-open-artist]')?.addEventListener('click',open);
+ document.querySelectorAll('[data-close-artist]').forEach(button=>button.addEventListener('click',()=>show(choices)));
+ if(form){
+  void populateRegionSelects(form).then(()=>{const select=form.querySelector<HTMLSelectElement>('[data-region-select]');const field=form.querySelector<HTMLElement>('[data-region-field]');if(field&&select)field.hidden=select.options.length<=1});
+  form.addEventListener('submit',async event=>{
+   event.preventDefault();
+   const data=new FormData(form),get=(name:string)=>String(data.get(name)||'').trim(),error=form.querySelector('[data-application-error]')!;
+   if(['name','city','practice','where'].some(name=>!get(name))){error.textContent='Please fill in all four: your name, your city, what you make, and where we can see it.';return}
+   const button=form.querySelector<HTMLButtonElement>('button:not([type])');if(button)button.disabled=true;error.textContent='Sending…';
+   try{
+    const saved=await applicationApi({kind:'artist',payload:{name:get('name'),email:'',regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio:portfolioFrom(get('where')),note:get('where'),opportunities:false}});
+    await list();
+    if(result&&saved.id){result.replaceChildren(element('h2','Got it'),element('p','A real person looks at every request, usually within a few days. You don’t have to wait, though. Your page is already open, and you can start putting work in it now. Nothing goes public until you’re approved.'),link('Start your page →',workspaceUrl(saved.id)));show(result)}
+   }catch(cause){error.textContent=cause instanceof Error?cause.message:'Unable to send this request.'}
+   finally{if(button)button.disabled=false}
+  });
  }
- void (async()=>{await list();await invitation()})();if(new URLSearchParams(location.search).get('kind')==='artist'&&!new URLSearchParams(location.search).has('invitation'))open();
+ void (async()=>{
+  await list();
+  // Older invitation links now simply lead to the applicant's page.
+  const params=new URLSearchParams(location.search),invited=params.get('invitation');
+  const entry=invited?own.find(item=>item.id===invited):undefined;
+  if(entry)showExisting(entry);else if(params.get('kind')==='artist')open();
+ })();
 }
 export function initArtistReview(){
  const root=document.querySelector('[data-artist-review]');if(!root)return;

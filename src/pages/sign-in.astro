@@ -2,8 +2,11 @@
 export const prerender = false;
 import { SignIn as ClerkSignIn } from '@clerk/astro/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
+// Send people back to where they started, but only to a page on this site.
+const requested = Astro.url.searchParams.get('next') ?? '';
+const next = /^\/(?!\/)[^\s\\]*$/.test(requested) ? requested : '/account/';
 ---
 <BaseLayout title="Sign in | Artists Are Jerks" noindex>
-<main class="auth-page"><h1>Sign in</h1><p>Artists Are Jerks · Development testing</p><ClerkSignIn fallbackRedirectUrl="/account/" /></main>
+<main class="auth-page"><h1>Sign in</h1><p>Artists Are Jerks · Development testing</p><ClerkSignIn forceRedirectUrl={next} signUpForceRedirectUrl={next} signUpUrl={`/sign-up/?next=${encodeURIComponent(next)}`} /></main>
 </BaseLayout>
-<style>.auth-page{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4rem}h1{text-align:center}</style>
+<style>.auth-page{display:flex;flex-direction:column;align-items:center;padding:var(--space-8) var(--space-4) var(--space-16)}h1{text-align:center}</style>

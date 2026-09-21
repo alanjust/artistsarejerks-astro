@@ -11,7 +11,8 @@ export function getMemberArtist(id:string){
  // profile exists, it is the durable workspace record and must not depend on a
  // second, browser-local copy of the accepted application.
  if(saved)return saved;
- const app=readArtistApplications().find(a=>a.id===id&&a.status==='approved'&&a.invitationAccepted);
+ // An applicant's own request opens a private workspace; a declined one does not.
+ const app=readArtistApplications().find(a=>a.id===id&&a.status!=='declined');
  if(!app)return null;
  return {id,name:app.name,city:app.city,practice:app.practice,bio:'',website:app.portfolio,email:app.email,phone:'',publicWebsite:false,publicEmail:false,publicPhone:false,published:false,step:0,works:[]};
 }

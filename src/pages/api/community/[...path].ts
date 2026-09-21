@@ -22,7 +22,19 @@ export const ALL:APIRoute=async (context)=>{
  if(request.method!=='GET'&&(request.headers.get('origin')!==url.origin||request.headers.get('x-aaj-prototype')!=='local'))return fail('Origin rejected.',403);
  const chunks:Uint8Array[]=[],reader=request.body?.getReader();let size=0;
  if(reader)while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>10*1024*1024){await reader.cancel();return fail('Upload too large.',413)}chunks.push(value)}
- const body=new Uint8Array(size);let offset=0;for(const chunk of chunks){body.set(chunk,offset);offset+=chunk.length}
+ let body=new Uint8Array(size);let offset=0;for(const chunk of chunks){body.set(chunk,offset);offset+=chunk.length}
+ // Artist applications use the signed-in account's own email, never a typed one.
+ if(url.pathname==='/api/community/applications'&&request.method==='PUT'){
+  try{
+   const intake=JSON.parse(new TextDecoder().decode(body));
+   if(intake?.kind==='artist'&&!intake.action&&intake.payload&&typeof intake.payload==='object'){
+    const user=await clerkClient(context).users.getUser(userId);
+    const email=user.primaryEmailAddress?.emailAddress||user.emailAddresses[0]?.emailAddress;
+    if(!email)return fail('Add an email address to your account before applying.',400);
+    intake.payload.email=email;body=new TextEncoder().encode(JSON.stringify(intake));
+   }
+  }catch{return fail('Unable to read this application.',400)}
+ }
  if(url.pathname==='/api/community/memberships'){
   if(!access?.administrator)return fail('Administrator access required.',403);
   if(request.method==='PUT'){
