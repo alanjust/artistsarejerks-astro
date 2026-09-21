@@ -49,6 +49,8 @@ const current = (url: string) => (path === url ? 'page' : undefined);
         </button>
     </div>
 
+
+    <!-- Desktop only: floats on the page just below the header band, so no page layout shifts. -->
     <nav class="community-access" aria-label="Account">
         <a href="/account/" aria-current={current('/account/')}>Your account / Sign in</a>
     </nav>
@@ -100,7 +102,7 @@ const current = (url: string) => (path === url ? 'page' : undefined);
 .hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(2) { opacity: 0; }
 .hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-/* Sign in lives in the menu on phones and tablets; desktop shows it alone in the black bar. */
+/* Sign in lives in the menu on phones and tablets; desktop also shows it under the header. */
 .community-access { display: none; }
 
 /* The menu: full screen on phones, a panel from the right on wider screens. */
@@ -133,8 +135,8 @@ const current = (url: string) => (path === url ? 'page' : undefined);
     .main-navigation { display: flex; }
     .nav-link { font-size: var(--font-size-lg); }
     .menu-word { display: inline; }
-    .community-access { display: flex; justify-content: flex-end; max-width: var(--max-width-content); margin: 0 auto; padding: var(--space-1) clamp(var(--space-4), 4vw, var(--space-8)); box-sizing: border-box; background: var(--color-black); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
-    .community-access a { display: inline-flex; align-items: center; min-height: 32px; color: var(--color-gold); text-decoration: none; }
+    .community-access { position: absolute; top: calc(100% + var(--header-border)); right: clamp(var(--space-4), 4vw, var(--space-8)); display: flex; font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+    .community-access a { display: inline-flex; align-items: center; min-height: 32px; color: var(--color-purple-dark); text-decoration: none; }
     .community-access a:hover, .community-access a:focus-visible, .community-access a[aria-current] { text-decoration: underline; text-underline-offset: var(--underline-offset); }
 }
 </style>
