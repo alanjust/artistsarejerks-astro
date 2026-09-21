@@ -32,18 +32,20 @@ const fixtures = (onlineTest ? [] : pilot.exhibitions).flatMap((show) => {
   return [{phase, card}];
 });
 
-// Clearly labeled sample tiles for the local prototype. Their dates are set
-// relative to today so the "Ends…" and "Just opened" tags can be seen working.
+// Clearly labeled FPO sample tiles, on both the local prototype and the test
+// site. Their dates are set relative to today so the tags can be seen working.
 const offset = (days: number) => { const date = new Date(`${today}T12:00:00Z`); date.setUTCDate(date.getUTCDate() + days); return date.toISOString().slice(0, 10); };
 const sampleDates = [[-30, 3], [-2, 40], [-20, 35], [-45, 20], [-10, 55]];
-const sampleCities = ['Ashland', 'Central Point', 'Grants Pass', 'Medford', 'Ashland'];
+const sampleNames = ['Mia Chen', 'Luis Moreno', 'Rae Adams', 'Kenji Sato', 'Sam Ortiz'];
+const sampleVenues = ['FPO coffee house', 'FPO gallery', 'FPO café', 'FPO brewery', 'FPO open studio'];
+const sampleCities = ['Phoenix', 'Grants Pass', 'Ashland', 'Medford', 'Central Point'];
 const featuredIds = new Set(pilot.exhibitions.map((show) => show.featuredArtworkId));
-const samples: Card[] = onlineTest ? [] : pilot.artworks.filter((work) => work.archiveStatus === 'active' && !featuredIds.has(work.id)).slice(0, 5).map((work, i) => {
+const samples: Card[] = pilot.artworks.filter((work) => work.archiveStatus === 'active' && !featuredIds.has(work.id)).slice(0, 5).map((work, i) => {
   const dates = {start: offset(sampleDates[i][0]), end: offset(sampleDates[i][1])};
   return {
-    id: `fpo-${i}`, artistId: null, image: work.image, alt: 'Placeholder artwork', name: `FPO Artist ${i + 2}`, href: null,
-    venue: 'FPO venue', city: sampleCities[i], dates: shortDates(dates, today), tag: showingTag(dates, today), sort: `zzz fpo ${i}`, start: dates.start,
-    search: `fpo artist ${work.medium} ${sampleCities[i]}`.toLowerCase(), fpo: true,
+    id: `fpo-${i}`, artistId: null, image: work.image, alt: 'Placeholder artwork', name: sampleNames[i], href: null,
+    venue: sampleVenues[i], city: sampleCities[i], dates: shortDates(dates, today), tag: showingTag(dates, today), sort: artistSortKey(sampleNames[i]), start: dates.start,
+    search: `fpo ${sampleNames[i]} ${work.medium} ${sampleCities[i]}`.toLowerCase(), fpo: true,
   };
 });
 const current = [...fixtures.filter((item) => item.phase === 'showing-now').map((item) => item.card), ...samples].sort((a, b) => a.sort.localeCompare(b.sort));
@@ -59,7 +61,7 @@ if (onlineTest) Astro.response.headers.set('Cache-Control', 'private, no-store')
       <h1>Showing Now</h1>
       <p class="intro">Real art, on real walls, near you. Here’s where to go see it.</p>
     </header>
-    <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> {onlineTest ? 'Listings come from records saved in the protected test site. They are not confirmed public exhibitions.' : 'Every showing here is a demonstration. Alan has no confirmed physical showing, and Leo’s Brewpub and Grill is fictional.'}</p>
+    <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> {onlineTest ? 'Listings come from records saved in the protected test site and are not confirmed public exhibitions. Tiles marked FPO are samples.' : 'Every showing here is a demonstration. Alan has no confirmed physical showing, Leo’s Brewpub and Grill is fictional, and tiles marked FPO are samples.'}</p>
 
     <section id="current-showings" aria-labelledby="current-heading">
       <div class="section-heading"><h2 id="current-heading">On view now</h2><p><span class="sort-note">A–Z by artist · </span><span id="result-count" aria-live="polite">{current.length} {current.length === 1 ? 'showing' : 'showings'}</span></p></div>
