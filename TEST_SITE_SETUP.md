@@ -1,5 +1,7 @@
 # Private online test setup
 
+> Historical setup log. See [CURRENT_STATUS.md](CURRENT_STATUS.md) for the current audit snapshot. In particular, the Cloudflare Access email allowlist described below was replaced on September 20 with an Allow policy for verified one-time-PIN users.
+
 Deployed September 18, 2026 at https://aaj-dev.alanjust.com. Localhost still uses the existing local D1/R2 storage.
 
 ## Deployment status

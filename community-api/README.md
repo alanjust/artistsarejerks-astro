@@ -1,5 +1,7 @@
 # Shared community storage (local prototype)
 
+> This document began as local-prototype setup notes. The private online test now has separate deployed D1/R2 resources; see [CURRENT_STATUS.md](../CURRENT_STATUS.md) and [TEST_SITE_SETUP.md](../TEST_SITE_SETUP.md) before auditing deployment behavior. Sections below that say the backend is local-only describe an earlier stage.
+
 The static Astro site stays intact. A separate loopback Worker serves versioned
 community records through D1 and uploaded image blobs through R2. An authenticated Astro server route exposes `/api/community` on the existing site origin.
 
