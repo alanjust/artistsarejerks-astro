@@ -1,7 +1,8 @@
 // The Showings panel in an artist's workspace: where, when, and which pieces,
 // on one screen, with a preview of the card visitors will see on Showing Now.
 import {readShowings,writeShowing,removeShowing,type Showing} from './prototype-showings';
-import {imageUrl,type MemberArtist,type MemberWork} from './member-artists';
+import {imageUrl,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
+import {openTellPeople} from './tell-people';
 import {showingStatus,shortDates,showingTag,needsCheckIn,checkInLapsed,localDay} from './showing-display';
 
 type Place = {id: string; name: string; address: string; city: string; website: string; regionId?: string};
@@ -78,12 +79,14 @@ export function initShowingsPanel(ctx: ShowingsContext) {
         card.append(check);
       }
       const actions = make('div', '', 'actions');
+      if (show.status === 'published' && showingStatus(show) !== 'expired') actions.append(button('Tell people', () => tell(show)));
       actions.append(button('Edit', () => void open(show)), button('Remove', () => { if (confirm(`Remove the showing at ${show.venue}?`)) { removeShowing(show.id); refresh(); } }));
       card.append(actions);
       list.append(card);
     }
   }
   function refresh() { renderList(); ctx.changed(); }
+  const tell = (show: Showing) => openTellPeople(show, ctx.artist().name, `${location.origin}${memberUrl(ctx.id)}`);
 
   // 1. Where?
   function showPlace() {
@@ -214,11 +217,13 @@ export function initShowingsPanel(ctx: ShowingsContext) {
       if (!confirmed) { message.textContent = 'Please confirm that you made this work.'; return; }
       next = {...artist, published: true, rightsConfirmedAt: confirmed};
     }
-    try { writeShowing({...show, status}); } catch { message.textContent = 'That didn’t save. Check your connection and try again.'; return; }
+    const saved: Showing = {...show, status};
+    try { writeShowing(saved); } catch { message.textContent = 'That didn’t save. Check your connection and try again.'; return; }
     if (next !== artist && !ctx.save(next)) return;
     close(); refresh();
     message.textContent = '';
     $('[data-showings-intro]').textContent = status === 'draft' ? 'Draft saved. Only you can see it.' : !ctx.approved ? 'Saved. It goes public once you’re approved.' : next.published ? 'Published. It’s on Showing Now.' : 'Saved.';
+    if (status === 'published') tell(saved);
     if (firstPublished && ctx.artist().venueOpportunities === undefined) $('[data-opportunities]').hidden = false;
   }
   form.addEventListener('submit', (event) => { event.preventDefault(); save('published'); });

@@ -97,6 +97,21 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
         <p data-showing-message role="status"></p>
       </form>
 
+      <section class="tell-people" data-tell-people hidden aria-labelledby="tell-heading">
+        <h3 id="tell-heading" data-tell-heading>Tell people</h3>
+        <p class="hint">Here’s a note you can send from your own email or phone. Change anything you like. Nothing is sent by Artists Are Jerks.</p>
+        <label>Your message<textarea rows="7" data-tell-message></textarea></label>
+        <div class="actions">
+          <button type="button" data-tell-share hidden>Share…</button>
+          <a class="button" data-tell-email>Email it</a>
+          <a class="button" data-tell-text>Text it</a>
+          <button type="button" data-tell-copy>Copy</button>
+          <button type="button" data-tell-calendar>Add to calendar</button>
+          <button type="button" data-tell-close>Done</button>
+        </div>
+        <p data-tell-status role="status"></p>
+      </section>
+
       <section class="opportunities" data-opportunities hidden>
         <h3>Want to hear when local venues are looking for artists?</h3>
         <p>Cafés, breweries, and shops sometimes ask for new work to hang. We can let you know.</p>
@@ -225,6 +240,10 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
   .piece-picker :global(.star) { position: absolute; top: var(--space-1); right: var(--space-1); width: 44px; min-height: 44px; padding: 0; border: 0; border-radius: var(--radius-full); background: var(--color-black); color: var(--color-gray-400); font-size: var(--font-size-2xl); line-height: var(--line-height-none); }
   .piece-picker :global(.star[aria-pressed="true"]) { color: var(--color-gold); }
   .showing-preview { max-width: 260px; margin-bottom: var(--space-4); }
+  .tell-people { margin-top: var(--space-6); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-gray-900); }
+  .tell-people h3 { color: var(--color-gold); }
+  .tell-people a.button { display: inline-flex; align-items: center; background: var(--color-purple); color: var(--color-white); border-color: var(--color-white); text-decoration: none; }
+  .tell-people label { display: grid; gap: var(--space-2); margin-top: var(--space-3); font-weight: var(--font-weight-bold); }
   .opportunities { margin-top: var(--space-6); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-purple); }
   .opportunities h3 { color: var(--color-white); }
   .live-next { margin-top: var(--space-6); padding-top: var(--space-4); border-top: var(--border-thin) solid var(--color-gray-700); }
