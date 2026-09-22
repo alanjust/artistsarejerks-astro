@@ -123,6 +123,12 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
       <h2>Messages</h2>
       <p class="hint">Visitors write to you through the form on your page. Each message is also emailed to you, and replying to that email answers the visitor directly.</p>
       <div class="message-list" data-message-list></div>
+      <section class="followers" data-followers hidden>
+        <h3>People following your work</h3>
+        <p data-follower-count></p>
+        <p class="hint">They asked to hear when you show next, and each email lets them stop. The list is yours: download it any time, and nobody else uses it.</p>
+        <div class="actions"><button type="button" data-follower-download>Download the list</button></div>
+      </section>
     </section>
 
     <section data-panel="profile" hidden>
@@ -189,6 +195,9 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
   .member-tabs button { min-width: 0; min-height: 44px; padding: var(--space-2) var(--space-1); border: 0; border-radius: 0; background: var(--color-black); color: var(--color-white); font-size: var(--font-size-sm); line-height: var(--line-height-tight); text-align: center; overflow-wrap: normal; }
   @media (max-width: 560px) { .member-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .member-tabs :global(.unread) { display: inline-block; min-width: var(--space-5); margin-left: var(--space-1); padding: 0 var(--space-1); border-radius: var(--radius-full); background: var(--color-gold); color: var(--color-black); font-size: var(--font-size-xs); }
+  .followers { margin-top: var(--space-6); padding-top: var(--space-4); border-top: var(--border-thin) solid var(--color-gray-700); }
+  .followers h3 { color: var(--color-gold); }
+  .followers p { margin-top: var(--space-2); }
   .message-list { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
   .message-list :global(article) { display: grid; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-gray-900); }
   .message-list :global(.new-badge) { justify-self: start; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--color-gold); color: var(--color-black); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); }

@@ -9,6 +9,17 @@ import '../../../styles/community-artists.css';
 <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/showing-now/">Showing now</a><span>/</span><span data-member-breadcrumb>Artist</span></nav>
 <header class="artist-intro"><div><p class="eyebrow" data-member-city></p><h1 data-member-name>Artist page</h1><div data-member-public-profile></div></div><aside><p class="page-address">Community artist page</p><strong data-member-address-name></strong><p>Artwork, contact details, and places to see this artist’s work in person.</p></aside></header>
 <BrowserShowings context="artist"/>
+<section class="follow-section" data-follow-section hidden aria-labelledby="follow-heading">
+<h2 id="follow-heading" data-follow-heading>Get an email when this artist shows next</h2>
+<p data-follow-note>One short email each time there’s new work on a wall somewhere. You can stop anytime.</p>
+<form class="follow-form" data-follow-form novalidate>
+<label>Your email<input name="email" type="email" required maxlength="254" autocomplete="email"/></label>
+<label class="trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"/></label>
+<div data-follow-turnstile></div>
+<button class="send">Keep me posted</button>
+<p data-follow-status role="status"></p>
+</form>
+</section>
 <section class="work-section"><div class="section-heading"><div><p class="eyebrow">From the artist’s studio</p><h2>Selected work</h2></div></div><div class="artwork-grid" data-member-public-works></div></section>
 <section class="message-section" data-contact-form-section hidden aria-labelledby="message-heading">
 <h2 id="message-heading" data-message-heading>Send a message</h2>
@@ -27,6 +38,13 @@ import '../../../styles/community-artists.css';
 <dialog data-member-viewer><button type="button" data-close-viewer aria-label="Close enlarged artwork">×</button><div class="viewer-stage"><img data-viewer-image alt=""/><button type="button" class="edge previous" data-viewer-previous aria-label="Previous artwork"><span>‹</span></button><button type="button" class="edge next" data-viewer-next aria-label="Next artwork"><span>›</span></button></div><p data-viewer-caption></p></dialog>
 <script>import {initMemberPublicPage} from '../../../lib/member-setup';initMemberPublicPage();</script>
 <style is:global>
+.member-artist-page .follow-section { max-width: 720px; margin-block: var(--space-8); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-white); }
+.member-artist-page .follow-section h2 { color: var(--color-gold); }
+.member-artist-page .follow-form { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); margin-top: var(--space-3); }
+.member-artist-page .follow-form label { display: grid; flex: 1 1 240px; gap: var(--space-2); font-weight: var(--font-weight-bold); }
+.member-artist-page .follow-form input { width: 100%; box-sizing: border-box; padding: var(--space-3); border: 0; border-radius: var(--radius-base); font: inherit; }
+.member-artist-page .follow-form [data-follow-turnstile], .member-artist-page .follow-form [role=status] { flex-basis: 100%; }
+.member-artist-page .follow-form .trap { position: absolute; width: var(--border-thin); height: var(--border-thin); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .member-artist-page .message-section { max-width: 720px; margin-block: var(--space-12); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
 .member-artist-page .message-section h2 { color: var(--color-gold); }
 .member-artist-page .message-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }

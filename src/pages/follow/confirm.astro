@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+// Confirmation happens on a button press, not on opening the link, so mail
+// scanners that follow links can't confirm anyone by accident.
+---
+<BaseLayout title="Confirm updates | Artists Are Jerks" noindex>
+  <main class="follow-page">
+    <h1>One last press</h1>
+    <p data-follow-copy>Press the button to start hearing when this artist has work up somewhere you can go see it.</p>
+    <div class="actions"><button type="button" data-follow-confirm>Yes, keep me posted</button></div>
+    <p data-follow-result role="status"></p>
+    <p><a href="/showing-now/">See what’s showing now →</a></p>
+  </main>
+  <script>
+    import {completeFollow} from '../../lib/follow-links';
+    completeFollow('confirm');
+  </script>
+</BaseLayout>
+<style>
+  .follow-page { width: min(640px, 100%); margin: 0 auto; padding: var(--space-8) var(--space-4) var(--space-16); display: grid; gap: var(--space-4); }
+  h1 { margin: 0; color: var(--color-purple); font-family: var(--font-display); font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-tight); }
+  button { min-height: 48px; padding: var(--space-3) var(--space-5); border: 0; border-radius: var(--radius-base); background: var(--color-purple); color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+  a { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  [role=status] { font-weight: var(--font-weight-bold); }
+</style>

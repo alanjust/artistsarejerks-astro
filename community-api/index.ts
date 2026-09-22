@@ -9,7 +9,7 @@ const shortText=(value:unknown,max=200)=>typeof value==='string'&&!!value.trim()
 const stateCode=(value:unknown)=>typeof value==='string'&&/^[A-Z]{2}$/.test(value);
 const regionSlug=(value:string)=>value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'region';
 const safeOptionalUrl=(value:unknown)=>{if(value===undefined||value===null||value==='')return true;if(typeof value!=='string'||value.length>500)return false;try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password}catch{return false}};
-type NotificationEnv=Env&{TURNSTILE_SECRET?:string;ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string;replyTo?:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
+type NotificationEnv=Env&{TURNSTILE_SECRET?:string;ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string;replyTo?:string;headers?:Record<string,string>}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
 async function queueAdminNotification(env:NotificationEnv,ctx:ExecutionContext,kind:'artist'|'venue'|'region',subjectId:string,title:string){
  const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO admin_notifications(id,kind,subject_id,title,delivery_status) VALUES(?1,?2,?3,?4,'pending')").bind(id,kind,subjectId,title).run();
@@ -38,6 +38,43 @@ async function forwardMessage(env:NotificationEnv,to:string,artistName:string,se
  const html=`<p>${escapeHtml(sender.name)} sent you a message through your page on Artists Are Jerks:</p><blockquote style="white-space:pre-wrap">${escapeHtml(sender.body)}</blockquote><p>Reply to this email to answer ${escapeHtml(sender.name)} directly at ${escapeHtml(sender.email)}.</p><p>—Artists Are Jerks</p>`;
  try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:sender.email,subject:`Message from ${sender.name.slice(0,80)} about your work`,text,html});return 'sent'}
  catch(error){console.error(JSON.stringify({event:'artist_message_failed',artist:artistName,message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+const siteUrl=(env:NotificationEnv)=>env.ADMIN_BASE_URL||'https://aaj-dev.alanjust.com';
+async function fingerprint(env:Env,client:string){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${env.COMMUNITY_GATEWAY_SECRET}:${client}`)))].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const randomToken=()=>[...crypto.getRandomValues(new Uint8Array(24))].map(x=>x.toString(16).padStart(2,'0')).join('');
+const artistPageUrl=(env:NotificationEnv,artistId:string)=>`${siteUrl(env)}/prototype/artists/member/?artist=${encodeURIComponent(artistId)}`;
+async function sendConfirmFollow(env:NotificationEnv,to:string,artistName:string,token:string){
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM)return 'not_configured';
+ const url=`${siteUrl(env)}/follow/confirm/?t=${token}`;
+ const text=`Someone, hopefully you, asked to hear when ${artistName} has new work on a wall somewhere.\n\nTo confirm, open this link and press the button: ${url}\n\nIf this wasn't you, ignore this email and you won't hear from us.\n\n—Artists Are Jerks`;
+ const html=`<p>Someone, hopefully you, asked to hear when ${escapeHtml(artistName)} has new work on a wall somewhere.</p><p><a href="${escapeHtml(url)}">Confirm that you want these updates</a></p><p>If this wasn’t you, ignore this email and you won’t hear from us.</p><p>—Artists Are Jerks</p>`;
+ try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`Confirm: updates from ${artistName.slice(0,80)}`,text,html});return 'sent'}catch(error){console.error(JSON.stringify({event:'follow_confirm_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+// Tells confirmed followers about a newly published showing, once per showing.
+async function notifyFollowers(env:NotificationEnv,showingId:string){
+ const records=(await env.DB.prepare('SELECT collection,id,payload,revision FROM community_records').all<{collection:string;id:string;payload:string|null;revision:number}>()).results.map(row=>({...row,payload:row.payload===null?null:JSON.parse(row.payload)})) as PublicRecord[];
+ const visible=publicRecords(records);
+ const show=visible.find(record=>record.collection==='showings'&&record.id===showingId)?.payload;
+ if(!show)return;
+ const artist=visible.find(record=>record.collection==='artists'&&record.id===show.artistId)?.payload;
+ if(!artist)return;
+ const claimed=await env.DB.prepare('INSERT OR IGNORE INTO showing_notices(showing_id,artist_id) VALUES(?1,?2)').bind(showingId,show.artistId).run();
+ if(!claimed.meta.changes)return;
+ const {results:followers}=await env.DB.prepare("SELECT email,token FROM artist_followers WHERE artist_id=?1 AND status='confirmed'").bind(show.artistId).all<{email:string;token:string}>();
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM){await env.DB.prepare('UPDATE showing_notices SET recipients=?1 WHERE showing_id=?2').bind(followers.length,showingId).run();return}
+ const day=(value:string)=>new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US',{month:'long',day:'numeric',timeZone:'UTC'});
+ const today=new Date().toISOString().slice(0,10),upcoming=String(show.start)>today;
+ const when=show.ongoing?(upcoming?`It opens ${day(show.start)} and will be up for a while.`:'It’s up now, and it’ll be there for a while.'):upcoming?`It runs ${day(show.start)} through ${day(show.end)}.`:`It’s up now, through ${day(show.end)}.`;
+ const where=[show.address,show.city].filter(Boolean).join(', '),page=artistPageUrl(env,show.artistId),name=String(artist.name);
+ let sent=0;
+ for(const follower of followers){
+  const unsubscribe=`${siteUrl(env)}/follow/unsubscribe/?t=${follower.token}`;
+  const text=`${name} has work up at ${show.venue}${show.city?` in ${show.city}`:''}. ${when}\n\n${where}\n\nSee the work: ${page}\n\nYou're getting this because you asked to hear when ${name} shows next. Stop these emails: ${unsubscribe}\n\n—Artists Are Jerks`;
+  const html=`<p>${escapeHtml(name)} has work up at ${escapeHtml(String(show.venue))}${show.city?` in ${escapeHtml(String(show.city))}`:''}. ${escapeHtml(when)}</p><p>${escapeHtml(where)}</p><p><a href="${escapeHtml(page)}">See the work</a></p><p style="color:#555">You’re getting this because you asked to hear when ${escapeHtml(name)} shows next. <a href="${escapeHtml(unsubscribe)}">Stop these emails</a>.</p><p>—Artists Are Jerks</p>`;
+  try{await env.ADMIN_EMAIL.send({to:follower.email,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`${name.slice(0,80)} has work up at ${String(show.venue).slice(0,80)}`,text,html,headers:{'List-Unsubscribe':`<${unsubscribe}>`}});sent++}
+  catch(error){console.error(JSON.stringify({event:'follower_notice_failed',message:error instanceof Error?error.message:String(error)}))}
+ }
+ await env.DB.prepare('UPDATE showing_notices SET recipients=?1,sent=?2 WHERE showing_id=?3').bind(followers.length,sent,showingId).run();
 }
 async function turnstileOk(env:NotificationEnv,token:unknown,ip:string){
  if(!env.TURNSTILE_SECRET)return true;
@@ -91,7 +128,7 @@ export default {
         const artist=publicRecords(records).find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
         if(!artist||artist.publicForm!==true)return json({error:'This artist isn’t taking messages here.'},404);
         // Rate limits use a salted fingerprint of the visitor's network address, never the address itself.
-        const senderHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${env.COMMUNITY_GATEWAY_SECRET}:${client}`)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+        const senderHash=await fingerprint(env,client);
         const recentFromSender=await env.DB.prepare("SELECT count(*) AS n FROM artist_messages WHERE sender_hash=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(senderHash).first<{n:number}>();
         if((recentFromSender?.n??0)>=5)return json({error:'You’ve sent several messages in the last hour. Please try again later.'},429);
         const recentToArtist=await env.DB.prepare("SELECT count(*) AS n FROM artist_messages WHERE artist_id=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day')").bind(body.artistId).first<{n:number}>();
@@ -103,6 +140,42 @@ export default {
         await env.DB.prepare('INSERT INTO artist_messages(id,artist_id,sender_name,sender_email,body,sender_hash,delivery_status) VALUES(?1,?2,?3,?4,?5,?6,?7)').bind(crypto.randomUUID(),body.artistId,name,email,message,senderHash,status).run();
         return json({sent:true});
       }catch(error){console.error(JSON.stringify({event:'artist_message_error',message:error instanceof Error?error.message:String(error)}));return json({error:'Your message couldn’t be sent. Please try again.'},400)}
+    }
+    if(request.method==='POST'&&url.pathname==='/api/community/public/follow'){
+      try{
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,8192))) as Record<string,unknown>;
+        const email=String(body.email??'').trim().toLowerCase();
+        if(!validId(body.artistId)||!/^\S+@\S+\.\S+$/.test(email)||email.length>254)return json({error:'Please enter a working email address.'},400);
+        if(String(body.website??'')||Number(body.elapsed)<2000)return json({saved:true});
+        const client=request.headers.get('x-aaj-client')||'unknown';
+        if(!await turnstileOk(env as NotificationEnv,body.turnstile,client))return json({error:'The spam check didn’t pass. Please try again.'},400);
+        const artist=publicRecords(await loadRecords()).find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
+        if(!artist)return json({error:'This artist’s page isn’t public right now.'},404);
+        const senderHash=await fingerprint(env,client);
+        const recent=await env.DB.prepare("SELECT count(*) AS n FROM artist_followers WHERE sender_hash=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(senderHash).first<{n:number}>();
+        if((recent?.n??0)>=10)return json({error:'That’s a lot of sign-ups in an hour. Please try again later.'},429);
+        const existing=await env.DB.prepare('SELECT id,token,status FROM artist_followers WHERE artist_id=?1 AND email=?2').bind(body.artistId,email).first<{id:string;token:string;status:string}>();
+        // The same answer either way, so the form never reveals who already follows an artist.
+        if(existing?.status==='confirmed')return json({saved:true});
+        const token=existing?.token??randomToken();
+        if(existing)await env.DB.prepare("UPDATE artist_followers SET status='pending',sender_hash=?1 WHERE id=?2").bind(senderHash,existing.id).run();
+        else await env.DB.prepare("INSERT INTO artist_followers(id,artist_id,email,token,status,sender_hash) VALUES(?1,?2,?3,?4,'pending',?5)").bind(crypto.randomUUID(),body.artistId,email,token,senderHash).run();
+        await sendConfirmFollow(env as NotificationEnv,email,String(artist.name),token);
+        return json({saved:true});
+      }catch(error){console.error(JSON.stringify({event:'follow_error',message:error instanceof Error?error.message:String(error)}));return json({error:'That didn’t go through. Please try again.'},400)}
+    }
+    if(request.method==='POST'&&(url.pathname==='/api/community/public/follow/confirm'||url.pathname==='/api/community/public/follow/unsubscribe')){
+      try{
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,2048))) as Record<string,unknown>;
+        if(typeof body.token!=='string'||!/^[0-9a-f]{48}$/.test(body.token))return json({error:'This link isn’t valid.'},400);
+        const row=await env.DB.prepare('SELECT id,artist_id,status FROM artist_followers WHERE token=?1').bind(body.token).first<{id:string;artist_id:string;status:string}>();
+        if(!row)return json({error:'This link isn’t valid anymore.'},404);
+        const confirm=url.pathname.endsWith('/confirm');
+        if(confirm)await env.DB.prepare("UPDATE artist_followers SET status='confirmed',confirmed_at=coalesce(confirmed_at,strftime('%Y-%m-%dT%H:%M:%fZ','now')) WHERE id=?1").bind(row.id).run();
+        else await env.DB.prepare("UPDATE artist_followers SET status='unsubscribed' WHERE id=?1").bind(row.id).run();
+        const artist=(await loadRecords()).find(record=>record.collection==='artists'&&record.id===row.artist_id)?.payload;
+        return json({saved:true,artistName:String(artist?.name??'this artist'),artistUrl:`/prototype/artists/member/?artist=${encodeURIComponent(row.artist_id)}`});
+      }catch{return json({error:'That didn’t go through. Please try again.'},400)}
     }
     const verified=await verifyCapability(request,env.COMMUNITY_GATEWAY_SECRET);
     const membership=verified?await env.DB.prepare('SELECT artist_id,venue_id,administrator FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null;venue_id:string|null;administrator:number}>():null;
@@ -237,6 +310,13 @@ export default {
     if(!principal)return json({error:'Verified server request required.'},401);
     if(url.pathname==='/api/community/access'&&request.method==='GET')return json(principal);
     try{
+      if(url.pathname==='/api/community/followers'&&request.method==='GET'){
+        const requested=url.searchParams.get('artist');
+        const artistId=principal.administrator&&validId(requested)?requested:principal.artistId;
+        if(!artistId)return json({error:'Only artists have followers.'},403);
+        const {results}=await env.DB.prepare("SELECT email,confirmed_at FROM artist_followers WHERE artist_id=?1 AND status='confirmed' ORDER BY confirmed_at DESC").bind(artistId).all();
+        return json({followers:results});
+      }
       if(url.pathname==='/api/community/messages'){
         // An administrator looking at an artist's workspace sees that artist's messages.
         const requested=url.searchParams.get('artist');
@@ -298,6 +378,8 @@ export default {
           ON CONFLICT(collection,id) DO UPDATE SET payload=?3,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE revision=?4 RETURNING revision`).bind(body.collection,body.id,payload,body.revision).first<{revision:number}>();
         // Existing records need an UPDATE when the insert SELECT has no row.
         const updated=result|| (body.revision>0?await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3 AND revision=?4 RETURNING revision").bind(payload,body.collection,body.id,body.revision).first<{revision:number}>():null);
+        // A showing published for the first time tells the artist's followers.
+        if(updated&&body.collection==='showings'&&(body.payload as Record<string,unknown>|null)?.status==='published'&&existing?.status!=='published')ctx.waitUntil(notifyFollowers(env as NotificationEnv,body.id).catch(error=>console.error(JSON.stringify({event:'notify_followers_error',message:error instanceof Error?error.message:String(error)}))));
         return updated?json(updated):json({error:'This record changed in another browser. Reload before editing.'},409);
       }
       const imageMatch=/^\/api\/community\/images\/([a-zA-Z0-9_-]{1,160})$/.exec(url.pathname);

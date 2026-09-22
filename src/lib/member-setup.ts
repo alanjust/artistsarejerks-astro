@@ -51,7 +51,7 @@ export async function initMemberSetup(){
   panels.forEach(panel=>panel.hidden=panel.dataset.panel!==tab);
   tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspaceTab===tab)));
   history.replaceState(null,'',`#${tab}`);
-  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();if(tab==='showing')showings.render();if(tab==='messages')void renderMessages();
+  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();if(tab==='showing')showings.render();if(tab==='messages'){void renderMessages();void loadFollowers()}
   artworkMode();
  }
  function openFirstPiece(){show('artwork');firstPiece=true;artworkMode()}
@@ -165,6 +165,21 @@ export async function initMemberSetup(){
  const messageApi=(init?:RequestInit)=>fetch(`/api/community/messages?artist=${encodeURIComponent(id)}`,{...init,headers:{'Content-Type':'application/json','x-aaj-prototype':'local',...init?.headers}});
  function unreadBadge(){const tab=document.querySelector<HTMLButtonElement>('[data-workspace-tab="messages"]');if(!tab)return;const unread=messages.filter(m=>!m.read_at).length;tab.replaceChildren(document.createTextNode('Messages'));if(unread){const badge=el('span',String(unread));badge.className='unread';badge.setAttribute('aria-label',`${unread} new`);tab.append(badge)}}
  async function loadMessages(){try{const response=await messageApi();if(response.ok)messages=(await response.json() as {messages:Message[]}).messages??[]}catch{}unreadBadge()}
+  // Followers: the artist sees how many there are and can take the list with them.
+ type Follower={email:string;confirmed_at:string};
+ let followers:Follower[]=[];
+ async function loadFollowers(){
+  try{const response=await fetch(`/api/community/followers?artist=${encodeURIComponent(id)}`,{headers:{'x-aaj-prototype':'local'}});if(response.ok)followers=(await response.json() as {followers:Follower[]}).followers??[]}catch{}
+  const section=document.querySelector<HTMLElement>('[data-followers]');if(!section)return;
+  section.hidden=false;
+  $('[data-follower-count]').textContent=followers.length?`${followers.length} ${followers.length===1?'person gets':'people get'} an email when you publish a showing.`:'Nobody yet. The sign-up sits on your public page, under where your work can be seen.';
+  $<HTMLButtonElement>('[data-follower-download]').hidden=!followers.length;
+ }
+ $('[data-follower-download]').addEventListener('click',()=>{
+  const rows=[['email','confirmed'],...followers.map(f=>[f.email,(f.confirmed_at||'').slice(0,10)])];
+  const file=new Blob([rows.map(row=>row.map(cell=>`"${cell.replace(/"/g,'""')}"`).join(',')).join('\r\n')],{type:'text/csv'});
+  const link=document.createElement('a');link.href=URL.createObjectURL(file);link.download=`${artist.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-followers.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+ });
  async function renderMessages(){
   const list=$('[data-message-list]');list.replaceChildren();
   if(!messages.length){list.append(el('p',artist.publicForm?'No messages yet. When someone writes to you through your page, it shows up here.':'No messages yet. Turn on the message form in Your page so visitors can write to you.'));return}
@@ -202,6 +217,30 @@ export async function initMemberPublicPage(){
  const profile=document.querySelector('[data-member-public-profile]')!;const practice=el('p',artist.practice),bio=el('p',artist.bio),contacts=el('div');practice.className='practice';bio.className='bio';contacts.className='contact-actions';profile.append(practice,bio,contacts);
  const link=(text:string,url:string)=>{const a=document.createElement('a');a.textContent=text;a.href=url;contacts.append(a)};
  if(artist.publicWebsite&&/^https?:\/\//i.test(artist.website))link('Visit artist’s website',artist.website);if(artist.publicEmail)link('Email the artist',`mailto:${artist.email}`);if(artist.publicPhone){link('Call the artist',`tel:${artist.phone.replace(/[^+\d]/g,'')}`);link('Text the artist',`sms:${artist.phone.replace(/[^+\d]/g,'')}`)}
+ // "Keep me posted": a double opt-in list of people who want to hear when this artist shows next.
+ const followSection=document.querySelector<HTMLElement>('[data-follow-section]'),followForm=document.querySelector<HTMLFormElement>('[data-follow-form]');
+ if(followSection&&followForm&&artist.published){
+  followSection.hidden=false;
+  document.querySelector('[data-follow-heading]')!.textContent=`Get an email when ${artist.name} shows next`;
+  document.querySelector('[data-follow-note]')!.textContent=`One short email each time there’s new work on a wall somewhere. ${artist.name} will see your email address, and you can stop anytime.`;
+  const followShown=Date.now(),followStatus=document.querySelector('[data-follow-status]')!;
+  const followCheck=preview?Promise.resolve(null):mountTurnstile(document.querySelector<HTMLElement>('[data-follow-turnstile]')!).catch(()=>null);
+  followForm.addEventListener('submit',async event=>{
+   event.preventDefault();
+   if(preview){followStatus.textContent='This is a preview. Visitors can sign up once your page is public.';return}
+   const data=new FormData(followForm),email=String(data.get('email')||'').trim();
+   if(!/^\S+@\S+\.\S+$/.test(email)){followStatus.textContent='Please enter a working email address.';return}
+   const check=await followCheck;
+   if(check?.enabled&&!check.token()){followStatus.textContent='One moment. The spam check is still finishing.';return}
+   const button=followForm.querySelector<HTMLButtonElement>('button.send')!;button.disabled=true;followStatus.textContent='Signing you up…';
+   try{
+    const response=await fetch('/api/community/public/follow',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artistId:id,email,website:String(data.get('website')||''),elapsed:Date.now()-followShown,turnstile:check?.token()})});
+    const result=await response.json().catch(()=>({})) as {error?:string};
+    if(!response.ok)throw new Error(result.error||'That didn’t go through. Please try again.');
+    followForm.replaceChildren(el('p',`Almost done. Check your email for a message from Artists Are Jerks, and press the button in it to confirm.`));
+   }catch(cause){followStatus.textContent=cause instanceof Error?cause.message:'That didn’t go through.';button.disabled=false;check?.reset()}
+  });
+ }
  // A message form keeps the artist's address private; the reply goes straight back to the visitor.
  const formSection=document.querySelector<HTMLElement>('[data-contact-form-section]'),contactForm=document.querySelector<HTMLFormElement>('[data-contact-form]');
  if(formSection&&contactForm&&artist.publicForm){
