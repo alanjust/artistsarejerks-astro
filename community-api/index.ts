@@ -9,7 +9,7 @@ const shortText=(value:unknown,max=200)=>typeof value==='string'&&!!value.trim()
 const stateCode=(value:unknown)=>typeof value==='string'&&/^[A-Z]{2}$/.test(value);
 const regionSlug=(value:string)=>value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'region';
 const safeOptionalUrl=(value:unknown)=>{if(value===undefined||value===null||value==='')return true;if(typeof value!=='string'||value.length>500)return false;try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password}catch{return false}};
-type NotificationEnv=Env&{ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string;replyTo?:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
+type NotificationEnv=Env&{TURNSTILE_SECRET?:string;ADMIN_EMAIL?:{send(message:{to:string;from:{email:string;name:string};subject:string;text:string;html:string;replyTo?:string}):Promise<unknown>};ADMIN_NOTIFICATION_TO?:string;ADMIN_NOTIFICATION_FROM?:string;ADMIN_BASE_URL?:string};
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
 async function queueAdminNotification(env:NotificationEnv,ctx:ExecutionContext,kind:'artist'|'venue'|'region',subjectId:string,title:string){
  const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO admin_notifications(id,kind,subject_id,title,delivery_status) VALUES(?1,?2,?3,?4,'pending')").bind(id,kind,subjectId,title).run();
@@ -29,6 +29,20 @@ async function sendApprovalEmail(env:NotificationEnv,application:Record<string,u
   await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:'You’re in: your Artists Are Jerks page is approved',text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});
   return 'sent';
  }catch(error){console.error(JSON.stringify({event:'approval_email_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+// A visitor's message to an artist. The artist's address stays private: the email
+// goes to the artist with the visitor as the reply-to, so a reply goes straight back.
+async function forwardMessage(env:NotificationEnv,to:string,artistName:string,sender:{name:string;email:string;body:string}):Promise<'sent'|'failed'|'not_configured'>{
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM||!/^\S+@\S+\.\S+$/.test(to))return 'not_configured';
+ const text=`${sender.name} sent you a message through your page on Artists Are Jerks:\n\n${sender.body}\n\nReply to this email to answer ${sender.name} directly at ${sender.email}.\n\n—Artists Are Jerks`;
+ const html=`<p>${escapeHtml(sender.name)} sent you a message through your page on Artists Are Jerks:</p><blockquote style="white-space:pre-wrap">${escapeHtml(sender.body)}</blockquote><p>Reply to this email to answer ${escapeHtml(sender.name)} directly at ${escapeHtml(sender.email)}.</p><p>—Artists Are Jerks</p>`;
+ try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:sender.email,subject:`Message from ${sender.name.slice(0,80)} about your work`,text,html});return 'sent'}
+ catch(error){console.error(JSON.stringify({event:'artist_message_failed',artist:artistName,message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+async function turnstileOk(env:NotificationEnv,token:unknown,ip:string){
+ if(!env.TURNSTILE_SECRET)return true;
+ if(typeof token!=='string'||!token)return false;
+ try{const form=new FormData();form.append('secret',env.TURNSTILE_SECRET);form.append('response',token);if(ip)form.append('remoteip',ip);const result=await (await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:form})).json() as {success?:boolean};return result.success===true}catch{return false}
 }
 async function boundedBody(request:Request,max:number):Promise<Uint8Array>{
   if(Number(request.headers.get('content-length'))>max)throw new Error('Too large');
@@ -63,6 +77,32 @@ export default {
       if(!publicImageKeys(await loadRecords()).has(publicImage[1]))return json({error:'Image unavailable'},404);
       const image=await env.ARTWORK.get(publicImage[1]);if(!image)return json({error:'Image unavailable'},404);
       const headers=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});image.writeHttpMetadata(headers);return new Response(image.body,{headers});
+    }
+    if(request.method==='POST'&&url.pathname==='/api/community/public/messages'){
+      try{
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,16384))) as Record<string,unknown>;
+        const name=String(body.name??'').trim(),email=String(body.email??'').trim(),message=String(body.message??'').trim();
+        if(!validId(body.artistId)||!name||name.length>120||!/^\S+@\S+\.\S+$/.test(email)||email.length>254||!message||message.length>4000)return json({error:'Please add your name, a working email, and a message.'},400);
+        // Quiet traps for automated senders: a hidden field people never fill, and a form sent too fast to have been read.
+        if(String(body.website??'')||Number(body.elapsed)<3000)return json({sent:true});
+        const client=request.headers.get('x-aaj-client')||'unknown';
+        if(!await turnstileOk(env as NotificationEnv,body.turnstile,client))return json({error:'The spam check didn’t pass. Please try again.'},400);
+        const records=await loadRecords();
+        const artist=publicRecords(records).find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
+        if(!artist||artist.publicForm!==true)return json({error:'This artist isn’t taking messages here.'},404);
+        // Rate limits use a salted fingerprint of the visitor's network address, never the address itself.
+        const senderHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${env.COMMUNITY_GATEWAY_SECRET}:${client}`)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+        const recentFromSender=await env.DB.prepare("SELECT count(*) AS n FROM artist_messages WHERE sender_hash=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(senderHash).first<{n:number}>();
+        if((recentFromSender?.n??0)>=5)return json({error:'You’ve sent several messages in the last hour. Please try again later.'},429);
+        const recentToArtist=await env.DB.prepare("SELECT count(*) AS n FROM artist_messages WHERE artist_id=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day')").bind(body.artistId).first<{n:number}>();
+        if((recentToArtist?.n??0)>=30)return json({error:'This artist has had a lot of messages today. Please try again tomorrow.'},429);
+        const own=records.find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
+        const application=records.find(record=>record.collection==='applications'&&record.id===body.artistId)?.payload;
+        const to=String(own?.email||application?.email||'');
+        const status=await forwardMessage(env as NotificationEnv,to,String(artist.name),{name,email,body:message});
+        await env.DB.prepare('INSERT INTO artist_messages(id,artist_id,sender_name,sender_email,body,sender_hash,delivery_status) VALUES(?1,?2,?3,?4,?5,?6,?7)').bind(crypto.randomUUID(),body.artistId,name,email,message,senderHash,status).run();
+        return json({sent:true});
+      }catch(error){console.error(JSON.stringify({event:'artist_message_error',message:error instanceof Error?error.message:String(error)}));return json({error:'Your message couldn’t be sent. Please try again.'},400)}
     }
     const verified=await verifyCapability(request,env.COMMUNITY_GATEWAY_SECRET);
     const membership=verified?await env.DB.prepare('SELECT artist_id,venue_id,administrator FROM community_memberships WHERE user_id=?1').bind(verified.userId).first<{artist_id:string|null;venue_id:string|null;administrator:number}>():null;
@@ -197,6 +237,21 @@ export default {
     if(!principal)return json({error:'Verified server request required.'},401);
     if(url.pathname==='/api/community/access'&&request.method==='GET')return json(principal);
     try{
+      if(url.pathname==='/api/community/messages'){
+        if(!principal.artistId)return json({error:'Only artists receive messages.'},403);
+        if(request.method==='GET'){
+          const {results}=await env.DB.prepare('SELECT id,sender_name,sender_email,body,delivery_status,created_at,read_at FROM artist_messages WHERE artist_id=?1 ORDER BY created_at DESC LIMIT 200').bind(principal.artistId).all();
+          return json({messages:results});
+        }
+        if(request.method==='PUT'){
+          const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
+          if(!validId(body.id)||!['read','delete'].includes(body.action))return json({error:'Invalid message action.'},400);
+          const statement=body.action==='read'
+            ?env.DB.prepare("UPDATE artist_messages SET read_at=coalesce(read_at,strftime('%Y-%m-%dT%H:%M:%fZ','now')) WHERE id=?1 AND artist_id=?2").bind(body.id,principal.artistId)
+            :env.DB.prepare('DELETE FROM artist_messages WHERE id=?1 AND artist_id=?2').bind(body.id,principal.artistId);
+          await statement.run();return json({saved:true});
+        }
+      }
       if(url.pathname==='/api/community/memberships'){
         if(!principal.administrator)return json({error:'Administrator access required.'},403);
         if(request.method==='GET'){

@@ -10,10 +10,30 @@ import '../../../styles/community-artists.css';
 <header class="artist-intro"><div><p class="eyebrow" data-member-city></p><h1 data-member-name>Artist page</h1><div data-member-public-profile></div></div><aside><p class="page-address">Community artist page</p><strong data-member-address-name></strong><p>Artwork, contact details, and places to see this artist’s work in person.</p></aside></header>
 <BrowserShowings context="artist"/>
 <section class="work-section"><div class="section-heading"><div><p class="eyebrow">From the artist’s studio</p><h2>Selected work</h2></div></div><div class="artwork-grid" data-member-public-works></div></section>
-<p data-member-page-status role="status"></p><p>Interested in artwork? Contact the artist directly. Artists Are Jerks does not handle sales.</p><a href="/showing-now/">Back to the community →</a></main>
+<section class="message-section" data-contact-form-section hidden aria-labelledby="message-heading">
+<h2 id="message-heading" data-message-heading>Send a message</h2>
+<p>Your note goes to the artist by email. Their address stays private, and they can write back to you directly.</p>
+<form class="message-form" data-contact-form novalidate>
+<label>Your name<input name="name" required maxlength="120" autocomplete="name"/></label>
+<label>Your email<input name="email" type="email" required maxlength="254" autocomplete="email"/></label>
+<label class="full">Message<textarea name="message" required rows="5" maxlength="4000" placeholder="Ask about a piece, a price, or where to see more."></textarea></label>
+<label class="trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"/></label>
+<div class="full"><button class="send">Send message</button></div>
+<p class="full" data-contact-status role="status"></p>
+</form>
+</section>
+<p data-member-page-status role="status"></p><p>Interested in artwork? Contact the artist directly. Artists Are Jerks doesn’t handle sales.</p><a href="/showing-now/">Back to the community →</a></main>
 <dialog data-member-viewer><button type="button" data-close-viewer aria-label="Close enlarged artwork">×</button><div class="viewer-stage"><img data-viewer-image alt=""/><button type="button" class="edge previous" data-viewer-previous aria-label="Previous artwork"><span>‹</span></button><button type="button" class="edge next" data-viewer-next aria-label="Next artwork"><span>›</span></button></div><p data-viewer-caption></p></dialog>
 <script>import {initMemberPublicPage} from '../../../lib/member-setup';initMemberPublicPage();</script>
 <style is:global>
+.member-artist-page .message-section { max-width: 720px; margin-block: var(--space-12); padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
+.member-artist-page .message-section h2 { color: var(--color-gold); }
+.member-artist-page .message-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+.member-artist-page .message-form label { display: grid; gap: var(--space-2); font-weight: var(--font-weight-bold); }
+.member-artist-page .message-form .full { grid-column: 1 / -1; }
+.member-artist-page .message-form input, .member-artist-page .message-form textarea { width: 100%; box-sizing: border-box; padding: var(--space-3); border: var(--border-base) solid var(--color-gray-500); border-radius: var(--radius-base); background: var(--color-artwork-mat); color: var(--color-white); font: inherit; }
+.member-artist-page .message-form .trap { position: absolute; width: var(--border-thin); height: var(--border-thin); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 560px) { .member-artist-page .message-form { grid-template-columns: 1fr; } .member-artist-page .message-section { padding: var(--space-4); } }
 
 [data-member-viewer]{width:min(94vw,1100px);max-height:94dvh;padding:1rem;border:0;border-radius:12px;background:#000;color:#fff}
 [data-member-viewer]::backdrop{background:#000c}[data-close-viewer]{position:absolute;right:1rem;top:.5rem;z-index:3;color:#fff;font-size:2rem}

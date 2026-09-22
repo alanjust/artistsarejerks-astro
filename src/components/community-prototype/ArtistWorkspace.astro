@@ -6,7 +6,7 @@ import pilot from '../../data/community-pilot.json';
 import '../../styles/venue-workspace.css';
 const {initialArtist = null} = Astro.props;
 const onlineTest = import.meta.env.MODE === 'online-test';
-const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'], ['profile', 'Profile'], ['page', 'Your page']];
+const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'], ['messages', 'Messages'], ['profile', 'Profile'], ['page', 'Your page']];
 ---
 <main class="venue-workspace artist-member-workspace" data-regular-workspace="true" data-initial-artist={initialArtist ? JSON.stringify(initialArtist) : undefined}>
   <p class="workspace-return"><a href="/prototype/workspaces/">← Your workspaces</a></p>
@@ -104,6 +104,12 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
       </section>
     </section>
 
+    <section class="card" data-panel="messages" hidden>
+      <h2>Messages</h2>
+      <p class="hint">Visitors write to you through the form on your page. Each message is also emailed to you, and replying to that email answers the visitor directly.</p>
+      <div class="message-list" data-message-list></div>
+    </section>
+
     <section data-panel="profile" hidden>
       <form class="card" data-setup-profile>
         <h2>About you</h2>
@@ -124,6 +130,7 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
           <label>Email<input name="email" type="email"/></label>
           <label>Phone or text number<input name="phone" type="tel"/></label>
         </div>
+        <label class="check"><input name="publicForm" type="checkbox"/> Show a message form on my page (your email stays private)</label>
         <label class="check"><input name="publicWebsite" type="checkbox"/> Show my website publicly</label>
         <label class="check"><input name="publicEmail" type="checkbox"/> Show my email publicly</label>
         <label class="check"><input name="publicPhone" type="checkbox"/> Show my phone number for calls or texts</label>
@@ -138,6 +145,7 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
       <form data-publish-form>
         <fieldset class="reach">
           <legend>How should people reach you?</legend>
+          <label class="reach-option"><input type="radio" name="reach" value="form"/><span>With a message form on my page. Your email stays private.</span></label>
           <label class="reach-option"><input type="radio" name="reach" value="website"/><span>Through my website</span></label>
           <label class="reach-website" data-reach-website hidden>Website<input name="website" type="text" inputmode="url" autocapitalize="none" spellcheck="false" placeholder="yourwebsite.com"/></label>
           <label class="reach-option"><input type="radio" name="reach" value="email"/><span>By email, at <span data-reach-email></span></span></label>
@@ -162,9 +170,15 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
   .workspace-return { margin-bottom: var(--space-2); }
   .workspace-return a { font-weight: var(--font-weight-bold); }
   /* Five equal tabs that always fit, even on a phone. */
-  .member-tabs { position: sticky; top: 0; z-index: var(--z-sticky); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-block: var(--space-6); overflow: hidden; border-radius: var(--radius-base); background: var(--color-black); }
+  .member-tabs { position: sticky; top: 0; z-index: var(--z-sticky); display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-block: var(--space-6); overflow: hidden; border-radius: var(--radius-base); background: var(--color-black); }
   .member-tabs button { min-width: 0; min-height: 44px; padding: var(--space-2) var(--space-1); border: 0; border-radius: 0; background: var(--color-black); color: var(--color-white); font-size: var(--font-size-sm); line-height: var(--line-height-tight); text-align: center; overflow-wrap: normal; }
-  @media (max-width: 560px) { .member-tabs button { font-size: var(--font-size-xs); } }
+  @media (max-width: 560px) { .member-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .member-tabs :global(.unread) { display: inline-block; min-width: var(--space-5); margin-left: var(--space-1); padding: 0 var(--space-1); border-radius: var(--radius-full); background: var(--color-gold); color: var(--color-black); font-size: var(--font-size-xs); }
+  .message-list { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
+  .message-list :global(article) { display: grid; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-gray-900); }
+  .message-list :global(.new-badge) { justify-self: start; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--color-gold); color: var(--color-black); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); }
+  .message-list :global(.from) { color: var(--color-gold); font-weight: var(--font-weight-bold); }
+  .message-list :global(.body) { white-space: pre-wrap; overflow-wrap: anywhere; }
   .member-tabs button[aria-pressed="true"] { background: var(--color-purple); }
   .home-card h2 { margin-bottom: var(--space-2); }
   .home-card p { font-size: var(--font-size-lg); }

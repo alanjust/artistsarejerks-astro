@@ -36,7 +36,8 @@ export async function initMemberSetup(){
  // Home says where things stand and offers the single most useful next step.
  function renderHome(){
   const works=artist.works.length,shows=showingCount();
-  const [headline,detail,label,target]=showings.needsAttention()?['Is your work still up?','One of your ongoing showings is due for a quick check-in.','Check your showings →','showing']:!works?['Let’s put up your first piece','Start with one photo. Everything else can wait.','Add your first piece →','first']
+  const unread=messages.filter(m=>!m.read_at).length;
+  const [headline,detail,label,target]=unread?[`You have ${unread} new ${unread===1?'message':'messages'}`,'Someone wrote to you through your page.','Read your messages →','messages']:showings.needsAttention()?['Is your work still up?','One of your ongoing showings is due for a quick check-in.','Check your showings →','showing']:!works?['Let’s put up your first piece','Start with one photo. Everything else can wait.','Add your first piece →','first']
    :!artist.published?[approved?'Your page is ready to publish':'Your page is taking shape',`${works} ${works===1?'piece':'pieces'} so far. ${approved?'Take a look, and publish it when you’re ready.':'It goes public once you’re approved.'}`,'See your page →','page']
    :!shows?['Your page is live','Next: tell visitors where they can see your work in person.','Add a showing →','showing']
    :['Your page is live',`${works} ${works===1?'piece':'pieces'} · ${shows} ${shows===1?'showing':'showings'}`,'Add another piece →','artwork'];
@@ -49,7 +50,7 @@ export async function initMemberSetup(){
   panels.forEach(panel=>panel.hidden=panel.dataset.panel!==tab);
   tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspaceTab===tab)));
   history.replaceState(null,'',`#${tab}`);
-  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();if(tab==='showing')showings.render();
+  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();if(tab==='showing')showings.render();if(tab==='messages')void renderMessages();
   artworkMode();
  }
  function openFirstPiece(){show('artwork');firstPiece=true;artworkMode()}
@@ -128,7 +129,7 @@ export async function initMemberSetup(){
  function renderPage(){
   const preview=$<HTMLIFrameElement>('[data-page-preview]'),url=memberUrl(id,true);
   preview.src=`${url}&v=${Date.now()}`;$<HTMLAnchorElement>('[data-member-preview]').href=url;
-  const reach=artist.publicWebsite?'website':artist.publicEmail?'email':'none';
+  const reach=artist.publicForm?'form':artist.publicWebsite?'website':artist.publicEmail?'email':artist.published?'none':'form';
   publishForm.querySelectorAll<HTMLInputElement>('input[name="reach"]').forEach(radio=>radio.checked=radio.value===reach);
   (publishForm.elements.namedItem('website') as HTMLInputElement).value=artist.website||'';
   $('[data-reach-email]').textContent=artist.email||'your account email';syncReach();
@@ -144,7 +145,7 @@ export async function initMemberSetup(){
   const confirmed=artist.rightsConfirmedAt||((publishForm.elements.namedItem('rights') as HTMLInputElement).checked?new Date().toISOString():'');
   if(!confirmed){publication.textContent='Please confirm that you made this work.';return}
   if(!artist.works.some(w=>w.public)){publication.textContent='Add at least one piece that shows on your page first.';return}
-  const next={...artist,website:reach==='website'?website!:artist.website,publicWebsite:reach==='website',publicEmail:reach==='email',rightsConfirmedAt:confirmed};
+  const next={...artist,website:reach==='website'?website!:artist.website,publicForm:reach==='form',publicWebsite:reach==='website',publicEmail:reach==='email',rightsConfirmedAt:confirmed};
   if(!approved){if(persist(next)){renderPage();publication.textContent='Saved. Your page can go public the moment you’re approved.'}return}
   const wasPublished=artist.published;if(persist({...next,published:true})){renderPage();publication.textContent=wasPublished?'Saved.':'Your page is public now, and you’re on Our Artists.'}
  });
@@ -155,12 +156,36 @@ export async function initMemberSetup(){
  const profile=$<HTMLFormElement>('[data-setup-profile]'),contact=$<HTMLFormElement>('[data-setup-contact]');
  function fillProfile(){for(const form of [profile,contact])for(const [name,value] of Object.entries(artist)){const field=form.elements.namedItem(name) as HTMLInputElement|null;if(!field)continue;if(field.type==='checkbox')field.checked=Boolean(value);else field.value=String(value??'')}}
  profile.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(profile),name=String(data.get('name')).trim(),practice=String(data.get('practice')).trim();if(!name||!practice){message.textContent='Please enter your name and what you make.';return}if(persist({...artist,name,practice,city:String(data.get('city')||'').trim(),bio:String(data.get('bio')||'').trim(),venueOpportunities:data.has('venueOpportunities')})){setTitle();message.textContent='Saved.'}});
- contact.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(contact),website=normalizeWebsite(String(data.get('website')).trim()),email=String(data.get('email')).trim(),phone=String(data.get('phone')).trim();if(website===null){message.textContent='That website address doesn’t look right.';return}if((data.has('publicEmail')&&!email)||(data.has('publicPhone')&&!phone)||(data.has('publicWebsite')&&!website)){message.textContent='Fill in each contact detail you want to show.';return}if(persist({...artist,website,email,phone,publicEmail:data.has('publicEmail'),publicWebsite:data.has('publicWebsite'),publicPhone:data.has('publicPhone')}))message.textContent='Saved.'});
+ contact.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(contact),website=normalizeWebsite(String(data.get('website')).trim()),email=String(data.get('email')).trim(),phone=String(data.get('phone')).trim();if(website===null){message.textContent='That website address doesn’t look right.';return}if((data.has('publicEmail')&&!email)||(data.has('publicPhone')&&!phone)||(data.has('publicWebsite')&&!website)){message.textContent='Fill in each contact detail you want to show.';return}if(persist({...artist,website,email,phone,publicForm:data.has('publicForm'),publicEmail:data.has('publicEmail'),publicWebsite:data.has('publicWebsite'),publicPhone:data.has('publicPhone')}))message.textContent='Saved.'});
 
+ // Messages from visitors, read through the artist's own signed-in session.
+ type Message={id:string;sender_name:string;sender_email:string;body:string;created_at:string;read_at:string|null};
+ let messages:Message[]=[];
+ const messageApi=(init?:RequestInit)=>fetch('/api/community/messages',{...init,headers:{'Content-Type':'application/json','x-aaj-prototype':'local',...init?.headers}});
+ function unreadBadge(){const tab=document.querySelector<HTMLButtonElement>('[data-workspace-tab="messages"]');if(!tab)return;const unread=messages.filter(m=>!m.read_at).length;tab.replaceChildren(document.createTextNode('Messages'));if(unread){const badge=el('span',String(unread));badge.className='unread';badge.setAttribute('aria-label',`${unread} new`);tab.append(badge)}}
+ async function loadMessages(){try{const response=await messageApi();if(response.ok)messages=(await response.json() as {messages:Message[]}).messages??[]}catch{}unreadBadge()}
+ async function renderMessages(){
+  const list=$('[data-message-list]');list.replaceChildren();
+  if(!messages.length){list.append(el('p',artist.publicForm?'No messages yet. When someone writes to you through your page, it shows up here.':'No messages yet. Turn on the message form in Your page so visitors can write to you.'));return}
+  for(const item of messages){
+   const card=el('article');
+   if(!item.read_at){const badge=el('span','New');badge.className='new-badge';card.append(badge)}
+   const from=el('p',`${item.sender_name} · ${new Date(item.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`);from.className='from';
+   const body=el('p',item.body);body.className='body';
+   const actions=document.createElement('div');actions.className='actions';
+   const reply=document.createElement('a');reply.textContent=`Reply to ${item.sender_email}`;reply.href=`mailto:${encodeURIComponent(item.sender_email)}?subject=${encodeURIComponent('Re: your message about my work')}`;
+   const remove=document.createElement('button');remove.type='button';remove.textContent='Delete';remove.addEventListener('click',async()=>{if(!confirm('Delete this message?'))return;await messageApi({method:'PUT',body:JSON.stringify({action:'delete',id:item.id})}).catch(()=>{});messages=messages.filter(m=>m.id!==item.id);unreadBadge();void renderMessages()});
+   actions.append(reply,remove);card.append(from,body,actions);list.append(card);
+  }
+  // Opening the tab counts as reading; the "New" labels stay until the next visit.
+  const unread=messages.filter(m=>!m.read_at);
+  await Promise.all(unread.map(m=>messageApi({method:'PUT',body:JSON.stringify({action:'read',id:m.id})}).catch(()=>{})));
+  unread.forEach(m=>m.read_at=new Date().toISOString());unreadBadge();
+ }
  const showings=initShowingsPanel({id,approved,artist:()=>artist,save:persist,changed:()=>{}});
- await works();
+ await Promise.all([works(),loadMessages()]);
  const start=location.hash.slice(1);
- if(['home','artwork','showing','profile','page'].includes(start))show(start);else if(!artist.works.length)openFirstPiece();else show('home');
+ if(['home','artwork','showing','messages','profile','page'].includes(start))show(start);else if(!artist.works.length)openFirstPiece();else show('home');
  window.addEventListener('pagehide',()=>{if(previewUrl)URL.revokeObjectURL(previewUrl)});
 }
 export async function initMemberPublicPage(){
@@ -176,6 +201,25 @@ export async function initMemberPublicPage(){
  const profile=document.querySelector('[data-member-public-profile]')!;const practice=el('p',artist.practice),bio=el('p',artist.bio),contacts=el('div');practice.className='practice';bio.className='bio';contacts.className='contact-actions';profile.append(practice,bio,contacts);
  const link=(text:string,url:string)=>{const a=document.createElement('a');a.textContent=text;a.href=url;contacts.append(a)};
  if(artist.publicWebsite&&/^https?:\/\//i.test(artist.website))link('Visit artist’s website',artist.website);if(artist.publicEmail)link('Email the artist',`mailto:${artist.email}`);if(artist.publicPhone){link('Call the artist',`tel:${artist.phone.replace(/[^+\d]/g,'')}`);link('Text the artist',`sms:${artist.phone.replace(/[^+\d]/g,'')}`)}
+ // A message form keeps the artist's address private; the reply goes straight back to the visitor.
+ const formSection=document.querySelector<HTMLElement>('[data-contact-form-section]'),contactForm=document.querySelector<HTMLFormElement>('[data-contact-form]');
+ if(formSection&&contactForm&&artist.publicForm){
+  formSection.hidden=false;document.querySelector('[data-message-heading]')!.textContent=`Send ${artist.name} a message`;
+  const shownAt=Date.now(),contactStatus=document.querySelector('[data-contact-status]')!;
+  contactForm.addEventListener('submit',async event=>{
+   event.preventDefault();
+   if(preview){contactStatus.textContent='This is a preview. Visitors can send messages once your page is public.';return}
+   const data=new FormData(contactForm),get=(name:string)=>String(data.get(name)||'').trim();
+   if(!get('name')||!/^\S+@\S+\.\S+$/.test(get('email'))||!get('message')){contactStatus.textContent='Please add your name, a working email, and a message.';return}
+   const send=contactForm.querySelector<HTMLButtonElement>('button')!;send.disabled=true;contactStatus.textContent='Sending…';
+   try{
+    const response=await fetch('/api/community/public/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artistId:id,name:get('name'),email:get('email'),message:get('message'),website:get('website'),elapsed:Date.now()-shownAt})});
+    const result=await response.json().catch(()=>({})) as {error?:string};
+    if(!response.ok)throw new Error(result.error||'Your message couldn’t be sent. Please try again.');
+    contactForm.replaceChildren(el('p',`Sent. ${artist.name} will get your message by email and can write back to you directly.`));
+   }catch(cause){contactStatus.textContent=cause instanceof Error?cause.message:'Your message couldn’t be sent.';send.disabled=false}
+  });
+ }
  const works=artist.works.filter(w=>w.public),root=document.querySelector('[data-member-public-works]')!,urls:string[]=[];const dialog=document.querySelector<HTMLDialogElement>('[data-member-viewer]')!,image=document.querySelector<HTMLImageElement>('[data-viewer-image]')!;let active=0;
  function display(index:number){active=(index+works.length)%works.length;image.src=urls[active];image.alt=works[active].title;document.querySelector('[data-viewer-caption]')!.textContent=`${works[active].title} · ${active+1} of ${works.length}`;}
  for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.sampleImage)copy.append(el('p','Sample artwork — borrowed for prototype layout.'));root.append(card)}

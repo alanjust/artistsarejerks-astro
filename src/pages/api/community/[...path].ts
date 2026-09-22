@@ -11,6 +11,14 @@ export const ALL:APIRoute=async (context)=>{
  if(request.method==='GET'&&(url.pathname==='/api/community/public/state'||url.pathname==='/api/community/public/regions'||/^\/api\/community\/public\/images\/[a-zA-Z0-9_-]{1,160}$/.test(url.pathname))){
   try{const response=await communityFetch(url.pathname,{signal:AbortSignal.timeout(15000)},locals);const headers=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});headers.set('Content-Type',response.headers.get('content-type')||'application/json');return new Response(response.body,{status:response.status,headers})}catch{return fail('Public directory storage unavailable.',503)}
  }
+ // Visitors can message an artist without an account. Same-origin only; the
+ // storage service applies spam checks and rate limits.
+ if(request.method==='POST'&&url.pathname==='/api/community/public/messages'){
+  if(request.headers.get('origin')!==url.origin)return fail('Origin rejected.',403);
+  const text=await request.text().catch(()=>'');
+  if(text.length>16384)return fail('Message too long.',413);
+  try{const response=await communityFetch(url.pathname,{method:'POST',headers:{'x-aaj-prototype':'local','Content-Type':'application/json','x-aaj-client':request.headers.get('cf-connecting-ip')||'local'},body:text,signal:AbortSignal.timeout(15000)},locals);const headers=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Type':'application/json'});return new Response(response.body,{status:response.status,headers})}catch{return fail('Messages are unavailable right now. Please try again later.',503)}
+ }
  const {isAuthenticated,userId}=locals.auth();
  if(!isAuthenticated||!userId)return fail('Sign in to access shared storage.',401);
  const access=await communityAccess(userId,locals);
