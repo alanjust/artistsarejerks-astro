@@ -1,4 +1,4 @@
-import {getStoredItem,setStoredItem,publicStorageMode} from './community-storage';
+import {getStoredItem,setStoredItem,publicStorageMode,storageReady} from './community-storage';
 import pilot from '../data/community-pilot.json';
 import {getMemberArtist,imageUrl,memberUrl} from './member-artists';
 import {readVenues,venueProfileUrl} from './prototype-venues';
@@ -33,6 +33,7 @@ export function venueUrl(show: Showing) {
 // Each root keeps a run counter so an older, slower render can't append stale cards.
 const renderRuns = new WeakMap<HTMLElement, number>();
 export async function renderShowings(root: HTMLElement) {
+  await storageReady;
   const run = (renderRuns.get(root) ?? 0) + 1;renderRuns.set(root, run);
   const context = root.dataset.context;
   const records = readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));

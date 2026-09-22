@@ -1,3 +1,4 @@
+import {storageReady} from './community-storage';
 import pilot from '../data/community-pilot.json';
 import {getMemberArtist} from './member-artists';
 import {readArtistApplications} from './artist-applications';
@@ -9,7 +10,7 @@ const anchor=(text:string,href:string)=>{const a=node('a',text) as HTMLAnchorEle
 const button=(text:string,action:()=>void)=>{const b=node('button',text) as HTMLButtonElement;b.type='button';b.addEventListener('click',action);return b};
 const approvedMembers=[...pilot.artists.filter(a=>a.admission==='invited-and-approved'&&a.adminVisibility==='visible').map(a=>({id:a.id,name:a.name,homeCity:a.homeCity,opportunities:true})),...readArtistApplications().filter(a=>a.status==='approved'&&a.invitationAccepted).map(a=>({id:a.id,name:a.name,homeCity:a.city,opportunities:a.opportunities}))];
 const opportunityMembers=approvedMembers.filter(a=>a.opportunities);
-export function initVenueWorkspace(){
+export async function initVenueWorkspace(){await storageReady;
  const formNode=document.querySelector<HTMLFormElement>('#venue-intake');if(!formNode)return;const form=formNode;
  void populateRegionSelects(form);
  const ownedVenue=document.querySelector<HTMLElement>('[data-owned-venue]')?.dataset.ownedVenue;
@@ -50,7 +51,7 @@ export function initVenueWorkspace(){
  window.addEventListener('storage',e=>{if(e.key===VENUES_KEY){const id=active?.id;options();if(id)load(id)}});
  const requested=new URLSearchParams(location.search).get('venue');options();if(requested)selector.value=requested;load(selector.value);
 }
-export function initVenueAdmin(){
+export async function initVenueAdmin(){await storageReady;
  const root=document.querySelector('[data-admin-venues]');if(!root)return;
  function render(){root!.replaceChildren();const records=readVenues();if(!records.length)root!.append(node('p','No venue applications yet. Submit a venue application first.'));
  records.forEach(venue=>{const card=node('article','','card');card.append(node('h2',venue.name),node('p',`${venue.status} · ${venue.city} · ${venue.type}`),node('p',`${venue.address} ${venue.postalCode}`),node('p',venue.description),node('p',`Private contact: ${venue.contactName} · ${venue.email}`),node('p',venue.opportunities));
@@ -62,14 +63,14 @@ export function initVenueAdmin(){
  });}
  render();window.addEventListener('storage',e=>{if(e.key===VENUES_KEY)render()});
 }
-export function initVenueDirectory(){
+export async function initVenueDirectory(){await storageReady;
  const root=document.querySelector('[data-venue-directory]');if(!root)return;
  const city=document.querySelector<HTMLSelectElement>('[data-venue-city]')!,search=document.querySelector<HTMLInputElement>('[data-venue-search]')!;
  function render(){root!.replaceChildren();const raw=readVenues();const leo=raw.find(v=>v.id==='venue-leos-brewpub');const records=availableVenues();if(!leo)records.unshift({...seedLeo(),status:'approved',available:false});else if(leo.status!=='approved'&&leo.visible)records.unshift({...seedLeo(),available:false});
  records.filter(v=>(!city.value||v.city===city.value)&&`${v.name} ${v.type}`.toLowerCase().includes(search.value.trim().toLowerCase())).forEach(v=>{const card=node('article','','card');const h=node('h2');h.append(anchor(v.name,v.id==='venue-leos-brewpub'?'/prototype/venues/leos-brewpub-and-grill/':venueProfileUrl(v.id)));const artists=new Set([...pilot.exhibitions.filter(s=>s.venueId===v.id&&s.publicationStatus==='published'&&showingStatus({start:s.startDate,end:s.endDate})==='showing-now').map(s=>s.artistId),...readShowings().filter(s=>s.venueId===v.id&&s.status==='published'&&showingStatus(s)==='showing-now'&&(pilot.artists.some(a=>a.id===s.artistId)||getMemberArtist(s.artistId)?.published)).map(s=>s.artistId)]);card.append(h,node('p',`${v.city} · ${v.type}`),node('p',artists.size?`Showing now: ${[...artists].map(id=>pilot.artists.find(a=>a.id===id)?.name||getMemberArtist(id)?.name).filter(Boolean).join(', ')}`:v.available?'Available to host artists':'No current showing'),node('p',v.description));root!.append(card)});document.querySelector<HTMLElement>('[data-venue-empty]')!.hidden=Boolean(root!.children.length)}
  city.addEventListener('change',render);search.addEventListener('input',render);render();window.addEventListener('storage',e=>{if(e.key===VENUES_KEY)render()});
 }
-export function initVenueProfile(){
+export async function initVenueProfile(){await storageReady;
  const id=new URLSearchParams(location.search).get('venue'),venue=availableVenues().find(v=>v.id===id);const root=document.querySelector('[data-venue-profile]')!;const heading=document.querySelector('[data-venue-name]')!;const shows=document.querySelector<HTMLElement>('[data-browser-showings]')!;
  if(!venue){heading.textContent='Venue unavailable';document.querySelector<HTMLElement>('[data-venue-unavailable]')!.hidden=false;shows.dataset.venue='';renderShowings(shows);return}
  heading.textContent=venue.name;document.title=`${venue.name} | Artists Are Jerks`;root.append(node('p',`${venue.city} · ${venue.type}`),node('p',venue.description));

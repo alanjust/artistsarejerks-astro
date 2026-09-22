@@ -1,8 +1,9 @@
+import {storageReady} from './community-storage';
 import {getStoredItem,sharedStorageRequired,sharedStorageEnabled} from './community-storage';
 import {imageUrl,type MemberWork} from './member-artists';
 export interface UploadedWork {id:string;title:string;medium:string;year:string;visibility:string;sale:string;price:string;imageKey:string;sampleImage:string}
 export function readAlanUploads():UploadedWork[]{const state=JSON.parse(getStoredItem('aaj-artist-workspace-prototype')||'{}');return Array.isArray(state.uploadedWorks)?state.uploadedWorks:[]}
-export async function renderAlanUploads(privateView:boolean){
+export async function renderAlanUploads(privateView:boolean){await storageReady;
  const root=document.querySelector(privateView?'[data-panel="artwork"] .works':'[data-selected-artwork]');if(!root)return;
  if(!privateView&&sharedStorageRequired()&&!sharedStorageEnabled()){const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='Uploaded artwork could not be loaded. Reload this preview to try again.';root.before(notice);return}
  const scopes=new Set([root,...root.querySelectorAll('*')].flatMap(node=>node.getAttributeNames().filter(name=>name.startsWith('data-astro-cid-'))));

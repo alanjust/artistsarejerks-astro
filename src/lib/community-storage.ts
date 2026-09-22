@@ -44,6 +44,10 @@ function hydrate(rows:SharedRecord[]){
  for(const row of rows){revisions.set(`${row.collection}/${row.id}`,row.revision);if(row.collection==='featured'&&row.payload)localStorage.setItem(`aaj-featured-${row.id}`,String(row.payload.value))}
  for(const op of pending){if(op.collection==='featured'){if(op.payload)localStorage.setItem(`aaj-featured-${op.id}`,String(op.payload.value));continue}const key=COLLECTION_KEYS[op.collection];if(!key)continue;if(op.collection==='alan-workspace'){localStorage.setItem(key,JSON.stringify(op.payload||{}));continue}const list=JSON.parse(localStorage.getItem(key)||'[]').filter((r:RecordValue)=>r.id!==op.id);if(op.payload)list.push(op.payload);localStorage.setItem(key,JSON.stringify(list))}
 }
+// Loading shared data is exposed as a promise. Safari can run a second page
+// script before this module's top-level await finishes, so readers that run at
+// page load should also `await storageReady` rather than rely on module order.
+export const storageReady:Promise<void>=(async()=>{
 if(publicView){ready=false;try{const body=await (await api('public/state')).json() as {records:SharedRecord[]};for(const [collection,key] of Object.entries(COLLECTION_KEYS)){const active=body.records.filter(r=>r.collection===collection&&r.payload);publicCache.set(key,JSON.stringify(collection==='alan-workspace'?active[0]?.payload||{}:active.map(r=>r.payload)))}ready=true}catch(cause){error=(cause as Error).message}}
 else if(enabled){try{
  const body=await (await api('state')).json() as {userId:string;administrator:boolean;records:SharedRecord[]};
@@ -58,6 +62,8 @@ else if(enabled){try{
  }
  pending=JSON.parse(localStorage.getItem(PENDING_KEY)||'[]');hydrate(body.records);ready=true;void flush()
 }catch(cause){error=(cause as Error).message+' Existing browser data has been retained.'}}
+})();
+await storageReady;
 
 if(typeof document!=='undefined'&&(loopback||onlineTest)&&!publicView){status();window.addEventListener('beforeunload',event=>{if(pending.length){event.preventDefault()}})}
 if(typeof window!=='undefined'&&(loopback||onlineTest)){window.addEventListener('storage',event=>{if(!publicView&&(event.key===SHARED_MODE_KEY||event.key===CACHE_OWNER_KEY)){enabled=protectedWorkspace||localStorage.getItem(SHARED_MODE_KEY)==='1';ready=false;error='Storage mode changed in another tab. Reload this page before saving.';status()}})}

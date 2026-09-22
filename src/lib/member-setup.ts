@@ -2,6 +2,7 @@ import {getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type Membe
 import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
+import {storageReady} from './community-storage';
 import {initShowingsPanel} from './member-showings';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
@@ -11,6 +12,7 @@ function normalizeWebsite(value:string){
  try{const url=new URL(/^[a-z][a-z0-9+.-]*:/i.test(value)?value:`https://${value}`);return ['http:','https:'].includes(url.protocol)&&url.hostname.includes('.')&&!url.username&&!url.password?url.href:null}catch{return null}
 }
 export async function initMemberSetup(){
+ await storageReady;
  const id=new URLSearchParams(location.search).get('artist')||'',root=document.querySelector<HTMLElement>('[data-regular-workspace]');
  let serverInitial:MemberArtist|null=null;try{serverInitial=JSON.parse(root?.dataset.initialArtist||'null') as MemberArtist|null}catch{}
  const initial=getMemberArtist(id)||(serverInitial?.id===id?serverInitial:null);
@@ -162,6 +164,7 @@ export async function initMemberSetup(){
  window.addEventListener('pagehide',()=>{if(previewUrl)URL.revokeObjectURL(previewUrl)});
 }
 export async function initMemberPublicPage(){
+ await storageReady;
  const id=new URLSearchParams(location.search).get('artist')||'',preview=new URLSearchParams(location.search).get('preview')==='1',artist=getMemberArtist(id);
  const status=document.querySelector('[data-member-page-status]')!;
  if(!artist||(!artist.published&&!preview)){document.querySelector('[data-member-name]')!.textContent='This artist page is not published';status.textContent='The artist can preview and publish this page from their workspace.';return}

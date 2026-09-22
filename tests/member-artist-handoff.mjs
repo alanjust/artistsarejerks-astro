@@ -7,7 +7,7 @@ const compiled=await build({
   builder.onResolve({filter:/community-storage$/},()=>({path:'storage',namespace:'fixture'}));
   builder.onLoad({filter:/.*/,namespace:'fixture'},()=>({loader:'js',contents:`
    export const getStoredItem=key=>key==='aaj-member-artists-prototype'?JSON.stringify([{id:'assigned-artist',name:'Saved artist',works:[{id:'work-1'}]}]):'[]';
-   export const setStoredItem=()=>{};export const sharedStorageEnabled=()=>false;export const sharedStorageRequired=()=>false;export const publicStorageMode=()=>false;export const api=()=>{};
+   export const storageReady=Promise.resolve();export const setStoredItem=()=>{};export const sharedStorageEnabled=()=>false;export const sharedStorageRequired=()=>false;export const publicStorageMode=()=>false;export const api=()=>{};
   `}));
  }}]
 });
