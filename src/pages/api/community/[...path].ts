@@ -51,7 +51,7 @@ export const ALL:APIRoute=async (context)=>{
  }
  const capability=await signCapability(secret,{userId,administrator:access?.administrator??false,artistId:access?.artistId},request.method,url.pathname,body);
  try{
-  const response=await communityFetch(url.pathname,{method:request.method,headers:{'x-aaj-prototype':'local','x-aaj-capability':capability.value,'x-aaj-signature':capability.signature,'Content-Type':request.headers.get('content-type')||'application/json'},body:request.method==='GET'?undefined:body,signal:AbortSignal.timeout(15000),redirect:'manual'},locals);
+  const response=await communityFetch(url.pathname+url.search,{method:request.method,headers:{'x-aaj-prototype':'local','x-aaj-capability':capability.value,'x-aaj-signature':capability.signature,'Content-Type':request.headers.get('content-type')||'application/json'},body:request.method==='GET'?undefined:body,signal:AbortSignal.timeout(15000),redirect:'manual'},locals);
   if(response.status>=300&&response.status<400)throw new Error('Unexpected storage redirect');
   const headers=new Headers({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});headers.set('Content-Type',response.headers.get('content-type')||'application/json');
   return new Response(response.body,{status:response.status,headers});

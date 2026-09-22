@@ -161,7 +161,7 @@ export async function initMemberSetup(){
  // Messages from visitors, read through the artist's own signed-in session.
  type Message={id:string;sender_name:string;sender_email:string;body:string;created_at:string;read_at:string|null};
  let messages:Message[]=[];
- const messageApi=(init?:RequestInit)=>fetch('/api/community/messages',{...init,headers:{'Content-Type':'application/json','x-aaj-prototype':'local',...init?.headers}});
+ const messageApi=(init?:RequestInit)=>fetch(`/api/community/messages?artist=${encodeURIComponent(id)}`,{...init,headers:{'Content-Type':'application/json','x-aaj-prototype':'local',...init?.headers}});
  function unreadBadge(){const tab=document.querySelector<HTMLButtonElement>('[data-workspace-tab="messages"]');if(!tab)return;const unread=messages.filter(m=>!m.read_at).length;tab.replaceChildren(document.createTextNode('Messages'));if(unread){const badge=el('span',String(unread));badge.className='unread';badge.setAttribute('aria-label',`${unread} new`);tab.append(badge)}}
  async function loadMessages(){try{const response=await messageApi();if(response.ok)messages=(await response.json() as {messages:Message[]}).messages??[]}catch{}unreadBadge()}
  async function renderMessages(){

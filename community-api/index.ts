@@ -238,17 +238,22 @@ export default {
     if(url.pathname==='/api/community/access'&&request.method==='GET')return json(principal);
     try{
       if(url.pathname==='/api/community/messages'){
-        if(!principal.artistId)return json({error:'Only artists receive messages.'},403);
+        // An administrator looking at an artist's workspace sees that artist's messages.
+        const requested=url.searchParams.get('artist');
+        const artistId=principal.administrator&&validId(requested)?requested:principal.artistId;
+        if(!artistId)return json({error:'Only artists receive messages.'},403);
         if(request.method==='GET'){
-          const {results}=await env.DB.prepare('SELECT id,sender_name,sender_email,body,delivery_status,created_at,read_at FROM artist_messages WHERE artist_id=?1 ORDER BY created_at DESC LIMIT 200').bind(principal.artistId).all();
+          const {results}=await env.DB.prepare('SELECT id,sender_name,sender_email,body,delivery_status,created_at,read_at FROM artist_messages WHERE artist_id=?1 ORDER BY created_at DESC LIMIT 200').bind(artistId).all();
           return json({messages:results});
         }
         if(request.method==='PUT'){
           const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
           if(!validId(body.id)||!['read','delete'].includes(body.action))return json({error:'Invalid message action.'},400);
+          // Only the artist's own viewing marks a message read, so an administrator's look doesn't hide it.
+          if(body.action==='read'&&artistId!==principal.artistId)return json({saved:false});
           const statement=body.action==='read'
-            ?env.DB.prepare("UPDATE artist_messages SET read_at=coalesce(read_at,strftime('%Y-%m-%dT%H:%M:%fZ','now')) WHERE id=?1 AND artist_id=?2").bind(body.id,principal.artistId)
-            :env.DB.prepare('DELETE FROM artist_messages WHERE id=?1 AND artist_id=?2').bind(body.id,principal.artistId);
+            ?env.DB.prepare("UPDATE artist_messages SET read_at=coalesce(read_at,strftime('%Y-%m-%dT%H:%M:%fZ','now')) WHERE id=?1 AND artist_id=?2").bind(body.id,artistId)
+            :env.DB.prepare('DELETE FROM artist_messages WHERE id=?1 AND artist_id=?2').bind(body.id,artistId);
           await statement.run();return json({saved:true});
         }
       }

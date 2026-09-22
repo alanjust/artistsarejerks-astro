@@ -16,7 +16,7 @@ try{
  await db.exec("INSERT OR IGNORE INTO community_memberships(user_id,administrator) VALUES('test-admin',1);");
  async function call(path,method='GET',body,principal=admin){
   const bytes=body===undefined?new Uint8Array():new TextEncoder().encode(JSON.stringify(body));
-  const capability=await signCapability(secret,principal,method,`/api/community/${path}`,bytes);
+  const capability=await signCapability(secret,principal,method,`/api/community/${path.split("?")[0]}`,bytes);
   return mf.dispatchFetch(`http://localhost/api/community/${path}`,{method,headers:{'x-aaj-prototype':'local','x-aaj-capability':capability.value,'x-aaj-signature':capability.signature,'Content-Type':'application/json'},body:method==='GET'?undefined:bytes});
  }
  const send=(body,client='203.0.113.7')=>mf.dispatchFetch('http://localhost/api/community/public/messages',{method:'POST',headers:{'x-aaj-prototype':'local','Content-Type':'application/json','x-aaj-client':client},body:JSON.stringify({name:'Visitor',email:'visitor@example.com',message:'Is the portrait for sale?',website:'',elapsed:9000,...body})});
@@ -54,6 +54,10 @@ try{
  await db.exec("INSERT INTO community_memberships(user_id,artist_id) VALUES('user_stranger','someone-else');");
  assert.equal((await (await call('messages','GET',undefined,stranger)).json()).messages.length,0,'another artist sees none of them');
  const first=inbox.messages[0].id;
+ assert.equal((await (await call(`messages?artist=${id}`,'GET',undefined,admin)).json()).messages.length,6,'an administrator viewing the workspace sees the artist’s messages');
+ await call(`messages?artist=${id}`,'PUT',{action:'read',id:first},admin);
+ assert.equal((await db.prepare('SELECT read_at FROM artist_messages WHERE id=?1').bind(first).first()).read_at,null,'an administrator’s look does not mark it read');
+ assert.equal((await (await call(`messages?artist=${id}`,'GET',undefined,stranger)).json()).messages.length,0,'a non-administrator cannot ask for someone else’s messages');
  await call('messages','PUT',{action:'delete',id:first},stranger);
  assert.equal(await count(),6,'another artist cannot delete them');
  await call('messages','PUT',{action:'read',id:first},artistUser);
