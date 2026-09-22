@@ -2,7 +2,7 @@ import {getStoredItem,setStoredItem,sharedStorageEnabled,sharedStorageRequired,p
 import {readArtistApplications} from './artist-applications';
 export const MEMBER_ARTISTS_KEY='aaj-member-artists-prototype';
 export interface MemberWork {id:string;title:string;medium:string;year:string;sale:string;price:string;public:boolean;imageKey:string;sampleImage:string}
-export interface MemberArtist {id:string;name:string;city:string;practice:string;bio:string;website:string;email:string;phone:string;publicWebsite:boolean;publicEmail:boolean;publicPhone:boolean;published:boolean;step:number;works:MemberWork[];rightsConfirmedAt?:string}
+export interface MemberArtist {id:string;name:string;city:string;practice:string;bio:string;website:string;email:string;phone:string;publicWebsite:boolean;publicEmail:boolean;publicPhone:boolean;published:boolean;step:number;works:MemberWork[];rightsConfirmedAt?:string;regionId?:string;venueOpportunities?:boolean}
 export function readMemberArtists():MemberArtist[]{try{const data=JSON.parse(getStoredItem(MEMBER_ARTISTS_KEY)||'[]');return Array.isArray(data)?data:[]}catch{return []}}
 export function saveMemberArtist(artist:MemberArtist){setStoredItem(MEMBER_ARTISTS_KEY,JSON.stringify([...readMemberArtists().filter(a=>a.id!==artist.id),artist]))}
 export function getMemberArtist(id:string){

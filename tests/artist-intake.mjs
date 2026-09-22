@@ -45,6 +45,18 @@ try{
  assert.equal((await call('applications','PUT',{action:'resend-approval',id},applicant)).status,403,'only an administrator can resend the approval email');
  assert.ok((await publicState()).some(record=>record.collection==='artists'&&record.id===id),'an approved, published page is public');
 
+ // Ongoing showings stay public while confirmed, and drop out 74 days after the last check-in.
+ const sample='/images/community-pilot/alan-just/self-portrait.webp';
+ const withWork={...page,works:[{id:'w1',title:'Piece',public:true,imageKey:'',sampleImage:sample}]};
+ assert.equal((await call('record','PUT',{collection:'artists',id,payload:withWork,revision:2},applicant)).status,200);
+ const day=offset=>new Date(Date.now()+offset*86400000).toISOString().slice(0,10);
+ const ongoing=confirmedAt=>({...show,id:'show-ongoing',start:day(-200),end:'',ongoing:true,confirmedAt,artworkIds:['w1'],featuredArtworkId:'w1'});
+ assert.equal((await call('record','PUT',{collection:'showings',id:'show-ongoing',payload:ongoing(day(-80)),revision:0},applicant)).status,200);
+ assert.ok(!(await publicState()).some(record=>record.id==='show-ongoing'),'a lapsed ongoing showing is hidden');
+ assert.equal((await call('record','PUT',{collection:'showings',id:'show-ongoing',payload:ongoing(day(0)),revision:1},applicant)).status,200);
+ const listed=(await publicState()).find(record=>record.id==='show-ongoing');
+ assert.ok(listed&&listed.payload.ongoing===true&&listed.payload.end==='','a confirmed ongoing showing is public with no end date');
+
  const second={userId:'user_second',administrator:false};
  const secondId=(await (await call('applications','PUT',application('Luis Moreno'),second)).json()).id;
  assert.equal(await membership('user_second'),secondId);

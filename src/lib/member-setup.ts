@@ -2,6 +2,7 @@ import {getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type Membe
 import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
+import {initShowingsPanel} from './member-showings';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
 // A web address typed without https:// still counts.
@@ -33,7 +34,7 @@ export async function initMemberSetup(){
  // Home says where things stand and offers the single most useful next step.
  function renderHome(){
   const works=artist.works.length,shows=showingCount();
-  const [headline,detail,label,target]=!works?['Let’s put up your first piece','Start with one photo. Everything else can wait.','Add your first piece →','first']
+  const [headline,detail,label,target]=showings.needsAttention()?['Is your work still up?','One of your ongoing showings is due for a quick check-in.','Check your showings →','showing']:!works?['Let’s put up your first piece','Start with one photo. Everything else can wait.','Add your first piece →','first']
    :!artist.published?[approved?'Your page is ready to publish':'Your page is taking shape',`${works} ${works===1?'piece':'pieces'} so far. ${approved?'Take a look, and publish it when you’re ready.':'It goes public once you’re approved.'}`,'See your page →','page']
    :!shows?['Your page is live','Next: tell visitors where they can see your work in person.','Add a showing →','showing']
    :['Your page is live',`${works} ${works===1?'piece':'pieces'} · ${shows} ${shows===1?'showing':'showings'}`,'Add another piece →','artwork'];
@@ -42,13 +43,11 @@ export async function initMemberSetup(){
   const publicLink=$<HTMLAnchorElement>('[data-home-public]');publicLink.hidden=!artist.published;publicLink.href=memberUrl(id);
  }
  function show(tab:string){
-  // Showings still load their form on page load; Phase 3 removes this reload.
-  if(tab==='showing'&&location.hash!=='#showing'){location.hash='showing';location.reload();return}
   firstPiece=false;
   panels.forEach(panel=>panel.hidden=panel.dataset.panel!==tab);
   tabs.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspaceTab===tab)));
   history.replaceState(null,'',`#${tab}`);
-  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();
+  if(tab==='home')renderHome();if(tab==='page')renderPage();if(tab==='profile')fillProfile();if(tab==='showing')showings.render();
   artworkMode();
  }
  function openFirstPiece(){show('artwork');firstPiece=true;artworkMode()}
@@ -153,9 +152,10 @@ export async function initMemberSetup(){
  // Profile and contact details.
  const profile=$<HTMLFormElement>('[data-setup-profile]'),contact=$<HTMLFormElement>('[data-setup-contact]');
  function fillProfile(){for(const form of [profile,contact])for(const [name,value] of Object.entries(artist)){const field=form.elements.namedItem(name) as HTMLInputElement|null;if(!field)continue;if(field.type==='checkbox')field.checked=Boolean(value);else field.value=String(value??'')}}
- profile.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(profile),name=String(data.get('name')).trim(),practice=String(data.get('practice')).trim();if(!name||!practice){message.textContent='Please enter your name and what you make.';return}if(persist({...artist,name,practice,city:String(data.get('city')||'').trim(),bio:String(data.get('bio')||'').trim()})){setTitle();message.textContent='Saved.'}});
+ profile.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(profile),name=String(data.get('name')).trim(),practice=String(data.get('practice')).trim();if(!name||!practice){message.textContent='Please enter your name and what you make.';return}if(persist({...artist,name,practice,city:String(data.get('city')||'').trim(),bio:String(data.get('bio')||'').trim(),venueOpportunities:data.has('venueOpportunities')})){setTitle();message.textContent='Saved.'}});
  contact.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(contact),website=normalizeWebsite(String(data.get('website')).trim()),email=String(data.get('email')).trim(),phone=String(data.get('phone')).trim();if(website===null){message.textContent='That website address doesn’t look right.';return}if((data.has('publicEmail')&&!email)||(data.has('publicPhone')&&!phone)||(data.has('publicWebsite')&&!website)){message.textContent='Fill in each contact detail you want to show.';return}if(persist({...artist,website,email,phone,publicEmail:data.has('publicEmail'),publicWebsite:data.has('publicWebsite'),publicPhone:data.has('publicPhone')}))message.textContent='Saved.'});
 
+ const showings=initShowingsPanel({id,approved,artist:()=>artist,save:persist,changed:()=>{}});
  await works();
  const start=location.hash.slice(1);
  if(['home','artwork','showing','profile','page'].includes(start))show(start);else if(!artist.works.length)openFirstPiece();else show('home');

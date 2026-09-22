@@ -2,13 +2,15 @@ import {getStoredItem,setStoredItem,publicStorageMode} from './community-storage
 import pilot from '../data/community-pilot.json';
 import {getMemberArtist,imageUrl,memberUrl} from './member-artists';
 import {readVenues,venueProfileUrl} from './prototype-venues';
-import {showingStatus,dates,datesLine,shortDates,showingTag,artistSortKey} from './showing-display';
+import {showingStatus,dates,datesLine,shortDates,showingTag,artistSortKey,checkInLapsed} from './showing-display';
 export {showingStatus,dates};
 export const SHOWINGS_KEY = 'aaj-showings-prototype';
 export interface Showing {
   id: string; artistId: string; venueId: string; venue: string; address: string;
   city: string; website: string; start: string; end: string; artworkIds: string[];
   featuredArtworkId: string; status: 'draft' | 'published';
+  // Ongoing showings have no end date and are confirmed by the artist every 60 days.
+  regionId?: string; ongoing?: boolean; confirmedAt?: string;
 }
 function alanUploads(){try{const value=JSON.parse(getStoredItem('aaj-artist-workspace-prototype')||'{}');return Array.isArray(value.uploadedWorks)?value.uploadedWorks:[]}catch{return []}}
 export function readShowings(): Showing[] {
@@ -33,7 +35,7 @@ const renderRuns = new WeakMap<HTMLElement, number>();
 export async function renderShowings(root: HTMLElement) {
   const run = (renderRuns.get(root) ?? 0) + 1;renderRuns.set(root, run);
   const context = root.dataset.context;
-  const records = readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));
+  const records = readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));
   const matches = records.filter(s => context === 'artist' ? s.artistId === root.dataset.artist : context === 'venue' ? s.venueId === root.dataset.venue : context === 'venue-preview' ? s.id === new URLSearchParams(location.search).get('show') : true);
   const built: {node: HTMLElement; destination: Element | null}[] = [];
   const create = (tag: string, text = '', className = '') => {const node = document.createElement(tag);node.textContent = text;node.className = className;return node;};
@@ -57,7 +59,8 @@ export async function renderShowings(root: HTMLElement) {
     }
     if(context==='directory'){
       // Same markup as the server-rendered cards on Showing Now.
-      const card=create('article','',`showing-card${upcoming?' coming-card':''}`);
+      const ongoing=!upcoming&&!show.end;
+      const card=create('article','',`showing-card${upcoming?' coming-card':ongoing?' ongoing-card':''}`);
       Object.assign(card.dataset,{browserShow:show.id,showId:show.id,artistId:show.artistId,city:show.city,sort:artistSortKey(artist.name),start:show.start,search:`${artist.name} ${show.venue} ${artist.practice.join(' ')} ${show.city} ${artwork.title} ${artwork.medium ?? ''}`.toLowerCase()});
       const frame=create('div','','artwork-frame');const image=document.createElement('img');image.src=artwork.image;image.alt=artwork.title;image.loading='lazy';frame.append(image);
       const copy=create('div','','copy');const tag=showingTag(show);
@@ -65,7 +68,7 @@ export async function renderShowings(root: HTMLElement) {
       const heading=create('h3');heading.append(link(artist.name,artistHref,'card-title'));
       copy.append(heading,create('p',`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
       card.append(frame,copy);
-      built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':'.showing-grid')});
+      built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':ongoing?'.ongoing-grid':'.showing-grid')});
       continue;
     }
     const card = create('article', '', 'browser-showing');
@@ -94,12 +97,11 @@ export async function renderShowings(root: HTMLElement) {
   }
   if (renderRuns.get(root) !== run) return;
   root.querySelectorAll('[data-browser-show]').forEach(node => node.remove());
-  if (context === 'directory') document.querySelectorAll('.showing-grid [data-browser-show],.coming-grid [data-browser-show]').forEach(node => node.remove());
+  if (context === 'directory') document.querySelectorAll('.showing-grid [data-browser-show],.coming-grid [data-browser-show],.ongoing-grid [data-browser-show]').forEach(node => node.remove());
   built.forEach(({node, destination}) => destination?.append(node));
   root.hidden = context === 'directory' || !matches.length;
   if(context==='directory'){
-    const coming=document.querySelector<HTMLElement>('.coming-section');
-    if(coming)coming.hidden=!coming.querySelector('.showing-card');
+    for(const selector of ['.coming-section','.ongoing-section']){const section=document.querySelector<HTMLElement>(selector);if(section)section.hidden=!section.querySelector('.showing-card')}
   }
   if (context === 'venue-preview') {
     const show = matches[0];

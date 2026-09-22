@@ -1,7 +1,7 @@
 ---
 // The artist's private workspace: a home that says where things stand, the first
 // piece of artwork, the page itself, showings, and profile details.
-import MemberShowingForm from './MemberShowingForm.astro';
+import '../../styles/showing-cards.css';
 import pilot from '../../data/community-pilot.json';
 import '../../styles/venue-workspace.css';
 const {initialArtist = null} = Astro.props;
@@ -52,7 +52,57 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
       <div data-artwork-list hidden><h3>Your pieces</h3><div data-member-works></div></div>
     </section>
 
-    <section data-panel="showing" data-workspace-showing hidden><h2>Where your work can be seen</h2><MemberShowingForm/></section>
+    <section class="card" data-panel="showing" hidden>
+      <h2>Where can people see your work?</h2>
+      <p data-showings-intro>List each place your work is hanging, so people can go see it in person.</p>
+      <div class="saved-showings" data-showings-list></div>
+      <div class="actions"><button type="button" data-new-showing>+ Add a showing</button></div>
+
+      <form class="showing-form" data-showing-form hidden novalidate>
+        <h3 data-showing-form-title>Add a showing</h3>
+        <fieldset>
+          <legend>1. Where?</legend>
+          <div data-place-picker>
+            <label>Find the place<input type="search" data-place-search placeholder="Name or city" autocomplete="off"/></label>
+            <div class="place-results" data-place-results></div>
+            <button type="button" class="quiet-button" data-place-new>It’s somewhere new</button>
+          </div>
+          <p class="place-chosen" data-place-chosen hidden><span data-place-label></span> <button type="button" class="quiet-button" data-place-change>Change</button></p>
+          <div class="fields" data-new-place hidden>
+            <label class="full">Name of the place<input name="venue" maxlength="150" placeholder="Café, gallery, studio…"/></label>
+            <label class="full">Street address<input name="address" maxlength="250" autocomplete="street-address"/><small>The entrance visitors use. This will be public.</small></label>
+            <label>City<input name="city" maxlength="120" list="showing-cities"/><datalist id="showing-cities">{pilot.regions[0]?.cities.map((city) => <option value={city}/>)}</datalist></label>
+            <label>Website <small>optional</small><input name="website" type="text" inputmode="url" autocapitalize="none" spellcheck="false" placeholder="theirwebsite.com"/></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>2. When?</legend>
+          <label class="reach-option"><input type="radio" name="when" value="dates" checked/><span>Between two dates</span></label>
+          <div class="fields" data-date-fields>
+            <label>First day<input name="start" type="date"/></label>
+            <label>Last day<input name="end" type="date"/></label>
+          </div>
+          <label class="reach-option"><input type="radio" name="when" value="ongoing"/><span>Ongoing, like a studio or a long-term wall</span></label>
+          <p class="hint" data-ongoing-note hidden>Every couple of months we’ll ask you to confirm it’s still up, so the listing stays true.</p>
+        </fieldset>
+        <fieldset>
+          <legend>3. Which pieces are there?</legend>
+          <p class="hint">Tap each piece that’s hanging there. The one with the star represents the showing on Showing Now.</p>
+          <div class="piece-picker" data-piece-picker></div>
+        </fieldset>
+        <div class="showing-preview" data-showing-preview hidden><p class="hint">How it will look on Showing Now:</p><div data-preview-card></div></div>
+        <label class="check" data-showing-rights hidden><input name="rights" type="checkbox"/> I made this work, and I have the right to show it.</label>
+        <p class="hint" data-publish-note></p>
+        <div class="actions"><button data-publish-showing>Publish showing</button><button type="button" data-save-showing-draft>Save as draft</button><button type="button" data-cancel-showing>Cancel</button></div>
+        <p data-showing-message role="status"></p>
+      </form>
+
+      <section class="opportunities" data-opportunities hidden>
+        <h3>Want to hear when local venues are looking for artists?</h3>
+        <p>Cafés, breweries, and shops sometimes ask for new work to hang. We can let you know.</p>
+        <div class="actions"><button type="button" data-opportunities-answer="yes">Yes, let me know</button><button type="button" data-opportunities-answer="no">No thanks</button></div>
+      </section>
+    </section>
 
     <section data-panel="profile" hidden>
       <form class="card" data-setup-profile>
@@ -63,6 +113,7 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
           <label class="full">What you make<input name="practice" required maxlength="200"/></label>
           <label class="full">Short biography <small>optional</small><textarea name="bio" rows="4" maxlength="2000" placeholder="A few sentences about you and your work"></textarea></label>
         </div>
+        <label class="check"><input name="venueOpportunities" type="checkbox"/> Tell me when local venues are looking for artists</label>
         <div class="actions"><button>Save</button></div>
       </form>
       <form class="card" data-setup-contact>
@@ -139,6 +190,29 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
   .reach-option input { flex: none; width: 20px; height: 20px; accent-color: var(--color-green); }
   .reach-option span { min-width: 0; overflow-wrap: anywhere; }
   .reach-website { margin-left: var(--space-8); }
+  .saved-showings { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
+  .saved-showings :global(article) { display: grid; gap: var(--space-1); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-gray-900); }
+  .saved-showings :global(h4) { margin: 0; color: var(--color-white); font-size: var(--font-size-lg); }
+  .saved-showings :global(.showing-state) { color: var(--color-gold); font-weight: var(--font-weight-bold); }
+  .saved-showings :global(.check-in) { padding: var(--space-3); border-radius: var(--radius-sm); background: var(--color-gold); color: var(--color-black); }
+  .showing-form { margin-top: var(--space-6); padding-top: var(--space-4); border-top: var(--border-thin) solid var(--color-gray-700); }
+  .showing-form fieldset { display: grid; gap: var(--space-2); margin: 0 0 var(--space-6); padding: 0; border: 0; }
+  .showing-form legend { margin-bottom: var(--space-2); color: var(--color-gold); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+  .hint { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .place-results { display: grid; gap: var(--space-2); }
+  .place-results :global(button) { justify-content: flex-start; text-align: left; }
+  .place-chosen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+  .piece-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-3); }
+  .piece-picker :global(.piece) { position: relative; display: grid; gap: var(--space-1); padding: var(--space-2); border: var(--border-base) solid var(--color-gray-700); border-radius: var(--radius-base); background: var(--color-artwork-mat); color: var(--color-white); text-align: left; }
+  .piece-picker :global(.piece[data-selected]) { border-color: var(--color-green); }
+  .piece-picker :global(.piece-toggle) { display: grid; gap: var(--space-1); min-height: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; }
+  .piece-picker :global(.piece img) { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; }
+  .piece-picker :global(.piece span) { font-size: var(--font-size-xs); overflow-wrap: anywhere; }
+  .piece-picker :global(.star) { position: absolute; top: var(--space-1); right: var(--space-1); width: 44px; min-height: 44px; padding: 0; border: 0; border-radius: var(--radius-full); background: var(--color-black); color: var(--color-gray-400); font-size: var(--font-size-2xl); line-height: var(--line-height-none); }
+  .piece-picker :global(.star[aria-pressed="true"]) { color: var(--color-gold); }
+  .showing-preview { max-width: 260px; margin-bottom: var(--space-4); }
+  .opportunities { margin-top: var(--space-6); padding: var(--space-4); border-radius: var(--radius-base); background: var(--color-purple); }
+  .opportunities h3 { color: var(--color-white); }
   .live-next { margin-top: var(--space-6); padding-top: var(--space-4); border-top: var(--border-thin) solid var(--color-gray-700); }
   .live-next h3 { color: var(--color-gold); font-size: var(--font-size-2xl); }
 
