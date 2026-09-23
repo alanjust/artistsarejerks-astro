@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/showing-cards.css';
+// One show, one place: where and when, the pieces on that wall, the artist's other
+// shows, then the rest of the artist's work. Filled in from public data by show-pages.ts.
+---
+<BaseLayout title="Showing | Artists Are Jerks">
+  <main class="show-page">
+    <a class="back" href="/showing-now/">← Showing Now</a>
+    <p class="eyebrow" data-show-eyebrow></p>
+    <h1 data-show-title>Loading the show…</h1>
+    <p class="missing" data-show-missing hidden>It may have ended or been taken down. <a href="/showing-now/">See what’s showing now →</a></p>
+
+    <section class="info" data-show-info hidden aria-label="Where and when"></section>
+
+    <section data-wall-section hidden aria-labelledby="wall-heading">
+      <div class="section-heading"><h2 id="wall-heading">On the wall</h2><p data-wall-count></p></div>
+      <div class="pieces" data-wall></div>
+    </section>
+
+    <div class="also" data-also hidden></div>
+
+    <section class="follow-section" data-follow-section hidden aria-labelledby="follow-heading">
+      <h2 id="follow-heading" data-follow-heading>Get an email when this artist shows next</h2>
+      <p data-follow-note></p>
+      <form class="follow-form" data-follow-form novalidate>
+        <label>Your email<input name="email" type="email" required maxlength="254" autocomplete="email"/></label>
+        <label class="trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"/></label>
+        <div data-follow-turnstile></div>
+        <button class="send">Keep me posted</button>
+        <p data-follow-status role="status"></p>
+      </form>
+    </section>
+
+    <section data-more-section hidden aria-labelledby="more-heading">
+      <div class="section-heading"><h2 id="more-heading" data-more-heading>More work</h2></div>
+      <div class="pieces" data-more></div>
+    </section>
+
+    <section class="about" data-about hidden aria-labelledby="about-heading">
+      <h2 id="about-heading" data-about-heading>About the artist</h2>
+      <p data-about-bio></p>
+      <a class="artist-page" data-artist-page href="/our-artists/">The artist’s page →</a>
+    </section>
+  </main>
+  <script>
+    import {initShowPage} from '../lib/show-pages';
+    void initShowPage();
+  </script>
+</BaseLayout>
+
+<style>
+  .show-page { width: 100%; max-width: 960px; box-sizing: border-box; margin: 0 auto; padding: var(--space-2) var(--space-4) var(--space-16); display: flex; flex-direction: column; gap: var(--space-5); }
+  .back, .artist-page, .missing a { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-purple-dark); font-weight: var(--font-weight-bold); }
+  .back { text-decoration: none; }
+  .eyebrow { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
+  h1 { margin: calc(-1 * var(--space-3)) 0 0; color: var(--color-purple); font-family: var(--font-display); font-size: clamp(2.2rem, 7vw, 3.6rem); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-tight); }
+  .info { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
+  .info :global(.showing-tag) { align-self: flex-start; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: var(--line-height-none); }
+  .info :global(.tag-ending) { background: var(--color-pink); color: var(--color-black); }
+  .info :global(.tag-new), .info :global(.tag-opens) { background: var(--color-green); color: var(--color-black); }
+  .info :global(.tag-ongoing) { background: var(--color-gray-300); color: var(--color-black); }
+  .info :global(.show-dates) { margin: 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+  .info :global(.show-where) { margin: 0; font-size: var(--font-size-base); line-height: var(--line-height-normal); }
+  .info :global(.show-hours) { margin: 0; color: var(--color-gray-300); font-size: var(--font-size-sm); white-space: pre-line; }
+  .info :global(.show-actions) { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-2); margin-top: var(--space-2); }
+  .info :global(.show-actions a) { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-base); font-weight: var(--font-weight-bold); text-decoration: none; }
+  .info :global(.show-directions) { background: var(--color-gold); color: var(--color-black); }
+  .info :global(.show-website) { box-sizing: border-box; border: var(--border-base) solid var(--color-gold); color: var(--color-gold); }
+  .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
+  .section-heading h2 { margin: 0; font-size: var(--font-size-2xl); }
+  .section-heading p { margin: 0; font-size: var(--font-size-sm); }
+  .pieces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-mat); }
+  .pieces :global(.show-piece) { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: var(--space-2); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
+  .pieces :global(.show-piece-frame) { display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: var(--radius-base); background: var(--color-artwork-mat); }
+  .pieces :global(.show-piece-frame img) { width: 100%; height: 100%; box-sizing: border-box; padding: var(--space-2); object-fit: contain; }
+  .pieces :global(figcaption) { display: flex; flex-direction: column; gap: var(--space-1); padding: 0 var(--space-1) var(--space-1); overflow-wrap: anywhere; }
+  .pieces :global(.show-piece-title) { font-weight: var(--font-weight-bold); }
+  .pieces :global(.show-piece-detail) { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .also { display: grid; gap: var(--space-3); }
+  .also :global(.also-row) { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); text-decoration: none; }
+  .also :global(.also-label) { color: var(--color-gold); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
+  .also :global(.also-venue) { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+  .also :global(.also-when) { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  .follow-section { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-white); }
+  .follow-section h2 { margin: 0; color: var(--color-gold); font-size: var(--font-size-xl); }
+  .follow-section p { margin: var(--space-2) 0 0; }
+  .follow-form { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); margin-top: var(--space-3); }
+  .follow-form label { display: grid; flex: 1 1 240px; gap: var(--space-2); font-weight: var(--font-weight-bold); }
+  .follow-form input { width: 100%; box-sizing: border-box; min-height: 44px; padding: var(--space-3); border: 0; border-radius: var(--radius-base); font: inherit; }
+  .follow-form button { min-height: 44px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-base); background: var(--color-gold); color: var(--color-black); font-family: var(--font-heading); font-weight: var(--font-weight-bold); }
+  .follow-form [data-follow-turnstile], .follow-form [role=status] { flex-basis: 100%; }
+  .follow-form .trap { position: absolute; width: var(--border-thin); height: var(--border-thin); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .about h2 { margin: 0 0 var(--space-2); font-size: var(--font-size-2xl); }
+  .about p { margin: 0; line-height: var(--line-height-comfortable); }
+  @media (min-width: 700px) {
+    .show-page { padding: var(--space-8) clamp(var(--space-6), 4vw, var(--space-10)) var(--space-16); }
+    .pieces { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  }
+</style>

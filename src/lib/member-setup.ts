@@ -4,6 +4,7 @@ import {readShowings,renderShowings} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
 import {storageReady} from './community-storage';
 import {mountTurnstile} from './turnstile';
+import {wireFollowForm} from './follow-form';
 import {initShowingsPanel} from './member-showings';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
@@ -218,29 +219,8 @@ export async function initMemberPublicPage(){
  const link=(text:string,url:string)=>{const a=document.createElement('a');a.textContent=text;a.href=url;contacts.append(a)};
  if(artist.publicWebsite&&/^https?:\/\//i.test(artist.website))link('Visit artist’s website',artist.website);if(artist.publicEmail)link('Email the artist',`mailto:${artist.email}`);if(artist.publicPhone){link('Call the artist',`tel:${artist.phone.replace(/[^+\d]/g,'')}`);link('Text the artist',`sms:${artist.phone.replace(/[^+\d]/g,'')}`)}
  // "Keep me posted": a double opt-in list of people who want to hear when this artist shows next.
- const followSection=document.querySelector<HTMLElement>('[data-follow-section]'),followForm=document.querySelector<HTMLFormElement>('[data-follow-form]');
- if(followSection&&followForm&&artist.published){
-  followSection.hidden=false;
-  document.querySelector('[data-follow-heading]')!.textContent=`Get an email when ${artist.name} shows next`;
-  document.querySelector('[data-follow-note]')!.textContent=`One short email each time there’s new work on a wall somewhere. ${artist.name} will see your email address, and you can stop anytime.`;
-  const followShown=Date.now(),followStatus=document.querySelector('[data-follow-status]')!;
-  const followCheck=preview?Promise.resolve(null):mountTurnstile(document.querySelector<HTMLElement>('[data-follow-turnstile]')!).catch(()=>null);
-  followForm.addEventListener('submit',async event=>{
-   event.preventDefault();
-   if(preview){followStatus.textContent='This is a preview. Visitors can sign up once your page is public.';return}
-   const data=new FormData(followForm),email=String(data.get('email')||'').trim();
-   if(!/^\S+@\S+\.\S+$/.test(email)){followStatus.textContent='Please enter a working email address.';return}
-   const check=await followCheck;
-   if(check?.enabled&&!check.token()){followStatus.textContent='One moment. The spam check is still finishing.';return}
-   const button=followForm.querySelector<HTMLButtonElement>('button.send')!;button.disabled=true;followStatus.textContent='Signing you up…';
-   try{
-    const response=await fetch('/api/community/public/follow',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artistId:id,email,website:String(data.get('website')||''),elapsed:Date.now()-followShown,turnstile:check?.token()})});
-    const result=await response.json().catch(()=>({})) as {error?:string};
-    if(!response.ok)throw new Error(result.error||'That didn’t go through. Please try again.');
-    followForm.replaceChildren(el('p',`Almost done. Check your email for a message from Artists Are Jerks, and press the button in it to confirm.`));
-   }catch(cause){followStatus.textContent=cause instanceof Error?cause.message:'That didn’t go through.';button.disabled=false;check?.reset()}
-  });
- }
+ const followSection=document.querySelector<HTMLElement>('[data-follow-section]');
+ if(followSection&&artist.published)wireFollowForm(followSection,id,artist.name,preview);
  // A message form keeps the artist's address private; the reply goes straight back to the visitor.
  const formSection=document.querySelector<HTMLElement>('[data-contact-form-section]'),contactForm=document.querySelector<HTMLFormElement>('[data-contact-form]');
  if(formSection&&contactForm&&artist.publicForm){
@@ -266,7 +246,8 @@ export async function initMemberPublicPage(){
  }
  const works=artist.works.filter(w=>w.public),root=document.querySelector('[data-member-public-works]')!,urls:string[]=[];const dialog=document.querySelector<HTMLDialogElement>('[data-member-viewer]')!,image=document.querySelector<HTMLImageElement>('[data-viewer-image]')!;let active=0;
  function display(index:number){active=(index+works.length)%works.length;image.src=urls[active];image.alt=works[active].title;document.querySelector('[data-viewer-caption]')!.textContent=`${works[active].title} · ${active+1} of ${works.length}`;}
- for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.sampleImage)copy.append(el('p','Sample artwork — borrowed for prototype layout.'));root.append(card)}
+ for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';card.dataset.artworkId=work.id;const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.sampleImage)copy.append(el('p','Sample artwork — borrowed for prototype layout.'));root.append(card)}
  if(!works.length)status.textContent='No artwork selected for public display yet.';
+ const {tagArtworks}=await import('./show-pages');tagArtworks(document,id);
  document.querySelector('[data-close-viewer]')?.addEventListener('click',()=>dialog.close());document.querySelector('[data-viewer-previous]')?.addEventListener('click',()=>display(active-1));document.querySelector('[data-viewer-next]')?.addEventListener('click',()=>display(active+1));dialog.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();display(active-1)}if(e.key==='ArrowRight'){e.preventDefault();display(active+1)}});window.addEventListener('pagehide',()=>urls.filter(u=>u.startsWith('blob:')).forEach(u=>URL.revokeObjectURL(u)));
 }

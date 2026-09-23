@@ -89,7 +89,7 @@ const showDates = show
       <section class="work-section" aria-labelledby="more-work-heading">
         <div class="section-heading">
           <div><p class="eyebrow">More by {artist.name.split(' ')[0]}</p><h2 id="more-work-heading">Selected work</h2></div>
-          <p>Public on this artist page, though not assigned to the current show.</p>
+          <p>Pieces marked “On view” are on a wall you can visit. Tap the tag for where and when.</p>
         </div>
         <p role="status">{previewError}</p>
         <div class="artwork-grid" data-selected-artwork>{[...otherArtworks,...uploads].map((work) => <ArtworkCard artwork={work} />)}</div>

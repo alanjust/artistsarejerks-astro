@@ -56,3 +56,23 @@
     .showing-card .showing-tag{font-size:var(--font-size-sm)}
   }
   @media(max-width:560px){.browser-showing{grid-template-columns:1fr}.browser-showing-artworks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  /* "Where to see it now" on artist pages: one slim row per show, opening its show page. */
+  .artist-shows{display:grid;gap:var(--space-3);margin-block:var(--space-6)}
+  .artist-shows h2{margin:0}
+  .artist-shows-empty{margin:0;padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white)}
+  .artist-show-row{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);text-decoration:none}
+  .artist-show-row:hover .artist-show-venue,.artist-show-row:focus-visible .artist-show-venue{text-decoration:underline;text-underline-offset:var(--underline-offset)}
+  .artist-show-row .showing-tag{align-self:flex-start;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);line-height:var(--line-height-none)}
+  .artist-show-row .tag-ending{background:var(--color-pink);color:var(--color-black)}
+  .artist-show-row .tag-new{background:var(--color-green);color:var(--color-black)}
+  .artist-show-row .tag-opens{background:var(--color-green);color:var(--color-black)}
+  .artist-show-row .tag-ongoing{background:var(--color-gray-300);color:var(--color-black)}
+  .artist-show-venue{font-size:var(--font-size-lg);font-weight:var(--font-weight-bold)}
+  .artist-show-when{color:var(--color-gray-300);font-size:var(--font-size-sm)}
+  .artist-show-thumbs{display:flex;gap:var(--space-2);margin-top:var(--space-1)}
+  .artist-show-thumbs img{width:52px;height:64px;padding:var(--space-1);box-sizing:border-box;border-radius:var(--radius-sm);background:var(--color-artwork-mat);object-fit:contain}
+
+  /* The gold tag on a piece that is hanging somewhere right now. */
+  .on-view-tag{display:inline-flex;align-self:flex-start;align-items:center;min-height:var(--space-8);margin-bottom:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);line-height:var(--line-height-tight);text-decoration:none}
+  .on-view-tag:hover,.on-view-tag:focus-visible{text-decoration:underline}

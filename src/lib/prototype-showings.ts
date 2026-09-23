@@ -30,13 +30,21 @@ export function venueUrl(show: Showing) {
   if(readVenues().some(v=>v.id===show.venueId&&v.status==='approved'&&v.visible))return venueProfileUrl(show.venueId);
   return show.venueId === 'venue-leos-brewpub' ? '/prototype/venues/leos-brewpub-and-grill/' : `/prototype/venues/preview/?show=${encodeURIComponent(show.id)}`;
 }
+// Showings visitors can see: published, not over, confirmed if ongoing, at a visible
+// venue, by an artist whose page is public.
+export function publicShowings(){
+  return readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));
+}
+export const showUrl = (id: string) => `/showing/?id=${encodeURIComponent(id)}`;
 // Each root keeps a run counter so an older, slower render can't append stale cards.
 const renderRuns = new WeakMap<HTMLElement, number>();
 export async function renderShowings(root: HTMLElement) {
   await storageReady;
   const run = (renderRuns.get(root) ?? 0) + 1;renderRuns.set(root, run);
   const context = root.dataset.context;
-  const records = readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));
+  // Artist pages list their shows as compact rows that open each show's page.
+  if (context === 'artist') { const {renderArtistShows} = await import('./show-pages'); await renderArtistShows(root, root.dataset.artist ?? ''); return; }
+  const records = publicShowings();
   const matches = records.filter(s => context === 'artist' ? s.artistId === root.dataset.artist : context === 'venue' ? s.venueId === root.dataset.venue : context === 'venue-preview' ? s.id === new URLSearchParams(location.search).get('show') : true);
   const built: {node: HTMLElement; destination: Element | null}[] = [];
   const create = (tag: string, text = '', className = '') => {const node = document.createElement(tag);node.textContent = text;node.className = className;return node;};
@@ -66,7 +74,7 @@ export async function renderShowings(root: HTMLElement) {
       const frame=create('div','','artwork-frame');const image=document.createElement('img');image.src=artwork.image;image.alt=artwork.title;image.loading='lazy';frame.append(image);
       const copy=create('div','','copy');const tag=showingTag(show);
       if(tag)copy.append(create('span',tag.label,`showing-tag tag-${tag.kind}`));
-      const heading=create('h3');heading.append(link(artist.name,artistHref,'card-title'));
+      const heading=create('h3');heading.append(link(artist.name,showUrl(show.id),'card-title'));
       copy.append(heading,create('p',`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
       card.append(frame,copy);
       built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':ongoing?'.ongoing-grid':'.showing-grid')});

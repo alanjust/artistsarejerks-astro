@@ -31,7 +31,7 @@ const saleLabel = artwork.salePresentation === 'public-price' && artwork.publicP
   : saleLabels[artwork.salePresentation] ?? 'Ask the artist';
 ---
 
-<article class:list={['artwork-card', { compact }]} data-artwork-card>
+<article class:list={['artwork-card', { compact }]} data-artwork-card data-artwork-id={artwork.id}>
   {artistSlug ? (
     <a class="artwork-image" href={`/prototype/artists/${artistSlug}/`} aria-label={`${artwork.title}${artistName ? ` by ${artistName}` : ''}`}>
       <img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" />
