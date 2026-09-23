@@ -72,8 +72,10 @@ import '../styles/showing-cards.css';
   .section-heading p { margin: 0; font-size: var(--font-size-sm); }
   .pieces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-mat); }
   .pieces :global(.show-piece) { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: var(--space-2); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
-  .pieces :global(.show-piece-frame) { display: grid; place-items: center; aspect-ratio: 4 / 5; border-radius: var(--radius-base); background: var(--color-artwork-mat); }
-  .pieces :global(.show-piece-frame img) { width: 100%; height: 100%; box-sizing: border-box; padding: var(--space-2); object-fit: contain; }
+  /* The picture is pinned inside a fixed-shape frame, so a photo's own size can never stretch the frame (Safari otherwise does). */
+  .pieces :global(.show-piece) { min-width: 0; }
+  .pieces :global(.show-piece-frame) { position: relative; width: 100%; min-width: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius-base); background: var(--color-artwork-mat); }
+  .pieces :global(.show-piece-frame img) { position: absolute; inset: 0; width: 100%; height: 100%; box-sizing: border-box; padding: var(--space-2); object-fit: contain; }
   .pieces :global(figcaption) { display: flex; flex-direction: column; gap: var(--space-1); padding: 0 var(--space-1) var(--space-1); overflow-wrap: anywhere; }
   .pieces :global(.show-piece-title) { font-weight: var(--font-weight-bold); }
   .pieces :global(.show-piece-detail) { color: var(--color-gray-300); font-size: var(--font-size-sm); }

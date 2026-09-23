@@ -6,7 +6,8 @@
   .showing-card{position:relative;display:flex;flex-direction:column;gap:var(--space-2);min-width:0;padding:var(--space-2);border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white);box-shadow:var(--shadow-card)}
   .showing-card:focus-within{outline:var(--border-thick) solid var(--color-gold);outline-offset:var(--border-base)}
   .showing-card .artwork-frame{position:relative;display:grid;place-items:center;aspect-ratio:4/5;min-width:0;overflow:hidden;border-radius:var(--radius-base);background:var(--color-artwork-mat)}
-  .showing-card .artwork-frame img{width:100%;height:100%;min-width:0;padding:var(--space-2);object-fit:contain}
+  .showing-card .artwork-frame{width:100%}
+  .showing-card .artwork-frame img{position:absolute;inset:0;width:100%;height:100%;min-width:0;box-sizing:border-box;padding:var(--space-2);object-fit:contain}
   .showing-card .fpo{position:absolute;top:var(--space-2);left:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);background:var(--color-gold);color:var(--color-black);font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);line-height:var(--line-height-none)}
   .showing-card .copy{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding:0 var(--space-1) var(--space-1);overflow-wrap:anywhere}
   .showing-card h3{margin:0;color:inherit;font-size:var(--font-size-lg);line-height:var(--line-height-tight)}
