@@ -7,21 +7,21 @@ import '../../../styles/venue-workspace.css';
 const onlineTest = import.meta.env.MODE === 'online-test';
 const {isAuthenticated,userId}=Astro.locals.auth();
 const access=isAuthenticated?await communityAccess(userId,Astro.locals):null;
-const memberArtist=access?.artistId&&access.artistId!=='artist-alan-just'?await communityArtistRecord(userId,access.artistId,Astro.locals):null;
+const memberArtist=access?.artistId?await communityArtistRecord(userId,access.artistId,Astro.locals):null;
 const memberPublished=Boolean(memberArtist?.published);
-const artistWorkspace=access?.artistId==='artist-alan-just'?'/prototype/workspace/':access?.artistId?`/prototype/workspace/member/?artist=${encodeURIComponent(access.artistId)}`:'';
+const artistWorkspace=access?.artistId?`/prototype/workspace/member/?artist=${encodeURIComponent(access.artistId)}`:'';
 const sections:{title:string;text:string;links:[string,string][]}[]=[];
 
 if(onlineTest){
- if(artistWorkspace)sections.push({title:'Your artist workspace',text:access?.artistId==='artist-alan-just'?'Manage your profile, artwork, visibility, and physical showings.':`Manage your profile, artwork, visibility, and physical showings. Your artist page is currently ${memberPublished?'published':'offline'}.`,links:[['Open your artist workspace →',artistWorkspace]]});
+ if(artistWorkspace)sections.push({title:'Your artist workspace',text:`Manage your profile, artwork, visibility, and physical showings. Your artist page is currently ${memberPublished?'published':'offline'}.`,links:[['Open your artist workspace →',artistWorkspace]]});
  if(access?.venueId)sections.push({title:'Your venue workspace',text:'Manage the information for the venue assigned to your account.',links:[['Open your venue workspace →',`/prototype/venues/workspace/?venue=${encodeURIComponent(access.venueId)}`]]});
  if(access?.administrator)sections.push({title:'Administrator tools',text:'Review all applications in one inbox and assign approved artists and venues to their accounts.',links:[['Open application inbox →','/prototype/admin/inbox/'],['Assign account access →','/prototype/admin/accounts/']]});
  const communityLinks:[string,string][]=[['Showing Now →','/showing-now/'],['Places to See Art →','/prototype/venues/']];
- if(access?.artistId)communityLinks.push([access.artistId==='artist-alan-just'||memberPublished?'View your artist page →':'Preview your offline artist page →',access.artistId==='artist-alan-just'?'/prototype/artists/alan-just/':`/prototype/artists/member/?artist=${encodeURIComponent(access.artistId)}${memberPublished?'':'&preview=1'}`]);
+ if(access?.artistId)communityLinks.push([memberPublished?'View your artist page →':'Preview your offline artist page →',`/prototype/artists/member/?artist=${encodeURIComponent(access.artistId)}${memberPublished?'':'&preview=1'}`]);
  sections.push({title:'Community pages',text:'Review what visitors see inside this protected test site.',links:communityLinks});
 }else{
  sections.push(
-  {title:'Artist workspace',text:'Manage Alan’s real profile and artwork. Exhibition and venue examples are for testing.',links:[['Open Alan’s workspace →','/prototype/workspace/'],['Create a showing →','/prototype/workspace/#showing'],['Add artwork →','/prototype/onboarding/artwork/']]},
+  {title:'Artist workspace',text:'Artists apply through Join the Community; applying opens their private workspace. Sample artist pages here are for local testing.',links:[['Join as an artist →','/join/?kind=artist'],['Sample artist page →','/prototype/artists/alan-just/']]},
   {title:'Venue workspace',text:'Apply as a venue, manage venue information, select AAJ members, and prepare invitation previews.',links:[['Open venue intake & workspace →','/prototype/venues/workspace/'],['Manage Leo’s sample venue →','/prototype/venues/workspace/?venue=venue-leos-brewpub']]},
   {title:'Administrator review',text:'Try the application approval, region expansion, and invitation journeys.',links:[['Application inbox →','/prototype/admin/inbox/'],['Review venue applications →','/prototype/admin/venues/'],['Review region proposals →','/prototype/admin/regions/']]},
   {title:'Community pages',text:'See what visitors see, or start a new membership request.',links:[['Join the Community →','/join/'],['Showing Now →','/showing-now/'],['Places to See Art →','/prototype/venues/'],['Alan’s public artist page →','/prototype/artists/alan-just/']]}

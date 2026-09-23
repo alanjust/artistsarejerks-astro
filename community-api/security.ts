@@ -26,7 +26,6 @@ export async function verifyCapability(request:Request,secret:string):Promise<Pr
 }
 export function canWrite(principal:Principal,collection:string,id:string,payload:Record<string,unknown>|null,existing:Record<string,unknown>|null,ownedImages:Set<string>=new Set()){
  if(principal.administrator)return true;
- if(collection==='alan-workspace')return principal.artistId==='artist-alan-just'&&id==='alan-just'&&(!payload||!Array.isArray(payload.uploadedWorks)||(payload.uploadedWorks as Record<string,unknown>[]).every(work=>(!work.imageKey||ownedImages.has(String(work.imageKey)))&&(!work.sampleImage||typeof work.sampleImage==='string'&&/^\/images\/community-pilot\/[a-zA-Z0-9_./-]+$/.test(work.sampleImage)&&!work.sampleImage.includes('..'))));
  if(collection==='artists'){
   if(!principal.artistId||id!==principal.artistId||payload&&payload.id!==id)return false;
   const oldWorks=Array.isArray(existing?.works)?existing.works as Record<string,unknown>[]:[];
@@ -47,13 +46,12 @@ export function canWrite(principal:Principal,collection:string,id:string,payload
   }
   return typeof payload.available==='boolean'&&['name','city','address','contactName','email'].every(field=>typeof payload[field]==='string'&&!!(payload[field] as string).trim())&&/^\S+@\S+\.\S+$/.test(payload.email as string)&&(!payload.website||/^https?:\/\//i.test(payload.website as string));
  }
- if(collection==='applications'||collection==='featured')return false;
+ if(collection==='applications')return false;
  if(collection==='showings')return !!principal.artistId&&(!existing||existing.artistId===principal.artistId)&&(!payload||payload.artistId===principal.artistId)&&!!(existing||payload);
  return false;
 }
 export function canRead(principal:Principal,collection:string,id:string,payload:Record<string,unknown>|null){
  if(principal.administrator)return true;
- if(collection==='alan-workspace')return principal.artistId==='artist-alan-just'&&id==='alan-just';
  if(collection==='applications')return !!principal.artistId&&id===principal.artistId;
  if(collection==='artists')return !!principal.artistId&&id===principal.artistId;
  if(collection==='showings')return !!principal.artistId&&payload?.artistId===principal.artistId;

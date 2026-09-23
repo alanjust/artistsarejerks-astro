@@ -1,7 +1,7 @@
 /// <reference path="./worker-configuration.d.ts" />
 import {publicRecords,publicImageKeys,type PublicRecord} from './public-records';
 import {verifyCapability,canWrite,canRead} from './security';
-const collections = new Set(['applications','artists','venues','showings','alan-workspace','featured']);
+const collections = new Set(['applications','artists','venues','showings']);
 const validId = (id:unknown):id is string => typeof id==='string' && /^[a-zA-Z0-9_-]{1,160}$/.test(id);
 const local = (host:string) => host==='localhost'||host==='127.0.0.1'||host==='[::1]';
 const json = (value:unknown,status=200) => Response.json(value,{status,headers:{'Cache-Control':'no-store'}});
@@ -347,7 +347,7 @@ export default {
           const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,8192)));
           if(typeof body.userId!=='string'||!/^user_[a-zA-Z0-9]+$/.test(body.userId)||typeof body.administrator!=='boolean'||!['artistId','venueId'].every(field=>body[field]===null||validId(body[field])))return json({error:'Invalid account assignment.'},400);
           if(body.userId===principal.userId&&!body.administrator)return json({error:'You cannot remove your own administrator access.'},403);
-          if(body.artistId&&body.artistId!=='artist-alan-just'){
+          if(body.artistId){
             const artist=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1").bind(body.artistId).first<{payload:string|null}>();
             const application=artist?.payload?JSON.parse(artist.payload):null;
             if(application?.status!=='approved'||!application.invitationAccepted)return json({error:'Choose an approved artist who accepted their invitation.'},400);

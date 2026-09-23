@@ -2,7 +2,7 @@
 // showing has its own page: where and when, the pieces on that wall, the artist's
 // other shows, and then the rest of the artist's work.
 import pilot from '../data/community-pilot.json';
-import {getStoredItem, storageReady} from './community-storage';
+import {storageReady} from './community-storage';
 import {getMemberArtist, imageUrl, memberUrl} from './member-artists';
 import {publicShowings, showUrl, type Showing} from './prototype-showings';
 import {readVenues} from './prototype-venues';
@@ -15,10 +15,6 @@ const make = (tag: string, text = '', className = '') => { const node = document
 const link = (text: string, href: string, className = '') => { const node = make('a', text, className) as HTMLAnchorElement; node.href = href; return node; };
 const saleLabels: Record<string, string> = {'contact': 'Contact the artist for price', 'contact-for-price': 'Contact the artist for price', 'private': 'Price shared privately', 'private-price': 'Price shared privately', 'not-for-sale': 'Not for sale', 'sold': 'Sold'};
 const priceLabel = (sale: string, price: unknown) => (sale === 'price' || sale === 'public-price') && price ? `$${Number(typeof price === 'object' ? (price as {amount: number}).amount : price).toLocaleString('en-US')}` : saleLabels[sale] ?? '';
-
-function alanWorkspace(): {uploadedWorks?: Record<string, string>[]; hiddenArtworkIds?: string[]} {
-  try { return JSON.parse(getStoredItem('aaj-artist-workspace-prototype') || '{}'); } catch { return {}; }
-}
 
 export function artistInfo(artistId: string): ArtistInfo | null {
   const fixture = pilot.artists.find((artist) => artist.id === artistId);
@@ -37,12 +33,9 @@ export async function artistWorks(artistId: string): Promise<ShowWork[]> {
     }
     return works;
   }
-  const workspace = alanWorkspace(), hidden = new Set(workspace.hiddenArtworkIds ?? []);
-  const fixtures = pilot.artworks.filter((work) => work.artistId === artistId && work.profileVisibility === 'public' && work.archiveStatus === 'active' && !hidden.has(work.id))
+  // Sample (pilot) artists, used in local development only.
+  return pilot.artworks.filter((work) => work.artistId === artistId && work.profileVisibility === 'public' && work.archiveStatus === 'active')
     .map((work) => ({id: work.id, title: work.title, detail: [work.medium, priceLabel(work.salePresentation, work.publicPrice)].filter(Boolean).join(' · '), image: work.image}));
-  const uploads = artistId === 'artist-alan-just' ? (workspace.uploadedWorks ?? []).filter((work) => work.visibility === 'public')
-    .map((work) => ({id: work.id, title: work.title, detail: [work.medium, priceLabel(work.sale, work.price)].filter(Boolean).join(' · '), image: work.sampleImage || `/api/community/public/images/${encodeURIComponent(work.imageKey)}`})) : [];
-  return [...fixtures, ...uploads];
 }
 
 export const artistShows = (artistId: string) => publicShowings().filter((show) => show.artistId === artistId).sort((a, b) => a.start.localeCompare(b.start));

@@ -1,6 +1,6 @@
 // Existing synchronous form controllers read a hydrated cache. Writes are queued
 // per entity with optimistic revisions; a visible status reports network failures.
-export const COLLECTION_KEYS:Record<string,string>={applications:'aaj-artist-applications-prototype',artists:'aaj-member-artists-prototype',venues:'aaj-venues-prototype',showings:'aaj-showings-prototype','alan-workspace':'aaj-artist-workspace-prototype'};
+export const COLLECTION_KEYS:Record<string,string>={applications:'aaj-artist-applications-prototype',artists:'aaj-member-artists-prototype',venues:'aaj-venues-prototype',showings:'aaj-showings-prototype'};
 export const SHARED_MODE_KEY='aaj-shared-storage-enabled';
 const PENDING_KEY='aaj-shared-storage-pending';
 type RecordValue=Record<string,unknown>;
@@ -20,8 +20,8 @@ function status(){let node=document.querySelector<HTMLElement>('[data-community-
 export function sharedStorageRequired(){return enabled||publicView}
 export function sharedStorageEnabled(){return (enabled||publicView)&&ready&&!error}
 export async function api(path:string,init:RequestInit={}){const response=await fetch(`/api/community/${path}`,{...init,headers:{'x-aaj-prototype':'local',...init.headers},cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok){const body=await response.json().catch(()=>({})) as {error?:string};throw new Error(body.error||`Storage request failed (${response.status})`)}return response}
-function descriptor(key:string){if(key.startsWith('aaj-featured-'))return {collection:'featured',singleton:true,id:key.slice('aaj-featured-'.length)};const collection=Object.keys(COLLECTION_KEYS).find(c=>COLLECTION_KEYS[c]===key);return collection?{collection,singleton:collection==='alan-workspace',id:'alan-just'}:null}
-function records(key:string,value:string|null):Map<string,RecordValue>{const spec=descriptor(key);if(!spec||value===null)return new Map();if(spec.collection==='featured')return new Map([[spec.id,{value}]]);const parsed=JSON.parse(value);if(spec.singleton)return new Map([[spec.id,parsed]]);return new Map((Array.isArray(parsed)?parsed:[]).map(row=>[row.id,row]))}
+function descriptor(key:string){const collection=Object.keys(COLLECTION_KEYS).find(c=>COLLECTION_KEYS[c]===key);return collection?{collection}:null}
+function records(key:string,value:string|null):Map<string,RecordValue>{const spec=descriptor(key);if(!spec||value===null)return new Map();const parsed=JSON.parse(value);return new Map((Array.isArray(parsed)?parsed:[]).map(row=>[row.id,row]))}
 export function getStoredItem(key:string){return publicView?publicCache.get(key)||null:enabled&&!ready?null:localStorage.getItem(key)}
 export function setStoredItem(key:string,value:string){
  if(publicView)throw new Error('Public pages are read-only. Open your workspace to make changes.');
@@ -39,16 +39,15 @@ export async function waitForSharedSave(){
 }
 async function flush(){if(sending||!pending.length||!ready||error)return;sending=true;try{while(pending.length){const operation=pending[0],key=`${operation.collection}/${operation.id}`;const result=await (await api('record',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(operation)})).json() as {revision:number};revisions.set(key,result.revision);pending.shift();localStorage.setItem(PENDING_KEY,JSON.stringify(pending))}}catch(cause){error=(cause as Error).message+' Your unsynced changes remain saved in this browser.'}finally{sending=false;status()}}
 function hydrate(rows:SharedRecord[]){
- for(const [collection,key] of Object.entries(COLLECTION_KEYS)){const active=rows.filter(row=>row.collection===collection&&row.payload!==null);localStorage.setItem(key,JSON.stringify(collection==='alan-workspace'?active[0]?.payload||{}:active.map(row=>row.payload)))}
- for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i)!;if(key.startsWith('aaj-featured-'))localStorage.removeItem(key)}
- for(const row of rows){revisions.set(`${row.collection}/${row.id}`,row.revision);if(row.collection==='featured'&&row.payload)localStorage.setItem(`aaj-featured-${row.id}`,String(row.payload.value))}
- for(const op of pending){if(op.collection==='featured'){if(op.payload)localStorage.setItem(`aaj-featured-${op.id}`,String(op.payload.value));continue}const key=COLLECTION_KEYS[op.collection];if(!key)continue;if(op.collection==='alan-workspace'){localStorage.setItem(key,JSON.stringify(op.payload||{}));continue}const list=JSON.parse(localStorage.getItem(key)||'[]').filter((r:RecordValue)=>r.id!==op.id);if(op.payload)list.push(op.payload);localStorage.setItem(key,JSON.stringify(list))}
+ for(const [collection,key] of Object.entries(COLLECTION_KEYS)){const active=rows.filter(row=>row.collection===collection&&row.payload!==null);localStorage.setItem(key,JSON.stringify(active.map(row=>row.payload)))}
+ for(const row of rows)revisions.set(`${row.collection}/${row.id}`,row.revision);
+ for(const op of pending){const key=COLLECTION_KEYS[op.collection];if(!key)continue;const list=JSON.parse(localStorage.getItem(key)||'[]').filter((r:RecordValue)=>r.id!==op.id);if(op.payload)list.push(op.payload);localStorage.setItem(key,JSON.stringify(list))}
 }
 // Loading shared data is exposed as a promise. Safari can run a second page
 // script before this module's top-level await finishes, so readers that run at
 // page load should also `await storageReady` rather than rely on module order.
 export const storageReady:Promise<void>=(async()=>{
-if(publicView){ready=false;try{const body=await (await api('public/state')).json() as {records:SharedRecord[]};for(const [collection,key] of Object.entries(COLLECTION_KEYS)){const active=body.records.filter(r=>r.collection===collection&&r.payload);publicCache.set(key,JSON.stringify(collection==='alan-workspace'?active[0]?.payload||{}:active.map(r=>r.payload)))}ready=true}catch(cause){error=(cause as Error).message}}
+if(publicView){ready=false;try{const body=await (await api('public/state')).json() as {records:SharedRecord[]};for(const [collection,key] of Object.entries(COLLECTION_KEYS)){const active=body.records.filter(r=>r.collection===collection&&r.payload);publicCache.set(key,JSON.stringify(active.map(r=>r.payload)))}ready=true}catch(cause){error=(cause as Error).message}}
 else if(enabled){try{
  const body=await (await api('state')).json() as {userId:string;administrator:boolean;records:SharedRecord[]};
  const previousOwner=localStorage.getItem(CACHE_OWNER_KEY);

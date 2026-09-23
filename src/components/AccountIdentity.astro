@@ -24,7 +24,7 @@ const roles=[];
 if(access?.administrator)roles.push('Administrator');
 if(access?.artistId)roles.push('Artist');
 if(access?.venueId)roles.push('Venue');
-const artistWorkspace=access?.artistId==='artist-alan-just'?'Alan Just':String(artistApplication?.payload.name||access?.artistId||'');
+const artistWorkspace=String(artistApplication?.payload.name||access?.artistId||'');
 ---
 {isAuthenticated&&<aside class="account-identity" aria-label="Current account">
  <div>

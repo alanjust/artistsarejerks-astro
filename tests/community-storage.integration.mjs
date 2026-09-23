@@ -78,7 +78,6 @@ try{
  assert.equal((await call('memberships','GET',undefined,{},member)).status,403);
  assert.equal((await call('memberships','PUT',{userId:'user_test',artistId:null,venueId:null,administrator:false})).status,200);
  assert.equal((await call('memberships','PUT',{userId:'user_test',artistId:'unapproved',venueId:null,administrator:false})).status,400);
- assert.equal((await call('memberships','PUT',{userId:'user_duplicate',artistId:'artist-alan-just',venueId:null,administrator:false})).status,409);
  await db.exec("INSERT INTO community_memberships(user_id,administrator) VALUES('user_admin',1)");
  assert.equal((await call('memberships','PUT',{userId:'user_admin',artistId:null,venueId:null,administrator:false},{},{userId:'user_admin',administrator:true})).status,403);
  const ownerUpload=await signed('images/member-image','PUT',png,{},member);assert.equal(ownerUpload.status,200);
@@ -104,27 +103,6 @@ try{
  assert.equal((await call('memberships','PUT',{userId:'user_publicowner',artistId:'public-artist',venueId:null,administrator:false})).status,200);
  assert.equal((await call('memberships','PUT',{userId:'user_secondowner',artistId:'public-artist',venueId:null,administrator:false})).status,409);
  const assigned=await (await signed('access','GET',undefined,{}, {userId:'user_publicowner',administrator:false})).json();assert.equal(assigned.artistId,'public-artist');
- // Alan uploads persist in the same workspace record and project only visible images.
- const alanRecord={collection:'alan-workspace',id:'alan-just',revision:0,payload:{artwork:[{id:'alan-self-portrait',visibility:'private',sale:'private-price'},{id:'alan-connie',visibility:'public'}],profile:{email:'alan-private-contact'},uploadedWorks:[{id:'iris-test',title:'Iris test',visibility:'public',imageKey:'test-image',sale:'private-price',price:'alan-secret-price'},{id:'alan-hidden',title:'Alan hidden upload',visibility:'private',imageKey:'hidden-image'}]}};
- assert.equal((await call('record','PUT',alanRecord)).status,200);
- const restoredAlan=(await (await call('state')).json()).records.find(r=>r.collection==='alan-workspace');
- assert.equal(restoredAlan.payload.uploadedWorks[0].title,'Iris test');
- const alanPublic=(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records.find(r=>r.collection==='alan-workspace');
- assert.equal(alanPublic.payload.uploadedWorks.length,1);
- assert.deepEqual(alanPublic.payload.hiddenArtworkIds,['alan-self-portrait']);
- const alanShowing={collection:'showings',id:'alan-test-show',revision:0,payload:{id:'alan-test-show',artistId:'artist-alan-just',venueId:'venue-new-test',venue:'Test Venue',address:'1 Test Way',city:'Medford',website:'',start:'2026-09-01',end:'2026-10-01',status:'published',featuredArtworkId:'iris-test',artworkIds:['iris-test','alan-self-portrait']}};
- assert.equal((await call('record','PUT',alanShowing)).status,200);
- const projectedShowing=(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records.find(r=>r.collection==='showings'&&r.id==='alan-test-show');
- assert.equal(projectedShowing.payload.featuredArtworkId,'iris-test');
- assert.deepEqual(projectedShowing.payload.artworkIds,['iris-test']);
- assert.ok(!JSON.stringify(alanPublic).includes('alan-secret-price'));
- assert.ok(!JSON.stringify(alanPublic).includes('alan-private-contact'));
- assert.equal((await call('record','PUT',{...alanRecord,revision:1,payload:{...alanRecord.payload,pageVisible:false}})).status,200);
- const offlineAlan=(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records.find(r=>r.collection==='alan-workspace');
- assert.deepEqual(offlineAlan.payload.uploadedWorks,[]);
- assert.equal((await call('record','PUT',{...alanRecord,revision:2,payload:{...alanRecord.payload,artwork:[{id:'alan-self-portrait',visibility:'public'}]}})).status,200);
- const visibleAgain=(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records.find(r=>r.collection==='alan-workspace');
- assert.deepEqual(visibleAgain.payload.hiddenArtworkIds,[]);
  const publicResponse=await mf.dispatchFetch('http://localhost/api/community/public/state');assert.equal(publicResponse.status,200);
  const publicData=await publicResponse.json(),text=JSON.stringify(publicData);
  for(const secretValue of ['private@example.test','private-phone','private-site','secret-price','Hidden','secret-email','secret-note'])assert.ok(!text.includes(secretValue),secretValue+' must not be public');

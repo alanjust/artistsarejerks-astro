@@ -23,11 +23,11 @@ export async function communityArtistRecord(userId:string|null,artistId:string|n
  const capability=await signCapability(secret,{userId,administrator:false},'GET',path,new Uint8Array());
  try{const response=await communityFetch(path,{headers:{'x-aaj-capability':capability.value,'x-aaj-signature':capability.signature},signal:AbortSignal.timeout(10000)},locals);if(!response.ok)return null;const body=await response.json() as {records?:{collection:string;id:string;payload:Record<string,unknown>|null}[]};return body.records?.find(record=>record.collection==='artists'&&record.id===artistId)?.payload||null}catch{return null}
 }
-export async function requireCommunityAccess(context: Pick<APIContext, 'locals' | 'redirect'> & {response: {headers: Headers};url:URL}, role: 'alan' | 'administrator' | 'venue' | 'artist') {
+export async function requireCommunityAccess(context: Pick<APIContext, 'locals' | 'redirect'> & {response: {headers: Headers};url:URL}, role: 'administrator' | 'venue' | 'artist') {
   const {isAuthenticated, userId} = context.locals.auth();
   if (!isAuthenticated) return context.redirect('/sign-in/');
   const access = await communityAccess(userId,context.locals);
-  if (!access || (role === 'administrator' ? !access.administrator : role==='venue' ? !access.administrator&&(!access.venueId||context.url.searchParams.get('venue')!==access.venueId) : role==='artist' ? !access.administrator&&(!access.artistId||context.url.searchParams.get('artist')!==access.artistId) : access.artistId !== 'artist-alan-just')) {
+  if (!access || (role === 'administrator' ? !access.administrator : role==='venue' ? !access.administrator&&(!access.venueId||context.url.searchParams.get('venue')!==access.venueId) : role==='artist' ? !access.administrator&&(!access.artistId||context.url.searchParams.get('artist')!==access.artistId) : true)) {
     return new Response('This account does not have access to this workspace.', {status: 403, headers: {'Cache-Control':'private, no-store'}});
   }
   context.response.headers.set('Cache-Control', 'private, no-store');

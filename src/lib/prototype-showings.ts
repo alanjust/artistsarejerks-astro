@@ -12,7 +12,6 @@ export interface Showing {
   // Ongoing showings have no end date and are confirmed by the artist every 60 days.
   regionId?: string; ongoing?: boolean; confirmedAt?: string;
 }
-function alanUploads(){try{const value=JSON.parse(getStoredItem('aaj-artist-workspace-prototype')||'{}');return Array.isArray(value.uploadedWorks)?value.uploadedWorks:[]}catch{return []}}
 export function readShowings(): Showing[] {
   try {
     const data = JSON.parse(getStoredItem(SHOWINGS_KEY) || '[]');
@@ -54,8 +53,6 @@ export async function renderShowings(root: HTMLElement) {
     const artist = pilot.artists.find(a => a.id === show.artistId) || (member ? {id:member.id,name:member.name,practice:member.practice.split(',').map(s=>s.trim()),slug:''}:null);
     const memberWork=member?.works.find(w=>w.id===show.featuredArtworkId&&w.public);
     let artwork=pilot.artworks.find(a => a.id === show.featuredArtworkId) as {image:string;title:string;medium?:string}|undefined;
-    const alanWork=show.artistId==='artist-alan-just'?alanUploads().find((w:any)=>w.id===show.featuredArtworkId&&w.visibility==='public'):null;
-    if(alanWork)artwork={image:alanWork.sampleImage||`/api/community/${publicStorageMode()?'public/':''}images/${encodeURIComponent(alanWork.imageKey)}`,title:alanWork.title,medium:alanWork.medium};
     if(memberWork){try{artwork={image:await imageUrl(memberWork),title:memberWork.title,medium:memberWork.medium}}catch{continue}}
     if(!artist||!artwork)continue;
     const artistHref=member?memberUrl(member.id):`/prototype/artists/${artist.slug}/`;
@@ -94,9 +91,8 @@ export async function renderShowings(root: HTMLElement) {
       const gallery=create('div','','browser-showing-artworks');gallery.dataset.browserShow=show.id;
       for(const id of show.artworkIds){
         const fixture=pilot.artworks.find(w=>w.id===id&&w.artistId===artist.id);
-        const alanFixture=show.artistId==='artist-alan-just'?alanUploads().find((w:any)=>w.id===id&&w.visibility==='public'):null;
         const ownWork=member?.works.find(w=>w.id===id&&w.public);
-        let source=fixture?.image||alanFixture?.sampleImage||(alanFixture?.imageKey?`/api/community/${publicStorageMode()?'public/':''}images/${encodeURIComponent(alanFixture.imageKey)}`:''),title=fixture?.title||alanFixture?.title||'';
+        let source=fixture?.image||'',title=fixture?.title||'';
         if(ownWork){try{source=await imageUrl(ownWork);title=ownWork.title}catch{continue}}
         if(!source)continue;
         const figure=create('figure'),img=document.createElement('img');img.src=source;img.alt=title;img.loading='lazy';figure.append(img,create('figcaption',title));gallery.append(figure);

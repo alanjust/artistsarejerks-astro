@@ -85,7 +85,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 5. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet.
-   - The first-prototype Alan workspace (`/prototype/workspace/`, the `alan-workspace` record, `showing-form.ts`, and pilot-artist special cases) is no longer used on the test site and can be retired.
+   - The first-prototype Alan workspace code was retired on September 22. `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/`. The unused `alan-workspace` and `featured` rows remain in the test database and can be deleted when convenient.
 6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
 7. **Before public launch:** decide the mailing address for follower emails. The site may not need one if the notices count as non-commercial; ask a lawyer.
 8. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.

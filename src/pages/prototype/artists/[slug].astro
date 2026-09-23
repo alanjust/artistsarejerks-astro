@@ -5,29 +5,15 @@ import BrowserShowings from '../../../components/community-prototype/BrowserShow
 import pilot from '../../../data/community-pilot.json';
 
 export const prerender = false;
-import {communityFetch} from '../../../lib/community-transport';
 // On the test site Alan Just is a member artist now; the first prototype page forwards there.
 if(import.meta.env.MODE==='online-test'&&Astro.params.slug==='alan-just')return Astro.redirect('/prototype/artists/member/?artist=alan-just',301);
 const artist=pilot.artists.find(item=>item.slug===Astro.params.slug);
 if(!artist)return new Response('Artist page unavailable.',{status:404});
-let uploads:any[]=[];
-let previewError='';
-let previewReady=artist.slug!=='alan-just';
-let hiddenArtworkIds=new Set<string>();
-if(artist.slug==='alan-just'){
- try {
-  const response=await communityFetch('/api/community/public/state',{signal:AbortSignal.timeout(15000)},Astro.locals);
-  if(!response.ok)throw new Error('Preview storage unavailable');
-  const data=await response.json() as {records:{collection:string;payload:any}[]};
-  const workspace=data.records.find(row=>row.collection==='alan-workspace')?.payload;
-  previewReady=true;
-  hiddenArtworkIds=new Set(workspace?.hiddenArtworkIds||[]);
-  if(workspace?.pageVisible===false)return new Response('This artist page is offline.',{headers:{'Cache-Control':'private, no-store'}});
-  uploads=(workspace?.uploadedWorks||[]).filter((work:any)=>work.visibility==='public').map((work:any)=>({id:work.id,title:work.title,medium:work.medium,year:work.year||null,dimensions:null,image:work.sampleImage||`/api/community/public/images/${encodeURIComponent(work.imageKey)}`,salePresentation:work.sale,publicPrice:work.sale==='public-price'?{amount:Number(work.price),currency:'USD'}:null}));
- }catch{previewError='Artwork visibility could not be loaded. Please reload this preview to try again.'}
-}
+// Sample (pilot) artist pages are for local development; member artists have their own pages.
+const uploads:{id:string;title:string;medium:string;year:null;dimensions:null;image:string;salePresentation:string;publicPrice:null}[]=[];
+const previewError='';
 Astro.response.headers.set('Cache-Control','private, no-store');
-const artworks = pilot.artworks.filter((work) => previewReady && !hiddenArtworkIds.has(work.id) && artist.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active');
+const artworks = pilot.artworks.filter((work) => artist.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active');
 const shows = (import.meta.env.MODE==='online-test'&&artist.slug==='alan-just'?[]:pilot.exhibitions).filter((show) => show.artistId === artist.id && show.publicationStatus === 'published');
 const currentShow = shows.find((show) => show.derivedStatusAsOfPilotDate === 'showing-now');
 const upcomingShow = shows.find((show) => show.derivedStatusAsOfPilotDate === 'upcoming');
