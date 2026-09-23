@@ -50,6 +50,19 @@ export function canWrite(principal:Principal,collection:string,id:string,payload
  if(collection==='showings')return !!principal.artistId&&(!existing||existing.artistId===principal.artistId)&&(!payload||payload.artistId===principal.artistId)&&!!(existing||payload);
  return false;
 }
+// Fields the storage service keeps on each piece, whatever a save sends: when the
+// piece last went public (for the administrator's "New work" list), and whether an
+// administrator has hidden it. Only the administrator's Hide action changes the latter.
+export function settleWorks(payload:Record<string,unknown>,existing:Record<string,unknown>|null,now:string){
+ if(!Array.isArray(payload.works))return;
+ const before=new Map((Array.isArray(existing?.works)?existing!.works as Record<string,unknown>[]:[]).map(work=>[work.id,work]));
+ for(const work of payload.works as Record<string,unknown>[]){
+  const old=before.get(work.id);
+  if(work.public===true)work.publicAt=old?.public===true?old.publicAt:now;else delete work.publicAt;
+  if(old?.hiddenByAdmin===true){work.hiddenByAdmin=true;work.hiddenAt=old.hiddenAt}else{delete work.hiddenByAdmin;delete work.hiddenAt}
+  work.madeWithAI=work.madeWithAI===true;
+ }
+}
 export function canRead(principal:Principal,collection:string,id:string,payload:Record<string,unknown>|null){
  if(principal.administrator)return true;
  if(collection==='applications')return !!principal.artistId&&id===principal.artistId;

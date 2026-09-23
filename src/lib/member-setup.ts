@@ -1,4 +1,4 @@
-import {MAX_WORKS,getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
+import {MAX_WORKS,isShown,getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
 import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings,writeShowing} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
@@ -6,6 +6,7 @@ import {storageReady} from './community-storage';
 import {mountTurnstile} from './turnstile';
 import {wireFollowForm} from './follow-form';
 import {initShowingsPanel} from './member-showings';
+import {aiLabel,reportLink} from './artwork-moderation';
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
 // A web address typed without https:// still counts.
@@ -85,7 +86,7 @@ export async function initMemberSetup(){
  async function editWork(work:MemberWork){
   editingWorkId=work.id;selected=null;sample=false;if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=''}
   (upload.elements.namedItem('title') as HTMLInputElement).value=work.title;(upload.elements.namedItem('medium') as HTMLInputElement).value=work.medium||'';(upload.elements.namedItem('year') as HTMLInputElement).value=work.year||'';
-  sale.value=work.sale||'contact';price.value=work.price||'';(upload.elements.namedItem('public') as HTMLInputElement).checked=work.public;
+  sale.value=work.sale||'contact';price.value=work.price||'';(upload.elements.namedItem('public') as HTMLInputElement).checked=work.public;(upload.elements.namedItem('madeWithAI') as HTMLInputElement).checked=work.madeWithAI===true;
   $('[data-member-price]').hidden=sale.value!=='price';price.required=sale.value==='price';
   showPreview(await imageUrl(work));artworkMode();uploadMessage.textContent='Choose a new photo only if you want to replace this one.';upload.scrollIntoView({behavior:'smooth',block:'start'});
  }
@@ -105,7 +106,8 @@ export async function initMemberSetup(){
   for(const work of artist.works){
    const row=el('article');row.className='card';const img=document.createElement('img');img.src=await imageUrl(work);img.alt=work.title;
    const copy=document.createElement('div'),details=[work.medium,work.year].filter(Boolean).join(' · ');copy.append(el('h3',work.title));if(details)copy.append(el('p',details));
-   copy.append(el('p',work.public?(artist.published?'On your public page':'Will show when your page is published'):'Private'));
+   if(work.madeWithAI)copy.append(aiLabel());
+   copy.append(el('p',work.hiddenByAdmin?'Hidden by Artists Are Jerks. It’s off your page and out of any showing. If you think that’s a mistake, reply to your approval email.':work.public?(artist.published?'On your public page':'Will show when your page is published'):'Private'));
    const actions=document.createElement('div');actions.className='actions';
    const edit=document.createElement('button');edit.type='button';edit.textContent='Edit';edit.addEventListener('click',()=>void editWork(work));
    const toggle=document.createElement('button');toggle.type='button';toggle.textContent=work.public?'Make private':'Show on my page';
@@ -124,7 +126,7 @@ export async function initMemberSetup(){
   if(!existing&&!sample&&!selected){uploadMessage.textContent='Choose a photo of your work first.';return}
   saveButton.disabled=true;uploadMessage.textContent='Saving…';
   const data=new FormData(upload),replacement=Boolean(sample||selected),imageKey=replacement?crypto.randomUUID():existing?.imageKey||crypto.randomUUID();
-  const work:MemberWork={id:existing?.id||crypto.randomUUID(),title:String(data.get('title')||'').trim()||'Untitled',medium:String(data.get('medium')||'').trim(),year:String(data.get('year')||''),sale:String(data.get('sale')),price:sale.value==='price'?price.value:'',public:data.has('public'),imageKey,sampleImage:sample?pilot.artworks[0].image:replacement?'':existing?.sampleImage||''};
+  const work:MemberWork={...existing,id:existing?.id||crypto.randomUUID(),title:String(data.get('title')||'').trim()||'Untitled',medium:String(data.get('medium')||'').trim(),year:String(data.get('year')||''),sale:String(data.get('sale')),price:sale.value==='price'?price.value:'',public:data.has('public'),imageKey,sampleImage:sample?pilot.artworks[0].image:replacement?'':existing?.sampleImage||'',madeWithAI:data.has('madeWithAI')};
   try{
    if(selected)await saveImage(work.imageKey,selected);
    const updated=existing?artist.works.map(item=>item.id===existing.id?work:item):[...artist.works,work];
@@ -258,9 +260,9 @@ export async function initMemberPublicPage(){
    }catch(cause){contactStatus.textContent=cause instanceof Error?cause.message:'Your message couldn’t be sent.';send.disabled=false;check?.reset()}
   });
  }
- const works=artist.works.filter(w=>w.public),root=document.querySelector('[data-member-public-works]')!,urls:string[]=[];const dialog=document.querySelector<HTMLDialogElement>('[data-member-viewer]')!,image=document.querySelector<HTMLImageElement>('[data-viewer-image]')!;let active=0;
+ const works=artist.works.filter(isShown),root=document.querySelector('[data-member-public-works]')!,urls:string[]=[];const dialog=document.querySelector<HTMLDialogElement>('[data-member-viewer]')!,image=document.querySelector<HTMLImageElement>('[data-viewer-image]')!;let active=0;
  function display(index:number){active=(index+works.length)%works.length;image.src=urls[active];image.alt=works[active].title;document.querySelector('[data-viewer-caption]')!.textContent=`${works[active].title} · ${active+1} of ${works.length}`;}
- for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';card.dataset.artworkId=work.id;const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.sampleImage)copy.append(el('p','Sample artwork — borrowed for prototype layout.'));root.append(card)}
+ for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';card.dataset.artworkId=work.id;const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.madeWithAI)copy.insertBefore(aiLabel(),copy.firstChild);if(work.sampleImage)copy.append(el('p','Sample artwork—borrowed for prototype layout.'));if(!preview)copy.append(reportLink(id,work.id,work.title));root.append(card)}
  if(!works.length)status.textContent='No artwork selected for public display yet.';
  const {tagArtworks}=await import('./show-pages');tagArtworks(document,id);
  document.querySelector('[data-close-viewer]')?.addEventListener('click',()=>dialog.close());document.querySelector('[data-viewer-previous]')?.addEventListener('click',()=>display(active-1));document.querySelector('[data-viewer-next]')?.addEventListener('click',()=>display(active+1));dialog.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){e.preventDefault();display(active-1)}if(e.key==='ArrowRight'){e.preventDefault();display(active+1)}});window.addEventListener('pagehide',()=>urls.filter(u=>u.startsWith('blob:')).forEach(u=>URL.revokeObjectURL(u)));

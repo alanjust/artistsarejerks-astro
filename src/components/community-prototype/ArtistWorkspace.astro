@@ -2,6 +2,7 @@
 // The artist's private workspace: a home that says where things stand, the first
 // piece of artwork, the page itself, showings, and profile details.
 import '../../styles/showing-cards.css';
+import '../../styles/moderation.css';
 import pilot from '../../data/community-pilot.json';
 import '../../styles/venue-workspace.css';
 const {initialArtist = null} = Astro.props;
@@ -36,6 +37,7 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
         </label>
         <button type="button" class="quiet-button" data-use-sample>Or use a labeled sample image</button>
         <label class="title-field">Title <small>optional</small><input name="title" placeholder="Untitled" maxlength="200"/></label>
+        <label class="check ai-check"><input name="madeWithAI" type="checkbox"/> <span>Made with AI <small>AI images are welcome here. This adds a small “Made with AI” label wherever the piece appears.</small></span></label>
         <details class="more-details">
           <summary>More details</summary>
           <div class="fields">

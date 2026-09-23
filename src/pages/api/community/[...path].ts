@@ -11,9 +11,9 @@ export const ALL:APIRoute=async (context)=>{
  if(request.method==='GET'&&(url.pathname==='/api/community/public/state'||url.pathname==='/api/community/public/regions'||/^\/api\/community\/public\/images\/[a-zA-Z0-9_-]{1,160}$/.test(url.pathname))){
   try{const response=await communityFetch(url.pathname,{signal:AbortSignal.timeout(15000)},locals);const headers=new Headers({'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});headers.set('Content-Type',response.headers.get('content-type')||'application/json');return new Response(response.body,{status:response.status,headers})}catch{return fail('Public directory storage unavailable.',503)}
  }
- // Visitors can message or follow an artist without an account. Same-origin only; the
+ // Visitors can message or follow an artist, or report a piece, without an account. Same-origin only; the
  // storage service applies spam checks and rate limits.
- if(request.method==='POST'&&['/api/community/public/messages','/api/community/public/follow','/api/community/public/follow/confirm','/api/community/public/follow/unsubscribe'].includes(url.pathname)){
+ if(request.method==='POST'&&['/api/community/public/messages','/api/community/public/follow','/api/community/public/follow/confirm','/api/community/public/follow/unsubscribe','/api/community/public/report'].includes(url.pathname)){
   if(request.headers.get('origin')!==url.origin)return fail('Origin rejected.',403);
   const text=await request.text().catch(()=>'');
   if(text.length>16384)return fail('Message too long.',413);

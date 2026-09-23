@@ -48,7 +48,7 @@ try{
  const venueApplication={kind:'venue',payload:{name:'Applicant Venue',type:'Gallery',regionId:'region-rogue-valley',city:'Ashland',address:'1 Test Street',postalCode:'97520',description:'Test gallery',website:'',phone:'',hours:'',accessibility:'',instructions:'',contactName:'Venue Owner',email:'venue@example.test',opportunities:'Wall space',available:true}};
  const venueSubmission=await call('applications','PUT',venueApplication,{},applicant);assert.equal(venueSubmission.status,200);const venueApplicationId=(await venueSubmission.json()).id;
  assert.equal((await call('applications','PUT',{action:'review',kind:'venue',id:venueApplicationId,status:'approved'})).status,200);
- const inbox=await (await call('applications')).json();assert.equal(inbox.applications.length,2);assert.equal(inbox.notifications.length,3);assert.ok(inbox.notifications.every(notification=>notification.delivery_status==='not_configured'));
+ const inbox=await (await call('applications')).json();assert.equal(inbox.applications.length,2);assert.equal(inbox.notifications.length,2,'the artist alert waits for sample pieces; the venue and region alerts are sent');assert.ok(inbox.notifications.every(notification=>notification.delivery_status==='not_configured'));
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state')).status,401);
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state',{headers:{'x-aaj-capability':btoa(JSON.stringify({principal:admin})),'x-aaj-signature':'0'.repeat(64)}})).status,401);
 

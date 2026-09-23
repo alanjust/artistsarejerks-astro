@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 22, 2026. `main` is at `260fdb4` plus this documentation commit, and matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 22, 2026, after gatekeeping step 1. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -11,7 +11,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Private test site:** `https://aaj-dev.alanjust.com`, behind Cloudflare Access. New work is deployed here only.
   - Site: `npm run build:test` then `npx wrangler deploy --config wrangler.test.jsonc`
   - Storage service: `npx wrangler deploy --config community-api/wrangler.test.jsonc`
-  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0008`)
+  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0009`)
 - **Public Pages site** (`artistsarejerks-astro.pages.dev`): automatic production and preview builds were turned **off** on September 21. Pushing to `main` changes nothing public.
 - **Local:** `npm run dev` (port 4326) and `npm run community:dev` (port 8787), with separate local storage. `npm run community:migrate` applies local migrations.
 
@@ -31,9 +31,11 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - The history section's "Artists" link is renamed "Artists in History".
 
 **Joining and onboarding**
-1. **Apply** (`/join/?kind=artist`). Signed-out visitors create an account first, then return. Four fields: name, city, what you make, and where we can see your work. The email comes from the account.
+1. **Apply** (`/join/?kind=artist`). Signed-out visitors create an account first, then return. Four fields (name, city, what you make, where we can see your work) plus **two or three photos of their work**. The email comes from the account.
+   - The form spells out the standard: art made to be looked at, not crafts, useful objects, or merchandise; ceramics and glass only when made for display; AI images welcome if labeled.
+   - The photos become the first pieces on the artist's page. You're emailed about the request only once they arrive. A request saved without them asks for just the photos next time.
 2. **Private page opens immediately.** Applying creates the artist record and workspace membership together. Nothing is public until approval.
-3. **Approval** in `/prototype/admin/inbox/`. There is no acceptance step. The artist is emailed "You're in", and the inbox shows delivery status with a resend button. A decline closes the workspace.
+3. **Approval** in `/prototype/admin/inbox/`. Each artist request shows its sample pieces large, with any AI label. There is no acceptance step. The artist is emailed "You're in", and the inbox shows delivery status with a resend button. A decline closes the workspace.
 4. **Workspace** (`/prototype/workspace/member/?artist=…`), with tabs Home, Artwork, Showings, Messages, Profile, Your page.
    - A new artist lands on "Your first piece", image first.
    - "This is your page" shows a live preview, a "how should people reach you" choice (message form, website, email, or not yet), a one-time "I made this work" confirmation, and Publish. Publish waits for approval.
@@ -42,6 +44,13 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - Ongoing showings ask "Still up?" after 60 days and leave public listings 14 days after a missed check-in.
    - After the first published showing, the artist is asked about venue-opportunity announcements.
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
+
+**Keeping the site honest** (gatekeeping step 1)
+- **Made with AI:** a checkbox on each piece in the workspace (and on each application photo). A small "Made with AI" label then appears on the artist page, show pages, Showing Now cards, and Our Artists.
+- **Report this:** a small link under each member artist's piece (artist page and show pages). Visitors pick a reason (not the artist's own work, craft or product, unlabeled AI, something else), with optional details and email. Same spam guards as the message form, five reports an hour per visitor. You're emailed; reports sit at the top of the inbox with **Hide the piece** and **Dismiss**.
+- **New work:** at the bottom of the inbox, every piece on the site, newest first, each with **Hide**. Hidden pieces stay listed with **Unhide**. A hidden piece leaves the public page, its image stops being served, and the artist sees "Hidden by Artists Are Jerks" in their workspace. The artist can't undo it.
+- The storage service keeps each piece's "went public" date and the hidden flag itself; ordinary saves can't change them.
+- Fixed along the way: a price an artist chose to show ("Show a price") was being left out of public data.
 
 **Visitors reaching artists**
 - **Message form** on the artist page. It is emailed to the artist with the visitor as reply-to, and saved to the workspace Messages tab. The artist's address is never shown.
@@ -57,6 +66,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - The message form was built now; Turnstile is on.
 - The venue-opportunity question comes after the first published showing.
 - New work goes to the test site only.
+- **The standard (September 22):** fine and visual art made to be looked at: painting, drawing, printmaking, photography, collage, mixed media, sculpture. No crafts, functional objects, or merchandise. Ceramics and glass only when made for display. AI images allowed, labeled. Nudity and violence allowed without warnings; whether to hang a piece is the venue's call. That reasoning goes in the Community Guidelines.
 
 ## Configuration outside Git
 
@@ -74,10 +84,14 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 ## Tests
 
-`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake, messages, followers, and Showing Now list tests. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
+`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake, messages, followers, artwork moderation, and Showing Now list tests. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
 
 ## Known issues and open list
 
+0. **Gatekeeping steps 2 and 3 (next):**
+   - Step 2: draft four plain-language documents for Alan's review: Artist Terms, Community Guidelines, Privacy Notice, Site Terms.
+   - Step 3: an unchecked "I agree" at application (store version and time), footer links, a short agreement line on the message and follow forms, re-agreement when terms change, and a lawyer's review before launch.
+   - Small follow-up: hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
 1. **For Venues page:** waiting on Alan's OK of the benefits list.
 2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.
 3. **Login clarity:** make Sign up and Sign in look clearly different, and write tester instructions that name both logins (the Cloudflare code, then the site account).

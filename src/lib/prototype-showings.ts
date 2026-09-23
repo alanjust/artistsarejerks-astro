@@ -1,6 +1,7 @@
 import {getStoredItem,setStoredItem,publicStorageMode,storageReady} from './community-storage';
 import pilot from '../data/community-pilot.json';
-import {getMemberArtist,imageUrl,memberUrl} from './member-artists';
+import {getMemberArtist,imageUrl,isShown,memberUrl} from './member-artists';
+import {aiLabel} from './artwork-moderation';
 import {readVenues,venueProfileUrl} from './prototype-venues';
 import {showingStatus,dates,datesLine,shortDates,showingTag,artistSortKey,checkInLapsed} from './showing-display';
 export {showingStatus,dates};
@@ -51,9 +52,9 @@ export async function renderShowings(root: HTMLElement) {
   for(const show of matches) {
     const member=getMemberArtist(show.artistId);
     const artist = pilot.artists.find(a => a.id === show.artistId) || (member ? {id:member.id,name:member.name,practice:member.practice.split(',').map(s=>s.trim()),slug:''}:null);
-    const memberWork=member?.works.find(w=>w.id===show.featuredArtworkId&&w.public);
-    let artwork=pilot.artworks.find(a => a.id === show.featuredArtworkId) as {image:string;title:string;medium?:string}|undefined;
-    if(memberWork){try{artwork={image:await imageUrl(memberWork),title:memberWork.title,medium:memberWork.medium}}catch{continue}}
+    const memberWork=member?.works.find(w=>w.id===show.featuredArtworkId&&isShown(w));
+    let artwork=pilot.artworks.find(a => a.id === show.featuredArtworkId) as {image:string;title:string;medium?:string;ai?:boolean}|undefined;
+    if(memberWork){try{artwork={image:await imageUrl(memberWork),title:memberWork.title,medium:memberWork.medium,ai:memberWork.madeWithAI===true}}catch{continue}}
     if(!artist||!artwork)continue;
     const artistHref=member?memberUrl(member.id):`/prototype/artists/${artist.slug}/`;
 
@@ -73,6 +74,7 @@ export async function renderShowings(root: HTMLElement) {
       if(tag)copy.append(create('span',tag.label,`showing-tag tag-${tag.kind}`));
       const heading=create('h3');heading.append(link(artist.name,showUrl(show.id),'card-title'));
       copy.append(heading,create('p',`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
+      if(artwork.ai)copy.append(aiLabel());
       card.append(frame,copy);
       built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':ongoing?'.ongoing-grid':'.showing-grid')});
       continue;
@@ -91,7 +93,7 @@ export async function renderShowings(root: HTMLElement) {
       const gallery=create('div','','browser-showing-artworks');gallery.dataset.browserShow=show.id;
       for(const id of show.artworkIds){
         const fixture=pilot.artworks.find(w=>w.id===id&&w.artistId===artist.id);
-        const ownWork=member?.works.find(w=>w.id===id&&w.public);
+        const ownWork=member?.works.find(w=>w.id===id&&isShown(w));
         let source=fixture?.image||'',title=fixture?.title||'';
         if(ownWork){try{source=await imageUrl(ownWork);title=ownWork.title}catch{continue}}
         if(!source)continue;

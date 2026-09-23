@@ -1,6 +1,6 @@
 /// <reference path="./worker-configuration.d.ts" />
-import {publicRecords,publicImageKeys,type PublicRecord} from './public-records';
-import {verifyCapability,canWrite,canRead} from './security';
+import {publicRecords,publicImageKeys,visibleWorks,type PublicRecord} from './public-records';
+import {verifyCapability,canWrite,canRead,settleWorks} from './security';
 const collections = new Set(['applications','artists','venues','showings']);
 const validId = (id:unknown):id is string => typeof id==='string' && /^[a-zA-Z0-9_-]{1,160}$/.test(id);
 const local = (host:string) => host==='localhost'||host==='127.0.0.1'||host==='[::1]';
@@ -75,6 +75,24 @@ async function notifyFollowers(env:NotificationEnv,showingId:string){
   catch(error){console.error(JSON.stringify({event:'follower_notice_failed',message:error instanceof Error?error.message:String(error)}))}
  }
  await env.DB.prepare('UPDATE showing_notices SET recipients=?1,sent=?2 WHERE showing_id=?3').bind(followers.length,sent,showingId).run();
+}
+const reportReasons:Record<string,string>={'not-theirs':'It isn’t the artist’s own work','not-art':'It’s a craft or a product, not art','unlabeled-ai':'It was made with AI but isn’t labeled','other':'Something else'};
+// Tells the administrator a visitor reported a piece. The report is in the inbox either way.
+async function sendReportNotice(env:NotificationEnv,artistName:string,title:string,reason:string,details:string){
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_TO||!env.ADMIN_NOTIFICATION_FROM)return;
+ const url=`${siteUrl(env)}/prototype/admin/inbox/#reports`,label=reportReasons[reason]||reason;
+ try{await env.ADMIN_EMAIL.send({to:env.ADMIN_NOTIFICATION_TO,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`Report: “${title.slice(0,80)}” by ${artistName.slice(0,80)}`,text:`A visitor reported “${title}” by ${artistName}.\n\nReason: ${label}${details?`\n\n${details}`:''}\n\nReview it: ${url}`,html:`<p>A visitor reported “${escapeHtml(title)}” by ${escapeHtml(artistName)}.</p><p>Reason: ${escapeHtml(label)}</p>${details?`<blockquote style="white-space:pre-wrap">${escapeHtml(details)}</blockquote>`:''}<p><a href="${escapeHtml(url)}">Review it in the inbox</a></p>`})}
+ catch(error){console.error(JSON.stringify({event:'report_notice_failed',message:error instanceof Error?error.message:String(error)}))}
+}
+// Hides or restores one piece. Only an administrator reaches this.
+async function setWorkHidden(env:Env,artistId:string,workId:string,hidden:boolean){
+ const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1 AND payload IS NOT NULL").bind(artistId).first<{payload:string}>();
+ if(!row)return false;
+ const artist=JSON.parse(row.payload),work=(Array.isArray(artist.works)?artist.works:[]).find((item:Record<string,unknown>)=>item&&item.id===workId);
+ if(!work)return false;
+ if(hidden){work.hiddenByAdmin=true;work.hiddenAt=new Date().toISOString()}else{delete work.hiddenByAdmin;delete work.hiddenAt}
+ await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='artists' AND id=?2").bind(JSON.stringify(artist),artistId).run();
+ return true;
 }
 async function turnstileOk(env:NotificationEnv,token:unknown,ip:string){
  if(!env.TURNSTILE_SECRET)return true;
@@ -164,6 +182,25 @@ export default {
         return json({saved:true});
       }catch(error){console.error(JSON.stringify({event:'follow_error',message:error instanceof Error?error.message:String(error)}));return json({error:'That didn’t go through. Please try again.'},400)}
     }
+    if(request.method==='POST'&&url.pathname==='/api/community/public/report'){
+      try{
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,8192))) as Record<string,unknown>;
+        const reason=String(body.reason??''),details=String(body.details??'').trim(),email=String(body.email??'').trim();
+        if(!validId(body.artistId)||!validId(body.workId)||!reportReasons[reason]||details.length>1000||email&&(!/^\S+@\S+\.\S+$/.test(email)||email.length>254))return json({error:'Choose what’s wrong, and check the email address if you added one.'},400);
+        if(String(body.website??'')||Number(body.elapsed)<2000)return json({sent:true});
+        const client=request.headers.get('x-aaj-client')||'unknown';
+        if(!await turnstileOk(env as NotificationEnv,body.turnstile,client))return json({error:'The spam check didn’t pass. Please try again.'},400);
+        const artist=publicRecords(await loadRecords()).find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
+        const work=artist?.works?.find((item:Record<string,unknown>)=>item.id===body.workId);
+        if(!artist||!work)return json({error:'That piece isn’t on the site anymore.'},404);
+        const senderHash=await fingerprint(env,client);
+        const recent=await env.DB.prepare("SELECT count(*) AS n FROM artwork_reports WHERE sender_hash=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(senderHash).first<{n:number}>();
+        if((recent?.n??0)>=5)return json({error:'You’ve sent several reports in the last hour. Please try again later.'},429);
+        await env.DB.prepare('INSERT INTO artwork_reports(id,artist_id,work_id,reason,details,reporter_email,sender_hash) VALUES(?1,?2,?3,?4,?5,?6,?7)').bind(crypto.randomUUID(),body.artistId,body.workId,reason,details,email,senderHash).run();
+        ctx.waitUntil(sendReportNotice(env as NotificationEnv,String(artist.name),String(work.title),reason,details));
+        return json({sent:true});
+      }catch(error){console.error(JSON.stringify({event:'report_error',message:error instanceof Error?error.message:String(error)}));return json({error:'That didn’t go through. Please try again.'},400)}
+    }
     if(request.method==='POST'&&(url.pathname==='/api/community/public/follow/confirm'||url.pathname==='/api/community/public/follow/unsubscribe')){
       try{
         const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,2048))) as Record<string,unknown>;
@@ -187,7 +224,12 @@ export default {
        const ownerFilter=administrator?'':" AND json_extract(payload,'$.submittedBy')=?1";
        const statement=env.DB.prepare("SELECT r.collection,r.id,r.payload,r.revision,r.updated_at,m.artist_id,m.venue_id FROM community_records r LEFT JOIN community_memberships m ON m.user_id=json_extract(r.payload,'$.submittedBy') WHERE r.payload IS NOT NULL AND r.collection IN ('applications','venues') AND json_extract(r.payload,'$.submittedBy') IS NOT NULL"+ownerFilter+" ORDER BY r.updated_at DESC");
        const {results}=await (administrator?statement:statement.bind(verified.userId)).all<{collection:string;id:string;payload:string;revision:number;updated_at:string;artist_id:string|null;venue_id:string|null}>();
-       const applications=results.map(row=>({kind:row.collection==='venues'?'venue':'artist',id:row.id,userId:JSON.parse(row.payload).submittedBy,payload:JSON.parse(row.payload),revision:row.revision,updatedAt:row.updated_at,assignedArtistId:row.artist_id,assignedVenueId:row.venue_id}));
+       // An administrator sees each artist's sample pieces: the ones sent with the
+       // request, or, for older requests, the first three pieces on their page.
+       const pages=new Map<string,Record<string,any>>();
+       if(administrator){const {results:artists}=await env.DB.prepare("SELECT id,payload FROM community_records WHERE collection='artists' AND payload IS NOT NULL").all<{id:string;payload:string}>();for(const artist of artists)pages.set(artist.id,JSON.parse(artist.payload))}
+       const samplesFor=(id:string,payload:Record<string,any>)=>{const works=(pages.get(id)?.works||[]) as Record<string,any>[];const chosen=Array.isArray(payload.samples)&&payload.samples.length?works.filter(work=>payload.samples.includes(work.id)):works.slice(0,3);return chosen.map(work=>({id:work.id,title:work.title,imageKey:work.imageKey,sampleImage:work.sampleImage,madeWithAI:work.madeWithAI===true}))};
+       const applications=results.map(row=>{const payload=JSON.parse(row.payload),kind=row.collection==='venues'?'venue':'artist';return {kind,id:row.id,userId:payload.submittedBy,payload,revision:row.revision,updatedAt:row.updated_at,assignedArtistId:row.artist_id,assignedVenueId:row.venue_id,...(administrator&&kind==='artist'?{samples:samplesFor(row.id,payload)}:{})}});
        const notifications=administrator?(await env.DB.prepare('SELECT * FROM admin_notifications ORDER BY created_at DESC LIMIT 100').all()).results:[];
        const notificationEnv=env as NotificationEnv;
        return json({applications,notifications,emailConfigured:!!(notificationEnv.ADMIN_EMAIL&&notificationEnv.ADMIN_NOTIFICATION_TO&&notificationEnv.ADMIN_NOTIFICATION_FROM)});
@@ -222,6 +264,33 @@ export default {
         payload.approvalEmail=await sendApprovalEmail(env as NotificationEnv,payload);
         await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id).run();
         return json({saved:true,approvalEmail:payload.approvalEmail});
+       }
+       // Two or three pieces, sent right after the request. They become the first
+       // pieces on the applicant's page, and the administrator hears about the request.
+       if(body.action==='samples'){
+        const works=Array.isArray(body.works)?body.works as Record<string,unknown>[]:[];
+        if(!validId(body.id)||works.length<2||works.length>3)return json({error:'Send two or three pieces.'},400);
+        const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();
+        const application=row?JSON.parse(row.payload):null;
+        if(!application||application.submittedBy!==verified.userId)return json({error:'This request isn’t yours.'},403);
+        if(application.status!=='pending')return json({error:'This request has already been reviewed.'},409);
+        if(Array.isArray(application.samples)&&application.samples.length)return json({error:'Your pieces are already in. Add more from your page.'},409);
+        const {results:owned}=await env.DB.prepare('SELECT image_id FROM artwork_owners WHERE artist_id=?1').bind(body.id).all<{image_id:string}>();
+        const ownedKeys=new Set(owned.map(image=>image.image_id));
+        if(works.some(work=>!work||!validId(work.imageKey)||!ownedKeys.has(String(work.imageKey))||typeof work.title!=='string'||work.title.length>200))return json({error:'Upload each piece before sending.'},400);
+        const pageRow=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();
+        if(!pageRow)return json({error:'Your page could not be found.'},404);
+        const page=JSON.parse(pageRow.payload),now=new Date().toISOString();
+        const samples=works.map(work=>({id:crypto.randomUUID(),title:String(work.title).trim()||'Untitled',medium:'',year:'',sale:'contact',price:'',public:true,publicAt:now,imageKey:String(work.imageKey),sampleImage:'',madeWithAI:work.madeWithAI===true}));
+        const keys=new Set(samples.map(work=>work.imageKey));
+        page.works=[...samples,...(Array.isArray(page.works)?page.works:[]).filter((work:Record<string,unknown>)=>!keys.has(String(work?.imageKey)))].slice(0,40);
+        application.samples=samples.map(work=>work.id);
+        await env.DB.batch([
+         env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(application),body.id),
+         env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='artists' AND id=?2").bind(JSON.stringify(page),body.id)
+        ]);
+        await queueAdminNotification(env as NotificationEnv,ctx,'artist',body.id,String(application.name));
+        return json({saved:true});
        }
        if(body.action==='accept'){
         if(!validId(body.id))return json({error:'Invalid invitation.'},400);
@@ -259,7 +328,8 @@ export default {
           env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(verified.userId,id)
          ]);
         }catch{return json({error:'Your workspace could not be opened. Please try again.'},409)}
-        await queueAdminNotification(env as NotificationEnv,ctx,'artist',id,stored.name);return json({saved:true,id,workspace:true});
+        // The administrator is told once the sample pieces arrive (the samples action).
+        return json({saved:true,id,workspace:true});
        }
        await env.DB.prepare('INSERT INTO community_records(collection,id,payload,revision) VALUES(?1,?2,?3,1)').bind(collection,id,JSON.stringify(stored)).run();await queueAdminNotification(env as NotificationEnv,ctx,kind as 'artist'|'venue',id,String(payload.name).trim());return json({saved:true,id});
       }
@@ -317,6 +387,45 @@ export default {
         const {results}=await env.DB.prepare("SELECT email,confirmed_at FROM artist_followers WHERE artist_id=?1 AND status='confirmed' ORDER BY confirmed_at DESC").bind(artistId).all();
         return json({followers:results});
       }
+      // The administrator's "New work" list: every piece on the site, newest first,
+      // plus the ones already hidden, so a hide can be undone.
+      if(url.pathname==='/api/community/admin/new-work'){
+        if(!principal.administrator)return json({error:'Administrator access required.'},403);
+        if(request.method==='GET'){
+          const records=await loadRecords(),live=new Set(publicRecords(records).filter(record=>record.collection==='artists').map(record=>record.id));
+          const items=records.filter(record=>record.collection==='artists'&&record.payload).flatMap(record=>{const artist=record.payload!,shown=new Set(visibleWorks(artist).map((work:Record<string,unknown>)=>work.id));
+            return (Array.isArray(artist.works)?artist.works:[]).filter((work:Record<string,any>)=>work&&(work.hiddenByAdmin===true||live.has(record.id)&&shown.has(work.id))).map((work:Record<string,any>)=>({artistId:record.id,artistName:artist.name,workId:work.id,title:work.title,medium:work.medium||'',imageKey:work.imageKey||'',sampleImage:work.sampleImage||'',madeWithAI:work.madeWithAI===true,publicAt:work.publicAt||'',hidden:work.hiddenByAdmin===true,hiddenAt:work.hiddenAt||''}))});
+          items.sort((a,b)=>String(b.hidden?b.hiddenAt:b.publicAt).localeCompare(String(a.hidden?a.hiddenAt:a.publicAt)));
+          return json({items:items.slice(0,120)});
+        }
+        if(request.method==='PUT'){
+          const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
+          if(!validId(body.artistId)||!validId(body.workId)||typeof body.hidden!=='boolean')return json({error:'Invalid request.'},400);
+          if(!await setWorkHidden(env,body.artistId,body.workId,body.hidden))return json({error:'That piece wasn’t found.'},404);
+          if(!body.hidden)await env.DB.prepare("UPDATE artwork_reports SET status='dismissed',closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE artist_id=?1 AND work_id=?2 AND status='hidden'").bind(body.artistId,body.workId).run();
+          return json({saved:true});
+        }
+      }
+      if(url.pathname==='/api/community/admin/reports'){
+        if(!principal.administrator)return json({error:'Administrator access required.'},403);
+        if(request.method==='GET'){
+          const {results}=await env.DB.prepare("SELECT id,artist_id,work_id,reason,details,reporter_email,status,created_at FROM artwork_reports WHERE status='open' ORDER BY created_at DESC LIMIT 100").all<Record<string,string>>();
+          const pages=new Map((await loadRecords()).filter(record=>record.collection==='artists'&&record.payload).map(record=>[record.id,record.payload!]));
+          return json({reports:results.map(report=>{const artist=pages.get(report.artist_id),work=(artist?.works||[]).find((item:Record<string,unknown>)=>item.id===report.work_id);return {...report,reasonLabel:reportReasons[report.reason]||report.reason,artistName:artist?.name||'Unknown artist',title:work?.title||'A removed piece',imageKey:work?.imageKey||'',sampleImage:work?.sampleImage||'',hidden:work?.hiddenByAdmin===true}})});
+        }
+        if(request.method==='PUT'){
+          const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
+          if(!validId(body.id)||!['hide','dismiss'].includes(body.action))return json({error:'Invalid request.'},400);
+          const report=await env.DB.prepare("SELECT artist_id,work_id FROM artwork_reports WHERE id=?1 AND status='open'").bind(body.id).first<{artist_id:string;work_id:string}>();
+          if(!report)return json({error:'That report is already closed.'},409);
+          if(body.action==='hide')await setWorkHidden(env,report.artist_id,report.work_id,true);
+          // Hiding a piece settles every open report about it.
+          await (body.action==='hide'
+            ?env.DB.prepare("UPDATE artwork_reports SET status='hidden',closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE artist_id=?1 AND work_id=?2 AND status='open'").bind(report.artist_id,report.work_id)
+            :env.DB.prepare("UPDATE artwork_reports SET status='dismissed',closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1").bind(body.id)).run();
+          return json({saved:true});
+        }
+      }
       if(url.pathname==='/api/community/messages'){
         // An administrator looking at an artist's workspace sees that artist's messages.
         const requested=url.searchParams.get('artist');
@@ -373,6 +482,7 @@ export default {
         const existing=previous?.payload?JSON.parse(previous.payload):null;
         const {results:ownedImages}=await env.DB.prepare('SELECT image_id FROM artwork_owners WHERE artist_id=?1').bind(principal.artistId||'').all<{image_id:string}>();
         if(!canWrite(principal,body.collection,body.id,body.payload as Record<string,unknown>|null,existing,new Set(ownedImages.map(image=>image.image_id))))return json({error:'Record ownership rejected.'},403);
+        if(body.collection==='artists'&&body.payload)settleWorks(body.payload as Record<string,unknown>,existing,new Date().toISOString());
         const payload=body.payload===null?null:JSON.stringify(body.payload);
         const result=await env.DB.prepare(`INSERT INTO community_records(collection,id,payload,revision) SELECT ?1,?2,?3,1 WHERE ?4=0
           ON CONFLICT(collection,id) DO UPDATE SET payload=?3,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE revision=?4 RETURNING revision`).bind(body.collection,body.id,payload,body.revision).first<{revision:number}>();

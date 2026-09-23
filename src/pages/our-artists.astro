@@ -1,6 +1,7 @@
 ---
 export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/moderation.css';
 import pilot from '../data/community-pilot.json';
 import {communityFetch} from '../lib/community-transport';
 import {artistSortKey, regionDay, showingStatus} from '../lib/showing-display';
@@ -9,7 +10,7 @@ const onlineTest = import.meta.env.MODE === 'online-test';
 const today = regionDay();
 const region = pilot.regions[0];
 
-type PublicMember = {id: string; name: string; city: string; practice: string; works: {title: string; imageKey: string; sampleImage?: string}[]};
+type PublicMember = {id: string; name: string; city: string; practice: string; works: {title: string; imageKey: string; sampleImage?: string; madeWithAI?: boolean}[]};
 type PublicShowing = {artistId: string; start: string; end: string};
 let publicMembers: PublicMember[] = [];
 let membersUnavailable = false;
@@ -37,8 +38,8 @@ const pilotArtists = pilot.artists
   .map((member) => ({member, work: pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')}))
   .filter((entry) => entry.work !== undefined);
 const cards = [
-  ...pilotArtists.map(({member, work}) => ({id: member.id, attr: 'artist', name: member.name, city: member.homeCity, practice: member.practice.join(' · '), image: work!.image, href: `/prototype/artists/${member.slug}/`})),
-  ...publicMembers.filter((member) => member.works[0]).map((member) => ({id: member.id, attr: 'member', name: member.name, city: member.city, practice: member.practice, image: member.works[0].sampleImage || `/api/community/public/images/${encodeURIComponent(member.works[0].imageKey)}`, href: `/prototype/artists/member/?artist=${encodeURIComponent(member.id)}`})),
+  ...pilotArtists.map(({member, work}) => ({id: member.id, attr: 'artist', name: member.name, city: member.homeCity, practice: member.practice.join(' · '), image: work!.image, ai: false, href: `/prototype/artists/${member.slug}/`})),
+  ...publicMembers.filter((member) => member.works[0]).map((member) => ({id: member.id, attr: 'member', name: member.name, city: member.city, practice: member.practice, image: member.works[0].sampleImage || `/api/community/public/images/${encodeURIComponent(member.works[0].imageKey)}`, ai: member.works[0].madeWithAI === true, href: `/prototype/artists/member/?artist=${encodeURIComponent(member.id)}`})),
 ].sort((a, b) => artistSortKey(a.name).localeCompare(artistSortKey(b.name)));
 ---
 
@@ -53,7 +54,7 @@ const cards = [
       {cards.map((card) => (
         <a class="member-card" data-artist-id={card.attr === 'artist' ? card.id : undefined} data-member-profile={card.attr === 'member' ? card.id : undefined} href={card.href}>
           <img src={card.image} alt={`Artwork by ${card.name}`} loading="lazy" />
-          <div><h2>{card.name}</h2><p>{card.city}</p><p>{card.practice}</p>{showingIds.has(card.id) && <span class="member-status">Showing now</span>}</div>
+          <div><h2>{card.name}</h2><p>{card.city}</p><p>{card.practice}</p>{showingIds.has(card.id) && <span class="member-status">Showing now</span>}{card.ai && <span class="aaj-ai-label">Made with AI</span>}</div>
         </a>
       ))}
       {!onlineTest && <article class="member-card member-card-fpo" aria-label="Prototype member artist who is not showing now"><img src="/images/community-pilot/alan-just/paul-missal-portrait.webp" alt="Placeholder artwork for a future member artist" loading="lazy" /><div><h2>FPO member artist</h2><p>Central Point</p><p>Drawing</p></div></article>}

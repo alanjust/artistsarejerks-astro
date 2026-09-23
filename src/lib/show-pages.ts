@@ -3,12 +3,13 @@
 // other shows, and then the rest of the artist's work.
 import pilot from '../data/community-pilot.json';
 import {storageReady} from './community-storage';
-import {getMemberArtist, imageUrl, memberUrl} from './member-artists';
+import {getMemberArtist, imageUrl, isShown, memberUrl} from './member-artists';
+import {aiLabel, reportLink} from './artwork-moderation';
 import {publicShowings, showUrl, type Showing} from './prototype-showings';
 import {readVenues} from './prototype-venues';
 import {dates, shortDates, showingStatus, showingTag} from './showing-display';
 
-export type ShowWork = {id: string; title: string; detail: string; image: string};
+export type ShowWork = {id: string; title: string; detail: string; image: string; ai?: boolean; artistId?: string};
 type ArtistInfo = {id: string; name: string; practice: string; city: string; bio: string; href: string; member: boolean};
 
 const make = (tag: string, text = '', className = '') => { const node = document.createElement(tag); node.textContent = text; if (className) node.className = className; return node; };
@@ -28,8 +29,8 @@ export async function artistWorks(artistId: string): Promise<ShowWork[]> {
   const member = getMemberArtist(artistId);
   if (member && !pilot.artists.some((artist) => artist.id === artistId)) {
     const works: ShowWork[] = [];
-    for (const work of member.works.filter((item) => item.public)) {
-      works.push({id: work.id, title: work.title, detail: [work.medium, priceLabel(work.sale, work.price)].filter(Boolean).join(' · '), image: await imageUrl(work).catch(() => '')});
+    for (const work of member.works.filter(isShown)) {
+      works.push({id: work.id, title: work.title, detail: [work.medium, priceLabel(work.sale, work.price)].filter(Boolean).join(' · '), image: await imageUrl(work).catch(() => ''), ai: work.madeWithAI === true, artistId});
     }
     return works;
   }
@@ -88,6 +89,9 @@ function workFigure(work: ShowWork) {
   const caption = make('figcaption');
   caption.append(make('span', work.title, 'show-piece-title'));
   if (work.detail) caption.append(make('span', work.detail, 'show-piece-detail'));
+  if (work.ai) caption.append(aiLabel());
+  // Member artists' pieces can be reported; the sample (pilot) pieces are the site's own.
+  if (work.artistId) caption.append(reportLink(work.artistId, work.id, work.title));
   figure.append(frame, caption);
   return figure;
 }

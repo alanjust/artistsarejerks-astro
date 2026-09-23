@@ -11,7 +11,7 @@
     "community:dev": "wrangler dev --config community-api/wrangler.jsonc --ip 127.0.0.1 --port 8787",
     "community:migrate": "wrangler d1 migrations apply aaj-community-local --local --config community-api/wrangler.jsonc",
     "community:types": "wrangler types --config community-api/wrangler.jsonc community-api/worker-configuration.d.ts",
-    "test:community": "node tests/community-storage.integration.mjs && node tests/member-artist-handoff.mjs && node tests/artist-intake.mjs && node tests/artist-messages.mjs && node tests/followers.mjs && node tests/directory-navigation.mjs",
+    "test:community": "node tests/community-storage.integration.mjs && node tests/member-artist-handoff.mjs && node tests/artist-intake.mjs && node tests/artist-messages.mjs && node tests/followers.mjs && node tests/artwork-moderation.mjs && node tests/directory-navigation.mjs",
     "community:check": "tsc --project community-api/tsconfig.json",
     "build:test": "astro check && node scripts/build-test.mjs",
     "test:deploy:check": "wrangler deploy --dry-run --config wrangler.test.jsonc"
