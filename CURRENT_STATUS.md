@@ -86,8 +86,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet.
    - The first-prototype Alan workspace code was retired on September 22. `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/`. The unused `alan-workspace` and `featured` rows were deleted the same day (they are in the pre-move backup).
-6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
-7. **Before public launch:** decide the mailing address for follower emails. The site may not need one if the notices count as non-commercial; ask a lawyer.
-8. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
+6. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask). Raised by Alan on September 22; deliberately separate from the terms work.
+7. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
+8. **Before public launch:** decide the mailing address for follower emails. The site may not need one if the notices count as non-commercial; ask a lawyer.
+9. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
 
 Design mockups for Showing Now, the menu, and the region picker: https://claude.ai/artifact/EGzZasV2ZZZTr18XD8uBnq
