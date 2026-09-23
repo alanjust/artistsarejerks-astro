@@ -17,6 +17,7 @@ Read:
 - `ARTISTS_ARE_JERKS_COMMUNITY_BRIEF.md` for the product model and boundaries
 - `TEST_SITE_SETUP.md` for the current implementation, deployment, validation, and next steps
 - `ONLINE_TEST_SITE_PLAN.md` for the protected test-site architecture
+- `DOMAIN_AND_EMAIL.md` before touching DNS, email, or signing up for any service; project accounts belong to `admin@artistsarejerks.com`, not Alan's personal accounts
 - `LEGACY_ART_LAB.md` when work concerns the retired application
 
 ## Design and code conventions
