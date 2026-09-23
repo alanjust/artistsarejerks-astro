@@ -57,6 +57,11 @@ try{
  const listed=(await publicState()).find(record=>record.id==='show-ongoing');
  assert.ok(listed&&listed.payload.ongoing===true&&listed.payload.end==='','a confirmed ongoing showing is public with no end date');
 
+ const many=Array.from({length:41},(_,i)=>({id:`m${i}`,title:'Piece',public:false,imageKey:'',sampleImage:sample}));
+ const current=await db.prepare("SELECT revision FROM community_records WHERE collection='artists' AND id=?1").bind(id).first();
+ assert.equal((await call('record','PUT',{collection:'artists',id,payload:{...withWork,works:many},revision:current.revision},applicant)).status,403,'no more than 40 pieces');
+ assert.equal((await call('record','PUT',{collection:'artists',id,payload:{...withWork,works:many.slice(0,40)},revision:current.revision},applicant)).status,200,'exactly 40 is fine');
+
  const second={userId:'user_second',administrator:false};
  const secondId=(await (await call('applications','PUT',application('Luis Moreno'),second)).json()).id;
  assert.equal(await membership('user_second'),secondId);

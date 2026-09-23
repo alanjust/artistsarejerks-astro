@@ -31,6 +31,8 @@ export function canWrite(principal:Principal,collection:string,id:string,payload
   if(!principal.artistId||id!==principal.artistId||payload&&payload.id!==id)return false;
   const oldWorks=Array.isArray(existing?.works)?existing.works as Record<string,unknown>[]:[];
   const newWorks=Array.isArray(payload?.works)?payload.works as Record<string,unknown>[]:[];
+  // An artist page holds at most 40 pieces (a page already over can still shrink).
+  if(newWorks.length>40&&newWorks.length>oldWorks.length)return false;
   return newWorks.every(work=>(!work.imageKey||ownedImages.has(String(work.imageKey)))&&(!work.sampleImage||oldWorks.some(old=>old.sampleImage===work.sampleImage)||typeof work.sampleImage==='string'&&/^\/images\/community-pilot\/[a-zA-Z0-9_./-]+$/.test(work.sampleImage)&&!work.sampleImage.includes('..')));
 
  }

@@ -1,6 +1,6 @@
-import {getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
+import {MAX_WORKS,getMemberArtist,saveMemberArtist,imageUrl,saveImage,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
 import pilot from '../data/community-pilot.json';
-import {readShowings,renderShowings} from './prototype-showings';
+import {readShowings,renderShowings,writeShowing} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
 import {storageReady} from './community-storage';
 import {mountTurnstile} from './turnstile';
@@ -90,6 +90,16 @@ export async function initMemberSetup(){
   showPreview(await imageUrl(work));artworkMode();uploadMessage.textContent='Choose a new photo only if you want to replace this one.';upload.scrollIntoView({behavior:'smooth',block:'start'});
  }
  cancelEdit.addEventListener('click',()=>{clearArtworkForm();uploadMessage.textContent='Nothing changed.'});
+ // Removing a piece also takes it out of any showing; a showing can't be left with no pieces.
+ function removeWork(work:MemberWork){
+  const shows=readShowings().filter(s=>s.artistId===id&&s.artworkIds.includes(work.id));
+  const stranded=shows.find(s=>s.artworkIds.length===1);
+  if(stranded){uploadMessage.textContent=`“${work.title}” is the only piece in your showing at ${stranded.venue}. Add another piece to that showing, or remove the showing, first.`;return}
+  if(!confirm(`Remove “${work.title}” from your page? This can’t be undone.`))return;
+  try{for(const show of shows){const artworkIds=show.artworkIds.filter(item=>item!==work.id);writeShowing({...show,artworkIds,featuredArtworkId:show.featuredArtworkId===work.id?artworkIds[0]:show.featuredArtworkId})}}catch{uploadMessage.textContent='That didn’t save. Check your connection and try again.';return}
+  const updated=artist.works.filter(w=>w.id!==work.id);
+  if(persist({...artist,works:updated,published:artist.published&&updated.some(w=>w.public)})){if(editingWorkId===work.id)clearArtworkForm();uploadMessage.textContent=`Removed “${work.title}.”`;void works()}
+ }
  async function works(){
   const list=$('[data-member-works]');list.replaceChildren();
   for(const work of artist.works){
@@ -100,13 +110,17 @@ export async function initMemberSetup(){
    const edit=document.createElement('button');edit.type='button';edit.textContent='Edit';edit.addEventListener('click',()=>void editWork(work));
    const toggle=document.createElement('button');toggle.type='button';toggle.textContent=work.public?'Make private':'Show on my page';
    toggle.addEventListener('click',()=>{const updated=artist.works.map(w=>w.id===work.id?{...w,public:!w.public}:w);if(persist({...artist,works:updated,published:artist.published&&updated.some(w=>w.public)}))void works()});
-   actions.append(edit,toggle);copy.append(actions);row.append(img,copy);list.append(row);
+   const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';remove.addEventListener('click',()=>removeWork(work));
+   actions.append(edit,toggle,remove);copy.append(actions);row.append(img,copy);list.append(row);
   }
+  const left=MAX_WORKS-artist.works.length,count=$('[data-works-count]');
+  count.textContent=left<=0?`${MAX_WORKS} of ${MAX_WORKS}. That’s the most a page holds; remove a piece to make room.`:left<=5?`${artist.works.length} of ${MAX_WORKS}. You have room for ${left} more.`:`${artist.works.length} of ${MAX_WORKS}.`;
   artworkMode();
  }
  upload.addEventListener('submit',async event=>{
   event.preventDefault();
   const existing=editingWorkId?artist.works.find(work=>work.id===editingWorkId):undefined;
+  if(!existing&&artist.works.length>=MAX_WORKS){uploadMessage.textContent=`That’s ${MAX_WORKS}, the most a page holds. Remove a piece to make room.`;return}
   if(!existing&&!sample&&!selected){uploadMessage.textContent='Choose a photo of your work first.';return}
   saveButton.disabled=true;uploadMessage.textContent='Saving…';
   const data=new FormData(upload),replacement=Boolean(sample||selected),imageKey=replacement?crypto.randomUUID():existing?.imageKey||crypto.randomUUID();

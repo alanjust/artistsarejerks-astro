@@ -1,6 +1,8 @@
 import {getStoredItem,setStoredItem,sharedStorageEnabled,sharedStorageRequired,publicStorageMode,api,storageReady} from './community-storage';
 import {readArtistApplications} from './artist-applications';
 export const MEMBER_ARTISTS_KEY='aaj-member-artists-prototype';
+// The most pieces one artist page holds. The storage service enforces the same number.
+export const MAX_WORKS=40;
 export interface MemberWork {id:string;title:string;medium:string;year:string;sale:string;price:string;public:boolean;imageKey:string;sampleImage:string}
 export interface MemberArtist {id:string;name:string;city:string;practice:string;bio:string;website:string;email:string;phone:string;publicWebsite:boolean;publicEmail:boolean;publicPhone:boolean;published:boolean;step:number;works:MemberWork[];rightsConfirmedAt?:string;regionId?:string;venueOpportunities?:boolean;publicForm?:boolean}
 export function readMemberArtists():MemberArtist[]{try{const data=JSON.parse(getStoredItem(MEMBER_ARTISTS_KEY)||'[]');return Array.isArray(data)?data:[]}catch{return []}}
