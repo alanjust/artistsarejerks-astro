@@ -6,6 +6,8 @@ import pilot from '../../../data/community-pilot.json';
 
 export const prerender = false;
 import {communityFetch} from '../../../lib/community-transport';
+// On the test site Alan Just is a member artist now; the first prototype page forwards there.
+if(import.meta.env.MODE==='online-test'&&Astro.params.slug==='alan-just')return Astro.redirect('/prototype/artists/member/?artist=alan-just',301);
 const artist=pilot.artists.find(item=>item.slug===Astro.params.slug);
 if(!artist)return new Response('Artist page unavailable.',{status:404});
 let uploads:any[]=[];

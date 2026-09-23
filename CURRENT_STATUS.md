@@ -68,7 +68,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 ## Test data on the test site
 
 - **Keep:** Randy Wilson (approved, published, one piece).
-- **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just workspace. alanjust@gmail.com owns Alan Russell Just.
+- **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just workspace. On September 22, Alan Just moved from the first prototype setup to a regular member artist (id `alan-just`), with 7 pieces and both showings; `/prototype/artists/alan-just/` forwards there on the test site. A backup from just before the move is at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`, and the old `alan-workspace` record is left in place, unused. alanjust@gmail.com owns Alan Russell Just.
 - **Test applicants** use Gmail plus-addresses (alanjust+test1@gmail.com is AJ Test One; +test2 is AJ Test Two).
 - **Clutter:** two identical Alan Just showings (Sep 15–Oct 13) remain from earlier testing.
 
@@ -85,7 +85,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 5. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet.
-   - The page `/prototype/workspace/` (Alan's older workspace) still uses the legacy showing form.
+   - The first-prototype Alan workspace (`/prototype/workspace/`, the `alan-workspace` record, `showing-form.ts`, and pilot-artist special cases) is no longer used on the test site and can be retired.
 6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
 7. **Before public launch:** decide the mailing address for follower emails. The site may not need one if the notices count as non-commercial; ask a lawyer.
 8. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.

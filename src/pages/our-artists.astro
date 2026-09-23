@@ -32,7 +32,8 @@ if (onlineTest) {
   pilot.exhibitions.filter((show) => show.publicationStatus === 'published' && showingStatus({start: show.startDate, end: show.endDate}, today) === 'showing-now').forEach((show) => showingIds.add(show.artistId));
 }
 const pilotArtists = pilot.artists
-  .filter((member) => member.artistVisibility === 'public' && member.adminVisibility === 'visible' && (!onlineTest || member.id === 'artist-alan-just'))
+  // The test site lists only real member artists; sample (pilot) artists are local-only.
+  .filter((member) => !onlineTest && member.artistVisibility === 'public' && member.adminVisibility === 'visible')
   .map((member) => ({member, work: pilot.artworks.find((work) => member.artworkIds.includes(work.id) && work.profileVisibility === 'public' && work.archiveStatus === 'active')}))
   .filter((entry) => entry.work !== undefined);
 const cards = [
