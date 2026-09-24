@@ -30,7 +30,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - Every size has one header and one black menu panel, grouped into See Art and Artist Tools.
 - On a phone: title, a "Showing Now" shortcut, and ☰.
 - On desktop: See Art links plus **For artists** (to the join page) in the header, and **Artist sign in** floating under it on the right.
-- Menu utility links: Join as an artist or venue, Artist sign in, About. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, About, and lessons are prerendered and never show it.
+- Menu utility links: Join as an artist or venue, For venues, Artist sign in, About. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, About, and lessons are prerendered and never show it.
 - **Footer on every page:** Artist Terms, Community Guidelines, Privacy, Site Terms, Copyright, and "© 2026 Alan Just Design · Artists Are Jerks · info@artistsarejerks.com".
   - Kept compact at Alan's request (September 24). On phones: two tight rows of links and a one-line copyright that drops "Artists Are Jerks" (it's in the header). On wide screens (900px and up): one slim line, links left, copyright right.
   - Links keep a 44px tap area through an invisible `::after` margin, so rows can sit close together.
@@ -124,17 +124,16 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 ## Open list
 
 **Waiting on Alan**
-1. **For Venues page:** needs Alan's OK of the benefits list.
-2. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
-3. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
+1. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
+2. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
 
 **Optional builds** (named in the Privacy Notice)
-4. A self-serve "delete my account" button (today artists write in).
-5. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
+3. A self-serve "delete my account" button (today artists write in).
+4. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
 
 **Later**
-6. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-7. **Cleanups:**
+5. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+6. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
@@ -145,6 +144,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Hidden featured piece.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
 - **Follower notices for showings published before the page was public.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
 - **Emailed "Still up?" reminders** (migration `0011`, `tests/still-up.mjs`), described under Showings above.
+- **For Venues page** (`/for-venues/`): Alan approved the benefits (free listing, walls that change on their own, artists bring their own people, nothing to handle on sales, still listed between shows). It covers how it works and fair questions, with "Introduce your place →" to `/join/venue/`. Linked from the menu ("For venues") and from Places to See Art ("Own a café, brewpub, or shop? Hang local art on your walls →"). Signed-out owners who tap Introduce now land on Create your account, then return to the venue form (it used to send them to Sign in).
 
 ## Working notes
 
