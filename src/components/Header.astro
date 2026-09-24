@@ -17,9 +17,13 @@ const artistTools: Link[] = [
     {name: 'Thinking Like an Artist', url: '/thinking-like-an-artist/'},
     {name: 'Gatekeepers', url: '/gatekeepers/'},
 ];
+// The prototype workspaces link is for signed-in testers only. Prerendered pages
+// can't know who's signed in, so they leave it out.
+let signedIn = false;
+if (!Astro.isPrerendered) { try { signedIn = Boolean(Astro.locals.auth?.().isAuthenticated); } catch { signedIn = false; } }
 const utility: Link[] = [
     {name: 'Join as an artist or venue', url: '/join/'},
-    {name: 'Workspaces · Prototype', url: '/prototype/workspaces/'},
+    ...(signedIn ? [{name: 'Workspaces · Prototype', url: '/prototype/workspaces/'}] : []),
     {name: 'Artist sign in', url: '/account/'},
     {name: 'About', url: '/about/'},
 ];
