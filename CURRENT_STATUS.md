@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation fixes, and the footer tightening. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, and emailed "Still up?" reminders. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -121,22 +121,35 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 `npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake (including terms), messages, followers, artwork moderation, member notes, Still up reminders, and Showing Now list tests. The artist-application tests read the current terms version from `community-api/terms.ts`. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
 
-## Known issues and open list
+## Open list
 
-1. **For Venues page:** waiting on Alan's OK of the benefits list.
-2. **Emailed "Still up?" reminders: done September 24** (migration `0011`, `tests/still-up.mjs`).
-3. **Sign up and Sign in: done September 24.** `src/components/AuthIntro.astro` puts a colored tag and heading above each Clerk box ("First time here · Create your account" in green, "Coming back · Welcome back" in purple), a save-your-password line on sign-up, a "not the gate code" line on sign-in (test site only), and a link to the other page. Clerk's own box text is unchanged.
-4. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-5. **Hidden featured piece: fixed September 24.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
-6. **Follower notices for showings published before the page was public: fixed September 24.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
-7. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
-8. **Optional builds named in the Privacy Notice:** a self-serve "delete my account" button (today artists write in), and serving fonts from the site itself so Google Fonts drops off the privacy list.
-9. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
-10. **Cleanups:**
-    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
-    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
-    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
-11. **Local dev server goes stale on component styles:** after editing a component's `<style>` (e.g. the footer), `npm run dev` sometimes keeps serving the old CSS. Restart it, or check the built CSS in `dist-test/_assets/` after `npm run build:test`. Judge layouts from Alan's real-device screenshots, not the automated preview.
-12. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
+**Waiting on Alan**
+1. **For Venues page:** needs Alan's OK of the benefits list.
+2. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
+3. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
+
+**Optional builds** (named in the Privacy Notice)
+4. A self-serve "delete my account" button (today artists write in).
+5. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
+
+**Later**
+6. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+7. **Cleanups:**
+   - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
+   - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
+   - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
+
+## Done September 24
+
+- **Sign up and Sign in look different.** `src/components/AuthIntro.astro` puts a colored tag and heading above each Clerk box ("First time here · Create your account" in green, "Coming back · Welcome back" in purple), a save-your-password line on sign-up, a "not the gate code" line on sign-in (test site only), and a link to the other page. Clerk's own box text is unchanged.
+- **Hidden featured piece.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
+- **Follower notices for showings published before the page was public.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
+- **Emailed "Still up?" reminders** (migration `0011`, `tests/still-up.mjs`), described under Showings above.
+
+## Working notes
+
+- **Local dev server goes stale on component styles:** after editing a component's `<style>` (e.g. the footer), `npm run dev` sometimes keeps serving the old CSS. Restart it, or check the built CSS in `dist-test/_assets/` after `npm run build:test`. Judge layouts from Alan's real-device screenshots, not the automated preview.
+- **Safari:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
+- **Approval is per artist, not per showing.** Alan approves each artist once; their showings go live when they publish them.
 
 Design mockups for Showing Now, the menu, and the region picker: https://claude.ai/artifact/EGzZasV2ZZZTr18XD8uBnq
