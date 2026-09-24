@@ -10,7 +10,7 @@ const onlineTest = import.meta.env.MODE === 'online-test';
 const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'], ['messages', 'Messages'], ['profile', 'Profile'], ['page', 'Your page']];
 ---
 <main class="venue-workspace artist-member-workspace" data-regular-workspace="true" data-initial-artist={initialArtist ? JSON.stringify(initialArtist) : undefined}>
-  <p class="workspace-return"><a href="/prototype/workspaces/">← Your workspaces</a></p>
+  <p class="workspace-return"><a href="/prototype/workspaces/">← Your workspaces</a> · <button type="button" class="write-to-us-link" data-write-to-us>Write to us</button></p>
   <p>Private artist workspace · {onlineTest ? 'Online test' : 'Local prototype'}</p>
   <h1 data-setup-title>Your page</h1>
   <p class="notice" data-approval-status hidden></p>

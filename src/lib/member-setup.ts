@@ -7,6 +7,9 @@ import {mountTurnstile} from './turnstile';
 import {wireFollowForm} from './follow-form';
 import {initShowingsPanel} from './member-showings';
 import {aiLabel,reportLink} from './artwork-moderation';
+import {initWriteToUs,openWriteToUs} from './write-to-us';
+// Why the site hid a piece, as the artist sees it in the workspace.
+const hiddenWhy:Record<string,string>={'not-theirs':'it may not be your own work','not-art':'it looks like a craft or a product rather than art made to be looked at','unlabeled-ai':'it looks like it was made with AI but isn’t labeled','copyright':'we received a copyright notice about it','other':'it doesn’t fit the Community Guidelines'};
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
 const $=<T extends Element=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
 // A web address typed without https:// still counts.
@@ -18,6 +21,7 @@ export async function initMemberSetup(){
  await storageReady;
  const id=new URLSearchParams(location.search).get('artist')||'',root=document.querySelector<HTMLElement>('[data-regular-workspace]');
  let serverInitial:MemberArtist|null=null;try{serverInitial=JSON.parse(root?.dataset.initialArtist||'null') as MemberArtist|null}catch{}
+ initWriteToUs();
  const initial=getMemberArtist(id)||(serverInitial?.id===id?serverInitial:null);
  if(!initial){$('[data-setup-unavailable]').hidden=false;return}
  let artist:MemberArtist=initial;
@@ -107,7 +111,8 @@ export async function initMemberSetup(){
    const row=el('article');row.className='card';const img=document.createElement('img');img.src=await imageUrl(work);img.alt=work.title;
    const copy=document.createElement('div'),details=[work.medium,work.year].filter(Boolean).join(' · ');copy.append(el('h3',work.title));if(details)copy.append(el('p',details));
    if(work.madeWithAI)copy.append(aiLabel());
-   copy.append(el('p',work.hiddenByAdmin?'Hidden by Artists Are Jerks. It’s off your page and out of any showing. If you think that’s a mistake, reply to your approval email.':work.public?(artist.published?'On your public page':'Will show when your page is published'):'Private'));
+   if(work.hiddenByAdmin){const hiddenNote=el('p',`Hidden by Artists Are Jerks, because ${hiddenWhy[work.hiddenReason||'other']||hiddenWhy.other}. It’s off your page and out of any showing.`);hiddenNote.className='hidden-note';const ask=document.createElement('button');ask.type='button';ask.className='write-to-us-link';ask.textContent='Write to us about this';ask.addEventListener('click',()=>openWriteToUs({topic:'hidden',workId:work.id,text:`About “${work.title}”: `}));copy.append(hiddenNote,ask)}
+   else copy.append(el('p',work.public?(artist.published?'On your public page':'Will show when your page is published'):'Private'));
    const actions=document.createElement('div');actions.className='actions';
    const edit=document.createElement('button');edit.type='button';edit.textContent='Edit';edit.addEventListener('click',()=>void editWork(work));
    const toggle=document.createElement('button');toggle.type='button';toggle.textContent=work.public?'Make private':'Show on my page';

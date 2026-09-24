@@ -3,7 +3,7 @@ import {readArtistApplications} from './artist-applications';
 export const MEMBER_ARTISTS_KEY='aaj-member-artists-prototype';
 // The most pieces one artist page holds. The storage service enforces the same number.
 export const MAX_WORKS=40;
-export interface MemberWork {id:string;title:string;medium:string;year:string;sale:string;price:string;public:boolean;imageKey:string;sampleImage:string;madeWithAI?:boolean;hiddenByAdmin?:boolean;publicAt?:string}
+export interface MemberWork {id:string;title:string;medium:string;year:string;sale:string;price:string;public:boolean;imageKey:string;sampleImage:string;madeWithAI?:boolean;hiddenByAdmin?:boolean;publicAt?:string;hiddenReason?:string;hiddenNotice?:string}
 // On the site: the artist shows it, and no administrator has hidden it.
 export const isShown=(work:MemberWork)=>work.public&&!work.hiddenByAdmin;
 export interface MemberArtist {id:string;name:string;city:string;practice:string;bio:string;website:string;email:string;phone:string;publicWebsite:boolean;publicEmail:boolean;publicPhone:boolean;published:boolean;step:number;works:MemberWork[];rightsConfirmedAt?:string;regionId?:string;venueOpportunities?:boolean;publicForm?:boolean}

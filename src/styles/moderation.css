@@ -36,7 +36,7 @@ button.aaj-report-link,
 button.aaj-report-link:hover,
 button.aaj-report-link:focus-visible { opacity: 1; }
 
-.aaj-report-dialog {
+.aaj-dialog {
   position: fixed;
   inset: 0;
   margin: auto;
@@ -44,23 +44,23 @@ button.aaj-report-link:focus-visible { opacity: 1; }
   width: min(32rem, calc(100% - var(--space-8)));
   max-height: calc(100% - var(--space-8));
   padding: var(--space-6);
-  border: 0;
+  border: var(--border-thin) solid var(--color-gray-600);
   border-radius: var(--radius-lg);
   background: var(--color-black);
   color: var(--color-white);
   box-shadow: var(--shadow-popup);
 }
-.aaj-report-dialog::backdrop { background: var(--color-backdrop); }
-.aaj-report-dialog h2 { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); color: var(--color-gold); }
-.aaj-report-dialog p { margin: 0 0 var(--space-4); }
-.aaj-report-dialog fieldset { margin: 0 0 var(--space-4); padding: 0; border: 0; }
-.aaj-report-dialog legend { margin-bottom: var(--space-2); font-weight: var(--font-weight-bold); }
-.aaj-report-dialog .report-choice { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; }
-.aaj-report-dialog .report-choice input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--color-gold); }
-.aaj-report-dialog .report-field { display: grid; gap: var(--space-1); margin-bottom: var(--space-4); font-weight: var(--font-weight-bold); }
-.aaj-report-dialog .report-field small { font-weight: var(--font-weight-normal); color: var(--color-gray-300); }
-.aaj-report-dialog textarea,
-.aaj-report-dialog input[type="email"] {
+.aaj-dialog::backdrop { background: var(--color-backdrop); }
+.aaj-dialog h2 { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); color: var(--color-gold); }
+.aaj-dialog p { margin: 0 0 var(--space-4); }
+.aaj-dialog fieldset { margin: 0 0 var(--space-4); padding: 0; border: 0; }
+.aaj-dialog legend { margin-bottom: var(--space-2); font-weight: var(--font-weight-bold); }
+.aaj-dialog .report-choice { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; }
+.aaj-dialog .report-choice input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--color-gold); }
+.aaj-dialog .report-field { display: grid; gap: var(--space-1); margin-bottom: var(--space-4); font-weight: var(--font-weight-bold); }
+.aaj-dialog .report-field small { font-weight: var(--font-weight-normal); color: var(--color-gray-300); }
+.aaj-dialog textarea,
+.aaj-dialog input[type="email"] {
   width: 100%;
   box-sizing: border-box;
   padding: var(--space-3);
@@ -70,8 +70,8 @@ button.aaj-report-link:focus-visible { opacity: 1; }
   color: var(--color-white);
   font: inherit;
 }
-.aaj-report-dialog .report-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
-.aaj-report-dialog .report-actions button {
+.aaj-dialog .report-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
+.aaj-dialog .report-actions button {
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
   border: var(--border-base) solid currentColor;
@@ -82,9 +82,30 @@ button.aaj-report-link:focus-visible { opacity: 1; }
   font-weight: var(--font-weight-bold);
   cursor: pointer;
 }
-.aaj-report-dialog .report-actions button[type="submit"] { border-color: var(--color-purple); background: var(--color-purple); }
-.aaj-report-dialog .report-status { margin: var(--space-3) 0 0; font-weight: var(--font-weight-bold); }
-.aaj-report-dialog .report-trap { position: absolute; left: -9999px; }
+.aaj-dialog .report-actions button[type="submit"] { border-color: var(--color-purple); background: var(--color-purple); }
+.aaj-dialog .report-status { margin: var(--space-3) 0 0; font-weight: var(--font-weight-bold); }
+.aaj-dialog .report-trap { position: absolute; left: -9999px; }
+
+.aaj-dialog .write-fallback { margin: var(--space-3) 0 0; font-size: var(--font-size-sm); color: var(--color-gray-300); }
+
+/* "Write to us" in workspaces: a text link that opens the note form. */
+button.write-to-us-link,
+.venue-workspace button.write-to-us-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  cursor: pointer;
+}
+.venue-workspace .card button.write-to-us-link { color: var(--color-gold); }
+.venue-workspace .hidden-note { color: var(--color-gold); }
 
 /* Join form: two or three pieces. */
 .join-samples { margin: 0; padding: 0; border: 0; }
@@ -121,6 +142,7 @@ button.aaj-report-link:focus-visible { opacity: 1; }
 .moderation-tile .hidden-flag { color: var(--color-gold); font-weight: var(--font-weight-bold); }
 .venue-workspace .moderation-tile a { color: var(--color-gold); }
 .venue-workspace .moderation-tile button { margin-top: auto; }
+.venue-workspace .moderation-tile .hide-reason { min-height: 44px; padding: var(--space-2); font-size: var(--font-size-sm); }
 .report-card { display: grid; gap: var(--space-4); }
 .report-card .frame { max-width: 240px; }
 

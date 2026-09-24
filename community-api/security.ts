@@ -59,7 +59,7 @@ export function settleWorks(payload:Record<string,unknown>,existing:Record<strin
  for(const work of payload.works as Record<string,unknown>[]){
   const old=before.get(work.id);
   if(work.public===true)work.publicAt=old?.public===true?old.publicAt:now;else delete work.publicAt;
-  if(old?.hiddenByAdmin===true){work.hiddenByAdmin=true;work.hiddenAt=old.hiddenAt}else{delete work.hiddenByAdmin;delete work.hiddenAt}
+  if(old?.hiddenByAdmin===true){work.hiddenByAdmin=true;work.hiddenAt=old.hiddenAt;work.hiddenReason=old.hiddenReason;work.hiddenNotice=old.hiddenNotice}else{delete work.hiddenByAdmin;delete work.hiddenAt;delete work.hiddenReason;delete work.hiddenNotice}
   work.madeWithAI=work.madeWithAI===true;
  }
 }

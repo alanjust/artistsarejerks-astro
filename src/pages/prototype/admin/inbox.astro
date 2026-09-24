@@ -6,9 +6,10 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';import '../../../styl
 <BaseLayout title="Administrator inbox | Artists Are Jerks" noindex><main class="venue-workspace">
 <p>Administrator</p><h1>Inbox</h1>
 <p data-inbox-counts class="notice">Loading pending applications…</p><p data-notification-status></p>
-<p><a href="#reports" data-report-count>Reports</a> · <a href="#new-work">New work</a> · <a href="/prototype/workspaces/">Workspaces →</a> · <a href="/prototype/admin/accounts/">Account assignments →</a></p>
+<p><a href="#notes" data-note-count>Notes</a> · <a href="#reports" data-report-count>Reports</a> · <a href="#new-work">New work</a> · <a href="/prototype/workspaces/">Workspaces →</a> · <a href="/prototype/admin/accounts/">Account assignments →</a></p>
 <p data-inbox-status role="status"></p>
+<section id="notes" class="moderation-section" data-notes hidden><h2>Notes from members</h2><p class="hint">Artists and venues wrote these with “Write to us.” Reply by email, then mark each one handled.</p><div data-note-list></div></section>
 <section id="reports" class="moderation-section" data-reports hidden><h2>Reports</h2><p class="hint">Visitors flagged these pieces. Hide takes one off the site right away; Dismiss leaves it up.</p><div data-report-list></div></section>
 <section class="moderation-section"><h2>Applications</h2><div data-admin-inbox></div></section>
-<section id="new-work" class="moderation-section"><h2>New work</h2><p class="hint">Every piece on the site, newest first. Hide takes one off right away, and Unhide puts it back.</p><div class="new-work-list" data-new-work-list></div></section>
+<section id="new-work" class="moderation-section"><h2>New work</h2><p class="hint">Every piece on the site, newest first. Hide asks why, takes the piece off right away, and emails the artist the reason. Unhide puts it back and tells them.</p><div class="new-work-list" data-new-work-list></div></section>
 </main><script>import {initAdminInbox} from '../../../lib/shared-applications';import {initModeration} from '../../../lib/admin-moderation';initAdminInbox();initModeration();</script></BaseLayout>

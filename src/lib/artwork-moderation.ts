@@ -20,7 +20,7 @@ let check: Awaited<ReturnType<typeof mountTurnstile>> | null = null;
 
 function buildDialog() {
   const box = document.createElement('dialog');
-  box.className = 'aaj-report-dialog';
+  box.className = 'aaj-dialog';
   box.setAttribute('aria-labelledby', 'aaj-report-title');
   const form = document.createElement('form');
   const heading = make('h2', '', ''); heading.id = 'aaj-report-title';

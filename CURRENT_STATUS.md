@@ -11,7 +11,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Private test site:** `https://aaj-dev.alanjust.com`, behind Cloudflare Access. New work is deployed here only.
   - Site: `npm run build:test` then `npx wrangler deploy --config wrangler.test.jsonc`
   - Storage service: `npx wrangler deploy --config community-api/wrangler.test.jsonc`
-  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0009`)
+  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0010`). The storage service also runs a monthly cleanup (cron `0 10 1 * *`).
 - **Public Pages site** (`artistsarejerks-astro.pages.dev`): automatic production and preview builds were turned **off** on September 21. Pushing to `main` changes nothing public.
 - **Local:** `npm run dev` (port 4326) and `npm run community:dev` (port 8787), with separate local storage. `npm run community:migrate` applies local migrations.
 
@@ -48,6 +48,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 **Keeping the site honest** (gatekeeping step 1)
 - **Made with AI:** a checkbox on each piece in the workspace (and on each application photo). A small "Made with AI" label then appears on the artist page, show pages, Showing Now cards, and Our Artists.
 - **Report this:** a small link under each member artist's piece (artist page and show pages). Visitors pick a reason (not the artist's own work, craft or product, unlabeled AI, something else), with optional details and email. Same spam guards as the message form, five reports an hour per visitor. You're emailed; reports sit at the top of the inbox with **Hide the piece** and **Dismiss**.
+- **Write to us:** a link at the top of every artist workspace and venue workspace opens a short note form (hidden piece, something not working, a question, something else). It's emailed to you with the member as reply-to, and waits under **Notes** at the top of the inbox with **Mark handled**. Ten notes a day per account.
+- **Hide emails the artist:** Hide now asks for a reason (craft or product, not their own work, unlabeled AI, copyright notice, other). The artist gets an email with the reason, and the workspace shows it with a "Write to us about this" button. Unhide sends a short "it's back" email. The inbox shows whether the email went out.
+- **Monthly cleanup:** visitor messages and member notes older than two years, and reports closed more than a year ago, are deleted on the 1st of each month. This matches the Privacy Notice draft.
 - **New work:** at the bottom of the inbox, every piece on the site, newest first, each with **Hide**. Hidden pieces stay listed with **Unhide**. A hidden piece leaves the public page, its image stops being served, and the artist sees "Hidden by Artists Are Jerks" in their workspace. The artist can't undo it.
 - The storage service keeps each piece's "went public" date and the hidden flag itself; ordinary saves can't change them.
 - Fixed along the way: a price an artist chose to show ("Show a price") was being left out of public data.
@@ -84,13 +87,12 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 ## Tests
 
-`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake, messages, followers, artwork moderation, and Showing Now list tests. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
+`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake, messages, followers, artwork moderation, member notes, and Showing Now list tests. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
 
 ## Known issues and open list
 
-0. **Gatekeeping steps 2 and 3 (next):**
-   - Step 2: draft four plain-language documents for Alan's review: Artist Terms, Community Guidelines, Privacy Notice, Site Terms.
-   - Step 3: an unchecked "I agree" at application (store version and time), footer links, a short agreement line on the message and follow forms, re-agreement when terms change, and a lawyer's review before launch.
+0. **Gatekeeping step 3 (next):** the terms drafts are done ("The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq: Artist Terms, Community Guidelines, Privacy Notice, Site Terms, Copyright). Alan decided against a lawyer's review. Step 3: turn them into site pages, footer links, an unchecked "I agree" at application (store version and time), a short agreement line on the message and follow forms, and re-agreement when terms change.
+   - The copyright agent is registered (DMCA-1080994, renew by September 2029). The filing lists admin@; the page shows info@. Alan may amend the filing.
    - Small follow-up: hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
 1. **For Venues page:** waiting on Alan's OK of the benefits list.
 2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.

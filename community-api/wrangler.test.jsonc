@@ -10,5 +10,6 @@
  "r2_buckets":[{"binding":"ARTWORK","bucket_name":"aaj-artwork-test"}],
  "send_email":[{"name":"ADMIN_EMAIL","allowed_sender_addresses":["applications@aaj-mail.alanjust.com"]}],
  "vars":{"ADMIN_NOTIFICATION_FROM":"applications@aaj-mail.alanjust.com","ADMIN_BASE_URL":"https://aaj-dev.alanjust.com"},
+ "triggers":{"crons":["0 10 1 * *"]},
  "observability":{"enabled":true}
 }

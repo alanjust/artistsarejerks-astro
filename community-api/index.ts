@@ -84,15 +84,52 @@ async function sendReportNotice(env:NotificationEnv,artistName:string,title:stri
  try{await env.ADMIN_EMAIL.send({to:env.ADMIN_NOTIFICATION_TO,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`Report: “${title.slice(0,80)}” by ${artistName.slice(0,80)}`,text:`A visitor reported “${title}” by ${artistName}.\n\nReason: ${label}${details?`\n\n${details}`:''}\n\nReview it: ${url}`,html:`<p>A visitor reported “${escapeHtml(title)}” by ${escapeHtml(artistName)}.</p><p>Reason: ${escapeHtml(label)}</p>${details?`<blockquote style="white-space:pre-wrap">${escapeHtml(details)}</blockquote>`:''}<p><a href="${escapeHtml(url)}">Review it in the inbox</a></p>`})}
  catch(error){console.error(JSON.stringify({event:'report_notice_failed',message:error instanceof Error?error.message:String(error)}))}
 }
-// Hides or restores one piece. Only an administrator reaches this.
-async function setWorkHidden(env:Env,artistId:string,workId:string,hidden:boolean){
+// Why a piece was hidden, in the words the artist reads.
+const hideReasons:Record<string,string>={'not-theirs':'It looks like it may not be your own work.','not-art':'It looks like a craft or a product rather than art made to be looked at.','unlabeled-ai':'It looks like it was made with AI but isn’t labeled. Check “Made with AI” on the piece, then write to us and we’ll put it back.','copyright':'We received a copyright notice about it. We’ll send you a copy separately.','other':'It doesn’t fit the Community Guidelines.'};
+// Tells an artist a piece was hidden, or put back. Returns the delivery status.
+async function sendHiddenNotice(env:NotificationEnv,artist:Record<string,any>,email:string,title:string,hidden:boolean,reason:string):Promise<'sent'|'failed'|'not_configured'>{
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM||!/^\S+@\S+\.\S+$/.test(email))return 'not_configured';
+ const name=String(artist.name||'there'),workspace=`${siteUrl(env)}/prototype/workspace/member/?artist=${encodeURIComponent(String(artist.id))}#artwork`;
+ const text=hidden
+  ?`Hi ${name},\n\nWe’ve taken “${title}” off your public page on Artists Are Jerks. Here’s why: ${hideReasons[reason]||hideReasons.other}\n\nThe piece is still in your workspace, marked hidden, and nothing else on your page changed.\n\nIf you think we got this wrong, or you’d like to talk it over, reply to this email or use “Write to us” in your workspace: ${workspace}\n\n—Artists Are Jerks`
+  :`Hi ${name},\n\nGood news: “${title}” is back on your public page on Artists Are Jerks.\n\nYour workspace: ${workspace}\n\n—Artists Are Jerks`;
+ const html=`<p>${text.split('\n\n').map(part=>escapeHtml(part).replace(escapeHtml(workspace),`<a href="${escapeHtml(workspace)}">your workspace</a>`)).join('</p><p>')}</p>`;
+ try{await env.ADMIN_EMAIL.send({to:email,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:hidden?`We’ve taken “${title.slice(0,80)}” off your page`:`“${title.slice(0,80)}” is back on your page`,text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});return 'sent'}
+ catch(error){console.error(JSON.stringify({event:'hidden_notice_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+// Hides or restores one piece, and emails the artist either way. Only an administrator reaches this.
+async function setWorkHidden(env:Env,artistId:string,workId:string,hidden:boolean,reason='other'){
  const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1 AND payload IS NOT NULL").bind(artistId).first<{payload:string}>();
  if(!row)return false;
  const artist=JSON.parse(row.payload),work=(Array.isArray(artist.works)?artist.works:[]).find((item:Record<string,unknown>)=>item&&item.id===workId);
  if(!work)return false;
- if(hidden){work.hiddenByAdmin=true;work.hiddenAt=new Date().toISOString()}else{delete work.hiddenByAdmin;delete work.hiddenAt}
+ const changed=(work.hiddenByAdmin===true)!==hidden;
+ if(hidden){work.hiddenByAdmin=true;work.hiddenAt=new Date().toISOString();work.hiddenReason=hideReasons[reason]?reason:'other'}else{delete work.hiddenByAdmin;delete work.hiddenAt;delete work.hiddenReason}
+ if(changed){
+  const application=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(artistId).first<{payload:string}>();
+  const email=String(artist.email||(application?JSON.parse(application.payload).email:'')||'');
+  work.hiddenNotice=await sendHiddenNotice(env as NotificationEnv,artist,email,String(work.title||'Untitled'),hidden,String(work.hiddenReason||reason));
+ }
  await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='artists' AND id=?2").bind(JSON.stringify(artist),artistId).run();
  return true;
+}
+const noteTopics:Record<string,string>={hidden:'A hidden piece',problem:'Something isn’t working',question:'A question',other:'Something else'};
+// A member's note to the administrator, emailed with the member as reply-to.
+async function sendMemberNote(env:NotificationEnv,note:{name:string;email:string;topic:string;body:string;where:string}):Promise<'sent'|'failed'|'not_configured'>{
+ if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_TO||!env.ADMIN_NOTIFICATION_FROM)return 'not_configured';
+ const inbox=`${siteUrl(env)}/prototype/admin/inbox/#notes`,label=noteTopics[note.topic]||note.topic;
+ const text=`${note.name} (${note.where}) wrote through “Write to us.”\n\nAbout: ${label}\n\n${note.body}\n\nReply to this email to answer ${note.name} at ${note.email}. Inbox: ${inbox}`;
+ const html=`<p>${escapeHtml(note.name)} (${escapeHtml(note.where)}) wrote through “Write to us.”</p><p>About: ${escapeHtml(label)}</p><blockquote style="white-space:pre-wrap">${escapeHtml(note.body)}</blockquote><p>Reply to this email to answer ${escapeHtml(note.name)} at ${escapeHtml(note.email)}. <a href="${escapeHtml(inbox)}">Open the inbox</a></p>`;
+ try{await env.ADMIN_EMAIL.send({to:env.ADMIN_NOTIFICATION_TO,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:note.email,subject:`${label}: ${note.name.slice(0,80)}`,text,html});return 'sent'}
+ catch(error){console.error(JSON.stringify({event:'member_note_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
+}
+// Monthly cleanup promised in the Privacy Notice.
+async function cleanUp(env:Env){
+ await env.DB.batch([
+  env.DB.prepare("DELETE FROM artist_messages WHERE created_at<strftime('%Y-%m-%dT%H:%M:%fZ','now','-2 years')"),
+  env.DB.prepare("DELETE FROM member_notes WHERE created_at<strftime('%Y-%m-%dT%H:%M:%fZ','now','-2 years')"),
+  env.DB.prepare("DELETE FROM artwork_reports WHERE status!='open' AND closed_at<strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 year')")
+ ]);
 }
 async function turnstileOk(env:NotificationEnv,token:unknown,ip:string){
  if(!env.TURNSTILE_SECRET)return true;
@@ -387,6 +424,36 @@ export default {
         const {results}=await env.DB.prepare("SELECT email,confirmed_at FROM artist_followers WHERE artist_id=?1 AND status='confirmed' ORDER BY confirmed_at DESC").bind(artistId).all();
         return json({followers:results});
       }
+      // "Write to us": artists and venues send notes; the administrator reads and closes them.
+      if(url.pathname==='/api/community/notes'){
+        if(request.method==='GET'){
+          if(!principal.administrator)return json({error:'Administrator access required.'},403);
+          const {results}=await env.DB.prepare("SELECT id,artist_id,venue_id,name,email,topic,work_id,body,delivery_status,created_at FROM member_notes WHERE status='open' ORDER BY created_at DESC LIMIT 100").all<Record<string,string>>();
+          return json({notes:results.map(note=>({...note,topicLabel:noteTopics[note.topic]||note.topic}))});
+        }
+        if(request.method==='PUT'){
+          const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,16384))) as Record<string,unknown>;
+          if(body.action==='handled'){
+            if(!principal.administrator)return json({error:'Administrator access required.'},403);
+            if(!validId(body.id))return json({error:'Invalid note.'},400);
+            await env.DB.prepare("UPDATE member_notes SET status='handled',handled_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?1").bind(body.id).run();
+            return json({saved:true});
+          }
+          const topic=String(body.topic??''),text=String(body.body??'').trim(),workId=body.workId===undefined||body.workId===''?null:body.workId;
+          if(!noteTopics[topic]||!text||text.length>4000||workId!==null&&!validId(workId))return json({error:'Pick what it’s about and write a few words.'},400);
+          if(!principal.artistId&&!principal.venueId)return json({error:'Only artists and venues can write from a workspace.'},403);
+          const recent=await env.DB.prepare("SELECT count(*) AS n FROM member_notes WHERE user_id=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day')").bind(principal.userId).first<{n:number}>();
+          if((recent?.n??0)>=10)return json({error:'That’s a lot of notes for one day. Please write to info@artistsarejerks.com instead.'},429);
+          const record=async(collection:string,id:string)=>{const row=await env.DB.prepare('SELECT payload FROM community_records WHERE collection=?1 AND id=?2 AND payload IS NOT NULL').bind(collection,id).first<{payload:string}>();return row?JSON.parse(row.payload):null};
+          let name='',email='',where='';
+          if(principal.artistId){const artist=await record('artists',principal.artistId),application=await record('applications',principal.artistId);name=String(artist?.name||application?.name||'An artist');email=String(artist?.email||application?.email||'');where='artist'}
+          else{const venue=await record('venues',principal.venueId!);name=String(venue?.contactName||venue?.name||'A venue');email=String(venue?.email||'');where=`venue: ${String(venue?.name||'')}`}
+          if(!/^\S+@\S+\.\S+$/.test(email))return json({error:'Your account has no email address to answer. Please write to info@artistsarejerks.com.'},400);
+          const status=await sendMemberNote(env as NotificationEnv,{name,email,topic,body:text,where});
+          await env.DB.prepare('INSERT INTO member_notes(id,user_id,artist_id,venue_id,name,email,topic,work_id,body,delivery_status) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)').bind(crypto.randomUUID(),principal.userId,principal.artistId||null,principal.venueId||null,name,email,topic,workId,text,status).run();
+          return json({sent:true});
+        }
+      }
       // The administrator's "New work" list: every piece on the site, newest first,
       // plus the ones already hidden, so a hide can be undone.
       if(url.pathname==='/api/community/admin/new-work'){
@@ -394,14 +461,14 @@ export default {
         if(request.method==='GET'){
           const records=await loadRecords(),live=new Set(publicRecords(records).filter(record=>record.collection==='artists').map(record=>record.id));
           const items=records.filter(record=>record.collection==='artists'&&record.payload).flatMap(record=>{const artist=record.payload!,shown=new Set(visibleWorks(artist).map((work:Record<string,unknown>)=>work.id));
-            return (Array.isArray(artist.works)?artist.works:[]).filter((work:Record<string,any>)=>work&&(work.hiddenByAdmin===true||live.has(record.id)&&shown.has(work.id))).map((work:Record<string,any>)=>({artistId:record.id,artistName:artist.name,workId:work.id,title:work.title,medium:work.medium||'',imageKey:work.imageKey||'',sampleImage:work.sampleImage||'',madeWithAI:work.madeWithAI===true,publicAt:work.publicAt||'',hidden:work.hiddenByAdmin===true,hiddenAt:work.hiddenAt||''}))});
+            return (Array.isArray(artist.works)?artist.works:[]).filter((work:Record<string,any>)=>work&&(work.hiddenByAdmin===true||live.has(record.id)&&shown.has(work.id))).map((work:Record<string,any>)=>({artistId:record.id,artistName:artist.name,workId:work.id,title:work.title,medium:work.medium||'',imageKey:work.imageKey||'',sampleImage:work.sampleImage||'',madeWithAI:work.madeWithAI===true,publicAt:work.publicAt||'',hidden:work.hiddenByAdmin===true,hiddenAt:work.hiddenAt||'',hiddenReason:work.hiddenReason||'',hiddenNotice:work.hiddenNotice||''}))});
           items.sort((a,b)=>String(b.hidden?b.hiddenAt:b.publicAt).localeCompare(String(a.hidden?a.hiddenAt:a.publicAt)));
           return json({items:items.slice(0,120)});
         }
         if(request.method==='PUT'){
           const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
           if(!validId(body.artistId)||!validId(body.workId)||typeof body.hidden!=='boolean')return json({error:'Invalid request.'},400);
-          if(!await setWorkHidden(env,body.artistId,body.workId,body.hidden))return json({error:'That piece wasn’t found.'},404);
+          if(!await setWorkHidden(env,body.artistId,body.workId,body.hidden,String(body.reason||'other')))return json({error:'That piece wasn’t found.'},404);
           if(!body.hidden)await env.DB.prepare("UPDATE artwork_reports SET status='dismissed',closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE artist_id=?1 AND work_id=?2 AND status='hidden'").bind(body.artistId,body.workId).run();
           return json({saved:true});
         }
@@ -416,9 +483,9 @@ export default {
         if(request.method==='PUT'){
           const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,4096)));
           if(!validId(body.id)||!['hide','dismiss'].includes(body.action))return json({error:'Invalid request.'},400);
-          const report=await env.DB.prepare("SELECT artist_id,work_id FROM artwork_reports WHERE id=?1 AND status='open'").bind(body.id).first<{artist_id:string;work_id:string}>();
+          const report=await env.DB.prepare("SELECT artist_id,work_id,reason FROM artwork_reports WHERE id=?1 AND status='open'").bind(body.id).first<{artist_id:string;work_id:string;reason:string}>();
           if(!report)return json({error:'That report is already closed.'},409);
-          if(body.action==='hide')await setWorkHidden(env,report.artist_id,report.work_id,true);
+          if(body.action==='hide')await setWorkHidden(env,report.artist_id,report.work_id,true,report.reason);
           // Hiding a piece settles every open report about it.
           await (body.action==='hide'
             ?env.DB.prepare("UPDATE artwork_reports SET status='hidden',closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE artist_id=?1 AND work_id=?2 AND status='open'").bind(report.artist_id,report.work_id)
@@ -510,5 +577,6 @@ export default {
       }
       return json({error:'Not found'},404);
     }catch(error){console.error(JSON.stringify({event:'community-api-error',message:error instanceof Error?error.message:'Unknown error'}));return json({error:'Unable to complete the shared storage request.'},400)}
-  }
+  },
+  async scheduled(_controller:ScheduledController,env:Env,ctx:ExecutionContext){ctx.waitUntil(cleanUp(env))}
 } satisfies ExportedHandler<Env>;
