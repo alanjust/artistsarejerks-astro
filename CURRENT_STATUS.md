@@ -124,7 +124,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 1. **For Venues page:** waiting on Alan's OK of the benefits list.
 2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.
-3. **Sign up and Sign in look nearly the same** (both Clerk boxes). Make them clearly different, e.g. "New here? Create your account" and "Welcome back."
+3. **Sign up and Sign in: done September 24.** `src/components/AuthIntro.astro` puts a colored tag and heading above each Clerk box ("First time here · Create your account" in green, "Coming back · Welcome back" in purple), a save-your-password line on sign-up, a "not the gate code" line on sign-in (test site only), and a link to the other page. Clerk's own box text is unchanged.
 4. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
 5. **Hidden featured piece:** hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
 6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.

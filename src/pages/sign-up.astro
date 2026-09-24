@@ -2,11 +2,12 @@
 export const prerender = false;
 import { SignUp as ClerkSignUp } from '@clerk/astro/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthIntro from '../components/AuthIntro.astro';
 // Send people back to where they started, but only to a page on this site.
 const requested = Astro.url.searchParams.get('next') ?? '';
 const next = /^\/(?!\/)[^\s\\]*$/.test(requested) ? requested : '/account/';
 ---
 <BaseLayout title="Create your account | Artists Are Jerks" noindex>
-<main class="auth-page"><h1>Create your account</h1><p>Artists Are Jerks · Development testing</p><ClerkSignUp forceRedirectUrl={next} signInForceRedirectUrl={next} signInUrl={`/sign-in/?next=${encodeURIComponent(next)}`} /></main>
+<main class="auth-page"><AuthIntro mode="sign-up" next={next} /><ClerkSignUp forceRedirectUrl={next} signInForceRedirectUrl={next} signInUrl={`/sign-in/?next=${encodeURIComponent(next)}`} /></main>
 </BaseLayout>
-<style>.auth-page{display:flex;flex-direction:column;align-items:center;padding:var(--space-8) var(--space-4) var(--space-16)}h1{text-align:center}</style>
+<style>.auth-page{display:flex;flex-direction:column;align-items:center;padding:var(--space-8) var(--space-4) var(--space-16)}</style>
