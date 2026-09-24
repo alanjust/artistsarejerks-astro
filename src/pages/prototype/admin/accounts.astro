@@ -8,7 +8,7 @@ if (denied) return denied;
 const currentUserId = Astro.locals.auth().userId;
 ---
 <BaseLayout title="Account access | Artists Are Jerks" noindex>
-<main class="venue-workspace"><p>Administrator · Local development</p><h1>Account access</h1><p>Link a signed-in account to an approved artist or venue. Creating an account does not approve membership.</p><p><a href="/account/">Your account →</a></p>
+<main class="venue-workspace"><p>Administrator</p><h1>Account access</h1><p>Link a signed-in account to an approved artist or venue. Creating an account does not approve membership.</p><p><a href="/account/">Your account →</a></p>
 <section class="card"><h2>Assign a workspace</h2><p>In this project’s Clerk dashboard, open Users, select the person, and copy their user ID. They must create their account first.</p>
 <form data-account-form data-current-user={currentUserId}>
 <label>Clerk user ID<input name="userId" required pattern="user_[a-zA-Z0-9]+" placeholder="user_…" /></label>
@@ -16,8 +16,12 @@ const currentUserId = Astro.locals.auth().userId;
 <label>Venue workspace<select name="venueId"><option value="">No venue workspace</option></select></label>
 <label><input name="administrator" type="checkbox" /> Administrator: can review applications, assign accounts, and manage shared records</label>
 <button type="submit" disabled>Save account access</button></form><p data-account-status role="status"></p></section>
-<section class="card"><h2>Existing assignments</h2><p>Select an account to review or change its permissions. An artist or venue can have one owner. Your own administrator access cannot be removed here.</p><div data-account-list></div></section>
-<p class="notice">These assignments affect the local database on this Mac. They do not create an online test site. Assigned members can edit their own artist workspace and upload images. Assigned venue owners can edit venue details; approval, visibility, artist lists, and announcement tools remain under administrator control.</p>
+<section class="card"><h2>Existing assignments</h2><p>Select an account to review or change its permissions. An artist or venue can have one owner. Your own administrator access cannot be removed here.</p><div class="account-list" data-account-list></div></section>
+<p class="notice">Approving an artist or venue in the inbox attaches it to the account that applied, so this page is for special cases. Assigned members can edit their own artist workspace and upload images. Assigned venue owners can edit venue details; approval, visibility, artist lists, and announcement tools remain under administrator control.</p>
 </main>
 <script>import {initAccountAssignments} from '../../../lib/account-assignments';initAccountAssignments();</script>
 </BaseLayout>
+<style>
+.account-list :global(button) { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); width: 100%; margin-bottom: var(--space-2); text-align: left; }
+.account-list :global(button span) { font-weight: var(--font-weight-normal); }
+</style>

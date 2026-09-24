@@ -113,7 +113,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Keep:** Randy Wilson (approved, published, one piece).
 - **Venues (checked September 24):** three approved, visible venue records.
   - **Test Venue — Not Real.** (Ashland).
-  - **Alan Just Studio** (appeared September 24; source not yet confirmed by Alan).
+  - **Alan Just Studio**, applied for from alan@alanjust.com and attached to that account on September 24 (so Alan's account page shows both workspaces).
   - **Leo's Brewpub and Grill** (Medford). A fictional sample made into a real venue record on September 24 (id `venue-leos-brewpub`, the id its two published showings already used). Address "101 Prototype Way" is made up; the description says it's a test venue; private contact is "Alan Just (test venue)" at info@.
   - Artist-typed places with no venue record: "Museum Test — Not Real" (Alan Just) and "Alan Russell Just Home Studio" (Alan Russell Just). These get **Invite this place** in the workspace.
 - **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just artist page (id `alan-just`, 7 pieces, both showings; moved from the first prototype setup on September 22, backup at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`). alanjust@gmail.com owns Alan Russell Just.
@@ -141,9 +141,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 4. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
 
 **Later**
-5. **Account assignments page** shows long account IDs, not names or emails; hard to tell who's who.
-6. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-7. **Cleanups:**
+5. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+6. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
@@ -154,6 +153,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Hidden featured piece.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
 - **Follower notices for showings published before the page was public.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
 - **Emailed "Still up?" reminders** (migration `0011`, `tests/still-up.mjs`), described under Showings above.
+- **Account assignments** lists each account by email (from its request) with artist and venue names, not raw IDs.
 - **For Venues page** (`/for-venues/`): Alan approved the benefits (free listing, walls that change on their own, artists bring their own people, nothing to handle on sales, still listed between shows). It covers how it works and fair questions, with "Introduce your place →" to `/join/venue/`. Linked from the menu ("For venues") and from Places to See Art ("Own a café, brewpub, or shop? Hang local art on your walls →"). Signed-out owners who tap Introduce now land on Create your account, then return to the venue form (it used to send them to Sign in).
 
 ## Working notes
