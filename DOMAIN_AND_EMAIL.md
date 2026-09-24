@@ -32,7 +32,7 @@ If a future sending service (Resend, Postmark, Cloudflare Email Service) sends a
 
 ## DMCA designated agent
 
-Filed September 23, 2026 at dmca.copyright.gov. The $6 Pay.gov payment was submitted; the confirmation email was still pending when this was written.
+Filed September 23, 2026 at dmca.copyright.gov. Registration No. **DMCA-1080994**. Payment of $6 through Pay.gov was confirmed the same day.
 
 - **Account:** DMCA registration account signed in through Login.gov as `admin@artistsarejerks.com`. Alan's personal Login.gov account (`alan@alanjust.com`, used for Social Security) is separate. Keep them apart: use a private browser window so the personal login doesn't get picked up automatically.
 - **Service provider:** Alan Just d/b/a Alan Just Design, with the alternate names Artists Are Jerks and artistsarejerks.com.
@@ -49,4 +49,4 @@ The filing protects the site only if the site also posts the same agent info, re
 4. **GitHub organization** for the repo.
 5. **Transactional mail** currently sends from `applications@aaj-mail.alanjust.com`, a subdomain of Alan's personal domain (see `TEST_SITE_SETUP.md`). Before launch, move it to a subdomain of artistsarejerks.com, such as `mail.artistsarejerks.com`.
 6. **At handoff:** change the Workspace recovery email (currently alanjust@gmail.com) and billing card, and remove the account from Alan's devices.
-7. **Copyright/DMCA page** on the site: agent contact matching the filing, how takedown notices and counter-notices work, and the repeat-infringer policy. Link it from the footer. Record the registration number here once it arrives.
+7. **Copyright/DMCA page** on the site: agent contact matching the filing, how takedown notices and counter-notices work, and the repeat-infringer policy. Link it from the footer.
