@@ -108,7 +108,12 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Keep:** Randy Wilson (approved, published, one piece).
 - **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just artist page (id `alan-just`, 7 pieces, both showings; moved from the first prototype setup on September 22, backup at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`). alanjust@gmail.com owns Alan Russell Just.
 - **Test applicants** use Gmail plus-addresses: alanjust+test1@gmail.com is AJ Test One, alanjust+test2@gmail.com is AJ Test Two. Both applied before sample photos and the agreement existed, so the join page will ask them for both. Use alanjust+test3@gmail.com (and up) for a fresh run.
-- **Tester handout** for Alan's artist friends, shared by link: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ. It explains the two logins (the Cloudflare gate code, then the site account) and follows the "Join free" path. Keep it in step with the site's navigation.
+- **Tester handout** ("Come kick the tires") for Alan's artist friends, shared by link and meant to be sent by text: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ. Its source is a scratchpad file, so edit it by reading the artifact first.
+  - It opens as an **invitation**: what the site is and what testing means, a big **Open the test site →** button to `https://aaj-dev.alanjust.com/showing-now/` (opens in a new tab), and three lines of what to expect.
+  - Then **the guide**: the two doors in the order people meet them. Door 1 is the Cloudflare gate code, then Showing Now with no other login. Door 2, the site account, appears only after tapping Join free, For artists, or Artist sign in.
+  - Step-by-step sections: just looking, putting your art up (with the terms checkbox), coming back later, and how to report problems (Write to us or info@).
+  - Three reminders to save the site password, including a tip box at the step where it's made. The gate code won't get anyone into their page.
+  - Keep it in step with the site's navigation and screens.
 - **Clutter:** two identical Alan Just showings (Sep 15–Oct 13) remain from earlier testing.
 
 ## Tests
