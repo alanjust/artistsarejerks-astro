@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 22, 2026, after gatekeeping step 1. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3) and the navigation fixes. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -11,7 +11,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Private test site:** `https://aaj-dev.alanjust.com`, behind Cloudflare Access. New work is deployed here only.
   - Site: `npm run build:test` then `npx wrangler deploy --config wrangler.test.jsonc`
   - Storage service: `npx wrangler deploy --config community-api/wrangler.test.jsonc`
-  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0010`). The storage service also runs a monthly cleanup (cron `0 10 1 * *`).
+  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0010`).
+  - The storage service runs a monthly cleanup (cron `0 10 1 * *`).
 - **Public Pages site** (`artistsarejerks-astro.pages.dev`): automatic production and preview builds were turned **off** on September 21. Pushing to `main` changes nothing public.
 - **Local:** `npm run dev` (port 4326) and `npm run community:dev` (port 8787), with separate local storage. `npm run community:migrate` applies local migrations.
 
@@ -19,46 +20,56 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 **Showing Now** (`/showing-now/`)
 - A two-across grid of current showings, A–Z by artist last name. Tags come from the dates: "Ends Thursday", "Last day", "Just opened", "Ongoing · since June", "Opens Nov 5".
+- Under the title: "Just here to look? No account needed. Go see it." and "Make art? Put your work on this page. Join free →" (to `/join/?kind=artist`).
 - City and Search sit below the grid. After them come Ongoing (rows) and Artists to come (rows).
 - "Rogue Valley, Oregon (somewhere else?)" links to the region picker, `/showing-now/regions/`.
 - FPO sample tiles (Mia Chen, Luis Moreno, Rae Adams, Kenji Sato, Sam Ortiz) show on the test site and are labeled.
 - **Our Artists** (`/our-artists/`) holds the roster, with "Showing now" badges.
 
-**Header and menu**
+**Header, menu, and footer**
 - Every size has one header and one black menu panel, grouped into See Art and Artist Tools.
 - On a phone: title, a "Showing Now" shortcut, and ☰.
-- On desktop: See Art links in the header, plus "Your account / Sign in" floating under it on the right. The old black strip of links is gone.
-- The history section's "Artists" link is renamed "Artists in History".
+- On desktop: See Art links plus **For artists** (to the join page) in the header, and **Artist sign in** floating under it on the right.
+- Menu utility links: Join as an artist or venue, Artist sign in, About. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, About, and lessons are prerendered and never show it.
+- **Footer on every page:** Artist Terms, Community Guidelines, Privacy, Site Terms, Copyright, and "© 2026 Alan Just Design · Artists Are Jerks · info@artistsarejerks.com".
 
 **Joining and onboarding**
-1. **Apply** (`/join/?kind=artist`). Signed-out visitors create an account first, then return. Four fields (name, city, what you make, where we can see your work) plus **two or three photos of their work**. The email comes from the account.
+1. **Apply** (`/join/?kind=artist`). Signed-out visitors create an account first, then return. Four fields (name, city, what you make, where we can see your work), **two or three photos**, and an unchecked **"I agree"** to the Artist Terms and Community Guidelines. The email comes from the account.
    - The form spells out the standard: art made to be looked at, not crafts, useful objects, or merchandise; ceramics and glass only when made for display; AI images welcome if labeled.
-   - The photos become the first pieces on the artist's page. You're emailed about the request only once they arrive. A request saved without them asks for just the photos next time.
+   - The photos become the first pieces on the artist's page. You're emailed about the request only once they arrive. A request saved without them asks for just the photos (and agreement) next time.
 2. **Private page opens immediately.** Applying creates the artist record and workspace membership together. Nothing is public until approval.
-3. **Approval** in `/prototype/admin/inbox/`. Each artist request shows its sample pieces large, with any AI label. There is no acceptance step. The artist is emailed "You're in", and the inbox shows delivery status with a resend button. A decline closes the workspace.
-4. **Workspace** (`/prototype/workspace/member/?artist=…`), with tabs Home, Artwork, Showings, Messages, Profile, Your page.
+3. **Approval** in `/prototype/admin/inbox/`. Each artist request shows its sample pieces large, with any AI label, and which terms version the artist agreed to. There is no acceptance step. The artist is emailed "You're in", and the inbox shows delivery status with a resend button. A decline closes the workspace.
+4. **Workspace** (`/prototype/workspace/member/?artist=…`), with tabs Home, Artwork, Showings, Messages, Profile, Your page, and a **Write to us** link at the top.
    - A new artist lands on "Your first piece", image first.
-   - "This is your page" shows a live preview, a "how should people reach you" choice (message form, website, email, or not yet), a one-time "I made this work" confirmation, and Publish. Publish waits for approval.
+   - "Your page" shows a live preview, a "how should people reach you" choice (message form, website, email, or not yet), a one-time "I made this work" confirmation, the terms agreement when it's needed, and Publish. Publish waits for approval.
    - Home shows where things stand and one next step.
 5. **Showings** in one panel with three questions: Where (search places or add a new one), When (two dates, or Ongoing), Which pieces (tap tiles; the star marks the featured piece). A live preview matches the Showing Now card.
    - Ongoing showings ask "Still up?" after 60 days and leave public listings 14 days after a missed check-in.
    - After the first published showing, the artist is asked about venue-opportunity announcements.
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
+7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms. Venue workspaces also have **Write to us**.
+
+**Terms and policies** (gatekeeping steps 2 and 3)
+- Five pages: `/artist-terms/`, `/guidelines/`, `/privacy/`, `/terms/` (Site Terms), `/copyright/`, sharing the layout `src/components/LegalPage.astro`. Each shows "Version 1 · effective September 24, 2026".
+- The current version is in `community-api/terms.ts` (`TERMS_VERSION`, `TERMS_DATE`). Change both when the terms change, and edit the page text.
+- Applications store `terms: {version, agreedAt}`; an earlier agreement moves to `termsHistory`.
+- An artist page can't go from private to public until its artist has agreed to the current version (enforced by the storage service). Home tells the artist when the terms have changed. Pages already public stay public. Venues aren't asked again when terms change, since an administrator controls their visibility.
+- Message, follow, and report forms carry a one-line "Sending this means you're OK with our Site Terms and Privacy Notice."
+- Artists who joined before September 24 (Alan Just, Randy Wilson, Alan Russell Just) haven't agreed yet; they'll be asked the next time one of their pages goes from private to public.
+- Drafts and review history: "The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq
 
 **Keeping the site honest** (gatekeeping step 1)
 - **Made with AI:** a checkbox on each piece in the workspace (and on each application photo). A small "Made with AI" label then appears on the artist page, show pages, Showing Now cards, and Our Artists.
-- **Report this:** a small link under each member artist's piece (artist page and show pages). Visitors pick a reason (not the artist's own work, craft or product, unlabeled AI, something else), with optional details and email. Same spam guards as the message form, five reports an hour per visitor. You're emailed; reports sit at the top of the inbox with **Hide the piece** and **Dismiss**.
-- **Write to us:** a link at the top of every artist workspace and venue workspace opens a short note form (hidden piece, something not working, a question, something else). It's emailed to you with the member as reply-to, and waits under **Notes** at the top of the inbox with **Mark handled**. Ten notes a day per account.
-- **Hide emails the artist:** Hide now asks for a reason (craft or product, not their own work, unlabeled AI, copyright notice, other). The artist gets an email with the reason, and the workspace shows it with a "Write to us about this" button. Unhide sends a short "it's back" email. The inbox shows whether the email went out.
-- **Monthly cleanup:** visitor messages and member notes older than two years, and reports closed more than a year ago, are deleted on the 1st of each month. This matches the Privacy Notice draft.
-- **New work:** at the bottom of the inbox, every piece on the site, newest first, each with **Hide**. Hidden pieces stay listed with **Unhide**. A hidden piece leaves the public page, its image stops being served, and the artist sees "Hidden by Artists Are Jerks" in their workspace. The artist can't undo it.
-- The storage service keeps each piece's "went public" date and the hidden flag itself; ordinary saves can't change them.
-- Fixed along the way: a price an artist chose to show ("Show a price") was being left out of public data.
+- **Report this:** a small link under each member artist's piece (artist page and show pages). Visitors pick a reason (not the artist's own work, craft or product, unlabeled AI, something else), with optional details and email. Same spam guards as the message form, five reports an hour per visitor. You're emailed; reports sit near the top of the inbox with **Hide the piece** and **Dismiss**.
+- **New work:** at the bottom of the inbox, every piece on the site, newest first. **Hide** asks for a reason (craft or product, not their own work, unlabeled AI, copyright notice, other), takes the piece off the site, stops serving its image, and emails the artist the reason. The workspace shows why, with a "Write to us about this" button. **Unhide** puts it back and emails "it's back." The artist can't undo a hide.
+- **Write to us:** notes from artists and venues are emailed to you with the member as reply-to, and wait under **Notes** at the top of the inbox with **Mark handled**. Ten notes a day per account.
+- **Monthly cleanup:** visitor messages and member notes older than two years, and reports closed more than a year ago, are deleted on the 1st of each month, as the Privacy Notice promises.
+- The storage service keeps each piece's "went public" date and the hidden flag and reason itself; ordinary saves can't change them.
 
 **Visitors reaching artists**
 - **Message form** on the artist page. It is emailed to the artist with the visitor as reply-to, and saved to the workspace Messages tab. The artist's address is never shown.
 - **"Get an email when [artist] shows next."** Double opt-in, confirmed by a button on `/follow/confirm/`. Confirmed followers get one email when a showing is first published. Every email has an unsubscribe link (`/follow/unsubscribe/`). The artist sees the count and can download the list as CSV.
-- **Spam guards on both forms:** a hidden field, a minimum time on the page, rate limits, and Cloudflare Turnstile.
+- **Spam guards on these forms:** a hidden field, a minimum time on the page, rate limits, and Cloudflare Turnstile.
 
 ## Decisions Alan has made
 
@@ -66,10 +77,17 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - A published showing at an unreviewed or artist-entered venue stays public: the artist vouches for the place.
 - Ongoing showings are allowed and sort after dated ones.
 - Showing Now has no single featured piece. The grid is A–Z. The title is purple.
-- The message form was built now; Turnstile is on.
 - The venue-opportunity question comes after the first published showing.
 - New work goes to the test site only.
-- **The standard (September 22):** fine and visual art made to be looked at: painting, drawing, printmaking, photography, collage, mixed media, sculpture. No crafts, functional objects, or merchandise. Ceramics and glass only when made for display. AI images allowed, labeled. Nudity and violence allowed without warnings; whether to hang a piece is the venue's call. That reasoning goes in the Community Guidelines.
+- **The standard (September 22):** fine and visual art made to be looked at: painting, drawing, printmaking, photography, collage, mixed media, sculpture, and fiber and textile art made for the wall. No crafts, functional objects, or merchandise. Ceramics and glass only when made for display. AI images allowed, labeled. Nudity and violence allowed without warnings; whether to hang a piece is the venue's call.
+- **Terms (September 23–24):**
+  - The site is run by Alan Just Design, Alan's sole proprietorship, in Medford, Oregon (Jackson County courts).
+  - No lawyer's review; Alan accepts the risk for a lightweight project.
+  - Artist accounts are for people 18 and up.
+  - The site won't post artists' work on its own social media; the license covers link previews only.
+  - 60 days' notice before the site ever charges. 30 days' notice if it shuts down, with no download promise.
+  - Visitor messages are deleted after two years.
+- **Navigation (September 24):** Showing Now answers "do I need an account?" and "where do I join?" right under the title; "Your account / Sign in" became "Artist sign in"; desktop gets "For artists".
 
 ## Configuration outside Git
 
@@ -77,40 +95,36 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Pages project** `artistsarejerks-astro`: automatic production and preview builds off (September 21).
 - **Turnstile widget** "AAJ test site artist messages", limited to `aaj-dev.alanjust.com`, managed mode. The site key is public in `src/lib/turnstile.ts`. The secret is the encrypted `TURNSTILE_SECRET` on `aaj-community-test`.
 - **Email:** the account is on Workers Paid. Cloudflare Email Service sends from `applications@aaj-mail.alanjust.com` to any address. Runtime secrets (`COMMUNITY_GATEWAY_SECRET`, Clerk keys, `ADMIN_NOTIFICATION_TO`) are not in Git.
+- **Public contact address:** info@artistsarejerks.com, an alias of admin@artistsarejerks.com. Show info@ publicly, never admin@.
+- **Copyright agent:** registered with the U.S. Copyright Office on September 23, DMCA-1080994, as Alan Just d/b/a Alan Just Design, 2520 Lyman Ave, Medford, OR 97504. Renew by September 2029. The filing lists admin@; the Copyright page shows info@. Alan may amend the filing to info@.
 
-## Test data on the test site
+## Test data and testers
 
 - **Keep:** Randy Wilson (approved, published, one piece).
-- **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just workspace. On September 22, Alan Just moved from the first prototype setup to a regular member artist (id `alan-just`), with 7 pieces and both showings; `/prototype/artists/alan-just/` forwards there on the test site. A backup from just before the move is at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`. alanjust@gmail.com owns Alan Russell Just.
-- **Test applicants** use Gmail plus-addresses (alanjust+test1@gmail.com is AJ Test One; +test2 is AJ Test Two).
+- **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just artist page (id `alan-just`, 7 pieces, both showings; moved from the first prototype setup on September 22, backup at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`). alanjust@gmail.com owns Alan Russell Just.
+- **Test applicants** use Gmail plus-addresses: alanjust+test1@gmail.com is AJ Test One, alanjust+test2@gmail.com is AJ Test Two. Both applied before sample photos and the agreement existed, so the join page will ask them for both. Use alanjust+test3@gmail.com (and up) for a fresh run.
+- **Tester handout** for Alan's artist friends, shared by link: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ. It explains the two logins (the Cloudflare gate code, then the site account) and follows the "Join free" path. Keep it in step with the site's navigation.
 - **Clutter:** two identical Alan Just showings (Sep 15–Oct 13) remain from earlier testing.
 
 ## Tests
 
-`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake, messages, followers, artwork moderation, member notes, and Showing Now list tests. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
+`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake (including terms), messages, followers, artwork moderation, member notes, and Showing Now list tests. The artist-application tests read the current terms version from `community-api/terms.ts`. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
 
 ## Known issues and open list
 
-0. **Gatekeeping step 3: done September 24.** The policies are real pages: `/artist-terms/`, `/guidelines/`, `/privacy/`, `/terms/`, `/copyright/` (shared layout `src/components/LegalPage.astro`), linked from a new footer on every page. The current version lives in `community-api/terms.ts` (`TERMS_VERSION`, `TERMS_DATE`); change both when the terms change.
-   - Applying requires an unchecked-by-default "I agree" box; the application stores `terms: {version, agreedAt}`, and older agreements move to `termsHistory`.
-   - An artist page can't go from private to public until its artist has agreed to the current version (server-enforced). The workspace asks on the "Your page" tab, and Home says so when the terms have changed. Pages already public stay public.
-   - Message, follow, and report forms carry a one-line "Sending this means you're OK with our Site Terms and Privacy Notice."
-   - The inbox shows each artist's agreement. Artists who joined before September 24 (Alan Just, Randy Wilson, Alan Russell Just) haven't agreed yet; they'll be asked the next time they publish.
-   - Venue applications ask too: the Community Guidelines and Site Terms, stored as `terms` on the venue record. Venues aren't re-asked when terms change, since an administrator controls their visibility.
-   - The earlier drafts: "The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq ("The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq: Artist Terms, Community Guidelines, Privacy Notice, Site Terms, Copyright). Alan decided against a lawyer's review. Step 3: turn them into site pages, footer links, an unchecked "I agree" at application (store version and time), a short agreement line on the message and follow forms, and re-agreement when terms change.
-   - The copyright agent is registered (DMCA-1080994, renew by September 2029). The filing lists admin@; the page shows info@. Alan may amend the filing.
-   - Small follow-up: hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
 1. **For Venues page:** waiting on Alan's OK of the benefits list.
 2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.
-3. **Login clarity:** make Sign up and Sign in look clearly different, and write tester instructions that name both logins (the Cloudflare code, then the site account).
+3. **Sign up and Sign in look nearly the same** (both Clerk boxes). Make them clearly different, e.g. "New here? Create your account" and "Welcome back."
 4. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-5. **Cleanups:**
-   - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
-   - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet.
-   - The first-prototype Alan workspace code was retired on September 22. `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/`. The unused `alan-workspace` and `featured` rows were deleted the same day (they are in the pre-move backup).
-6. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask). Raised by Alan on September 22; deliberately separate from the terms work.
-7. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
-8. **Before public launch:** decide the mailing address for follower emails. The site may not need one if the notices count as non-commercial; ask a lawyer.
-9. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
+5. **Hidden featured piece:** hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
+6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
+7. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
+8. **Optional builds named in the Privacy Notice:** a self-serve "delete my account" button (today artists write in), and serving fonts from the site itself so Google Fonts drops off the privacy list.
+9. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
+10. **Cleanups:**
+    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
+    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
+    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
+11. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
 
 Design mockups for Showing Now, the menu, and the region picker: https://claude.ai/artifact/EGzZasV2ZZZTr18XD8uBnq
