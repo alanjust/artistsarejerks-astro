@@ -27,6 +27,9 @@ Artists Are Jerks may be handed to another person or organization someday. Proje
 | TXT | `@` | `google-site-verification=…` (Workspace ownership; keep it) |
 | TXT | `@` | `v=spf1 include:_spf.google.com ~all` |
 | TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:admin@artistsarejerks.com` |
+| TXT | `google._domainkey` | `v=DKIM1; k=rsa; p=…` (2048-bit Google DKIM key, added September 24) |
+
+Daily DMARC reports from Google arrive at admin@ as zip attachments. They can be archived.
 
 If a future sending service (Resend, Postmark, Cloudflare Email Service) sends as artistsarejerks.com, its servers must be added to the same SPF record. Don't create a second SPF record—there can only be one.
 
@@ -43,10 +46,9 @@ The filing protects the site only if the site also posts the same agent info, re
 
 ## Still to do
 
-1. **DKIM.** In admin.google.com, go to Apps → Google Workspace → Gmail → Authenticate email → Generate new record. Add the `google._domainkey` TXT record in Cloudflare, then Start authentication.
-2. **Separate Cloudflare account** for the project, owned by admin@. The Workers, D1 and R2 have to be recreated there rather than moved.
-3. **Transfer the registration** from GoDaddy to Cloudflare Registrar—into the project account, not the personal one.
-4. **GitHub organization** for the repo.
-5. **Transactional mail** currently sends from `applications@aaj-mail.alanjust.com`, a subdomain of Alan's personal domain (see `TEST_SITE_SETUP.md`). Before launch, move it to a subdomain of artistsarejerks.com, such as `mail.artistsarejerks.com`.
-6. **At handoff:** change the Workspace recovery email (currently alanjust@gmail.com) and billing card, and remove the account from Alan's devices.
-7. **Copyright/DMCA page** on the site: agent contact matching the filing, how takedown notices and counter-notices work, and the repeat-infringer policy. Link it from the footer.
+1. **Separate Cloudflare account** for the project, owned by admin@. The Workers, D1 and R2 have to be recreated there rather than moved.
+2. **Transfer the registration** from GoDaddy to Cloudflare Registrar—into the project account, not the personal one.
+3. **GitHub organization** for the repo.
+4. **Transactional mail** currently sends from `applications@aaj-mail.alanjust.com`, a subdomain of Alan's personal domain (see `TEST_SITE_SETUP.md`). Before launch, move it to a subdomain of artistsarejerks.com, such as `mail.artistsarejerks.com`.
+5. **At handoff:** change the Workspace recovery email (currently alanjust@gmail.com) and billing card, and remove the account from Alan's devices.
+6. **Copyright/DMCA page** on the site: agent contact matching the filing, how takedown notices and counter-notices work, and the repeat-infringer policy. Link it from the footer.
