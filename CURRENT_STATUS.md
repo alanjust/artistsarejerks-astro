@@ -110,6 +110,11 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 ## Test data and testers
 
 - **Keep:** Randy Wilson (approved, published, one piece).
+- **Venues (checked September 24):** three approved, visible venue records.
+  - **Test Venue — Not Real.** (Ashland).
+  - **Alan Just Studio** (appeared September 24; source not yet confirmed by Alan).
+  - **Leo's Brewpub and Grill** (Medford). A fictional sample made into a real venue record on September 24 (id `venue-leos-brewpub`, the id its two published showings already used). Address "101 Prototype Way" is made up; the description says it's a test venue; private contact is "Alan Just (test venue)" at info@.
+  - Artist-typed places with no venue record: "Museum Test — Not Real" (Alan Just) and "Alan Russell Just Home Studio" (Alan Russell Just). These get **Invite this place** in the workspace.
 - **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just artist page (id `alan-just`, 7 pieces, both showings; moved from the first prototype setup on September 22, backup at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`). alanjust@gmail.com owns Alan Russell Just.
 - **Test applicants** use Gmail plus-addresses: alanjust+test1@gmail.com is AJ Test One, alanjust+test2@gmail.com is AJ Test Two. Both applied before sample photos and the agreement existed, so the join page will ask them for both. Use alanjust+test3@gmail.com (and up) for a fresh run.
 - **Tester handout** ("Come kick the tires") for Alan's artist friends, shared by link and meant to be sent by text: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ. Its source is a scratchpad file, so edit it by reading the artifact first.
