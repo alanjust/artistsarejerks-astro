@@ -16,6 +16,8 @@
 }
 
 html {
+  /* Past the page's edges (Safari's toolbar area, overscroll) shows black, matching the footer. */
+  background: var(--color-black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
