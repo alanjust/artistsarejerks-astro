@@ -1,6 +1,6 @@
 ---
 export const prerender=false;
-const {isAuthenticated}=Astro.locals.auth();if(!isAuthenticated)return Astro.redirect('/sign-in/');
+const {isAuthenticated}=Astro.locals.auth();if(!isAuthenticated)return Astro.redirect('/sign-up/?next=%2Fjoin%2Fvenue%2F');
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import pilot from '../../data/community-pilot.json';
 import '../../styles/venue-workspace.css';

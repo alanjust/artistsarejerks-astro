@@ -24,6 +24,7 @@ if (!Astro.isPrerendered) { try { signedIn = Boolean(Astro.locals.auth?.().isAut
 const utility: Link[] = [
     {name: 'Join as an artist or venue', url: '/join/'},
     ...(signedIn ? [{name: 'Workspaces · Prototype', url: '/prototype/workspaces/'}] : []),
+    {name: 'For venues', url: '/for-venues/'},
     {name: 'Artist sign in', url: '/account/'},
     {name: 'About', url: '/about/'},
 ];

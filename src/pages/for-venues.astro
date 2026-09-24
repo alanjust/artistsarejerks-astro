@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+// For café, brewpub, and shop owners: what hanging local art through the site gets them.
+const benefits = [
+  ['A free listing', 'Your place shows up on Showing Now and Places to See Art, with your hours, your address, and a Directions button. It’s free.'],
+  ['Walls that change on their own', 'Artists bring the work and hang it. Nobody on your staff has to curate, frame, or chase anyone down.'],
+  ['Artists bring their own people', 'When a showing goes up, the artist’s followers get an email saying where to find it. The artist also gets a ready-made note and calendar invite to send to friends. Those people come to see the art, and they come through your door.'],
+  ['Nothing to handle on sales', 'If someone wants a piece, they deal with the artist directly. You never touch money, prices, or receipts.'],
+  ['Still listed between shows', 'When one showing comes down and before the next goes up, your place stays on Places to See Art.'],
+];
+---
+<BaseLayout title="For Venues | Artists Are Jerks">
+  <main class="for-venues">
+    <p class="kicker">For cafés, brewpubs, shops, and studios</p>
+    <h1>Hang local art</h1>
+    <p class="lede">Think about the blank wall across from your counter. Now picture a painting on it by someone who lives ten minutes away, and a couple of people who came in just to see it, and stayed for lunch.</p>
+    <p class="lede">That’s the whole idea. Artists Are Jerks is a guide to art on real walls around the Rogue Valley. Artists list where their work is hanging, and people go see it. Your place can be one of those walls.</p>
+    <p class="cta"><a class="button" href="/join/venue/">Introduce your place →</a></p>
+
+    <h2>What you get</h2>
+    <ul class="benefits">
+      {benefits.map(([title, text]) => <li><h3>{title}</h3><p>{text}</p></li>)}
+    </ul>
+
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><h3>Introduce your place</h3><p>A short form: your name and address, hours, and who to contact. You’ll make a free account first, so you can update your details later.</p></li>
+      <li><h3>A real person says hello</h3><p>Alan reads every request and approves your place. Then it’s listed on Places to See Art.</p></li>
+      <li><h3>An artist hangs work</h3><p>You and the artist work out the details together: how long, how many pieces, where they go. The artist lists the showing, and it goes up on Showing Now with your name on it.</p></li>
+    </ol>
+
+    <h2>Fair questions</h2>
+    <dl class="faq">
+      <dt>Do we have to approve every piece?</dt>
+      <dd>The site doesn’t ask you to, but it’s your wall. What hangs there is between you and the artist. Our <a href="/guidelines/">Community Guidelines</a> say the same thing: the venue and the artist decide what suits the room.</dd>
+      <dt>Does it cost anything?</dt>
+      <dd>No. If that ever changes, you’ll hear about it well ahead of time.</dd>
+      <dt>What if an artist lists us without asking?</dt>
+      <dd>Artists vouch for the places they list. If a showing at your place isn’t real, write to info@artistsarejerks.com and we’ll take care of it.</dd>
+      <dt>Do we take a cut of sales?</dt>
+      <dd>The site doesn’t handle sales at all. If you and an artist want an arrangement, that’s yours to make.</dd>
+    </dl>
+
+    <div class="closing">
+      <p>Ready when you are. It takes about five minutes.</p>
+      <p class="cta"><a class="button" href="/join/venue/">Introduce your place →</a></p>
+      <p class="small">Questions first? Email <a href="mailto:info@artistsarejerks.com">info@artistsarejerks.com</a>. Want to see what it looks like? <a href="/showing-now/">Browse Showing Now →</a></p>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .for-venues { width: 100%; max-width: var(--max-width-reading); box-sizing: border-box; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-16); }
+  .kicker { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; }
+  h1 { margin: var(--space-1) 0 var(--space-4); color: var(--color-purple); font-family: var(--font-display); font-size: var(--font-size-5xl); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-tight); }
+  .lede { margin: 0 0 var(--space-4); font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-normal); }
+  h2 { margin: var(--space-12) 0 var(--space-4); font-family: var(--font-heading); font-size: var(--font-size-3xl); line-height: var(--line-height-tight); }
+  h3 { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-tight); }
+  p, dd { margin: 0; font-size: var(--font-size-lg); line-height: var(--line-height-relaxed); }
+  .benefits, .steps { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+  .benefits li, .steps li { padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); }
+  .benefits h3 { color: var(--color-gold); }
+  .steps { counter-reset: step; }
+  .steps li { counter-increment: step; }
+  .steps h3::before { content: counter(step) ". "; color: var(--color-gold); }
+  .faq { margin: 0; }
+  .faq dt { margin: var(--space-5) 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+  .faq dt:first-child { margin-top: 0; }
+  .faq dd { margin: 0; }
+  .cta { margin: var(--space-5) 0 0; }
+  .button { display: inline-flex; align-items: center; min-height: 48px; padding: var(--space-2) var(--space-5); border-radius: var(--radius-base); background: var(--color-purple); color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); text-decoration: none; }
+  .button:hover, .button:focus-visible { background: var(--color-purple-dark); }
+  a:not(.button) { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  .closing { margin-top: var(--space-12); padding-top: var(--space-6); border-top: var(--border-base) solid var(--color-black); }
+  .small { margin-top: var(--space-4); font-size: var(--font-size-base); }
+  @media (min-width: 700px) {
+    .for-venues { padding: var(--space-10) var(--space-8) var(--space-16); }
+    h1 { font-size: var(--font-size-6xl); }
+  }
+</style>

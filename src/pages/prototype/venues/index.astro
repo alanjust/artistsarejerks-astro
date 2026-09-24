@@ -4,9 +4,13 @@ import pilot from '../../../data/community-pilot.json';
 import '../../../styles/venue-workspace.css';
 ---
 <BaseLayout title="Places to see art | Artists Are Jerks" noindex>
-<main class="venue-workspace"><p>Rogue Valley community</p><h1>Places to see art</h1><p>Find current art displays and approved spaces available to host AAJ artists.</p><p class="notice">Local prototype · Leo’s and its address are fictional. Applications saved in this browser appear here after administrator approval.</p>
+<main class="venue-workspace"><p>Rogue Valley community</p><h1>Places to see art</h1><p>Find current art displays and approved spaces available to host AAJ artists.</p><p class="venue-invite">Own a café, brewpub, or shop? <a href="/for-venues/">Hang local art on your walls →</a></p><p class="notice">Local prototype · Leo’s and its address are fictional. Applications saved in this browser appear here after administrator approval.</p>
 <p><a href="/showing-now/">Showing Now →</a> · <a href="/join/">Join the community →</a></p>
 <div class="fields card"><label>City<select data-venue-city><option value="">All Rogue Valley</option>{pilot.regions[0].cities.map(city=><option>{city}</option>)}</select></label><label>Find a place<input data-venue-search type="search" placeholder="Name or venue type"/></label></div>
 <div class="public-grid" data-venue-directory></div><p data-venue-empty hidden>No venues match your selection.</p></main>
 <script>import {initVenueDirectory} from '../../../lib/venue-workspace';initVenueDirectory();</script>
 </BaseLayout>
+<style>
+.venue-invite { margin: var(--space-3) 0; font-family: var(--font-heading); font-size: var(--font-size-lg); }
+.venue-invite a { color: var(--color-purple-dark); }
+</style>
