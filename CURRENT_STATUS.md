@@ -126,8 +126,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.
 3. **Sign up and Sign in: done September 24.** `src/components/AuthIntro.astro` puts a colored tag and heading above each Clerk box ("First time here · Create your account" in green, "Coming back · Welcome back" in purple), a save-your-password line on sign-up, a "not the gate code" line on sign-in (test site only), and a link to the other page. Clerk's own box text is unchanged.
 4. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-5. **Hidden featured piece:** hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
-6. **A newly published showing only notifies followers if the artist's page is already public** at that moment.
+5. **Hidden featured piece: fixed September 24.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
+6. **Follower notices for showings published before the page was public: fixed September 24.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
 7. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
 8. **Optional builds named in the Privacy Notice:** a self-serve "delete my account" button (today artists write in), and serving fonts from the site itself so Google Fonts drops off the privacy list.
 9. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).

@@ -63,5 +63,26 @@ try{
  await new Promise(resolve=>setTimeout(resolve,300));
  assert.equal((await db.prepare('SELECT recipients FROM showing_notices WHERE showing_id=?1').bind('show-3').first())?.recipients,0,'an unsubscribed follower hears nothing');
  assert.equal((await post('follow/confirm',{token:'0'.repeat(48)})).status,404,'a made-up token is refused');
+ // A showing published while the page is offline is announced once the page goes public.
+ const pageRow=async()=>db.prepare("SELECT payload,revision FROM community_records WHERE collection='artists' AND id=?1").bind(id).first();
+ let row=await pageRow();
+ await call('record','PUT',{collection:'artists',id,payload:{...JSON.parse(row.payload),published:false},revision:row.revision},artistUser);
+ assert.equal((await call('record','PUT',{collection:'showings',id:'show-late',payload:{...show,id:'show-late',venue:'Late Café'},revision:0},artistUser)).status,200);
+ await new Promise(resolve=>setTimeout(resolve,300));
+ assert.equal(await db.prepare("SELECT recipients FROM showing_notices WHERE showing_id='show-late'").first(),null,'nothing is sent while the page is offline');
+ row=await pageRow();
+ await call('record','PUT',{collection:'artists',id,payload:{...JSON.parse(row.payload),published:true},revision:row.revision},artistUser);
+ await new Promise(resolve=>setTimeout(resolve,300));
+ assert.ok(await db.prepare("SELECT recipients FROM showing_notices WHERE showing_id='show-late'").first(),'publishing the page announces the waiting showing');
+
+ // A hidden featured piece hands the spot to the next piece still on view.
+ row=await pageRow();
+ await call('record','PUT',{collection:'artists',id,payload:{...JSON.parse(row.payload),works:[...JSON.parse(row.payload).works,{id:'w2',title:'Second',public:true,imageKey:'',sampleImage:sample}]},revision:row.revision},artistUser);
+ await call('record','PUT',{collection:'showings',id:'show-two',payload:{...show,id:'show-two',artworkIds:['w1','w2'],featuredArtworkId:'w1'},revision:0},artistUser);
+ await call('admin/new-work','PUT',{artistId:id,workId:'w1',hidden:true,reason:'other'});
+ const listed=(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records.find(r=>r.id==='show-two');
+ assert.ok(listed,'the showing stays listed');
+ assert.equal(listed.payload.featuredArtworkId,'w2','with the next piece featured');
+ assert.deepEqual(listed.payload.artworkIds,['w2'],'and the hidden piece left out');
  console.log('Followers passed: double opt-in, one notice per showing, unsubscribe honored, artist-only list.');
 }finally{await mf.dispose()}

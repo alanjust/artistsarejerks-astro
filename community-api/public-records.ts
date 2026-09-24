@@ -25,8 +25,11 @@ export function publicRecords(rows:PublicRecord[],now=Date.now()):PublicRecord[]
   const a=artists.get(s.artistId),v=venues.get(s.venueId);
   if(!a||v&&!v.visible)continue;
   const works=visibleWorks(a).map((w:Payload)=>w.id);
-  if(!works.includes(s.featuredArtworkId))continue;
-  emit('showings',r.id,{id:r.id,artistId:s.artistId,venueId:s.venueId,venue:s.venue,address:s.address,city:s.city,website:s.website,regionId:typeof s.regionId==='string'?s.regionId:'region-rogue-valley',start:s.start,end:s.ongoing===true?'':s.end,ongoing:s.ongoing===true,confirmedAt:s.ongoing===true?String(s.confirmedAt||s.start):undefined,status:'published',featuredArtworkId:s.featuredArtworkId,artworkIds:(Array.isArray(s.artworkIds)?s.artworkIds:[]).filter((id:string)=>works.includes(id))});
+  // If the featured piece was hidden or made private, the next piece still on view
+  // takes its place; the showing leaves the listings only when none are left.
+  const featured=works.includes(s.featuredArtworkId)?s.featuredArtworkId:(Array.isArray(s.artworkIds)?s.artworkIds:[]).find((id:string)=>works.includes(id));
+  if(!featured)continue;
+  emit('showings',r.id,{id:r.id,artistId:s.artistId,venueId:s.venueId,venue:s.venue,address:s.address,city:s.city,website:s.website,regionId:typeof s.regionId==='string'?s.regionId:'region-rogue-valley',start:s.start,end:s.ongoing===true?'':s.end,ongoing:s.ongoing===true,confirmedAt:s.ongoing===true?String(s.confirmedAt||s.start):undefined,status:'published',featuredArtworkId:featured,artworkIds:(Array.isArray(s.artworkIds)?s.artworkIds:[]).filter((id:string)=>works.includes(id))});
  }
  return output;
 }

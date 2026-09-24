@@ -1,7 +1,7 @@
 // The Showings panel in an artist's workspace: where, when, and which pieces,
 // on one screen, with a preview of the card visitors will see on Showing Now.
 import {readShowings,writeShowing,removeShowing,type Showing} from './prototype-showings';
-import {imageUrl,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
+import {imageUrl,isShown,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
 import {openTellPeople} from './tell-people';
 import {showingStatus,shortDates,showingTag,needsCheckIn,checkInLapsed,localDay} from './showing-display';
 
@@ -68,6 +68,12 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     for (const show of shows) {
       const card = make('article');
       card.append(make('h4', show.venue), make('p', `${show.city} · ${show.ongoing ? shortDates(show) : `${longDate(show.start)}–${longDate(show.end)}`}`), make('p', stateOf(show), 'showing-state'));
+      const hidden = ctx.artist().works.filter((work) => work.hiddenByAdmin && show.artworkIds.includes(work.id));
+      if (hidden.length) {
+        const left = show.artworkIds.some((id) => ctx.artist().works.some((work) => work.id === id && isShown(work)));
+        const names = hidden.map((work) => `“${work.title}”`).join(' and ');
+        card.append(make('p', left ? `${names} ${hidden.length === 1 ? 'was' : 'were'} hidden by Artists Are Jerks, so ${hidden.length === 1 ? 'it’s' : 'they’re'} left out of this showing.${hidden.some((work) => work.id === show.featuredArtworkId) ? ' Your next piece is featured instead.' : ''}` : `${names} ${hidden.length === 1 ? 'was' : 'were'} hidden by Artists Are Jerks, and nothing else is left in this showing, so it’s off Showing Now. Edit it to add another piece.`, 'hidden-note'));
+      }
       if (show.status === 'published' && needsCheckIn(show)) {
         const check = make('div', '', 'check-in');
         check.append(make('p', `Is your work still up at ${show.venue}?`));
@@ -116,7 +122,7 @@ export function initShowingsPanel(ctx: ShowingsContext) {
   ['start', 'end', 'venue', 'city'].forEach((name) => field(name).addEventListener('input', renderPreview));
 
   // 3. Which pieces? The first one chosen is featured until the artist stars another.
-  const publicWorks = () => ctx.artist().works.filter((work) => work.public);
+  const publicWorks = () => ctx.artist().works.filter(isShown);
   async function renderPieces() {
     const picker = $('[data-piece-picker]');
     picker.replaceChildren();
@@ -185,7 +191,9 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     places = await loadPlaces(ctx.id);
     place = show ? places.find((item) => item.id === show.venueId) ?? {id: show.venueId, name: show.venue, address: show.address, city: show.city, website: show.website, regionId: show.regionId} : null;
     newPlace = false;
-    chosen = show ? [...show.artworkIds] : []; featured = show?.featuredArtworkId ?? '';
+    // Pieces the site has hidden drop out of the picker; the next chosen piece takes the star.
+    const onView = new Set(publicWorks().map((work) => work.id));
+    chosen = show ? show.artworkIds.filter((id) => onView.has(id)) : []; featured = show && onView.has(show.featuredArtworkId) ? show.featuredArtworkId : chosen[0] ?? '';
     form.querySelectorAll<HTMLInputElement>('input[name="when"]').forEach((radio) => radio.checked = radio.value === (show?.ongoing ? 'ongoing' : 'dates'));
     if (show && !show.ongoing) { field('start').value = show.start; field('end').value = show.end; }
     $('[data-showing-form-title]').textContent = show ? `Edit: ${show.venue}` : 'Add a showing';

@@ -132,6 +132,13 @@ async function cleanUp(env:Env){
   env.DB.prepare("DELETE FROM artwork_reports WHERE status!='open' AND closed_at<strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 year')")
  ]);
 }
+// When an artist's page goes public (published, or approved), tells followers about
+// any showings that were published while the page was still private. Each showing is
+// announced at most once, so this is safe to call more than once.
+async function notifyPendingShowings(env:NotificationEnv,artistId:string){
+ const {results}=await env.DB.prepare("SELECT id FROM community_records WHERE collection='showings' AND payload IS NOT NULL AND json_extract(payload,'$.artistId')=?1 AND json_extract(payload,'$.status')='published'").bind(artistId).all<{id:string}>();
+ for(const row of results)await notifyFollowers(env,row.id);
+}
 async function turnstileOk(env:NotificationEnv,token:unknown,ip:string){
  if(!env.TURNSTILE_SECRET)return true;
  if(typeof token!=='string'||!token)return false;
@@ -291,6 +298,7 @@ export default {
           ?[env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(payload.submittedBy,body.id)]
           :[env.DB.prepare('UPDATE community_memberships SET artist_id=NULL WHERE artist_id=?1').bind(body.id)];
         try{await env.DB.batch([update,...workspace])}catch{await update.run()}
+        if(collection==='applications'&&body.status==='approved')ctx.waitUntil(notifyPendingShowings(env as NotificationEnv,body.id).catch(error=>console.error(JSON.stringify({event:'notify_pending_error',message:error instanceof Error?error.message:String(error)}))));
         return json({saved:true});
        }
        if(body.action==='resend-approval'){
@@ -578,6 +586,7 @@ export default {
         // Existing records need an UPDATE when the insert SELECT has no row.
         const updated=result|| (body.revision>0?await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3 AND revision=?4 RETURNING revision").bind(payload,body.collection,body.id,body.revision).first<{revision:number}>():null);
         // A showing published for the first time tells the artist's followers.
+        if(updated&&body.collection==='artists'&&(body.payload as Record<string,unknown>|null)?.published===true&&existing?.published!==true)ctx.waitUntil(notifyPendingShowings(env as NotificationEnv,body.id).catch(error=>console.error(JSON.stringify({event:'notify_pending_error',message:error instanceof Error?error.message:String(error)}))));
         if(updated&&body.collection==='showings'&&(body.payload as Record<string,unknown>|null)?.status==='published'&&existing?.status!=='published')ctx.waitUntil(notifyFollowers(env as NotificationEnv,body.id).catch(error=>console.error(JSON.stringify({event:'notify_followers_error',message:error instanceof Error?error.message:String(error)}))));
         return updated?json(updated):json({error:'This record changed in another browser. Reload before editing.'},409);
       }
