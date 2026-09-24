@@ -6,7 +6,7 @@ import pilot from '../../data/community-pilot.json';
 import '../../styles/venue-workspace.css';
 Astro.response.headers.set('Cache-Control','private, no-store');
 ---
-<BaseLayout title="Apply as a venue | Artists Are Jerks" noindex><main class="venue-workspace"><p>Community venue application</p><h1>Introduce your place</h1><p>Tell us where people can see art and who we should contact privately. Approval makes the venue eligible for a workspace; public visibility remains under administrator control.</p>
+<BaseLayout title="Apply as a venue | Artists Are Jerks" noindex><main class="venue-workspace"><p>Community venue application</p><h1>Introduce your place</h1><p>Tell us where people can see art and who we should contact privately. A real person reads every request. Once your place is approved, it’s listed on Places to See Art, and your venue workspace opens so you can keep the details current.</p>
 <form class="card" data-venue-application><h2>Venue information</h2><div class="fields">
 <label>Venue name<input name="name" required maxlength="150"/></label><label>Type<select name="type"><option>Restaurant</option><option>Brewpub and restaurant</option><option>Gallery</option><option>Cooperative</option><option>Museum</option><option>Artist studio</option><option>Other art display space</option></select></label>
 <label>Region<select name="regionId" data-region-select><option value="region-rogue-valley">Rogue Valley · OR</option></select></label><label>City<input name="city" required list="venue-application-cities" maxlength="120"/><datalist id="venue-application-cities">{pilot.regions[0].cities.map(city=><option value={city}/>)}</datalist></label>

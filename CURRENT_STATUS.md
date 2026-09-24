@@ -54,6 +54,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
 7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms and an optional "Did an artist send you? Who?" (stored as `invitedBy`, shown in the inbox). Venue workspaces also have **Write to us**.
    - Arriving at `/join/?kind=artist` (from "Join free") hides "Back to choices" and shows "Not an artist? Venues: introduce your place → · Your area isn't listed? Propose it →".
+   - **Approving a venue opens its workspace** for the account that applied (September 24), the same as artists; a decline closes it. The applicant's "Your venue requests" list links to the workspace. Account assignments (`/prototype/admin/accounts/`) stays as the manual fallback. Venues approved before this (e.g. Alan Just Studio, applied from alan@alanjust.com) weren't attached.
    - **Invite this place:** a showing at a place the artist typed in (venue id starting `new-`) shows "Invite this place" in the workspace. It opens the Tell people kit with a ready-made note to the owner linking to `/for-venues/`, sent from the artist's own phone or email.
    - `/for-venues/` has an "An artist sent you here?" section near the top.
 
@@ -140,8 +141,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 4. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
 
 **Later**
-5. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-6. **Cleanups:**
+5. **Account assignments page** shows long account IDs, not names or emails; hard to tell who's who.
+6. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+7. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).

@@ -359,9 +359,11 @@ export default {
         if(collection==='applications')payload.invitationAccepted=body.status==='approved';
         if(collection==='applications'&&body.status==='approved')payload.approvalEmail=await sendApprovalEmail(env as NotificationEnv,payload);
         const update=env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection=?2 AND id=?3").bind(JSON.stringify(payload),collection,body.id);
-        const workspace=collection!=='applications'?[]:body.status==='approved'
-          ?[env.DB.prepare('INSERT INTO community_memberships(user_id,artist_id,administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET artist_id=excluded.artist_id WHERE community_memberships.artist_id IS NULL').bind(payload.submittedBy,body.id)]
-          :[env.DB.prepare('UPDATE community_memberships SET artist_id=NULL WHERE artist_id=?1').bind(body.id)];
+        // Approval opens the applicant's workspace (artist page or venue); a decline closes it.
+        const column=collection==='applications'?'artist_id':'venue_id';
+        const workspace=body.status==='approved'
+          ?[env.DB.prepare(`INSERT INTO community_memberships(user_id,${column},administrator) VALUES(?1,?2,0) ON CONFLICT(user_id) DO UPDATE SET ${column}=excluded.${column} WHERE community_memberships.${column} IS NULL`).bind(payload.submittedBy,body.id)]
+          :[env.DB.prepare(`UPDATE community_memberships SET ${column}=NULL WHERE ${column}=?1`).bind(body.id)];
         try{await env.DB.batch([update,...workspace])}catch{await update.run()}
         if(collection==='applications'&&body.status==='approved')ctx.waitUntil(notifyPendingShowings(env as NotificationEnv,body.id).catch(error=>console.error(JSON.stringify({event:'notify_pending_error',message:error instanceof Error?error.message:String(error)}))));
         return json({saved:true});

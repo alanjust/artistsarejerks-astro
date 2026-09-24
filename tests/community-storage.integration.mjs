@@ -51,6 +51,7 @@ try{
  const venueSubmission=await call('applications','PUT',venueApplication,{},applicant);assert.equal(venueSubmission.status,200);const venueApplicationId=(await venueSubmission.json()).id;
  const storedVenue=JSON.parse((await db.prepare("SELECT payload FROM community_records WHERE collection='venues' AND id=?1").bind(venueApplicationId).first()).payload);assert.equal(storedVenue.terms.version,TERMS,'the venue’s agreement is recorded');assert.equal(storedVenue.invitedBy,'Rae Adams','the inviting artist is kept');
  assert.equal((await call('applications','PUT',{action:'review',kind:'venue',id:venueApplicationId,status:'approved'})).status,200);
+ assert.equal((await db.prepare("SELECT venue_id FROM community_memberships WHERE user_id='new-applicant'").first()).venue_id,venueApplicationId,'approving a venue opens its workspace for the applicant');
  const inbox=await (await call('applications')).json();assert.equal(inbox.applications.length,2);assert.equal(inbox.notifications.length,2,'the artist alert waits for sample pieces; the venue and region alerts are sent');assert.ok(inbox.notifications.every(notification=>notification.delivery_status==='not_configured'));
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state')).status,401);
  assert.equal((await mf.dispatchFetch('http://localhost/api/community/state',{headers:{'x-aaj-capability':btoa(JSON.stringify({principal:admin})),'x-aaj-signature':'0'.repeat(64)}})).status,401);
