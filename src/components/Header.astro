@@ -20,7 +20,7 @@ const artistTools: Link[] = [
 const utility: Link[] = [
     {name: 'Join as an artist or venue', url: '/join/'},
     {name: 'Workspaces · Prototype', url: '/prototype/workspaces/'},
-    {name: 'Your account / Sign in', url: '/account/'},
+    {name: 'Artist sign in', url: '/account/'},
     {name: 'About', url: '/about/'},
 ];
 const path = Astro.url.pathname;
@@ -34,6 +34,8 @@ const current = (url: string) => (path === url ? 'page' : undefined);
         <nav class="main-navigation" aria-label="Site">
             <ul class="nav-menu">
                 {seeArt.map((link) => <li class="nav-item"><a href={link.url} class="nav-link" aria-current={current(link.url)}>{link.name}</a></li>)}
+                {/* Desktop only; on phones the Showing Now page carries the artist invitation. */}
+                <li class="nav-item"><a href="/join/?kind=artist" class="nav-link" aria-current={current('/join/')}>For artists</a></li>
             </ul>
         </nav>
 
@@ -49,7 +51,7 @@ const current = (url: string) => (path === url ? 'page' : undefined);
 
     <!-- Desktop only: floats on the page just below the header band, so no page layout shifts. -->
     <nav class="community-access" aria-label="Account">
-        <a href="/account/" aria-current={current('/account/')}>Your account / Sign in</a>
+        <a href="/account/" aria-current={current('/account/')}>Artist sign in</a>
     </nav>
 
     <div class="mobile-menu" id="site-menu">
