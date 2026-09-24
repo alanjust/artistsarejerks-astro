@@ -8,6 +8,6 @@
   "preview_urls": false,
   "d1_databases": [{"binding": "DB", "database_name": "aaj-community-local", "database_id": "00000000-0000-0000-0000-000000000001", "migrations_dir": "migrations"}],
   "r2_buckets": [{"binding": "ARTWORK", "bucket_name": "aaj-artwork-local"}],
-  "triggers":{"crons":["0 10 1 * *"]},
+  "triggers":{"crons":["0 10 1 * *","0 16 * * *"]},
  "observability": {"enabled": true}
 }

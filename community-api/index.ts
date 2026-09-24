@@ -124,6 +124,44 @@ async function sendMemberNote(env:NotificationEnv,note:{name:string;email:string
  try{await env.ADMIN_EMAIL.send({to:env.ADMIN_NOTIFICATION_TO,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:note.email,subject:`${label}: ${note.name.slice(0,80)}`,text,html});return 'sent'}
  catch(error){console.error(JSON.stringify({event:'member_note_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
 }
+// "Still up?" reminders for ongoing showings. The workspace asks at 60 days since the
+// last check-in and the showing leaves the listings at 74; these emails ask at 60 and
+// again at 70, so an artist who never opens the workspace still hears in time.
+const pacificDay=(date=new Date())=>date.toLocaleDateString('en-CA',{timeZone:'America/Los_Angeles'});
+const dayNumber=(day:string)=>Date.parse(`${day.slice(0,10)}T12:00:00Z`)/86400000;
+const shiftDay=(day:string,days:number)=>new Date(Date.parse(`${day.slice(0,10)}T12:00:00Z`)+days*86400000).toISOString().slice(0,10);
+const longDay=(day:string)=>new Date(`${day.slice(0,10)}T12:00:00Z`).toLocaleDateString('en-US',{month:'long',day:'numeric',timeZone:'UTC'});
+async function sendStillUpReminders(env:NotificationEnv,today=pacificDay()){
+ const rows=(await env.DB.prepare('SELECT collection,id,payload FROM community_records WHERE payload IS NOT NULL').all<{collection:string;id:string;payload:string}>()).results.map(row=>({...row,data:JSON.parse(row.payload)}));
+ const find=(collection:string,id:string)=>rows.find(row=>row.collection===collection&&row.id===id)?.data;
+ for(const row of rows){
+  const show=row.data;
+  if(row.collection!=='showings'||show.status!=='published'||show.ongoing!==true)continue;
+  const application=find('applications',show.artistId);
+  if(application?.status!=='approved')continue;
+  const cycle=String(show.confirmedAt||show.start||'').slice(0,10);
+  if(!/^\d{4}-\d\d-\d\d$/.test(cycle))continue;
+  const age=dayNumber(today)-dayNumber(cycle);
+  if(age<60||age>=74)continue;
+  const stage=age>=70?2:1;
+  const artist=find('artists',show.artistId)||{};
+  const to=String(artist.email||application.email||'');
+  const token=randomToken();
+  const claimed=await env.DB.prepare('INSERT OR IGNORE INTO showing_reminders(token,showing_id,cycle,stage) VALUES(?1,?2,?3,?4)').bind(token,row.id,cycle,stage).run();
+  if(!claimed.meta.changes)continue;
+  let status='not_configured';
+  if(env.ADMIN_EMAIL&&env.ADMIN_NOTIFICATION_FROM&&/^\S+@\S+\.\S+$/.test(to)){
+   const url=`${siteUrl(env)}/still-up/?t=${token}`,venue=String(show.venue||'your showing'),name=String(artist.name||application.name||'there'),offDay=longDay(shiftDay(cycle,74));
+   const text=stage===1
+    ?`Hi ${name},\n\nIt’s been a couple of months since you listed your work at ${venue} as an ongoing showing. Is it still up?\n\nOne tap keeps it on Showing Now: ${url}\n\nIf it came down, the same page lets you say so, and it comes off the listings.\n\n—Artists Are Jerks`
+    :`Hi ${name},\n\nWe haven’t heard back, so your showing at ${venue} comes off Showing Now on ${offDay} unless you tell us it’s still up.\n\nIt takes one tap: ${url}\n\n—Artists Are Jerks`;
+   const html=`<p>${text.split('\n\n').map(part=>escapeHtml(part).replace(escapeHtml(url),`<a href="${escapeHtml(url)}">${stage===1?'Tell us it’s still up':'Answer here'}</a>`)).join('</p><p>')}</p>`;
+   try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:stage===1?`Is your work still up at ${venue.slice(0,80)}?`:`Last call: is your work still up at ${venue.slice(0,80)}?`,text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});status='sent'}
+   catch(error){status='failed';console.error(JSON.stringify({event:'still_up_failed',message:error instanceof Error?error.message:String(error)}))}
+  }
+  await env.DB.prepare('UPDATE showing_reminders SET delivery_status=?1 WHERE token=?2').bind(status,token).run();
+ }
+}
 // Monthly cleanup promised in the Privacy Notice.
 async function cleanUp(env:Env){
  await env.DB.batch([
@@ -245,6 +283,33 @@ export default {
         ctx.waitUntil(sendReportNotice(env as NotificationEnv,String(artist.name),String(work.title),reason,details));
         return json({sent:true});
       }catch(error){console.error(JSON.stringify({event:'report_error',message:error instanceof Error?error.message:String(error)}));return json({error:'That didn’t go through. Please try again.'},400)}
+    }
+    // The page a "Still up?" email links to. Without an answer it describes the showing;
+    // with one it records it. Answering happens on a button press, never on opening the link.
+    if(request.method==='POST'&&url.pathname==='/api/community/public/still-up'){
+      try{
+        const body=JSON.parse(new TextDecoder().decode(await boundedBody(request,2048))) as Record<string,unknown>;
+        if(typeof body.token!=='string'||!/^[0-9a-f]{48}$/.test(body.token))return json({error:'This link isn’t valid.'},400);
+        const reminder=await env.DB.prepare('SELECT showing_id,cycle,answered_at FROM showing_reminders WHERE token=?1').bind(body.token).first<{showing_id:string;cycle:string;answered_at:string|null}>();
+        if(!reminder)return json({error:'This link isn’t valid anymore.'},404);
+        const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='showings' AND id=?1 AND payload IS NOT NULL").bind(reminder.showing_id).first<{payload:string}>();
+        if(!row)return json({error:'This showing isn’t on the site anymore.'},404);
+        const show=JSON.parse(row.payload),current=String(show.confirmedAt||show.start||'').slice(0,10);
+        const artist=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1").bind(show.artistId).first<{payload:string|null}>();
+        const info={venue:String(show.venue||''),city:String(show.city||''),artistName:artist?.payload?String(JSON.parse(artist.payload).name||''):'',workspaceUrl:`/prototype/workspace/member/?artist=${encodeURIComponent(String(show.artistId))}#showing`};
+        // Already settled: answered here, confirmed in the workspace, or no longer ongoing.
+        if(reminder.answered_at||current!==reminder.cycle||show.ongoing!==true)return json({...info,settled:true});
+        if(body.answer===undefined)return json({...info,settled:false});
+        if(!['yes','down'].includes(String(body.answer)))return json({error:'Choose one of the two answers.'},400);
+        const today=pacificDay();
+        if(body.answer==='yes')show.confirmedAt=today;
+        else{const yesterday=shiftDay(today,-1);show.ongoing=false;show.end=yesterday<String(show.start)?String(show.start):yesterday}
+        await env.DB.batch([
+          env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='showings' AND id=?2").bind(JSON.stringify(show),reminder.showing_id),
+          env.DB.prepare("UPDATE showing_reminders SET answered_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'),answer=?1 WHERE showing_id=?2 AND cycle=?3").bind(String(body.answer),reminder.showing_id,reminder.cycle)
+        ]);
+        return json({...info,settled:true,answer:body.answer});
+      }catch{return json({error:'That didn’t go through. Please try again.'},400)}
     }
     if(request.method==='POST'&&(url.pathname==='/api/community/public/follow/confirm'||url.pathname==='/api/community/public/follow/unsubscribe')){
       try{
@@ -609,5 +674,6 @@ export default {
       return json({error:'Not found'},404);
     }catch(error){console.error(JSON.stringify({event:'community-api-error',message:error instanceof Error?error.message:'Unknown error'}));return json({error:'Unable to complete the shared storage request.'},400)}
   },
-  async scheduled(_controller:ScheduledController,env:Env,ctx:ExecutionContext){ctx.waitUntil(cleanUp(env))}
+  // The 1st of the month runs the Privacy Notice cleanup; every day sends any "Still up?" reminders.
+  async scheduled(controller:ScheduledController,env:Env,ctx:ExecutionContext){ctx.waitUntil(controller.cron==='0 10 1 * *'?cleanUp(env):sendStillUpReminders(env as NotificationEnv))}
 } satisfies ExportedHandler<Env>;

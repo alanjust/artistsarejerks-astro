@@ -11,8 +11,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Private test site:** `https://aaj-dev.alanjust.com`, behind Cloudflare Access. New work is deployed here only.
   - Site: `npm run build:test` then `npx wrangler deploy --config wrangler.test.jsonc`
   - Storage service: `npx wrangler deploy --config community-api/wrangler.test.jsonc`
-  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0010`).
-  - The storage service runs a monthly cleanup (cron `0 10 1 * *`).
+  - Database changes: `npx wrangler d1 migrations apply aaj-community-test --remote --config community-api/wrangler.test.jsonc` (applied through `0011`).
+  - The storage service runs two crons: the monthly cleanup (`0 10 1 * *`) and daily "Still up?" reminders (`0 16 * * *`, 9 a.m. Pacific).
 - **Public Pages site** (`artistsarejerks-astro.pages.dev`): automatic production and preview builds were turned **off** on September 21. Pushing to `main` changes nothing public.
 - **Local:** `npm run dev` (port 4326) and `npm run community:dev` (port 8787), with separate local storage. `npm run community:migrate` applies local migrations.
 
@@ -49,6 +49,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - Home shows where things stand and one next step.
 5. **Showings** in one panel with three questions: Where (search places or add a new one), When (two dates, or Ongoing), Which pieces (tap tiles; the star marks the featured piece). A live preview matches the Showing Now card.
    - Ongoing showings ask "Still up?" after 60 days and leave public listings 14 days after a missed check-in.
+   - The artist is also **emailed**: at 60 days, and a last call at 70 that names the day it comes off. The email links to `/still-up/?t=…`, where one button says "Yes, it's still up" (checks it in for today) or "No, it came down" (ends it yesterday). Opening the link changes nothing; checking in from the workspace makes the link moot. Approved artists only; one email per stage.
    - After the first published showing, the artist is asked about venue-opportunity announcements.
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
 7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms. Venue workspaces also have **Write to us**.
@@ -118,12 +119,12 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 ## Tests
 
-`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake (including terms), messages, followers, artwork moderation, member notes, and Showing Now list tests. The artist-application tests read the current terms version from `community-api/terms.ts`. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
+`npm run test:community` runs the storage integration, account cache, workspace handoff, artist intake (including terms), messages, followers, artwork moderation, member notes, Still up reminders, and Showing Now list tests. The artist-application tests read the current terms version from `community-api/terms.ts`. `npm run community:check` and `npx astro check` type-check. All pass as of this update.
 
 ## Known issues and open list
 
 1. **For Venues page:** waiting on Alan's OK of the benefits list.
-2. **Emailed "Still up?" reminders** for ongoing showings. The check-in is only inside the workspace today.
+2. **Emailed "Still up?" reminders: done September 24** (migration `0011`, `tests/still-up.mjs`).
 3. **Sign up and Sign in: done September 24.** `src/components/AuthIntro.astro` puts a colored tag and heading above each Clerk box ("First time here · Create your account" in green, "Coming back · Welcome back" in purple), a save-your-password line on sign-up, a "not the gate code" line on sign-in (test site only), and a link to the other page. Clerk's own box text is unchanged.
 4. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
 5. **Hidden featured piece: fixed September 24.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.

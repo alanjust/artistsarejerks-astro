@@ -13,7 +13,7 @@ export const ALL:APIRoute=async (context)=>{
  }
  // Visitors can message or follow an artist, or report a piece, without an account. Same-origin only; the
  // storage service applies spam checks and rate limits.
- if(request.method==='POST'&&['/api/community/public/messages','/api/community/public/follow','/api/community/public/follow/confirm','/api/community/public/follow/unsubscribe','/api/community/public/report'].includes(url.pathname)){
+ if(request.method==='POST'&&['/api/community/public/messages','/api/community/public/follow','/api/community/public/follow/confirm','/api/community/public/follow/unsubscribe','/api/community/public/report','/api/community/public/still-up'].includes(url.pathname)){
   if(request.headers.get('origin')!==url.origin)return fail('Origin rejected.',403);
   const text=await request.text().catch(()=>'');
   if(text.length>16384)return fail('Message too long.',413);
