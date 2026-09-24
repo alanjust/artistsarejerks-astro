@@ -48,7 +48,8 @@ function buildDialog() {
   cancel.addEventListener('click', () => box.close());
   actions.append(send, cancel);
   const status = make('p', '', 'report-status'); status.setAttribute('role', 'status');
-  form.append(heading, intro, choices, details, email, trap, turnstile, actions, status);
+  const fine = make('p', '', 'form-fineprint'); fine.append(document.createTextNode('Sending this means you’re OK with our '), Object.assign(make('a', 'Site Terms'), {href: '/terms/'}), document.createTextNode(' and '), Object.assign(make('a', 'Privacy Notice'), {href: '/privacy/'}), document.createTextNode('.'));
+  form.append(heading, intro, choices, details, email, trap, turnstile, actions, fine, status);
   box.append(form);
 
   form.addEventListener('submit', async (event) => {

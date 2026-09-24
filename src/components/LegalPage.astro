@@ -1,0 +1,50 @@
+---
+// One of the site's plain-language policies: Artist Terms, Community Guidelines,
+// Privacy Notice, Site Terms, and Copyright. The text is the page's slot.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {TERMS_DATE} from '../../community-api/terms';
+interface Props { title: string; kicker: string }
+const {title, kicker} = Astro.props;
+const policies = [
+  ['Artist Terms', '/artist-terms/'],
+  ['Community Guidelines', '/guidelines/'],
+  ['Privacy Notice', '/privacy/'],
+  ['Site Terms', '/terms/'],
+  ['Copyright', '/copyright/'],
+];
+const path = Astro.url.pathname;
+---
+<BaseLayout title={`${title} | Artists Are Jerks`}>
+  <article class="legal-page">
+    <p class="legal-kicker">{kicker}</p>
+    <h1>{title}</h1>
+    <p class="legal-version">Version 1 · effective {TERMS_DATE}</p>
+    <div class="legal-body"><slot /></div>
+    <nav class="legal-others" aria-label="The fine print">
+      <h2>The rest of the fine print</h2>
+      <ul>{policies.filter(([, url]) => url !== path).map(([name, url]) => <li><a href={url}>{name}</a></li>)}</ul>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal-page { width: 100%; max-width: var(--max-width-reading); box-sizing: border-box; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-16); }
+  .legal-kicker { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; }
+  h1 { margin: var(--space-1) 0 0; color: var(--color-purple); font-family: var(--font-display); font-size: var(--font-size-5xl); font-weight: var(--font-weight-normal); letter-spacing: var(--letter-spacing-display); line-height: var(--line-height-tight); }
+  .legal-version { margin: var(--space-2) 0 var(--space-6); font-size: var(--font-size-sm); }
+  .legal-body { font-size: var(--font-size-lg); line-height: var(--line-height-relaxed); }
+  .legal-body :global(.lede) { font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-normal); }
+  .legal-body :global(h3) { margin: var(--space-10) 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-2xl); line-height: var(--line-height-tight); }
+  .legal-body :global(p), .legal-body :global(ul) { margin: 0 0 var(--space-4); }
+  .legal-body :global(ul) { padding-left: var(--space-6); list-style-position: outside; }
+  .legal-body :global(li) { margin-bottom: var(--space-2); }
+  .legal-body :global(a), .legal-others a { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  .legal-others { margin-top: var(--space-12); padding-top: var(--space-6); border-top: var(--border-base) solid var(--color-black); }
+  .legal-others h2 { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); }
+  .legal-others ul { display: flex; flex-wrap: wrap; gap: 0 var(--space-5); margin: 0; padding: 0; list-style: none; }
+  .legal-others a { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (min-width: 700px) {
+    .legal-page { padding: var(--space-10) var(--space-8) var(--space-16); }
+    h1 { font-size: var(--font-size-6xl); }
+  }
+</style>

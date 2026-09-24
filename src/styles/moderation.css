@@ -107,6 +107,10 @@ button.write-to-us-link,
 .venue-workspace .card button.write-to-us-link { color: var(--color-gold); }
 .venue-workspace .hidden-note { color: var(--color-gold); }
 
+/* The one-line agreement under visitor forms. */
+.form-fineprint { flex-basis: 100%; margin: var(--space-2) 0 0; font-size: var(--font-size-xs); }
+.form-fineprint a { color: inherit; text-decoration: underline; text-underline-offset: var(--underline-offset); }
+
 /* Join form: two or three pieces. */
 .join-samples { margin: 0; padding: 0; border: 0; }
 .join-samples legend { margin-bottom: var(--space-2); font-weight: var(--font-weight-bold); }

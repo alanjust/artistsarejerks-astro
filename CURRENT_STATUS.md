@@ -91,7 +91,13 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 ## Known issues and open list
 
-0. **Gatekeeping step 3 (next):** the terms drafts are done ("The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq: Artist Terms, Community Guidelines, Privacy Notice, Site Terms, Copyright). Alan decided against a lawyer's review. Step 3: turn them into site pages, footer links, an unchecked "I agree" at application (store version and time), a short agreement line on the message and follow forms, and re-agreement when terms change.
+0. **Gatekeeping step 3: done September 24.** The policies are real pages: `/artist-terms/`, `/guidelines/`, `/privacy/`, `/terms/`, `/copyright/` (shared layout `src/components/LegalPage.astro`), linked from a new footer on every page. The current version lives in `community-api/terms.ts` (`TERMS_VERSION`, `TERMS_DATE`); change both when the terms change.
+   - Applying requires an unchecked-by-default "I agree" box; the application stores `terms: {version, agreedAt}`, and older agreements move to `termsHistory`.
+   - An artist page can't go from private to public until its artist has agreed to the current version (server-enforced). The workspace asks on the "Your page" tab, and Home says so when the terms have changed. Pages already public stay public.
+   - Message, follow, and report forms carry a one-line "Sending this means you're OK with our Site Terms and Privacy Notice."
+   - The inbox shows each artist's agreement. Artists who joined before September 24 (Alan Just, Randy Wilson, Alan Russell Just) haven't agreed yet; they'll be asked the next time they publish.
+   - Not done: venue applications don't ask for an agreement yet.
+   - The earlier drafts: "The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq ("The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq: Artist Terms, Community Guidelines, Privacy Notice, Site Terms, Copyright). Alan decided against a lawyer's review. Step 3: turn them into site pages, footer links, an unchecked "I agree" at application (store version and time), a short agreement line on the message and follow forms, and re-agreement when terms change.
    - The copyright agent is registered (DMCA-1080994, renew by September 2029). The filing lists admin@; the page shows info@. Alan may amend the filing.
    - Small follow-up: hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
 1. **For Venues page:** waiting on Alan's OK of the benefits list.

@@ -1,6 +1,7 @@
 /// <reference path="./worker-configuration.d.ts" />
 import {publicRecords,publicImageKeys,visibleWorks,type PublicRecord} from './public-records';
 import {verifyCapability,canWrite,canRead,settleWorks} from './security';
+import {TERMS_VERSION} from './terms';
 const collections = new Set(['applications','artists','venues','showings']);
 const validId = (id:unknown):id is string => typeof id==='string' && /^[a-zA-Z0-9_-]{1,160}$/.test(id);
 const local = (host:string) => host==='localhost'||host==='127.0.0.1'||host==='[::1]';
@@ -302,6 +303,21 @@ export default {
         await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(payload),body.id).run();
         return json({saved:true,approvalEmail:payload.approvalEmail});
        }
+       // An artist agreeing to the current Artist Terms and Community Guidelines,
+       // after applying or when the terms change. Earlier agreements are kept.
+       if(body.action==='agree-terms'){
+        if(!validId(body.id))return json({error:'Invalid request.'},400);
+        const row=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();
+        const application=row?JSON.parse(row.payload):null;
+        if(!application||application.submittedBy!==verified.userId)return json({error:'Only the artist can agree to their own terms.'},403);
+        if(body.termsVersion!==TERMS_VERSION)return json({error:'The terms changed while this page was open. Reload and try again.'},409);
+        if(application.terms?.version!==TERMS_VERSION){
+         if(application.terms)application.termsHistory=[...(Array.isArray(application.termsHistory)?application.termsHistory:[]),application.terms];
+         application.terms={version:TERMS_VERSION,agreedAt:new Date().toISOString()};
+         await env.DB.prepare("UPDATE community_records SET payload=?1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE collection='applications' AND id=?2").bind(JSON.stringify(application),body.id).run();
+        }
+        return json({saved:true,terms:application.terms});
+       }
        // Two or three pieces, sent right after the request. They become the first
        // pieces on the applicant's page, and the administrator hears about the request.
        if(body.action==='samples'){
@@ -348,10 +364,11 @@ export default {
        if(!['artist','venue'].includes(kind)||!payload||typeof payload!=='object')return json({error:'Invalid application.'},400);
        const required=kind==='artist'?['name','email','regionId','city','practice','note']:['name','type','regionId','city','address','contactName','email'];
        if(required.some(field=>!shortText(payload[field],field==='note'?2000:250))||!/^\S+@\S+\.\S+$/.test(String(payload.email))||!validId(payload.regionId)||!safeOptionalUrl(kind==='artist'?payload.portfolio:payload.website))return json({error:'Complete every required application field with a valid website address.'},400);
+       if(kind==='artist'&&(payload.agreeTerms!==true||payload.termsVersion!==TERMS_VERSION))return json({error:'Please agree to the Artist Terms and Community Guidelines.'},400);
        const region=await env.DB.prepare("SELECT id FROM community_regions WHERE id=?1 AND status='active'").bind(payload.regionId).first();if(!region)return json({error:'Choose an active region.'},400);
        const collection=kind==='venue'?'venues':'applications';
        const duplicate=await env.DB.prepare("SELECT id FROM community_records WHERE collection=?1 AND payload IS NOT NULL AND json_extract(payload,'$.submittedBy')=?2 AND json_extract(payload,'$.status')='pending'").bind(collection,verified.userId).first();if(duplicate)return json({error:`You already have a pending ${kind} application.`},409);
-       const id=crypto.randomUUID(),stored=kind==='artist'?{id,name:String(payload.name).trim(),email:String(payload.email).trim(),regionId:payload.regionId,city:String(payload.city).trim(),practice:String(payload.practice).trim(),portfolio:String(payload.portfolio||'').trim(),note:String(payload.note).trim(),opportunities:!!payload.opportunities,status:'pending',invitationAccepted:false,submittedBy:verified.userId}:{id,name:String(payload.name).trim(),type:String(payload.type).trim(),regionId:payload.regionId,city:String(payload.city).trim(),address:String(payload.address).trim(),postalCode:String(payload.postalCode||'').trim(),description:String(payload.description||'').trim(),website:String(payload.website||'').trim(),phone:String(payload.phone||'').trim(),hours:String(payload.hours||'').trim(),accessibility:String(payload.accessibility||'').trim(),instructions:String(payload.instructions||'').trim(),contactName:String(payload.contactName).trim(),email:String(payload.email).trim(),opportunities:String(payload.opportunities||'').trim(),status:'pending',visible:false,available:!!payload.available,memberIds:[],campaigns:[],submittedBy:verified.userId};
+       const id=crypto.randomUUID(),stored=kind==='artist'?{id,name:String(payload.name).trim(),email:String(payload.email).trim(),regionId:payload.regionId,city:String(payload.city).trim(),practice:String(payload.practice).trim(),portfolio:String(payload.portfolio||'').trim(),note:String(payload.note).trim(),opportunities:!!payload.opportunities,terms:{version:TERMS_VERSION,agreedAt:new Date().toISOString()},status:'pending',invitationAccepted:false,submittedBy:verified.userId}:{id,name:String(payload.name).trim(),type:String(payload.type).trim(),regionId:payload.regionId,city:String(payload.city).trim(),address:String(payload.address).trim(),postalCode:String(payload.postalCode||'').trim(),description:String(payload.description||'').trim(),website:String(payload.website||'').trim(),phone:String(payload.phone||'').trim(),hours:String(payload.hours||'').trim(),accessibility:String(payload.accessibility||'').trim(),instructions:String(payload.instructions||'').trim(),contactName:String(payload.contactName).trim(),email:String(payload.email).trim(),opportunities:String(payload.opportunities||'').trim(),status:'pending',visible:false,available:!!payload.available,memberIds:[],campaigns:[],submittedBy:verified.userId};
        if(kind==='artist'){
         // The applicant can start building a private page right away. Nothing
         // becomes public until an administrator approves the application.
@@ -549,6 +566,11 @@ export default {
         const existing=previous?.payload?JSON.parse(previous.payload):null;
         const {results:ownedImages}=await env.DB.prepare('SELECT image_id FROM artwork_owners WHERE artist_id=?1').bind(principal.artistId||'').all<{image_id:string}>();
         if(!canWrite(principal,body.collection,body.id,body.payload as Record<string,unknown>|null,existing,new Set(ownedImages.map(image=>image.image_id))))return json({error:'Record ownership rejected.'},403);
+        // An artist page goes public only after its artist agrees to the current terms.
+        if(body.collection==='artists'&&!principal.administrator&&(body.payload as Record<string,unknown>|null)?.published===true&&existing?.published!==true){
+          const application=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1 AND payload IS NOT NULL").bind(body.id).first<{payload:string}>();
+          if(!application||JSON.parse(application.payload).terms?.version!==TERMS_VERSION)return json({error:'Please agree to the current Artist Terms before publishing.'},403);
+        }
         if(body.collection==='artists'&&body.payload)settleWorks(body.payload as Record<string,unknown>,existing,new Date().toISOString());
         const payload=body.payload===null?null:JSON.stringify(body.payload);
         const result=await env.DB.prepare(`INSERT INTO community_records(collection,id,payload,revision) SELECT ?1,?2,?3,1 WHERE ?4=0

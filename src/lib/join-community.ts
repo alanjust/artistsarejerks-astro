@@ -1,5 +1,6 @@
 import {populateRegionSelects} from './regions';
 import {applicationApi,type SharedApplication} from './shared-applications';
+import {TERMS_VERSION} from '../../community-api/terms';
 const element=(tag:string,text='',className='')=>{const node=document.createElement(tag);node.textContent=text;node.className=className;return node};
 const link=(text:string,url:string)=>{const node=element('a',text) as HTMLAnchorElement;node.href=url;return node};
 const workspaceUrl=(id:string)=>`/prototype/workspace/member/?artist=${encodeURIComponent(id)}`;
@@ -85,11 +86,14 @@ export function initJoin(){
    const data=new FormData(form),get=(name:string)=>String(data.get(name)||'').trim(),resuming=waitingForPieces();
    if(!resuming&&['name','city','practice','where'].some(name=>!get(name))){error.textContent='Please fill in your name, your city, what you make, and where we can see it.';return}
    if(picks.length<2){error.textContent=picks.length?'Add one more piece. We need at least two.':'Add two or three photos of your work.';return}
+   const agreed=form.querySelector<HTMLInputElement>('[data-agree-terms]')!.checked;
+   if(!agreed){error.textContent='Check the box to agree to the Artist Terms and Community Guidelines.';return}
    const button=form.querySelector<HTMLButtonElement>('button:not([type])');if(button)button.disabled=true;error.textContent='Sending…';
    try{
     // The request opens the page; the photos go into it; then the request is complete.
     let id=resuming?.id;
-    if(!id){id=(await applicationApi({kind:'artist',payload:{name:get('name'),email:'',regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio:portfolioFrom(get('where')),note:get('where'),opportunities:false}})).id;await list()}
+    if(!id){id=(await applicationApi({kind:'artist',payload:{name:get('name'),email:'',regionId:get('regionId')||'region-rogue-valley',city:get('city'),practice:get('practice'),portfolio:portfolioFrom(get('where')),note:get('where'),opportunities:false,agreeTerms:true,termsVersion:TERMS_VERSION}})).id;await list()}
+    else if(resuming?.payload.terms?.version!==TERMS_VERSION)await applicationApi({action:'agree-terms',id,termsVersion:TERMS_VERSION});
     if(!id)throw new Error('Unable to send this request.');
     for(const [index,pick] of picks.entries()){error.textContent=`Uploading photo ${index+1} of ${picks.length}…`;pick.key||=crypto.randomUUID();await uploadPhoto(pick.key,pick.file)}
     await applicationApi({action:'samples',id,works:picks.map(pick=>({imageKey:pick.key,title:pick.title.trim(),madeWithAI:pick.ai}))});

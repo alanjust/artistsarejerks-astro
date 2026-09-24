@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 // Following an artist takes two steps, a published showing notifies confirmed
 // followers once, and unsubscribing stops it.
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
@@ -23,7 +24,7 @@ try{
  const follower=email=>db.prepare('SELECT status,token FROM artist_followers WHERE email=?1').bind(email).first();
 
  const artistUser={userId:'user_artist',administrator:false};
- const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Rae Adams',email:'rae@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Studio',opportunities:false}},artistUser)).json();
+ const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Rae Adams',email:'rae@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Studio',opportunities:false,agreeTerms:true,termsVersion:TERMS}},artistUser)).json();
  await call('applications','PUT',{action:'review',kind:'artist',id,status:'approved'});
  const page=JSON.parse((await db.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1").bind(id).first()).payload);
  const sample='/images/community-pilot/alan-just/self-portrait.webp';

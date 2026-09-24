@@ -176,6 +176,8 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
         </fieldset>
         <label class="check" data-rights-field><input name="rights" type="checkbox"/> I made this work, and I have the right to show it.</label>
         <p data-rights-done hidden>You’ve confirmed that you made this work.</p>
+        <p class="hint" data-terms-changed hidden></p>
+        <label class="check" data-terms-field hidden><input name="terms" type="checkbox"/> <span>I agree to the <a href="/artist-terms/" target="_blank">Artist Terms</a> and <a href="/guidelines/" target="_blank">Community Guidelines</a>.</span></label>
         <div class="actions"><button data-publish-member>Publish my page</button><button type="button" data-offline-member hidden>Take my page offline</button><button type="button" data-keep-private>Keep it private for now</button></div>
         <p data-publication-message role="status"></p>
       </form>

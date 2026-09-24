@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 // Sample pieces at application, the "Made with AI" label, the administrator's Hide,
 // and visitors' "Report this".
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
@@ -27,7 +28,7 @@ try{
 
  // Applying, then sending sample pieces.
  const artistUser={userId:'user_mia',administrator:false};
- const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Mia Chen',email:'mia@example.com',regionId:'region-rogue-valley',city:'Medford',practice:'Painting',portfolio:'',note:'Oil paintings',opportunities:false}},artistUser)).json();
+ const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Mia Chen',email:'mia@example.com',regionId:'region-rogue-valley',city:'Medford',practice:'Painting',portfolio:'',note:'Oil paintings',opportunities:false,agreeTerms:true,termsVersion:TERMS}},artistUser)).json();
  assert.equal(await alerts(),0,'the administrator isn’t alerted until the pieces arrive');
  for(const key of ['s1','s2','s3'])assert.equal((await call(`images/${key}`,'PUT',jpeg,artistUser)).status,200,'the applicant can upload right away');
  assert.ok((await call('images/intruder','PUT',jpeg,{userId:'user_other',administrator:false})).status>=400,'an account with no page can’t upload');

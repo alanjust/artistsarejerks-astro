@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 // Visitors can message an artist who turned on the form; bots and floods are turned away;
 // only the artist can read or delete their own messages.
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
@@ -24,7 +25,7 @@ try{
 
  // An approved, published artist.
  const artistUser={userId:'user_artist',administrator:false};
- const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Rae Adams',email:'rae@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Studio',opportunities:false}},artistUser)).json();
+ const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Rae Adams',email:'rae@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Studio',opportunities:false,agreeTerms:true,termsVersion:TERMS}},artistUser)).json();
  await call('applications','PUT',{action:'review',kind:'artist',id,status:'approved'});
  const record=async()=>JSON.parse((await db.prepare("SELECT payload,revision FROM community_records WHERE collection='artists' AND id=?1").bind(id).first()).payload);
  const revision=async()=>(await db.prepare("SELECT revision FROM community_records WHERE collection='artists' AND id=?1").bind(id).first()).revision;

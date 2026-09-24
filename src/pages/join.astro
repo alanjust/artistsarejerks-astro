@@ -50,6 +50,7 @@ Astro.response.headers.set('Cache-Control', 'private, no-store');
     <label class="button" data-sample-add>Add a photo<input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" multiple data-sample-input/></label>
     <p><small>JPEG, PNG, or WebP, up to 10 MB each.</small></p>
   </fieldset>
+  <label class="check terms-check"><input type="checkbox" name="agreeTerms" data-agree-terms/> <span>I’ve read and agree to the <a href="/artist-terms/" target="_blank">Artist Terms</a> and <a href="/guidelines/" target="_blank">Community Guidelines</a>. I’ve also read the <a href="/privacy/" target="_blank">Privacy Notice</a>.</span></label>
   <p class="account-email">We’ll write to you at <strong>{accountEmail || 'the email on your account'}</strong>. <a href="/account/">Change it in your account</a></p>
   <div class="actions"><button>Send my request</button><button type="button" data-close-artist>Back to choices</button></div>
   <p data-application-error role="status"></p>
@@ -66,5 +67,6 @@ import {initJoin} from '../lib/join-community';initJoin();
 </BaseLayout>
 <style>
 .account-email { margin-top: var(--space-4); }
-.account-email a { color: var(--color-gold); }
+.account-email a, .terms-check a { color: var(--color-gold); }
+.terms-check { font-weight: var(--font-weight-normal); }
 </style>

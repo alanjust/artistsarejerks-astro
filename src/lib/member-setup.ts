@@ -8,6 +8,8 @@ import {wireFollowForm} from './follow-form';
 import {initShowingsPanel} from './member-showings';
 import {aiLabel,reportLink} from './artwork-moderation';
 import {initWriteToUs,openWriteToUs} from './write-to-us';
+import {applicationApi} from './shared-applications';
+import {TERMS_DATE,TERMS_VERSION} from '../../community-api/terms';
 // Why the site hid a piece, as the artist sees it in the workspace.
 const hiddenWhy:Record<string,string>={'not-theirs':'it may not be your own work','not-art':'it looks like a craft or a product rather than art made to be looked at','unlabeled-ai':'it looks like it was made with AI but isn’t labeled','copyright':'we received a copyright notice about it','other':'it doesn’t fit the Community Guidelines'};
 const el=(tag:string,text='')=>{const node=document.createElement(tag);node.textContent=text;return node};
@@ -33,7 +35,10 @@ export async function initMemberSetup(){
  const application=readArtistApplications().find(a=>a.id===id);
  const approved=!application||application.status==='approved';
  const approval=document.querySelector<HTMLElement>('[data-approval-status]');
- if(approval&&application){approval.hidden=false;approval.textContent=approved?'You’re approved. Your page can go public whenever you publish it.':'Your request is with us. Go ahead and build your page. It goes public once you’re approved.'}
+ // Publishing waits until the artist has agreed to the current Artist Terms.
+ let termsOk=application?.terms?.version===TERMS_VERSION;
+ const termsChanged=()=>Boolean(application?.terms)&&!termsOk;
+ if(approval&&application){approval.hidden=false;approval.textContent=approved&&termsChanged()?`The Artist Terms were updated on ${TERMS_DATE}. Your page stays up. Take a look and agree on the “Your page” tab.`:approved?'You’re approved. Your page can go public whenever you publish it.':'Your request is with us. Go ahead and build your page. It goes public once you’re approved.'}
 
  function persist(next:MemberArtist){try{saveMemberArtist(next);artist=next;message.textContent='';return true}catch{message.textContent='We couldn’t save that. Check your connection and try again; your entries are still here.';return false}}
  const showingCount=()=>readShowings().filter(s=>s.artistId===id).length;
@@ -157,10 +162,12 @@ export async function initMemberSetup(){
   (publishForm.elements.namedItem('website') as HTMLInputElement).value=artist.website||'';
   $('[data-reach-email]').textContent=artist.email||'your account email';syncReach();
   $('[data-rights-field]').hidden=Boolean(artist.rightsConfirmedAt);$('[data-rights-done]').hidden=!artist.rightsConfirmedAt;
+  $('[data-terms-field]').hidden=termsOk;
+  const changedNote=$('[data-terms-changed]');changedNote.hidden=!termsChanged();changedNote.textContent=`The Artist Terms were updated on ${TERMS_DATE}. Please take a look and agree before you publish again.`;
   $('[data-publish-member]').textContent=artist.published?'Save changes':'Publish my page';$('[data-keep-private]').hidden=artist.published;$('[data-offline-member]').hidden=!artist.published;
   $('[data-live-next]').hidden=!artist.published;
  }
- publishForm.addEventListener('submit',event=>{
+  publishForm.addEventListener('submit',async event=>{
   event.preventDefault();
   const reach=reachChoice(),website=normalizeWebsite(String(new FormData(publishForm).get('website')||'').trim());
   if(reach==='website'&&!website){publication.textContent='Enter your website, like yourwebsite.com.';return}
@@ -168,6 +175,11 @@ export async function initMemberSetup(){
   const confirmed=artist.rightsConfirmedAt||((publishForm.elements.namedItem('rights') as HTMLInputElement).checked?new Date().toISOString():'');
   if(!confirmed){publication.textContent='Please confirm that you made this work.';return}
   if(!artist.works.some(w=>w.public)){publication.textContent='Add at least one piece that shows on your page first.';return}
+  if(!termsOk){
+   if(!(publishForm.elements.namedItem('terms') as HTMLInputElement).checked){publication.textContent='Please agree to the Artist Terms and Community Guidelines.';return}
+   try{await applicationApi({action:'agree-terms',id,termsVersion:TERMS_VERSION});termsOk=true;if(approval&&approved)approval.textContent='You’re approved. Your page can go public whenever you publish it.'}
+   catch(cause){publication.textContent=cause instanceof Error?cause.message:'That didn’t save. Try again.';return}
+  }
   const next={...artist,website:reach==='website'?website!:artist.website,publicForm:reach==='form',publicWebsite:reach==='website',publicEmail:reach==='email',rightsConfirmedAt:confirmed};
   if(!approved){if(persist(next)){renderPage();publication.textContent='Saved. Your page can go public the moment you’re approved.'}return}
   const wasPublished=artist.published;if(persist({...next,published:true})){renderPage();publication.textContent=wasPublished?'Saved.':'Your page is public now, and you’re on Our Artists.'}
@@ -220,7 +232,7 @@ export async function initMemberSetup(){
   await Promise.all(unread.map(m=>messageApi({method:'PUT',body:JSON.stringify({action:'read',id:m.id})}).catch(()=>{})));
   unread.forEach(m=>m.read_at=new Date().toISOString());unreadBadge();
  }
- const showings=initShowingsPanel({id,approved,artist:()=>artist,save:persist,changed:()=>{}});
+ const showings=initShowingsPanel({id,approved,termsOk:()=>termsOk,artist:()=>artist,save:persist,changed:()=>{}});
  await Promise.all([works(),loadMessages()]);
  const start=location.hash.slice(1);
  if(['home','artwork','showing','messages','profile','page'].includes(start))show(start);else if(!artist.works.length)openFirstPiece();else show('home');

@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 // Applying opens a private page right away; nothing is public until approval; a decline closes it.
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {signCapability}=await import('data:text/javascript;base64,'+Buffer.from(security.outputFiles[0].text).toString('base64'));
@@ -20,7 +21,7 @@ try{
  }
  const publicState=async()=>(await (await mf.dispatchFetch('http://localhost/api/community/public/state')).json()).records;
  const membership=async user=>(await db.prepare('SELECT artist_id FROM community_memberships WHERE user_id=?1').bind(user).first())?.artist_id??null;
- const application=(name)=>({kind:'artist',payload:{name,email:`${name.split(' ')[0].toLowerCase()}@example.com`,regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Paintings at the library through May.',opportunities:false}});
+ const application=(name)=>({kind:'artist',payload:{name,email:`${name.split(' ')[0].toLowerCase()}@example.com`,regionId:'region-rogue-valley',city:'Ashland',practice:'Painting',portfolio:'',note:'Paintings at the library through May.',opportunities:false,agreeTerms:true,termsVersion:TERMS}});
 
  const applicant={userId:'user_applicant',administrator:false};
  const sent=await call('applications','PUT',application('Rae Adams'),applicant);
@@ -67,5 +68,26 @@ try{
  assert.equal(await membership('user_second'),secondId);
  assert.equal((await call('applications','PUT',{action:'review',kind:'artist',id:secondId,status:'declined'})).status,200);
  assert.equal(await membership('user_second'),null,'a decline closes the private workspace');
- console.log('Artist intake passed: private page on apply, nothing public before approval, no acceptance step, decline closes the workspace.');
+ // Terms: agreeing is part of applying, and a changed version must be agreed to before publishing.
+ const termsUser={userId:'user_terms',administrator:false};
+ const bare=application('Lee Park');
+ assert.equal((await call('applications','PUT',{...bare,payload:{...bare.payload,agreeTerms:false}},termsUser)).status,400,'the agreement box is required');
+ assert.equal((await call('applications','PUT',{...bare,payload:{...bare.payload,termsVersion:'1999-01-01'}},termsUser)).status,400,'an old version of the terms doesn’t count');
+ const lee=(await (await call('applications','PUT',bare,termsUser)).json()).id;
+ const leeApp=async()=>JSON.parse((await db.prepare("SELECT payload FROM community_records WHERE collection='applications' AND id=?1").bind(lee).first()).payload);
+ assert.equal((await leeApp()).terms.version,TERMS,'the agreement is recorded with its version');
+ await call('applications','PUT',{action:'review',kind:'artist',id:lee,status:'approved'});
+ const outdated=await leeApp();outdated.terms={version:'2000-01-01',agreedAt:'2000-01-01T00:00:00Z'};
+ await db.prepare("UPDATE community_records SET payload=?1 WHERE collection='applications' AND id=?2").bind(JSON.stringify(outdated),lee).run();
+ const leePage=async()=>db.prepare("SELECT payload,revision FROM community_records WHERE collection='artists' AND id=?1").bind(lee).first();
+ let row=await leePage();
+ assert.equal((await call('record','PUT',{collection:'artists',id:lee,payload:{...JSON.parse(row.payload),published:true},revision:row.revision},termsUser)).status,403,'after the terms change, publishing waits for a new agreement');
+ assert.equal((await call('applications','PUT',{action:'agree-terms',id:lee,termsVersion:TERMS},applicant)).status,403,'nobody else can agree for the artist');
+ assert.equal((await call('applications','PUT',{action:'agree-terms',id:lee,termsVersion:'2000-01-01'},termsUser)).status,409,'agreeing to a stale page’s terms is refused');
+ assert.equal((await call('applications','PUT',{action:'agree-terms',id:lee,termsVersion:TERMS},termsUser)).status,200);
+ const agreed=await leeApp();
+ assert.equal(agreed.terms.version,TERMS);assert.equal(agreed.termsHistory[0].version,'2000-01-01','earlier agreements are kept');
+ row=await leePage();
+ assert.equal((await call('record','PUT',{collection:'artists',id:lee,payload:{...JSON.parse(row.payload),published:true},revision:row.revision},termsUser)).status,200,'then publishing works');
+ console.log('Artist intake passed: private page on apply, terms agreed and versioned, nothing public before approval, no acceptance step, decline closes the workspace.');
 }finally{await mf.dispose()}

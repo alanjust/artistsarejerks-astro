@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {signCapability}=await import('data:text/javascript;base64,'+Buffer.from(security.outputFiles[0].text).toString('base64'));
 const secret='isolated-test-secret-with-no-production-use';
@@ -34,7 +35,7 @@ try{
  assert.equal((await call('region-proposals','PUT',{action:'review',id:ownProposals.proposals[0].id,status:'approved'})).status,200);
  const approvedRegions=await (await mf.dispatchFetch('http://localhost/api/community/public/regions')).json();assert.equal(approvedRegions.regions.length,2);assert.ok(approvedRegions.regions.some(region=>region.name==='Santa Fe area'));
  const applicant={userId:'new-applicant',administrator:false};
- const artistApplication={kind:'artist',payload:{name:'New Artist',email:'artist@example.test',regionId:'region-rogue-valley',city:'Medford',practice:'Painting',portfolio:'',note:'Local painter seeking membership.',opportunities:true}};
+ const artistApplication={kind:'artist',payload:{name:'New Artist',email:'artist@example.test',regionId:'region-rogue-valley',city:'Medford',practice:'Painting',portfolio:'',note:'Local painter seeking membership.',opportunities:true,agreeTerms:true,termsVersion:TERMS}};
  const artistSubmission=await call('applications','PUT',artistApplication,{},applicant);assert.equal(artistSubmission.status,200);const artistApplicationId=(await artistSubmission.json()).id;
  assert.equal((await call('applications','PUT',artistApplication,{},applicant)).status,409,'an applicant may not create duplicate pending artist applications');
  const ownApplications=await (await call('applications','GET',undefined,{},applicant)).json();assert.equal(ownApplications.applications.length,1);assert.equal(ownApplications.applications[0].payload.name,'New Artist');

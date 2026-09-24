@@ -2,6 +2,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+const TERMS=(await fs.readFile('community-api/terms.ts','utf8')).match(/TERMS_VERSION = '([^']+)'/)[1];
 // "Write to us" notes, the artist's email when a piece is hidden, and the monthly cleanup.
 const security=await build({entryPoints:['community-api/security.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {signCapability}=await import('data:text/javascript;base64,'+Buffer.from(security.outputFiles[0].text).toString('base64'));
@@ -19,7 +20,7 @@ try{
   return mf.dispatchFetch(`http://localhost/api/community/${path}`,{method,headers:{'x-aaj-prototype':'local','x-aaj-capability':capability.value,'x-aaj-signature':capability.signature,'Content-Type':'application/json'},body:method==='GET'?undefined:bytes});
  }
  const artistUser={userId:'user_kenji',administrator:false};
- const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Kenji Sato',email:'kenji@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Prints',portfolio:'',note:'Prints',opportunities:false}},artistUser)).json();
+ const {id}=await (await call('applications','PUT',{kind:'artist',payload:{name:'Kenji Sato',email:'kenji@example.com',regionId:'region-rogue-valley',city:'Ashland',practice:'Prints',portfolio:'',note:'Prints',opportunities:false,agreeTerms:true,termsVersion:TERMS}},artistUser)).json();
  await call('applications','PUT',{action:'review',kind:'artist',id,status:'approved'});
 
  // Write to us.

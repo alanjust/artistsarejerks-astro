@@ -9,6 +9,7 @@ type Place = {id: string; name: string; address: string; city: string; website: 
 export interface ShowingsContext {
   id: string;
   approved: boolean;
+  termsOk: () => boolean;
   artist: () => MemberArtist;
   save: (next: MemberArtist) => boolean;
   changed: () => void;
@@ -213,6 +214,7 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     const firstPublished = status === 'published' && !mine().some((item) => item.status === 'published');
     let next = artist;
     if (status === 'published' && ctx.approved && !artist.published) {
+      if (!ctx.termsOk()) { message.textContent = 'Your page isn’t public yet. Publish it from the “Your page” tab first, where you’ll agree to the Artist Terms.'; return; }
       const confirmed = artist.rightsConfirmedAt || (field('rights').checked ? new Date().toISOString() : '');
       if (!confirmed) { message.textContent = 'Please confirm that you made this work.'; return; }
       next = {...artist, published: true, rightsConfirmedAt: confirmed};
