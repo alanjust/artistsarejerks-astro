@@ -20,7 +20,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 **Showing Now** (`/showing-now/`)
 - A two-across grid of current showings, A–Z by artist last name. Tags come from the dates: "Ends Thursday", "Last day", "Just opened", "Ongoing · since June", "Opens Nov 5".
-- Under the title: "Just here to look? No account needed. Go see it." and "Make art? Put your work on this page. Join free →" (to `/join/?kind=artist`).
+- Under the title, three short lines: "Just here to look? No account needed. Go see it.", "Make art? Put your work on this page. Join free →" (to `/join/?kind=artist`), and "Have a wall? Host local art →" (to `/for-venues/`).
 - City and Search sit below the grid. After them come Ongoing (rows) and Artists to come (rows).
 - "Rogue Valley, Oregon (somewhere else?)" links to the region picker, `/showing-now/regions/`.
 - FPO sample tiles (Mia Chen, Luis Moreno, Rae Adams, Kenji Sato, Sam Ortiz) show on the test site and are labeled.
@@ -52,7 +52,10 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - The artist is also **emailed**: at 60 days, and a last call at 70 that names the day it comes off. The email links to `/still-up/?t=…`, where one button says "Yes, it's still up" (checks it in for today) or "No, it came down" (ends it yesterday). Opening the link changes nothing; checking in from the workspace makes the link moot. Approved artists only; one email per stage.
    - After the first published showing, the artist is asked about venue-opportunity announcements.
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
-7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms. Venue workspaces also have **Write to us**.
+7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms and an optional "Did an artist send you? Who?" (stored as `invitedBy`, shown in the inbox). Venue workspaces also have **Write to us**.
+   - Arriving at `/join/?kind=artist` (from "Join free") hides "Back to choices" and shows "Not an artist? Venues: introduce your place → · Your area isn't listed? Propose it →".
+   - **Invite this place:** a showing at a place the artist typed in (venue id starting `new-`) shows "Invite this place" in the workspace. It opens the Tell people kit with a ready-made note to the owner linking to `/for-venues/`, sent from the artist's own phone or email.
+   - `/for-venues/` has an "An artist sent you here?" section near the top.
 
 **Terms and policies** (gatekeeping steps 2 and 3)
 - Five pages: `/artist-terms/`, `/guidelines/`, `/privacy/`, `/terms/` (Site Terms), `/copyright/`, sharing the layout `src/components/LegalPage.astro`. Each shows "Version 1 · effective September 24, 2026".

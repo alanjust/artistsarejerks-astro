@@ -2,7 +2,7 @@
 // on one screen, with a preview of the card visitors will see on Showing Now.
 import {readShowings,writeShowing,removeShowing,type Showing} from './prototype-showings';
 import {imageUrl,isShown,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
-import {openTellPeople} from './tell-people';
+import {openTellPeople, openInviteVenue} from './tell-people';
 import {showingStatus,shortDates,showingTag,needsCheckIn,checkInLapsed,localDay} from './showing-display';
 
 type Place = {id: string; name: string; address: string; city: string; website: string; regionId?: string};
@@ -87,6 +87,12 @@ export function initShowingsPanel(ctx: ShowingsContext) {
       }
       const actions = make('div', '', 'actions');
       if (show.status === 'published' && showingStatus(show) !== 'expired') actions.append(button('Tell people', () => tell(show)));
+      // A place that isn't on the site yet: the artist can send the owner an invitation.
+      // Places the artist typed in themselves get a `new-` id until a venue joins.
+      if (show.venueId.startsWith('new-') && showingStatus(show) !== 'expired') {
+        card.append(make('p', `${show.venue} isn’t on Artists Are Jerks yet. Invite them, and they can list their hours and directions.`, 'hint'));
+        actions.append(button('Invite this place', () => openInviteVenue(show, ctx.artist().name, `${location.origin}/for-venues/`)));
+      }
       actions.append(button('Edit', () => void open(show)), button('Remove', () => { if (confirm(`Remove the showing at ${show.venue}?`)) { removeShowing(show.id); refresh(); } }));
       card.append(actions);
       list.append(card);

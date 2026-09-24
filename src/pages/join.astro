@@ -56,9 +56,9 @@ Astro.response.headers.set('Cache-Control', 'private, no-store');
   <p data-application-error role="status"></p>
 </form>}
 
+<p class="other-ways" data-other-ways hidden>Not an artist? Venues: <a href="/for-venues/">introduce your place →</a> · Your area isn’t listed? <a href="/join/region/">Propose it →</a></p>
 <section class="card" data-join-result hidden role="status"></section>
 <section class="card" data-existing-application hidden></section>
-{!user && <p>Already participating? <a href="/sign-in/?next=%2Fjoin%2F">Sign in to your account →</a></p>}
 {user && <details open><summary>Your artist requests</summary><div data-my-applications></div></details>}
 </main>
 <script>
@@ -68,5 +68,6 @@ import {initJoin} from '../lib/join-community';initJoin();
 <style>
 .account-email { margin-top: var(--space-4); }
 .account-email a, .terms-check a { color: var(--color-gold); }
+.other-ways a { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); }
 .terms-check { font-weight: var(--font-weight-normal); }
 </style>

@@ -25,7 +25,12 @@ export function initJoin(){
  // A request saved before its pieces arrived only needs the pieces.
  const waitingForPieces=()=>own.find(entry=>entry.payload.status==='pending'&&!(Array.isArray(entry.payload.samples)&&entry.payload.samples.length));
  const active=()=>own.find(entry=>entry.payload.status!=='declined');
- const show=(panel:HTMLElement|null)=>{for(const node of [choices,form,prompt,result,existing])if(node)node.hidden=node!==panel;panel?.scrollIntoView({block:'start',behavior:'smooth'})};
+ const otherWays=document.querySelector<HTMLElement>('[data-other-ways]');
+ // Someone who arrived straight at the artist form ("Join free") never saw the choices,
+ // so there's no "Back to choices"; a line points venues and new areas elsewhere instead.
+ const direct=new URLSearchParams(location.search).get('kind')==='artist';
+ if(direct)document.querySelectorAll<HTMLElement>('[data-close-artist]').forEach(button=>button.hidden=true);
+ const show=(panel:HTMLElement|null)=>{for(const node of [choices,form,prompt,result,existing])if(node)node.hidden=node!==panel;if(otherWays)otherWays.hidden=panel===choices||panel===result;panel?.scrollIntoView({block:'start',behavior:'smooth'})};
  function describe(entry:SharedApplication){
   const status=String(entry.payload.status);
   return status==='approved'?'You’re approved. Your page can go live whenever you publish it.':'Your request is with us. While you wait, your page is open, and you can start putting work in it. Nothing goes public until you’re approved.';

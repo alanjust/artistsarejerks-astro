@@ -60,7 +60,7 @@ if (onlineTest) Astro.response.headers.set('Cache-Control', 'private, no-store')
       <div class="region-line"><p class="eyebrow">{regionLabel}</p><a class="region-change" href="/showing-now/regions/">(somewhere else?)</a></div>
       <h1>Showing Now</h1>
       <p class="intro">Real art, on real walls, near you. Here’s where to go see it.</p>
-      <p class="who-line"><span>Just here to look? No account needed. Go see it.</span> <span>Make art? <a href="/join/?kind=artist">Put your work on this page. Join free →</a></span></p>
+      <p class="who-line"><span>Just here to look? No account needed. Go see it.</span> <span>Make art? <a href="/join/?kind=artist">Put your work on this page. Join free →</a></span> <span>Have a wall? <a href="/for-venues/">Host local art →</a></span></p>
     </header>
     <p class="notice"><strong>{onlineTest ? 'Private online test:' : 'Local prototype:'}</strong> {onlineTest ? 'Listings come from records saved in the protected test site and are not confirmed public exhibitions. Tiles marked FPO are samples.' : 'Every showing here is a demonstration. Alan has no confirmed physical showing, Leo’s Brewpub and Grill is fictional, and tiles marked FPO are samples.'}</p>
 

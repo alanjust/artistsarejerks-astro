@@ -17,6 +17,11 @@ const benefits = [
     <p class="lede">That’s the whole idea. Artists Are Jerks is a guide to art on real walls around the Rogue Valley. Artists list where their work is hanging, and people go see it. Your place can be one of those walls.</p>
     <p class="cta"><a class="button" href="/join/venue/">Introduce your place →</a></p>
 
+    <aside class="sent">
+      <h2>An artist sent you here?</h2>
+      <p>Good. Their work is hanging at your place, or about to be, and they’ve listed it on the site so people can find it. They’re inviting you to list your place too, with your hours and a Directions button. It’s free, and it’s entirely up to you. When you introduce your place, the form asks who sent you, so we can connect the two of you.</p>
+    </aside>
+
     <h2>What you get</h2>
     <ul class="benefits">
       {benefits.map(([title, text]) => <li><h3>{title}</h3><p>{text}</p></li>)}
@@ -71,6 +76,8 @@ const benefits = [
   .button { display: inline-flex; align-items: center; min-height: 48px; padding: var(--space-2) var(--space-5); border-radius: var(--radius-base); background: var(--color-purple); color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); text-decoration: none; }
   .button:hover, .button:focus-visible { background: var(--color-purple-dark); }
   a:not(.button) { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  .sent { margin-top: var(--space-8); padding: var(--space-4) var(--space-5); border-left: var(--border-heavy) solid var(--color-purple); background: var(--color-gold); }
+  .sent h2 { margin: 0 0 var(--space-2); font-size: var(--font-size-2xl); }
   .closing { margin-top: var(--space-12); padding-top: var(--space-6); border-top: var(--border-base) solid var(--color-black); }
   .small { margin-top: var(--space-4); font-size: var(--font-size-base); }
   @media (min-width: 700px) {

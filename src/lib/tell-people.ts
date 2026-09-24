@@ -31,36 +31,56 @@ export function calendarFile(show: Showing, artistName: string, message: string,
   return lines.map(fold).join('\r\n') + '\r\n';
 }
 
-export function openTellPeople(show: Showing, artistName: string, pageUrl: string) {
+// A ready-made note the artist can send to a place that isn't on the site yet,
+// pointing the owner to the For Venues page.
+export function inviteMessage(show: Showing, artistName: string, venuesUrl: string) {
+  return `Hi! Thanks for having my work at ${show.venue}.\n\nI’ve listed the showing on Artists Are Jerks, a free guide to local art on real walls around the Rogue Valley. If you’d like ${show.venue} listed there too, with your hours and a Directions button, it’s free and takes about five minutes. This page explains it: ${venuesUrl}\n\nThanks again,\n${artistName}`;
+}
+
+type Kit = {heading: string; subject: string; message: string; calendar?: () => Blob; fileName?: string};
+function openKit(kit: Kit) {
   const panel = document.querySelector<HTMLElement>('[data-tell-people]');
   if (!panel) return;
   const message = panel.querySelector<HTMLTextAreaElement>('[data-tell-message]')!, status = panel.querySelector('[data-tell-status]')!;
   const email = panel.querySelector<HTMLAnchorElement>('[data-tell-email]')!, text = panel.querySelector<HTMLAnchorElement>('[data-tell-text]')!;
   const share = panel.querySelector<HTMLButtonElement>('[data-tell-share]')!, calendar = panel.querySelector<HTMLButtonElement>('[data-tell-calendar]')!;
-  panel.querySelector('[data-tell-heading]')!.textContent = `Tell people about ${show.venue}`;
-  message.value = tellMessage(show, pageUrl);
+  panel.querySelector('[data-tell-heading]')!.textContent = kit.heading;
+  message.value = kit.message;
   status.textContent = '';
   const sync = () => {
-    email.href = `mailto:?subject=${encodeURIComponent(tellSubject(show))}&body=${encodeURIComponent(message.value)}`;
+    email.href = `mailto:?subject=${encodeURIComponent(kit.subject)}&body=${encodeURIComponent(message.value)}`;
     text.href = `sms:?&body=${encodeURIComponent(message.value)}`;
   };
   sync();
   message.oninput = sync;
   share.hidden = typeof navigator.share !== 'function';
-  share.onclick = () => { void navigator.share({title: tellSubject(show), text: message.value}).catch(() => {}); };
+  share.onclick = () => { void navigator.share({title: kit.subject, text: message.value}).catch(() => {}); };
   panel.querySelector<HTMLButtonElement>('[data-tell-copy]')!.onclick = async () => {
     try { await navigator.clipboard.writeText(message.value); status.textContent = 'Copied. Paste it anywhere.'; }
     catch { message.select(); status.textContent = 'Select the text above and copy it.'; }
   };
-  calendar.hidden = Boolean(show.ongoing);
+  calendar.hidden = !kit.calendar;
   calendar.onclick = () => {
-    const file = new Blob([calendarFile(show, artistName, message.value, pageUrl)], {type: 'text/calendar'});
+    if (!kit.calendar) return;
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(file); link.download = `${show.venue.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'showing'}.ics`;
+    link.href = URL.createObjectURL(kit.calendar()); link.download = kit.fileName ?? 'showing.ics';
     link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     status.textContent = 'Calendar invite saved. Attach it to an email, or open it to add it to your own calendar.';
   };
   panel.querySelector<HTMLButtonElement>('[data-tell-close]')!.onclick = () => { panel.hidden = true; };
   panel.hidden = false;
   panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+export function openTellPeople(show: Showing, artistName: string, pageUrl: string) {
+  const message = tellMessage(show, pageUrl);
+  openKit({
+    heading: `Tell people about ${show.venue}`, subject: tellSubject(show), message,
+    calendar: show.ongoing ? undefined : () => new Blob([calendarFile(show, artistName, (document.querySelector<HTMLTextAreaElement>('[data-tell-message]')?.value ?? message), pageUrl)], {type: 'text/calendar'}),
+    fileName: `${show.venue.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'showing'}.ics`,
+  });
+}
+
+export function openInviteVenue(show: Showing, artistName: string, venuesUrl: string) {
+  openKit({heading: `Invite ${show.venue}`, subject: `${show.venue} on Artists Are Jerks`, message: inviteMessage(show, artistName, venuesUrl)});
 }
