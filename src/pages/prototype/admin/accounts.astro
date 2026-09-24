@@ -24,4 +24,7 @@ const currentUserId = Astro.locals.auth().userId;
 <style>
 .account-list :global(button) { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); width: 100%; margin-bottom: var(--space-2); text-align: left; }
 .account-list :global(button span) { font-weight: var(--font-weight-normal); }
+.venue-workspace :global(.ownerless) { margin-top: var(--space-6); }
+.venue-workspace :global(.ownerless h3) { margin: 0 0 var(--space-1); color: var(--color-gold); }
+.venue-workspace :global(.ownerless ul) { margin: var(--space-2) 0 0; }
 </style>
