@@ -133,16 +133,14 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 ## Open list
 
 **Waiting on Alan**
-1. **Follower emails and a mailing address:** decide whether follower notices should carry a mailing address (the copyright agent's address is already public).
-2. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
+1. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
 
 **Optional builds** (named in the Privacy Notice)
-3. A self-serve "delete my account" button (today artists write in).
-4. Serving fonts from the site itself, so Google Fonts drops off the privacy list.
+2. A self-serve "delete my account" button (today artists write in).
 
 **Later**
-5. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-6. **Cleanups:**
+3. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+4. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
@@ -153,6 +151,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Hidden featured piece.** When a showing's featured piece is hidden (or made private), the next piece still on view is featured instead; the showing leaves the listings only when none are left. The workspace skips hidden pieces in the picker and explains on the showing card.
 - **Follower notices for showings published before the page was public.** When a page goes public (the artist publishes it, or it's approved), followers hear about any published showings that were waiting. Each showing is still announced only once.
 - **Emailed "Still up?" reminders** (migration `0011`, `tests/still-up.mjs`), described under Showings above.
+- **Fonts are served from the site** (`public/fonts/`, `src/styles/fonts.css`): Spicy Rice and Averia Sans Libre, Latin subsets. Google Fonts is gone, and the unused Inter was dropped. The Privacy page no longer lists Google Fonts.
+- **Follower notices carry the mailing address** (Artists Are Jerks · Alan Just Design · 2520 Lyman Ave, Medford, OR 97504), the address filed with the Copyright Office.
 - **Account assignments** (`/prototype/admin/accounts/`) lists each account by email (from its artist or venue request; otherwise "Account ending …") with "Artist: …" and "Runs venue: …" (or "Doesn't run a venue"). "Venue" here means a place the account owns, not where its art is showing. A "Venues with no owner account" list at the bottom names approved venues set up by hand (today Test Venue — Not Real. and Leo's Brewpub and Grill).
 - **Account page** (`/account/`) reworded: "Your pages" with a line under each workspace link, a nudge to the other role (artist to venue or venue to artist), and a test-site note. Its first sentence refers to the "Signed in as" bar above, which Alan's screenshot didn't show; Alan chose to leave it as is.
 - **For Venues page** (`/for-venues/`): Alan approved the benefits (free listing, walls that change on their own, artists bring their own people, nothing to handle on sales, still listed between shows). It covers how it works and fair questions, with "Introduce your place →" to `/join/venue/`. Linked from the menu ("For venues") and from Places to See Art ("Own a café, brewpub, or shop? Hang local art on your walls →"). Signed-out owners who tap Introduce now land on Create your account, then return to the venue form (it used to send them to Sign in).

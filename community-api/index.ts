@@ -51,6 +51,9 @@ async function sendConfirmFollow(env:NotificationEnv,to:string,artistName:string
  const html=`<p>Someone, hopefully you, asked to hear when ${escapeHtml(artistName)} has new work on a wall somewhere.</p><p><a href="${escapeHtml(url)}">Confirm that you want these updates</a></p><p>If this wasn’t you, ignore this email and you won’t hear from us.</p><p>—Artists Are Jerks</p>`;
  try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`Confirm: updates from ${artistName.slice(0,80)}`,text,html});return 'sent'}catch(error){console.error(JSON.stringify({event:'follow_confirm_failed',message:error instanceof Error?error.message:String(error)}));return 'failed'}
 }
+// The sender's postal address, printed at the bottom of follower notices (the
+// same address filed with the U.S. Copyright Office).
+const MAILING_ADDRESS='Artists Are Jerks · Alan Just Design · 2520 Lyman Ave, Medford, OR 97504';
 // Tells confirmed followers about a newly published showing, once per showing.
 async function notifyFollowers(env:NotificationEnv,showingId:string){
  const records=(await env.DB.prepare('SELECT collection,id,payload,revision FROM community_records').all<{collection:string;id:string;payload:string|null;revision:number}>()).results.map(row=>({...row,payload:row.payload===null?null:JSON.parse(row.payload)})) as PublicRecord[];
@@ -70,8 +73,8 @@ async function notifyFollowers(env:NotificationEnv,showingId:string){
  let sent=0;
  for(const follower of followers){
   const unsubscribe=`${siteUrl(env)}/follow/unsubscribe/?t=${follower.token}`;
-  const text=`${name} has work up at ${show.venue}${show.city?` in ${show.city}`:''}. ${when}\n\n${where}\n\nSee the work: ${page}\n\nYou're getting this because you asked to hear when ${name} shows next. Stop these emails: ${unsubscribe}\n\n—Artists Are Jerks`;
-  const html=`<p>${escapeHtml(name)} has work up at ${escapeHtml(String(show.venue))}${show.city?` in ${escapeHtml(String(show.city))}`:''}. ${escapeHtml(when)}</p><p>${escapeHtml(where)}</p><p><a href="${escapeHtml(page)}">See the work</a></p><p style="color:#555">You’re getting this because you asked to hear when ${escapeHtml(name)} shows next. <a href="${escapeHtml(unsubscribe)}">Stop these emails</a>.</p><p>—Artists Are Jerks</p>`;
+  const text=`${name} has work up at ${show.venue}${show.city?` in ${show.city}`:''}. ${when}\n\n${where}\n\nSee the work: ${page}\n\nYou're getting this because you asked to hear when ${name} shows next. Stop these emails: ${unsubscribe}\n\n—Artists Are Jerks\n${MAILING_ADDRESS}`;
+  const html=`<p>${escapeHtml(name)} has work up at ${escapeHtml(String(show.venue))}${show.city?` in ${escapeHtml(String(show.city))}`:''}. ${escapeHtml(when)}</p><p>${escapeHtml(where)}</p><p><a href="${escapeHtml(page)}">See the work</a></p><p style="color:#555">You’re getting this because you asked to hear when ${escapeHtml(name)} shows next. <a href="${escapeHtml(unsubscribe)}">Stop these emails</a>.</p><p>—Artists Are Jerks</p><p style="color:#555;font-size:12px">${escapeHtml(MAILING_ADDRESS)}</p>`;
   try{await env.ADMIN_EMAIL.send({to:follower.email,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`${name.slice(0,80)} has work up at ${String(show.venue).slice(0,80)}`,text,html,headers:{'List-Unsubscribe':`<${unsubscribe}>`}});sent++}
   catch(error){console.error(JSON.stringify({event:'follower_notice_failed',message:error instanceof Error?error.message:String(error)}))}
  }
