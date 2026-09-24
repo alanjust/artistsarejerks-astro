@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3) and the navigation fixes. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation fixes, and the footer tightening. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -32,6 +32,10 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - On desktop: See Art links plus **For artists** (to the join page) in the header, and **Artist sign in** floating under it on the right.
 - Menu utility links: Join as an artist or venue, Artist sign in, About. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, About, and lessons are prerendered and never show it.
 - **Footer on every page:** Artist Terms, Community Guidelines, Privacy, Site Terms, Copyright, and "© 2026 Alan Just Design · Artists Are Jerks · info@artistsarejerks.com".
+  - Kept compact at Alan's request (September 24). On phones: two tight rows of links and a one-line copyright that drops "Artists Are Jerks" (it's in the header). On wide screens (900px and up): one slim line, links left, copyright right.
+  - Links keep a 44px tap area through an invisible `::after` margin, so rows can sit close together.
+  - The `html` background is black, so Safari's toolbar area and overscroll past the footer match it (the body stays gold).
+- **Home page** (`/`) stays the "Studio Entrance" illustration with the painted "Start Here" sign, which links to Showing Now. Alan decided to keep it (September 24); on his phone the sign is large and obvious. Shared links and the tester handout go straight to Showing Now.
 
 **Joining and onboarding**
 1. **Apply** (`/join/?kind=artist`). Signed-out visitors create an account first, then return. Four fields (name, city, what you make, where we can see your work), **two or three photos**, and an unchecked **"I agree"** to the Artist Terms and Community Guidelines. The email comes from the account.
@@ -87,6 +91,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
   - The site won't post artists' work on its own social media; the license covers link previews only.
   - 60 days' notice before the site ever charges. 30 days' notice if it shuts down, with no download promise.
   - Visitor messages are deleted after two years.
+- **Home page (September 24):** keep the studio illustration as the front door; don't redirect `/` to Showing Now.
 - **Navigation (September 24):** Showing Now answers "do I need an account?" and "where do I join?" right under the title; "Your account / Sign in" became "Artist sign in"; desktop gets "For artists".
 
 ## Configuration outside Git
@@ -125,6 +130,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
     - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
     - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
     - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
-11. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
+11. **Local dev server goes stale on component styles:** after editing a component's `<style>` (e.g. the footer), `npm run dev` sometimes keeps serving the old CSS. Restart it, or check the built CSS in `dist-test/_assets/` after `npm run build:test`. Judge layouts from Alan's real-device screenshots, not the automated preview.
+12. **Safari note:** pages must `await storageReady` from `src/lib/community-storage.ts` before reading shared data. Safari can run a second page script before the storage module's top-level await finishes.
 
 Design mockups for Showing Now, the menu, and the region picker: https://claude.ai/artifact/EGzZasV2ZZZTr18XD8uBnq
