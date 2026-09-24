@@ -96,7 +96,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - An artist page can't go from private to public until its artist has agreed to the current version (server-enforced). The workspace asks on the "Your page" tab, and Home says so when the terms have changed. Pages already public stay public.
    - Message, follow, and report forms carry a one-line "Sending this means you're OK with our Site Terms and Privacy Notice."
    - The inbox shows each artist's agreement. Artists who joined before September 24 (Alan Just, Randy Wilson, Alan Russell Just) haven't agreed yet; they'll be asked the next time they publish.
-   - Not done: venue applications don't ask for an agreement yet.
+   - Venue applications ask too: the Community Guidelines and Site Terms, stored as `terms` on the venue record. Venues aren't re-asked when terms change, since an administrator controls their visibility.
    - The earlier drafts: "The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq ("The Fine Print", https://claude.ai/artifact/SPTdrvFNQeW6vwjpyM2Veq: Artist Terms, Community Guidelines, Privacy Notice, Site Terms, Copyright). Alan decided against a lawyer's review. Step 3: turn them into site pages, footer links, an unchecked "I agree" at application (store version and time), a short agreement line on the message and follow forms, and re-agreement when terms change.
    - The copyright agent is registered (DMCA-1080994, renew by September 2029). The filing lists admin@; the page shows info@. Alan may amend the filing.
    - Small follow-up: hiding a showing's featured piece takes that showing off public listings. The showings panel doesn't yet warn the artist or skip hidden pieces in its picker.
