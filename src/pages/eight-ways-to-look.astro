@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {ways} from '../data/thinkers';
+---
+<BaseLayout title="Eight Ways to Look - Artists Are Jerks" bodyClass="eight-ways-page">
+  <div class="ways-page">
+    <header class="ways-header">
+      <h1>Eight Ways to Look</h1>
+      <p class="lede">Most people give a work of art about four seconds. Here are eight small experiments for the next time you're standing in front of one. Each comes from a thinker who spent a lifetime on it, so you don't have to.</p>
+    </header>
+
+    <ol class="ways">
+      {ways.map((way, index) => (
+        <li class="card">
+          <h2 class="card-title"><span class="card-number" aria-hidden="true">{index + 1}</span>{way.title}</h2>
+          <p>{way.idea}</p>
+          <div class="try"><h3>Try it</h3><p>{way.tryIt}</p></div>
+          <dl class="jerks">
+            <dt class="tag tag--good">Good jerk</dt><dd>{way.good}</dd>
+            <dt class="tag tag--bad">Bad jerk</dt><dd>{way.bad}</dd>
+            <dt class="tag tag--normie">Normie</dt><dd>{way.normie}</dd>
+          </dl>
+          <p class="credit">{way.credit}</p>
+        </li>
+      ))}
+    </ol>
+
+    <p class="more">Not sure what good, bad, and normie mean here? <a href="/whats-a-jerk/">What's a Jerk? →</a></p>
+  </div>
+
+  <style>
+    .ways-page { max-width: var(--max-width-text); margin: 0 auto; padding: var(--space-4) 0 var(--space-12); color: var(--color-black); }
+    .ways-header { margin-bottom: var(--space-6); }
+    .ways-header h1 { margin: 0 0 var(--space-2); text-align: center; font-family: var(--font-heading); font-size: var(--font-size-4xl); }
+    .lede { max-width: 32rem; margin: 0 auto; font-size: var(--font-size-lg); line-height: var(--line-height-normal); }
+    .ways { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+    .card { padding: var(--space-4) var(--space-5); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); }
+    .card p { margin: 0; line-height: var(--line-height-relaxed); }
+    .card-title { display: flex; align-items: flex-start; gap: var(--space-3); margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-tight); }
+    .card-number { display: grid; place-items: center; flex: none; width: var(--space-8); height: var(--space-8); border-radius: var(--radius-full); background: var(--color-black); color: var(--color-gold); font-size: var(--font-size-base); }
+    .try { margin-top: var(--space-3); padding: var(--space-3); background: var(--color-black); border-radius: var(--radius-base); color: var(--color-white); }
+    .try h3 { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-sm); letter-spacing: var(--letter-spacing-wider); text-transform: uppercase; color: var(--color-gold); }
+    .jerks { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-3); align-items: start; margin: var(--space-3) 0 0; font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+    .jerks dd { margin: 0; }
+    .tag { padding: 0 var(--space-2); border-radius: var(--radius-sm); font-family: var(--font-heading); font-weight: var(--font-weight-bold); white-space: nowrap; }
+    .tag--good { background: var(--color-green); }
+    .tag--bad { background: var(--color-plum-red); color: var(--color-white); }
+    .tag--normie { border: var(--border-thin) solid var(--color-black); }
+    .card .credit { margin-top: var(--space-3); font-family: var(--font-heading); font-size: var(--font-size-sm); color: var(--color-purple); }
+    .more { margin: var(--space-6) 0 0; text-align: center; }
+    .more a { color: var(--color-purple); font-weight: var(--font-weight-bold); }
+    @media (min-width: 900px) {
+      .ways-header h1 { font-size: var(--font-size-5xl); }
+      .ways-page { max-width: var(--max-width-wide); }
+      .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .lede { max-width: var(--max-width-reading); }
+    }
+  </style>
+</BaseLayout>
