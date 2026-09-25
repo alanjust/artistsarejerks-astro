@@ -7,6 +7,7 @@ const day = (value: string, options: Intl.DateTimeFormatOptions = {month: 'long'
 const place = (show: Showing) => [show.address, show.city].filter(Boolean).join(', ');
 
 export function tellMessage(show: Showing, pageUrl: string) {
+  if (show.kind === 'studio') return `My studio${show.city ? ` in ${show.city}` : ''} is open to visitors, by appointment. If you’d like to see the work in person, get in touch and we’ll find a time.\n\nMore about the work, and how to reach me: ${location.origin}/showing/?id=${encodeURIComponent(show.id)}`;
   const where = `${show.venue}${show.city ? ` in ${show.city}` : ''}`;
   const upcoming = showingStatus(show) === 'upcoming';
   const when = show.ongoing
@@ -14,7 +15,7 @@ export function tellMessage(show: Showing, pageUrl: string) {
     : upcoming ? `Some of my work goes up at ${where} on ${day(show.start)} and stays through ${day(show.end)}.` : `Some of my work is up at ${where} through ${day(show.end)}.`;
   return `${when} If you’re nearby, I’d love for you to see it in person.\n\n${place(show)}\n\nMore about the work: ${pageUrl}`;
 }
-export const tellSubject = (show: Showing) => `Come see my work at ${show.venue}`;
+export const tellSubject = (show: Showing) => show.kind === 'studio' ? 'Come visit my studio' : `Come see my work at ${show.venue}`;
 
 // An all-day calendar event (iCalendar), for dated showings.
 export function calendarFile(show: Showing, artistName: string, message: string, pageUrl: string) {

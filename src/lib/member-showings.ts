@@ -1,6 +1,6 @@
 // The Showings panel in an artist's workspace: where, when, and which pieces,
 // on one screen, with a preview of the card visitors will see on Showing Now.
-import {readShowings,writeShowing,removeShowing,type Showing} from './prototype-showings';
+import {isStudio,readShowings,writeShowing,removeShowing,type Showing} from './prototype-showings';
 import {imageUrl,isShown,memberUrl,type MemberArtist,type MemberWork} from './member-artists';
 import {openTellPeople, openInviteVenue} from './tell-people';
 import {showingStatus,shortDates,showingTag,needsCheckIn,checkInLapsed,localDay} from './showing-display';
@@ -54,10 +54,12 @@ export function initShowingsPanel(ctx: ShowingsContext) {
   function stateOf(show: Showing) {
     const artist = ctx.artist();
     if (show.status === 'draft') return 'Draft. Only you can see it.';
+    if (isStudio(show) && !ctx.artist().works.some(isShown)) return 'Hidden until your page has a piece on view.';
     if (!ctx.approved) return 'Waiting for your approval before it goes public.';
     if (!artist.published) return 'Hidden while your page is offline.';
     if (checkInLapsed(show)) return 'Hidden until you confirm it’s still up.';
     const phase = showingStatus(show);
+    if (isStudio(show)) return phase === 'expired' ? 'Closed.' : 'On Showing Now under Studios by appointment.';
     return phase === 'expired' ? 'Ended.' : phase === 'upcoming' ? `On Showing Now under Artists to come. Opens ${longDate(show.start)}.` : 'On Showing Now.';
   }
   function renderList() {
@@ -76,11 +78,11 @@ export function initShowingsPanel(ctx: ShowingsContext) {
       }
       if (show.status === 'published' && needsCheckIn(show)) {
         const check = make('div', '', 'check-in');
-        check.append(make('p', `Is your work still up at ${show.venue}?`));
+        check.append(make('p', isStudio(show) ? 'Is your studio still open for visits?' : `Is your work still up at ${show.venue}?`));
         const actions = make('div', '', 'actions');
         actions.append(
-          button('Yes, still there', () => { writeShowing({...show, confirmedAt: localDay()}); refresh(); }),
-          button('No, it came down', () => { const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); writeShowing({...show, ongoing: false, end: localDay(yesterday) < show.start ? show.start : localDay(yesterday)}); refresh(); }),
+          button(isStudio(show) ? 'Yes, still open' : 'Yes, still there', () => { writeShowing({...show, confirmedAt: localDay()}); refresh(); }),
+          button(isStudio(show) ? 'No, it’s closed' : 'No, it came down', () => { const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); writeShowing({...show, ongoing: false, end: localDay(yesterday) < show.start ? show.start : localDay(yesterday)}); refresh(); }),
         );
         check.append(actions);
         card.append(check);
@@ -93,12 +95,12 @@ export function initShowingsPanel(ctx: ShowingsContext) {
         card.append(make('p', `${show.venue} isn’t on Artists Are Jerks yet. Invite them, and they can list their hours and directions.`, 'hint'));
         actions.append(button('Invite this place', () => openInviteVenue(show, ctx.artist().name, `${location.origin}/for-venues/`)));
       }
-      actions.append(button('Edit', () => void open(show)), button('Remove', () => { if (confirm(`Remove the showing at ${show.venue}?`)) { removeShowing(show.id); refresh(); } }));
+      actions.append(button('Edit', () => void (isStudio(show) ? openStudio(show) : open(show))), button('Remove', () => { if (confirm(`Remove the showing at ${show.venue}?`)) { removeShowing(show.id); refresh(); } }));
       card.append(actions);
       list.append(card);
     }
   }
-  function refresh() { renderList(); ctx.changed(); }
+  function refresh() { renderList(); ctx.changed(); syncStudioButton(); }
   const tell = (show: Showing) => openTellPeople(show, ctx.artist().name, `${location.origin}${memberUrl(ctx.id)}`);
 
   // 1. Where?
@@ -203,11 +205,11 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     form.querySelectorAll<HTMLInputElement>('input[name="when"]').forEach((radio) => radio.checked = radio.value === (show?.ongoing ? 'ongoing' : 'dates'));
     if (show && !show.ongoing) { field('start').value = show.start; field('end').value = show.end; }
     $('[data-showing-form-title]').textContent = show ? `Edit: ${show.venue}` : 'Add a showing';
-    form.hidden = false; $('[data-new-showing]').hidden = true;
+    form.hidden = false; $('[data-new-showing]').hidden = true; studioForm.hidden = true; syncStudioButton();
     publishNote(); showPlace(); renderPlaces(); showWhen(); await renderPieces(); renderPreview();
     form.scrollIntoView({behavior: 'smooth', block: 'start'});
   }
-  function close() { form.hidden = true; editing = null; $('[data-new-showing]').hidden = false; }
+  function close() { form.hidden = true; editing = null; $('[data-new-showing]').hidden = false; syncStudioButton(); }
   $('[data-new-showing]').addEventListener('click', () => void open(null));
   $('[data-cancel-showing]').addEventListener('click', close);
 
@@ -251,5 +253,56 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     }
   }));
 
-  return {render() { renderList(); publishNote(); }, needsAttention: () => mine().some((show) => show.status === 'published' && needsCheckIn(show))};
+  // Studio by appointment: one per artist, the whole portfolio, the artist's own contacts.
+  const studioForm = $<HTMLFormElement>('[data-studio-form]'), studioMessage = $('[data-studio-message]');
+  const studioField = (name: string) => studioForm.elements.namedItem(name) as HTMLInputElement;
+  const newStudio = $<HTMLButtonElement>('[data-new-studio]');
+  let editingStudio: Showing | null = null;
+  const myStudio = () => mine().find(isStudio);
+  const syncStudioButton = () => { newStudio.hidden = Boolean(myStudio()) || !studioForm.hidden || !form.hidden; };
+  function openStudio(show: Showing | null) {
+    editingStudio = show;
+    const artist = ctx.artist();
+    studioField('studioName').value = show?.venue ?? `${artist.name}’s studio`;
+    studioField('studioCity').value = show?.city ?? artist.city ?? '';
+    studioField('studioAddress').value = show?.address ?? '';
+    studioField('showAddress').checked = show?.showAddress === true;
+    studioField('contactPhone').value = show?.contactPhone ?? '';
+    studioField('contactEmail').value = show?.contactEmail ?? '';
+    studioField('bookingUrl').value = show?.bookingUrl ?? '';
+    $('[data-studio-form-title]').textContent = show ? 'Edit your studio listing' : 'List your studio';
+    studioMessage.textContent = '';
+    studioForm.hidden = false; form.hidden = true; $('[data-new-showing]').hidden = true; syncStudioButton();
+    studioForm.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+  function closeStudio() { studioForm.hidden = true; editingStudio = null; $('[data-new-showing]').hidden = false; syncStudioButton(); }
+  newStudio.addEventListener('click', () => openStudio(null));
+  $('[data-studio-cancel]').addEventListener('click', closeStudio);
+  studioForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const value = (name: string) => studioField(name).value.trim();
+    const onView = ctx.artist().works.filter(isShown);
+    let booking = value('bookingUrl');
+    if (booking && !/^https?:\/\//i.test(booking)) booking = `https://${booking}`;
+    if (!value('studioCity')) { studioMessage.textContent = 'Add the city your studio is in.'; return; }
+    if (!value('contactPhone') && !value('contactEmail') && !booking) { studioMessage.textContent = 'Add at least one way to reach you: a phone, an email, or a booking link.'; return; }
+    if (value('contactEmail') && !/^\S+@\S+\.\S+$/.test(value('contactEmail'))) { studioMessage.textContent = 'That email address doesn’t look right.'; return; }
+    if (booking && !/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(booking)) { studioMessage.textContent = 'That booking link doesn’t look right. Paste the whole web address.'; return; }
+    if (studioField('showAddress').checked && !value('studioAddress')) { studioMessage.textContent = 'Add your street address, or uncheck “Show my full address.”'; return; }
+    if (!onView.length) { studioMessage.textContent = 'Put at least one piece on your page first, in the Artwork tab. Your studio listing shows your work.'; return; }
+    const id = editingStudio?.id ?? `studio-${crypto.randomUUID()}`, today = localDay();
+    const studio: Showing = {
+      id, artistId: ctx.id, kind: 'studio', venueId: id, venue: value('studioName') || `${ctx.artist().name}’s studio`,
+      address: value('studioAddress'), city: value('studioCity'), website: '', regionId: ctx.artist().regionId || 'region-rogue-valley',
+      start: editingStudio?.start ?? today, end: '', ongoing: true, confirmedAt: today, showAddress: studioField('showAddress').checked,
+      contactPhone: value('contactPhone'), contactEmail: value('contactEmail'), bookingUrl: booking,
+      artworkIds: onView.map((work) => work.id), featuredArtworkId: onView[0].id, status: 'published',
+    };
+    try { writeShowing(studio); } catch { studioMessage.textContent = 'That didn’t save. Check your connection and try again.'; return; }
+    closeStudio(); refresh();
+    $('[data-showings-intro]').textContent = !ctx.approved ? 'Studio saved. It goes public once you’re approved.' : !ctx.artist().published ? 'Studio saved. It shows up once your page is public; publish it from the “Your page” tab.' : 'Your studio is on Showing Now, under Studios by appointment.';
+  });
+  syncStudioButton();
+
+  return {render() { renderList(); publishNote(); syncStudioButton(); }, needsAttention: () => mine().some((show) => show.status === 'published' && needsCheckIn(show))};
 }

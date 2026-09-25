@@ -1,5 +1,5 @@
 // The answer page for an emailed "Still up?" reminder about an ongoing showing.
-type Reply = {error?: string; venue?: string; city?: string; artistName?: string; workspaceUrl?: string; settled?: boolean; answer?: string};
+type Reply = {error?: string; kind?: string; venue?: string; city?: string; artistName?: string; workspaceUrl?: string; settled?: boolean; answer?: string};
 async function ask(token: string, answer?: string): Promise<Reply> {
   const response = await fetch('/api/community/public/still-up', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(answer ? {token, answer} : {token})});
   const body = await response.json().catch(() => ({})) as Reply;
@@ -15,9 +15,11 @@ export async function initStillUp() {
   try {
     const info = await ask(token);
     const where = [info.venue, info.city].filter(Boolean).join(', ');
-    title.textContent = `Is your work still up at ${info.venue || 'this place'}?`;
+    const studio = info.kind === 'studio';
+    title.textContent = studio ? 'Is your studio still open for visits?' : `Is your work still up at ${info.venue || 'this place'}?`;
+    if (studio) { actions.querySelector('[data-still-answer="yes"]')!.textContent = 'Yes, still open'; actions.querySelector('[data-still-answer="down"]')!.textContent = 'No, it’s closed'; }
     if (info.settled) { copy.textContent = `You’re all set. Your showing at ${where} is up to date.`; workspaceLink(info); return; }
-    copy.textContent = `Your ongoing showing at ${where} stays on Showing Now as long as it’s still hanging. Just let us know.`;
+    copy.textContent = studio ? `Your studio in ${info.city || where} stays on Showing Now as long as you’re welcoming visitors. Just let us know.` : `Your ongoing showing at ${where} stays on Showing Now as long as it’s still hanging. Just let us know.`;
     actions.hidden = false;
     actions.querySelectorAll<HTMLButtonElement>('[data-still-answer]').forEach((button) => button.addEventListener('click', async () => {
       actions.querySelectorAll('button').forEach((each) => each.disabled = true);
@@ -26,8 +28,8 @@ export async function initStillUp() {
         const reply = await ask(token, button.dataset.stillAnswer);
         actions.hidden = true;
         copy.textContent = reply.answer === 'down'
-          ? `Thanks for letting us know. The showing at ${where} is off Showing Now, and it stays in your workspace as a past showing.`
-          : `Thanks. Your showing at ${where} stays on Showing Now. We’ll check in again in a couple of months.`;
+          ? (studio ? 'Thanks for letting us know. Your studio is off Showing Now. You can list it again anytime from your workspace.' : `Thanks for letting us know. The showing at ${where} is off Showing Now, and it stays in your workspace as a past showing.`)
+          : (studio ? 'Thanks. Your studio stays on Showing Now. We’ll check in again in a couple of months.' : `Thanks. Your showing at ${where} stays on Showing Now. We’ll check in again in a couple of months.`);
         workspaceLink(reply);
       } catch (cause) {
         result.textContent = cause instanceof Error ? cause.message : 'That didn’t go through.';

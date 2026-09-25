@@ -73,9 +73,10 @@ async function notifyFollowers(env:NotificationEnv,showingId:string){
  let sent=0;
  for(const follower of followers){
   const unsubscribe=`${siteUrl(env)}/follow/unsubscribe/?t=${follower.token}`;
-  const text=`${name} has work up at ${show.venue}${show.city?` in ${show.city}`:''}. ${when}\n\n${where}\n\nSee the work: ${page}\n\nYou're getting this because you asked to hear when ${name} shows next. Stop these emails: ${unsubscribe}\n\n—Artists Are Jerks\n${MAILING_ADDRESS}`;
-  const html=`<p>${escapeHtml(name)} has work up at ${escapeHtml(String(show.venue))}${show.city?` in ${escapeHtml(String(show.city))}`:''}. ${escapeHtml(when)}</p><p>${escapeHtml(where)}</p><p><a href="${escapeHtml(page)}">See the work</a></p><p style="color:#555">You’re getting this because you asked to hear when ${escapeHtml(name)} shows next. <a href="${escapeHtml(unsubscribe)}">Stop these emails</a>.</p><p>—Artists Are Jerks</p><p style="color:#555;font-size:12px">${escapeHtml(MAILING_ADDRESS)}</p>`;
-  try{await env.ADMIN_EMAIL.send({to:follower.email,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:`${name.slice(0,80)} has work up at ${String(show.venue).slice(0,80)}`,text,html,headers:{'List-Unsubscribe':`<${unsubscribe}>`}});sent++}
+  const studio=show.kind==='studio';
+  const text=`${studio?`${name} is opening their studio to visitors, by appointment${show.city?`, in ${show.city}`:''}.`:`${name} has work up at ${show.venue}${show.city?` in ${show.city}`:''}. ${when}`}\n\n${studio?`Get in touch to set up a visit: ${siteUrl(env)}/showing/?id=${encodeURIComponent(showingId)}`:where}\n\nSee the work: ${page}\n\nYou're getting this because you asked to hear when ${name} shows next. Stop these emails: ${unsubscribe}\n\n—Artists Are Jerks\n${MAILING_ADDRESS}`;
+  const html=`<p>${studio?`${escapeHtml(name)} is opening their studio to visitors, by appointment${show.city?`, in ${escapeHtml(String(show.city))}`:''}.`:`${escapeHtml(name)} has work up at ${escapeHtml(String(show.venue))}${show.city?` in ${escapeHtml(String(show.city))}`:''}. ${escapeHtml(when)}`}</p><p>${studio?`<a href="${escapeHtml(`${siteUrl(env)}/showing/?id=${encodeURIComponent(showingId)}`)}">Set up a visit</a>`:escapeHtml(where)}</p><p><a href="${escapeHtml(page)}">See the work</a></p><p style="color:#555">You’re getting this because you asked to hear when ${escapeHtml(name)} shows next. <a href="${escapeHtml(unsubscribe)}">Stop these emails</a>.</p><p>—Artists Are Jerks</p><p style="color:#555;font-size:12px">${escapeHtml(MAILING_ADDRESS)}</p>`;
+  try{await env.ADMIN_EMAIL.send({to:follower.email,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:studio?`${name.slice(0,80)} is opening their studio by appointment`:`${name.slice(0,80)} has work up at ${String(show.venue).slice(0,80)}`,text,html,headers:{'List-Unsubscribe':`<${unsubscribe}>`}});sent++}
   catch(error){console.error(JSON.stringify({event:'follower_notice_failed',message:error instanceof Error?error.message:String(error)}))}
  }
  await env.DB.prepare('UPDATE showing_notices SET recipients=?1,sent=?2 WHERE showing_id=?3').bind(followers.length,sent,showingId).run();
@@ -154,12 +155,15 @@ async function sendStillUpReminders(env:NotificationEnv,today=pacificDay()){
   if(!claimed.meta.changes)continue;
   let status='not_configured';
   if(env.ADMIN_EMAIL&&env.ADMIN_NOTIFICATION_FROM&&/^\S+@\S+\.\S+$/.test(to)){
-   const url=`${siteUrl(env)}/still-up/?t=${token}`,venue=String(show.venue||'your showing'),name=String(artist.name||application.name||'there'),offDay=longDay(shiftDay(cycle,74));
-   const text=stage===1
+   const url=`${siteUrl(env)}/still-up/?t=${token}`,venue=String(show.venue||'your showing'),name=String(artist.name||application.name||'there'),offDay=longDay(shiftDay(cycle,74)),studio=show.kind==='studio';
+   const text=studio?(stage===1
+    ?`Hi ${name},\n\nIs your studio still open for visits by appointment? It’s been a couple of months since you last said so.\n\nOne tap keeps it on Showing Now: ${url}\n\nIf it’s closed for now, the same page lets you say so.\n\n—Artists Are Jerks`
+    :`Hi ${name},\n\nWe haven’t heard back, so your studio listing comes off Showing Now on ${offDay} unless you tell us it’s still open for visits.\n\nIt takes one tap: ${url}\n\n—Artists Are Jerks`)
+   :stage===1
     ?`Hi ${name},\n\nIt’s been a couple of months since you listed your work at ${venue} as an ongoing showing. Is it still up?\n\nOne tap keeps it on Showing Now: ${url}\n\nIf it came down, the same page lets you say so, and it comes off the listings.\n\n—Artists Are Jerks`
     :`Hi ${name},\n\nWe haven’t heard back, so your showing at ${venue} comes off Showing Now on ${offDay} unless you tell us it’s still up.\n\nIt takes one tap: ${url}\n\n—Artists Are Jerks`;
    const html=`<p>${text.split('\n\n').map(part=>escapeHtml(part).replace(escapeHtml(url),`<a href="${escapeHtml(url)}">${stage===1?'Tell us it’s still up':'Answer here'}</a>`)).join('</p><p>')}</p>`;
-   try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:stage===1?`Is your work still up at ${venue.slice(0,80)}?`:`Last call: is your work still up at ${venue.slice(0,80)}?`,text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});status='sent'}
+   try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},subject:studio?(stage===1?'Is your studio still open for visits?':'Last call: is your studio still open for visits?'):stage===1?`Is your work still up at ${venue.slice(0,80)}?`:`Last call: is your work still up at ${venue.slice(0,80)}?`,text,html,...(env.ADMIN_NOTIFICATION_TO?{replyTo:env.ADMIN_NOTIFICATION_TO}:{})});status='sent'}
    catch(error){status='failed';console.error(JSON.stringify({event:'still_up_failed',message:error instanceof Error?error.message:String(error)}))}
   }
   await env.DB.prepare('UPDATE showing_reminders SET delivery_status=?1 WHERE token=?2').bind(status,token).run();
@@ -299,7 +303,7 @@ export default {
         if(!row)return json({error:'This showing isn’t on the site anymore.'},404);
         const show=JSON.parse(row.payload),current=String(show.confirmedAt||show.start||'').slice(0,10);
         const artist=await env.DB.prepare("SELECT payload FROM community_records WHERE collection='artists' AND id=?1").bind(show.artistId).first<{payload:string|null}>();
-        const info={venue:String(show.venue||''),city:String(show.city||''),artistName:artist?.payload?String(JSON.parse(artist.payload).name||''):'',workspaceUrl:`/prototype/workspace/member/?artist=${encodeURIComponent(String(show.artistId))}#showing`};
+        const info={kind:show.kind==='studio'?'studio':'showing',venue:String(show.venue||''),city:String(show.city||''),artistName:artist?.payload?String(JSON.parse(artist.payload).name||''):'',workspaceUrl:`/prototype/workspace/member/?artist=${encodeURIComponent(String(show.artistId))}#showing`};
         // Already settled: answered here, confirmed in the workspace, or no longer ongoing.
         if(reminder.answered_at||current!==reminder.cycle||show.ongoing!==true)return json({...info,settled:true});
         if(body.answer===undefined)return json({...info,settled:false});

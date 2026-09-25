@@ -5,7 +5,7 @@ import pilot from '../data/community-pilot.json';
 import {storageReady} from './community-storage';
 import {getMemberArtist, imageUrl, isShown, memberUrl} from './member-artists';
 import {aiLabel, reportLink} from './artwork-moderation';
-import {publicShowings, showUrl, type Showing} from './prototype-showings';
+import {isStudio, publicShowings, showUrl, type Showing} from './prototype-showings';
 import {readVenues} from './prototype-venues';
 import {dates, shortDates, showingStatus, showingTag} from './showing-display';
 
@@ -71,7 +71,8 @@ export async function renderArtistShows(root: HTMLElement, artistId: string) {
 // A gold "On view at…" tag on each piece that is hanging somewhere right now.
 export function tagArtworks(scope: ParentNode, artistId: string, skipShowId = '') {
   const placed = new Map<string, Showing>();
-  for (const show of artistShows(artistId)) for (const id of show.artworkIds) if (!placed.has(id)) placed.set(id, show);
+  // A studio holds the whole portfolio, so it would tag every piece; only real walls get tags.
+  for (const show of artistShows(artistId)) if (!isStudio(show)) for (const id of show.artworkIds) if (!placed.has(id)) placed.set(id, show);
   scope.querySelectorAll<HTMLElement>('[data-artwork-id]').forEach((card) => {
     card.querySelector('.on-view-tag')?.remove();
     const show = placed.get(card.dataset.artworkId ?? '');
@@ -107,21 +108,27 @@ export async function initShowPage() {
     document.querySelector<HTMLElement>('[data-show-missing]')!.hidden = false;
     return;
   }
-  const phase = showingStatus(show);
-  document.title = `${artist.name} at ${show.venue} | Artists Are Jerks`;
-  document.querySelector('[data-show-title]')!.textContent = `${artist.name} at ${show.venue}`;
-  document.querySelector('[data-show-eyebrow]')!.textContent = `${phase === 'upcoming' ? 'Coming soon' : show.ongoing ? 'Ongoing' : 'On view now'} · ${show.city}`;
+  const phase = showingStatus(show), studio = isStudio(show);
+  document.title = studio ? `Visit ${artist.name}’s studio | Artists Are Jerks` : `${artist.name} at ${show.venue} | Artists Are Jerks`;
+  document.querySelector('[data-show-title]')!.textContent = studio ? `Visit ${artist.name}’s studio` : `${artist.name} at ${show.venue}`;
+  document.querySelector('[data-show-eyebrow]')!.textContent = `${studio ? 'Studio · by appointment' : phase === 'upcoming' ? 'Coming soon' : show.ongoing ? 'Ongoing' : 'On view now'} · ${show.city}`;
 
   // Where and when.
   const info = document.querySelector<HTMLElement>('[data-show-info]')!;
   const tag = showingTag(show);
   if (tag) info.append(make('span', tag.label, `showing-tag tag-${tag.kind}`));
-  info.append(make('p', show.ongoing ? shortDates(show) : dates(show), 'show-dates'));
+  info.append(make('p', studio ? 'Open to visitors by appointment. Get in touch to set up a time.' : show.ongoing ? shortDates(show) : dates(show), 'show-dates'));
   const where = make('p', '', 'show-where'); where.append(make('strong', show.venue), document.createElement('br'), document.createTextNode([show.address, show.city].filter(Boolean).join(', '))); info.append(where);
   const hours = readVenues().find((venue) => venue.id === show.venueId)?.hours;
   if (hours) info.append(make('p', hours, 'show-hours'));
   const actions = make('div', '', 'show-actions');
-  actions.append(link('Directions', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([show.venue, show.address, show.city].filter(Boolean).join(', '))}`, 'show-directions'));
+  if (studio) {
+    // The artist's own contacts for arranging a visit.
+    if (show.bookingUrl) { const book = link('Book a visit ↗', show.bookingUrl, 'show-directions'); book.target = '_blank'; book.rel = 'noopener'; actions.append(book); }
+    if (show.contactPhone) actions.append(link(`Call ${show.contactPhone}`, `tel:${show.contactPhone.replace(/[^0-9+]/g, '')}`, 'show-website'));
+    if (show.contactEmail) actions.append(link('Email the artist', `mailto:${show.contactEmail}?subject=${encodeURIComponent('Studio visit')}`, 'show-website'));
+  }
+  if (!studio || show.address) actions.append(link('Directions', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([show.venue, show.address, show.city].filter(Boolean).join(', '))}`, 'show-directions'));
   if (show.website) { const site = link('Their website ↗', show.website, 'show-website'); site.target = '_blank'; site.rel = 'noopener'; actions.append(site); }
   info.append(actions);
   info.hidden = false;
@@ -129,6 +136,7 @@ export async function initShowPage() {
   // On the wall.
   const works = await artistWorks(show.artistId);
   const here = show.artworkIds.map((workId) => works.find((work) => work.id === workId)).filter((work): work is ShowWork => Boolean(work));
+  document.getElementById('wall-heading')!.textContent = studio ? 'In the studio' : 'On the wall';
   document.querySelector('[data-wall-count]')!.textContent = `${here.length} ${here.length === 1 ? 'piece' : 'pieces'}`;
   document.querySelector('[data-wall]')!.replaceChildren(...here.map(workFigure));
   document.querySelector<HTMLElement>('[data-wall-section]')!.hidden = !here.length;

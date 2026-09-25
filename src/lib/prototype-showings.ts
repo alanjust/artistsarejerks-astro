@@ -12,11 +12,15 @@ export interface Showing {
   featuredArtworkId: string; status: 'draft' | 'published';
   // Ongoing showings have no end date and are confirmed by the artist every 60 days.
   regionId?: string; ongoing?: boolean; confirmedAt?: string;
+  // A studio open by appointment: the whole portfolio, the artist's own contacts, and
+  // a street address only if the artist chose to show it.
+  kind?: 'showing' | 'studio'; showAddress?: boolean; contactPhone?: string; contactEmail?: string; bookingUrl?: string;
 }
+export const isStudio = (show: {kind?: string}) => show.kind === 'studio';
 export function readShowings(): Showing[] {
   try {
     const data = JSON.parse(getStoredItem(SHOWINGS_KEY) || '[]');
-    return Array.isArray(data) ? data.filter((s) => s && typeof s.id === 'string' && typeof s.start === 'string' && typeof s.end === 'string' && typeof s.venue === 'string' && Array.isArray(s.artworkIds) && ((pilot.artists.some(a => a.id === s.artistId) && pilot.artworks.some(a => a.id === s.featuredArtworkId&&a.artistId===s.artistId)) || getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId))) : [];
+    return Array.isArray(data) ? data.filter((s) => s && typeof s.id === 'string' && typeof s.start === 'string' && typeof s.end === 'string' && typeof s.venue === 'string' && Array.isArray(s.artworkIds) && (s.kind === 'studio' || (pilot.artists.some(a => a.id === s.artistId) && pilot.artworks.some(a => a.id === s.featuredArtworkId&&a.artistId===s.artistId)) || getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId))) : [];
   } catch { return []; }
 }
 export function removeShowing(id: string) {
@@ -33,7 +37,7 @@ export function venueUrl(show: Showing) {
 // Showings visitors can see: published, not over, confirmed if ongoing, at a visible
 // venue, by an artist whose page is public.
 export function publicShowings(){
-  return readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>w.id===s.featuredArtworkId&&w.public))));
+  return readShowings().filter(s => s.status === 'published' && showingStatus(s) !== 'expired' && !checkInLapsed(s) && !readVenues().some(v=>v.id===s.venueId&&!v.visible) && (pilot.artists.some(a=>a.id===s.artistId)||Boolean(getMemberArtist(s.artistId)?.published && getMemberArtist(s.artistId)?.works.some(w=>(isStudio(s)||w.id===s.featuredArtworkId)&&isShown(w)))));
 }
 export const showUrl = (id: string) => `/showing/?id=${encodeURIComponent(id)}`;
 // Each root keeps a run counter so an older, slower render can't append stale cards.
@@ -52,7 +56,8 @@ export async function renderShowings(root: HTMLElement) {
   for(const show of matches) {
     const member=getMemberArtist(show.artistId);
     const artist = pilot.artists.find(a => a.id === show.artistId) || (member ? {id:member.id,name:member.name,practice:member.practice.split(',').map(s=>s.trim()),slug:''}:null);
-    const memberWork=member?.works.find(w=>w.id===show.featuredArtworkId&&isShown(w));
+    // A studio shows the whole portfolio, so its card falls back to the first piece on view.
+    const memberWork=member?.works.find(w=>w.id===show.featuredArtworkId&&isShown(w))??(isStudio(show)?member?.works.find(isShown):undefined);
     let artwork=pilot.artworks.find(a => a.id === show.featuredArtworkId) as {image:string;title:string;medium?:string;ai?:boolean}|undefined;
     if(memberWork){try{artwork={image:await imageUrl(memberWork),title:memberWork.title,medium:memberWork.medium,ai:memberWork.madeWithAI===true}}catch{continue}}
     if(!artist||!artwork)continue;
@@ -66,17 +71,17 @@ export async function renderShowings(root: HTMLElement) {
     }
     if(context==='directory'){
       // Same markup as the server-rendered cards on Showing Now.
-      const ongoing=!upcoming&&!show.end;
-      const card=create('article','',`showing-card${upcoming?' coming-card':ongoing?' ongoing-card':''}`);
+      const ongoing=!upcoming&&!show.end, studio=isStudio(show);
+      const card=create('article','',`showing-card${studio?' studio-card':upcoming?' coming-card':ongoing?' ongoing-card':''}`);
       Object.assign(card.dataset,{browserShow:show.id,showId:show.id,artistId:show.artistId,city:show.city,sort:artistSortKey(artist.name),start:show.start,search:`${artist.name} ${show.venue} ${artist.practice.join(' ')} ${show.city} ${artwork.title} ${artwork.medium ?? ''}`.toLowerCase()});
       const frame=create('div','','artwork-frame');const image=document.createElement('img');image.src=artwork.image;image.alt=artwork.title;image.loading='lazy';frame.append(image);
       const copy=create('div','','copy');const tag=showingTag(show);
       if(tag)copy.append(create('span',tag.label,`showing-tag tag-${tag.kind}`));
       const heading=create('h3');heading.append(link(artist.name,showUrl(show.id),'card-title'));
-      copy.append(heading,create('p',`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
+      copy.append(heading,create('p',studio?(show.address?`${show.address}, ${show.city}`:show.city):`${show.venue} · ${show.city}`,'venue-line'),create('p',shortDates(show),'dates'));
       if(artwork.ai)copy.append(aiLabel());
       card.append(frame,copy);
-      built.push({node:card,destination:document.querySelector(upcoming?'.coming-grid':ongoing?'.ongoing-grid':'.showing-grid')});
+      built.push({node:card,destination:document.querySelector(studio?'.studio-grid':upcoming?'.coming-grid':ongoing?'.ongoing-grid':'.showing-grid')});
       continue;
     }
     const card = create('article', '', 'browser-showing');
@@ -104,11 +109,11 @@ export async function renderShowings(root: HTMLElement) {
   }
   if (renderRuns.get(root) !== run) return;
   root.querySelectorAll('[data-browser-show]').forEach(node => node.remove());
-  if (context === 'directory') document.querySelectorAll('.showing-grid [data-browser-show],.coming-grid [data-browser-show],.ongoing-grid [data-browser-show]').forEach(node => node.remove());
+  if (context === 'directory') document.querySelectorAll('.showing-grid [data-browser-show],.coming-grid [data-browser-show],.ongoing-grid [data-browser-show],.studio-grid [data-browser-show]').forEach(node => node.remove());
   built.forEach(({node, destination}) => destination?.append(node));
   root.hidden = context === 'directory' || !matches.length;
   if(context==='directory'){
-    for(const selector of ['.coming-section','.ongoing-section']){const section=document.querySelector<HTMLElement>(selector);if(section)section.hidden=!section.querySelector('.showing-card')}
+    for(const selector of ['.coming-section','.ongoing-section','.studio-section']){const section=document.querySelector<HTMLElement>(selector);if(section)section.hidden=!section.querySelector('.showing-card')}
   }
   if (context === 'venue-preview') {
     const show = matches[0];

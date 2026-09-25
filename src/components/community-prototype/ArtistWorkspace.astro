@@ -58,7 +58,7 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
       <h2>Where can people see your work?</h2>
       <p data-showings-intro>List each place your work is hanging, so people can go see it in person.</p>
       <div class="saved-showings" data-showings-list></div>
-      <div class="actions"><button type="button" data-new-showing>+ Add a showing</button></div>
+      <div class="actions"><button type="button" data-new-showing>+ Add a showing</button><button type="button" data-new-studio>+ List your studio</button></div>
 
       <form class="showing-form" data-showing-form hidden novalidate>
         <h3 data-showing-form-title>Add a showing</h3>
@@ -97,6 +97,24 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
         <p class="hint" data-publish-note></p>
         <div class="actions"><button data-publish-showing>Publish showing</button><button type="button" data-save-showing-draft>Save as draft</button><button type="button" data-cancel-showing>Cancel</button></div>
         <p data-showing-message role="status"></p>
+      </form>
+
+      <form class="showing-form studio-form" data-studio-form hidden novalidate>
+        <h3 data-studio-form-title>List your studio</h3>
+        <p class="hint">For artists who welcome visitors to their own studio, by appointment. Your listing shows your whole portfolio, and people get in touch with you to set up a time.</p>
+        <label>Studio name<input name="studioName" maxlength="120"/></label>
+        <label>City<input name="studioCity" maxlength="120" autocomplete="address-level2"/></label>
+        <label>Street address<input name="studioAddress" maxlength="200" autocomplete="street-address"/></label>
+        <label class="check"><input type="checkbox" name="showAddress"/> <span>Show my full address <small>Leave this off to show only your city. You can share the address when someone gets in touch.</small></span></label>
+        <fieldset class="studio-contacts">
+          <legend>How should people reach you to set up a visit? At least one.</legend>
+          <label>Phone<input name="contactPhone" type="tel" maxlength="40" autocomplete="tel"/></label>
+          <label>Email<input name="contactEmail" type="email" maxlength="254" autocomplete="email"/></label>
+          <label>Booking link <small>optional, like a Calendly page</small><input name="bookingUrl" type="url" maxlength="300" placeholder="https://"/></label>
+          <p class="hint">Whatever you fill in here shows on your studio listing for anyone to see.</p>
+        </fieldset>
+        <div class="actions"><button>Publish my studio</button><button type="button" data-studio-cancel>Cancel</button></div>
+        <p data-studio-message role="status"></p>
       </form>
 
       <section class="tell-people" data-tell-people hidden aria-labelledby="tell-heading">
@@ -192,6 +210,8 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
 <script>import {initMemberSetup} from '../../lib/member-setup';initMemberSetup();</script>
 
 <style>
+  .studio-contacts { display: grid; gap: var(--space-3); margin: var(--space-4) 0; padding: 0; border: 0; }
+  .studio-contacts legend { margin-bottom: var(--space-2); font-weight: var(--font-weight-bold); }
   .workspace-return { margin-bottom: var(--space-2); }
   .workspace-return a { font-weight: var(--font-weight-bold); }
   /* Five equal tabs that always fit, even on a phone. */

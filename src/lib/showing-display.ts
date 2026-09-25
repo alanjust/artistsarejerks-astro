@@ -39,16 +39,18 @@ export function regionDay(timeZone = 'America/Los_Angeles', now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', {timeZone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(now);
 }
 // Compact card dates: "Sep 5–Oct 25". The year appears only when it isn't this year.
-export function shortDates(show: {start: string; end: string}, today = regionDay()) {
+export function shortDates(show: {start: string; end: string; kind?: string}, today = regionDay()) {
+  if (show.kind === 'studio') return 'By appointment';
   if (!show.end) return `Since ${monthDay(show.start)}`;
   const year = today.slice(0, 4);
   const label = (value: string) => new Date(`${value}T12:00:00`).toLocaleDateString('en-US', {month: 'short', day: 'numeric', ...(value.slice(0, 4) === year ? {} : {year: 'numeric'})});
   return `${label(show.start)}–${label(show.end)}`;
 }
 const dayNumber = (value: string) => Date.UTC(+value.slice(0, 4), +value.slice(5, 7) - 1, +value.slice(8, 10)) / 86400000;
-export type ShowingTag = {label: string; kind: 'ending' | 'new' | 'opens' | 'ongoing'};
+export type ShowingTag = {label: string; kind: 'ending' | 'new' | 'opens' | 'ongoing' | 'studio'};
 // The small colored tag on a card: last week, first week, or opening date.
-export function showingTag(show: {start: string; end: string}, today = regionDay()): ShowingTag | null {
+export function showingTag(show: {start: string; end: string; kind?: string}, today = regionDay()): ShowingTag | null {
+  if (show.kind === 'studio') return {label: 'Studio', kind: 'studio'};
   const phase = showingStatus(show, today);
   if (phase === 'upcoming') return {label: `Opens ${new Date(`${show.start}T12:00:00`).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}`, kind: 'opens'};
   if (phase !== 'showing-now') return null;

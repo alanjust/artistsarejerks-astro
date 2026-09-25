@@ -52,6 +52,10 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - The artist is also **emailed**: at 60 days, and a last call at 70 that names the day it comes off. The email links to `/still-up/?t=…`, where one button says "Yes, it's still up" (checks it in for today) or "No, it came down" (ends it yesterday). Opening the link changes nothing; checking in from the workspace makes the link moot. Approved artists only; one email per stage.
    - After the first published showing, the artist is asked about venue-opportunity announcements.
 6. **Tell people** kit after publishing a showing: an editable note with Share, Email it, Text it, Copy, and an all-day calendar invite. It is sent from the artist's own device, never by the site.
+8. **Studios by appointment** (September 24): a showing with `kind: 'studio'`, one per artist, listed from the Showings tab with **List your studio**. The artist gives a studio name, city, street address, a **Show my full address** checkbox (off by default: only the city is public), and at least one contact (phone, email, or booking link), shown publicly for arranging visits.
+   - The storage service lists it only with a usable contact and a public piece; the street address leaves the service only when the artist chose to show it; the listing carries the whole public portfolio (first piece is the card image).
+   - Showing Now has a **Studios by appointment** section (compact rows, purple "Studio" tag). The show page becomes "Visit [Name]'s studio" with Book a visit, Call, and Email buttons, Directions only when the address is shown, and "In the studio" for the portfolio. Studios don't put "On view at…" tags on pieces.
+   - Same 60-day "Still open for visits?" check-in, emailed reminders (studio wording), and 74-day lapse as ongoing showings. Followers get one "opening their studio by appointment" email. Tell people has a studio note. `tests/studio.mjs`.
 7. **Venues** apply at `/join/venue/`, with an unchecked "I agree" to the Community Guidelines and Site Terms and an optional "Did an artist send you? Who?" (stored as `invitedBy`, shown in the inbox). Venue workspaces also have **Write to us**.
    - Arriving at `/join/?kind=artist` (from "Join free") hides "Back to choices" and shows "Not an artist? Venues: introduce your place → · Your area isn't listed? Propose it →".
    - **Approving a venue opens its workspace** for the account that applied (September 24), the same as artists; a decline closes it. The applicant's "Your venue requests" list links to the workspace. Account assignments (`/prototype/admin/accounts/`) stays as the manual fallback. Venues approved before this (e.g. Alan Just Studio, applied from alan@alanjust.com) weren't attached.
@@ -132,15 +136,12 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 
 ## Open list
 
-**Waiting on Alan**
-1. **Studio visits by appointment:** some artists show in their own studio only by appointment. Needs its own design (how a showing says "by appointment" and how visitors ask).
-
 **Optional builds** (named in the Privacy Notice)
-2. A self-serve "delete my account" button (today artists write in).
+1. A self-serve "delete my account" button (today artists write in).
 
 **Later**
-3. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
-4. **Cleanups:**
+2. **Region extras:** "On the road" and "Use my location". Showings already record `regionId`.
+3. **Cleanups:**
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).

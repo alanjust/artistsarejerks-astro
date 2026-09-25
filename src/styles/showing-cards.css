@@ -22,14 +22,15 @@
   .showing-card .tag-new{background:var(--color-green);color:var(--color-black)}
   .showing-card .tag-opens{background:var(--color-black);color:var(--color-green)}
   .showing-card .tag-ongoing{background:var(--color-gray-300);color:var(--color-black)}
+  .showing-card .tag-studio{background:var(--color-purple);color:var(--color-white)}
 
   /* Upcoming and ongoing showings are rows: a small image beside the details. */
-  .showing-card:is(.coming-card,.ongoing-card){flex-direction:row;gap:var(--space-3);padding:var(--space-3)}
+  .showing-card:is(.coming-card,.ongoing-card,.studio-card){flex-direction:row;gap:var(--space-3);padding:var(--space-3)}
   .showing-card.coming-card{background:var(--color-green);color:var(--color-black)}
-  :is(.coming-card,.ongoing-card) .artwork-frame{width:96px;flex-shrink:0;align-self:flex-start}
-  :is(.coming-card,.ongoing-card) .artwork-frame img{padding:var(--space-1)}
-  :is(.coming-card,.ongoing-card) .copy{justify-content:center;padding:0}
-  :is(.coming-card,.ongoing-card) h3{font-size:var(--font-size-xl)}
+  :is(.coming-card,.ongoing-card,.studio-card) .artwork-frame{width:96px;flex-shrink:0;align-self:flex-start}
+  :is(.coming-card,.ongoing-card,.studio-card) .artwork-frame img{padding:var(--space-1)}
+  :is(.coming-card,.ongoing-card,.studio-card) .copy{justify-content:center;padding:0}
+  :is(.coming-card,.ongoing-card,.studio-card) h3{font-size:var(--font-size-xl)}
   .coming-card .dates{color:var(--color-gray-800)}
 
   .browser-showing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);min-width:0;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-black);color:var(--color-white)}
@@ -69,6 +70,7 @@
   .artist-show-row .tag-new{background:var(--color-green);color:var(--color-black)}
   .artist-show-row .tag-opens{background:var(--color-green);color:var(--color-black)}
   .artist-show-row .tag-ongoing{background:var(--color-gray-300);color:var(--color-black)}
+  .artist-show-row .tag-studio{background:var(--color-purple);color:var(--color-white)}
   .artist-show-venue{font-size:var(--font-size-lg);font-weight:var(--font-weight-bold)}
   .artist-show-when{color:var(--color-gray-300);font-size:var(--font-size-sm)}
   .artist-show-thumbs{display:flex;gap:var(--space-2);margin-top:var(--space-1)}
