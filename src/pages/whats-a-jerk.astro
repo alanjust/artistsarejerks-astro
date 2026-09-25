@@ -81,9 +81,18 @@ const jerkBehaviors = [
   <div class="jerk-page">
     <header class="jerk-header">
       <h1>What's a Jerk?</h1>
-      <p class="lede">Twelve ways artists act like jerks, what's usually going on underneath, and what you might say back.</p>
+      <p class="lede">You know the type, or you've heard about them: the moody artist in black who looks at you like you've just asked where the bathroom is. So, are artists jerks? Some are. Some are the good kind. And some aren't jerks at all.</p>
     </header>
 
+    <ul class="kinds">
+      <li class="kind kind--good"><h2>Good jerks</h2><p>They make you see something you'd have walked right past. They're annoying on purpose, and it's usually worth it.</p><p class="kind-example">The painter whose work bugs you for a week.</p></li>
+      <li class="kind kind--bad"><h2>Bad jerks</h2><p>They make you feel dumb so they can feel important. That's the stereotype, and yes, they're real.</p><p class="kind-example">"You wouldn't understand."</p></li>
+      <li class="kind kind--normie"><h2>Normies</h2><p>Not jerks at all. They make art you can live with, and they keep it in everyday life. Art needs them more than it admits.</p><p class="kind-example">The landscape over your parents' couch.</p></li>
+    </ul>
+
+    <section class="bad-section" aria-labelledby="bad-title">
+      <h2 id="bad-title" class="section-title">When an artist is being a bad jerk</h2>
+      <p class="section-intro">Twelve things difficult artists do, what's usually going on underneath, and something you can say back.</p>
     <ol class="behaviors">
       {jerkBehaviors.map((item) => (
         <li class="card">
@@ -96,18 +105,19 @@ const jerkBehaviors = [
       ))}
     </ol>
 
-    <section class="card bigger-picture">
-      <h2 class="card-title">The bigger picture</h2>
-      <p>These behaviors aren't just individual quirks—they're symptoms of how the art world works. The pressure to be "original," the gatekeeping of galleries and institutions, the anxiety about class and taste, the constant comparison: all of it puts artists in impossible positions.</p>
-      <p>Once you see what's driving the jerk, you can answer with curiosity instead of judgment. And you start to see the whole ecology: the Good Jerks who make us see differently, the Bad Jerks who gatekeep, and the Normies who keep art alive in everyday life. We need all three. We just need to know which is which.</p>
     </section>
+
+    <aside class="artist-note">
+      <h2>If you're an artist</h2>
+      <p>And you recognized yourself in a few of these: welcome. So did we. <a href="/thinking-like-an-artist/">Thinking Like an Artist →</a></p>
+    </aside>
   </div>
 
   <style>
     .jerk-page { max-width: var(--max-width-text); margin: 0 auto; padding: var(--space-4) 0 var(--space-12); }
     .jerk-header { text-align: center; margin-bottom: var(--space-6); }
     .jerk-header h1 { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-4xl); color: var(--color-black); }
-    .lede { max-width: 32rem; margin: 0 auto; font-size: var(--font-size-lg); line-height: var(--line-height-normal); color: var(--color-black); }
+    .lede { max-width: 32rem; margin: 0 auto; text-align: left; font-size: var(--font-size-lg); line-height: var(--line-height-normal); color: var(--color-black); }
     .behaviors { display: grid; gap: var(--space-4); margin: 0 0 var(--space-4); padding: 0; list-style: none; }
     .card { padding: var(--space-4) var(--space-5); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); color: var(--color-black); }
     .card p { margin: 0; font-size: var(--font-size-base); line-height: var(--line-height-relaxed); }
@@ -116,11 +126,25 @@ const jerkBehaviors = [
     .card-number { display: grid; place-items: center; flex: none; width: var(--space-8); height: var(--space-8); border-radius: var(--radius-full); background: var(--color-black); color: var(--color-gold); font-size: var(--font-size-base); }
     .card-label { margin: var(--space-3) 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-purple); }
     .card-quote { font-style: italic; }
+    .kinds { display: grid; gap: var(--space-3); margin: 0 0 var(--space-8); padding: 0; list-style: none; }
+    .kind { padding: var(--space-4) var(--space-5); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); color: var(--color-black); }
+    .kind h2 { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-2xl); }
+    .kind p { margin: 0; line-height: var(--line-height-relaxed); }
+    .kind .kind-example { margin-top: var(--space-2); font-style: italic; }
+    .kind--good { background: var(--color-green); }
+    .kind--bad { background: var(--color-plum-red); color: var(--color-white); }
+    .kind--normie { background: var(--color-cream); }
+    .section-title { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-2xl); }
+    .section-intro { margin: 0 0 var(--space-4); line-height: var(--line-height-relaxed); }
+    .artist-note { margin-top: var(--space-6); padding: var(--space-4) var(--space-5); background: var(--color-black); border-radius: var(--radius-lg); color: var(--color-white); }
+    .artist-note h2 { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-xl); color: var(--color-gold); }
+    .artist-note p { margin: 0; line-height: var(--line-height-relaxed); }
+    .artist-note a { color: var(--color-gold); font-weight: var(--font-weight-bold); }
     @media (min-width: 900px) {
       .jerk-page { max-width: var(--max-width-content); }
       .jerk-header h1 { font-size: var(--font-size-5xl); }
       .behaviors { grid-template-columns: 1fr 1fr; }
-      .bigger-picture { max-width: var(--max-width-text); margin: 0 auto; }
+      .kinds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
   </style>
 </BaseLayout>
