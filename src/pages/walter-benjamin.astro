@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+type Position = {stance: string; artists: string; line: string; ask: string; image?: {src: string; alt: string}};
+type Idea = {id: string; pill: string; name: string; about: string; positions: Position[]};
+
+const ideas: Idea[] = [
+  {
+    id: 'aura', pill: 'Aura', name: 'Aura',
+    about: 'The feeling of being in the room with the real thing. Copies were supposed to kill it.',
+    positions: [
+      {stance: 'Builds it', artists: 'Mark Rothko', line: 'Art as relic, glowing with presence.', ask: 'When does a work feel sacred to you, and why?'},
+      {stance: 'Breaks it', artists: 'Andy Warhol, Barbara Kruger', line: 'Copy it, sell it, flood the world.', ask: 'What happens to value when an image can repeat forever?', image: {src: '/images/artists/andy-warhol-campbells-soup-cans.jpeg', alt: "Andy Warhol, Campbell's Soup Cans"}},
+      {stance: 'Reinvents it', artists: 'Marina Abramović, Hito Steyerl', line: 'Performance, pixels, and screens reinvent presence.', ask: 'Can a livestream or a performance have its own aura?', image: {src: '/images/artists/marina-abramović-rhythm-0.jpg', alt: 'Marina Abramović, Rhythm 0'}},
+    ],
+  },
+  {
+    id: 'copies', pill: 'Copies', name: 'Copies',
+    about: "Printing, photography, film, and now the internet. Once an image can be copied endlessly, we stop looking at it the same way. Benjamin called this mechanical reproduction.",
+    positions: [
+      {stance: 'Shares it', artists: 'Barbara Kruger, meme makers', line: 'Everyone gets a copy. No gatekeepers.', ask: 'Does easy access help you understand an image, or just make it cheaper?', image: {src: '/images/artists/barbara-kruger-untitled.webp', alt: 'Barbara Kruger, Untitled'}},
+      {stance: 'Sells it', artists: 'Jeff Koons, Takashi Murakami', line: 'Repetition as brand, spectacle as sales pitch.', ask: 'When does making more copies turn into plain marketing?', image: {src: '/images/artists/jeff-koons-new-hoover-convertibles.jpeg', alt: 'Jeff Koons, New Hoover Convertibles'}},
+    ],
+  },
+  {
+    id: 'lens', pill: 'The lens', name: 'The lens',
+    about: "Cameras see things our eyes miss: a horse's legs mid-gallop, a face held still long enough to study. Benjamin called this the optical unconscious.",
+    positions: [
+      {stance: 'Trusts the camera', artists: 'Eadweard Muybridge, Rineke Dijkstra', line: "The lens reveals what eyes can't.", ask: 'What shows up only in slow motion, a zoom, or high resolution?'},
+      {stance: 'Trusts the eye', artists: 'Lucian Freud', line: 'Only the trained gaze claims authority.', ask: "What can a person looking for hours see that a machine can't?"},
+    ],
+  },
+  {
+    id: 'history', pill: 'History', name: 'History',
+    about: 'Benjamin pictured an angel facing backward, watching the wreckage pile up, while a storm called progress blows it into the future. He called it the angel of history.',
+    positions: [
+      {stance: 'Looks back', artists: 'Anselm Kiefer', line: 'The past piles up in shards.', ask: 'Where do you see ruins in everyday life?', image: {src: '/images/artists/anselm-kiefer-margarethe.jpeg', alt: 'Anselm Kiefer, Margarethe'}},
+      {stance: 'Charges ahead', artists: 'The Italian Futurists', line: 'Progress is a hurricane blowing us onward.', ask: 'What gets lost when we chase the new?'},
+      {stance: 'Holds both', artists: 'Kara Walker, Olafur Eliasson', line: 'Between loss and hope, the artist stands.', ask: 'How can one piece hold grief and hope at the same time?', image: {src: '/images/artists/olafur-eliasson-the-weather-project.jpg', alt: 'Olafur Eliasson, The Weather Project'}},
+    ],
+  },
+  {
+    id: 'politics', pill: 'Politics', name: 'Politics',
+    about: 'Benjamin thought no art is neutral. It can fight, it can hide, or it can turn politics into something to sell.',
+    positions: [
+      {stance: 'Fights', artists: 'Diego Rivera, Ai Weiwei', line: 'Art as weapon, banner, uprising.', ask: 'When does art work like a rally cry instead of a picture?', image: {src: '/images/artists/ai-weiwei-sunflower-seeds.jpg', alt: 'Ai Weiwei, Sunflower Seeds'}},
+      {stance: 'Hides', artists: 'James McNeill Whistler', line: 'Beauty as refuge, art as retreat.', ask: 'Is staying out of politics its own political choice?'},
+      {stance: 'Sells', artists: 'Damien Hirst', line: 'Politics as product, controversy as currency.', ask: 'When does a provocation feel built for sales rather than thought?', image: {src: '/images/artists/damien-hirst-the-physical-impossibility-of-death-in-the-mind-of.jpg', alt: 'Damien Hirst, The Physical Impossibility of Death in the Mind of Someone Living'}},
+    ],
+  },
+];
+
+const practice = [
+  ['Aura', 'Does this feel like a presence, or just another image? If it\'s a copy, does it still have power?'],
+  ['Copies', 'If there are lots of these, is that generous or cheapening? Who gains from the copies?'],
+  ['The lens', 'If a camera made this, what is it showing you that your eye would miss?'],
+  ['History', 'Is this cheering for the future, or sitting with what got lost? Can it do both?'],
+  ['Politics', 'Is it trying to change something, escape something, or sell something?'],
+];
+---
+<BaseLayout title="Who Is Walter Benjamin? - Artists Are Jerks" bodyClass="walter-benjamin-page">
+  <div class="benjamin-page">
+    <header class="benjamin-header">
+      <h1>Who Is Walter Benjamin?</h1>
+      <p class="dates">1892 to 1940</p>
+      <p class="lede">A German writer who asked, in the 1930s, what happens to art when anyone can copy it. Five of his ideas, and the artists who picked a side.</p>
+    </header>
+
+    <div class="pills" role="group" aria-label="Benjamin's five ideas" data-pills hidden>
+      {ideas.map((idea, index) => (
+        <button type="button" class="pill" data-idea={idea.id} aria-pressed={index === 0 ? 'true' : 'false'}>{idea.pill}</button>
+      ))}
+    </div>
+
+    {ideas.map((idea) => (
+      <section class="panel" id={idea.id} data-panel={idea.id} aria-labelledby={`${idea.id}-title`}>
+        <div class="panel-intro">
+          <h2 class="panel-kicker" id={`${idea.id}-title`}>{idea.name} · {idea.positions.length} positions</h2>
+          <p>{idea.about}</p>
+        </div>
+        <ul class="positions">
+          {idea.positions.map((position) => (
+            <li class="position">
+              {position.image && <img src={position.image.src} alt={position.image.alt} loading="lazy" />}
+              <div>
+                <h3 class="stance">{position.stance} <span class="artists">· {position.artists}</span></h3>
+                <p class="line">"{position.line}"</p>
+                <p class="ask"><span class="ask-label">Ask yourself</span> {position.ask}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="closing">
+      <h2>Next time you're looking at art</h2>
+      <dl>
+        {practice.map(([term, question]) => (<><dt>{term}</dt><dd>{question}</dd></>))}
+      </dl>
+      <h2>Why he still matters</h2>
+      <p>Benjamin wrote before television, let alone Instagram, AI images, and infinite digital copies. His questions got more urgent, not less: what makes art matter, what creates value, and who gets to decide. The artists here aren't just making pictures. They're taking sides. Once you see the sides, you can't unsee them.</p>
+      <p class="credits">Inspired by Walter Benjamin's ideas on aura, mechanical reproduction, the optical unconscious, the angel of history, and art's political stakes. Compiled by Artists Are Jerks.</p>
+    </section>
+  </div>
+
+  <script>
+    // Without JavaScript every idea stays visible; with it, the pills show one at a time.
+    const pills = document.querySelector<HTMLElement>('[data-pills]');
+    const panels = document.querySelectorAll<HTMLElement>('[data-panel]');
+    if (pills) {
+      pills.hidden = false;
+      const show = (id: string) => {
+        panels.forEach((panel) => { panel.hidden = panel.dataset.panel !== id; });
+        pills.querySelectorAll<HTMLButtonElement>('[data-idea]').forEach((pill) => pill.setAttribute('aria-pressed', String(pill.dataset.idea === id)));
+      };
+      pills.addEventListener('click', (event) => {
+        const pill = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-idea]');
+        if (pill?.dataset.idea) show(pill.dataset.idea);
+      });
+      show(location.hash.slice(1) && document.getElementById(location.hash.slice(1)) ? location.hash.slice(1) : panels[0].dataset.panel!);
+    }
+  </script>
+
+  <style>
+    .benjamin-page { max-width: var(--max-width-text); margin: 0 auto; padding: var(--space-4) 0 var(--space-12); color: var(--color-black); }
+    .benjamin-header { text-align: center; margin-bottom: var(--space-5); }
+    .benjamin-header h1 { margin: 0; font-family: var(--font-heading); font-size: var(--font-size-4xl); }
+    .dates { margin: var(--space-1) 0 var(--space-3); font-family: var(--font-heading); color: var(--color-purple); }
+    .lede { max-width: 32rem; margin: 0 auto; font-size: var(--font-size-lg); line-height: var(--line-height-normal); }
+    .pills { display: flex; gap: var(--space-2); margin: 0 calc(var(--page-gutter-mobile) * -1) var(--space-4); padding: 0 var(--page-gutter-mobile) var(--space-1); overflow-x: auto; scrollbar-width: none; }
+    .pills[hidden] { display: none; }
+    .pill { flex: none; min-height: 44px; padding: 0 var(--space-4); background: var(--color-cream); border: 0; border-radius: var(--radius-base); color: var(--color-black); font-family: var(--font-heading); font-size: var(--font-size-base); cursor: pointer; }
+    .pill[aria-pressed='true'] { background: var(--color-green); font-weight: var(--font-weight-bold); }
+    .pill:focus-visible { outline: var(--border-base) solid var(--color-black); outline-offset: var(--border-base); }
+    .panel { margin-bottom: var(--space-4); padding: var(--space-4); background: var(--color-black); border-radius: var(--radius-lg); color: var(--color-white); }
+    .panel[hidden] { display: none; }
+    .panel p { margin: 0; line-height: var(--line-height-relaxed); }
+    .panel-kicker { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-wider); text-transform: uppercase; color: var(--color-gold); }
+    .positions { display: grid; gap: var(--space-4); margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+    .position { display: flex; gap: var(--space-3); padding-top: var(--space-4); border-top: var(--border-thin) solid var(--color-gray-700); }
+    .position img { flex: none; width: var(--space-16); height: var(--space-16); object-fit: cover; border-radius: var(--radius-sm); }
+    .stance { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-lg); }
+    .artists { font-size: var(--font-size-base); font-weight: var(--font-weight-normal); }
+    .panel .line { font-style: italic; color: var(--color-cream); }
+    .panel .ask { margin-top: var(--space-2); }
+    .ask-label { display: block; font-family: var(--font-heading); font-size: var(--font-size-sm); color: var(--color-gold); }
+    .closing { margin-top: var(--space-8); padding: var(--space-4) var(--space-5); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); }
+    .closing h2 { margin: 0 0 var(--space-3); font-family: var(--font-heading); font-size: var(--font-size-2xl); }
+    .closing h2 + p { margin-top: 0; }
+    .closing p, .closing dd { line-height: var(--line-height-relaxed); }
+    .closing dl { margin: 0 0 var(--space-6); }
+    .closing dt { margin-top: var(--space-3); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-purple); }
+    .closing dd { margin: 0; }
+    .credits { margin-top: var(--space-4); padding-top: var(--space-3); border-top: var(--border-thin) solid var(--color-black); font-size: var(--font-size-sm); }
+    @media (min-width: 900px) {
+      .benjamin-page { max-width: var(--max-width-wide); }
+      .benjamin-header h1 { font-size: var(--font-size-5xl); }
+      .pills { justify-content: center; margin-inline: 0; padding-inline: 0; }
+      .panel { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: var(--space-6); padding: var(--space-6); }
+      .positions { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; margin: 0; }
+      .position { flex-direction: column; padding-top: 0; border-top: 0; }
+      .position img { width: 100%; height: auto; aspect-ratio: 4 / 3; }
+      .closing { max-width: var(--max-width-text); margin-inline: auto; }
+    }
+  </style>
+</BaseLayout>
