@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 25, 2026, after the header, home-footer, and Artist Tools redesign (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 25, 2026, after the header, home-footer, Artist Tools, About, and Eight Ways to Look work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -170,6 +170,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - All five Artist Tools pages redesigned (details above), each mocked up first and approved by Alan. Benjamin page renamed and moved; `about.astro` link updated.
 - Gatekeepers gained a fifth tile: 78% of the value of $10 million-plus art auction sales in 2025 was in the US (Art Basel/UBS report, confirmed in the PDF along with "39 of the top 50").
 - Thinking Like an Artist's Fear tool ends on a hopeful "What's actually true" layer; its warning note now says it "goes to some dark places before it comes back up." The earlier Fear layers moved one shade lighter so black stays the last step. Not yet seen on a phone.
+- What's a Jerk? rebuilt: the stereotype, three kinds of jerks, and eight visitor moments replacing the twelve behaviors.
+- About rewritten as Alan's story; "More about me" links to alanjust.com/about in a new tab.
+- New page Eight Ways to Look, added to the Artist Tools menu after Thinking Like an Artist.
 - New tokens: `--color-cream`, `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24

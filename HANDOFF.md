@@ -16,11 +16,15 @@ Written September 25, 2026; updated later that day after a design session on the
   - Visitor and venue paths: navigation fixes, Write to us, the For Venues page and venue paths, and "Still up?" reminder emails.
   - Studios by appointment, and the account pages.
   - Fonts served from the site, and the Figma script removed.
-- **Later on September 25:** a design-critique session. The header band is thinner, the home footer is just the copyright line and clears Safari's toolbar, and all five Artist Tools pages were rebuilt in one look (cream cards, pills and black panels, Ira Glass copy). The Benjamin Wheel became **Who Is Walter Benjamin?** at `/walter-benjamin/`. Gatekeepers now footnotes every number. Details are in `CURRENT_STATUS.md` under "Artist Tools pages".
+- **Later on September 25:** a design-critique session. The header band is thinner, the home footer is just the copyright line and clears Safari's toolbar, and all five Artist Tools pages were rebuilt in one look (cream cards, pills and black panels, Ira Glass copy). The Benjamin Wheel became **Who Is Walter Benjamin?** at `/walter-benjamin/`. Gatekeepers now footnotes every number. Then: **What's a Jerk?** rebuilt around the Good/Bad/Normie jerks and eight visitor moments; **About** rewritten as Alan's short story; the old About thinkers became a new page, **Eight Ways to Look** (Good and Bad jerk notes only; Alan removed the Normie lines). Details are in `CURRENT_STATUS.md` under "Artist Tools pages".
+- **Alan's voice and story for About copy:** art school (not the right one), a turn to illustration, graphic design, and packaging design after hitting the art world's barriers; he's been a jerk and "that guy still shows up now and then." Galleries are still the goal worth reaching for; the site helps artists get seen meanwhile and keeps helping after, like musicians playing local bars. Don't list credentials (docent, teaching) on the site; link to alanjust.com/about instead. His elevator pitch is the About page's third paragraph in shorter form (it's in this session's chat, not in the repo).
+- **Reader for What's a Jerk?:** someone who's met a difficult artist or believes the stereotype. Visitors usually blame themselves ("I'm dumb"), so cards start from what the visitor felt. Suggested replies must calm things down, never add fuel.
 - **Loose ends from that session:**
   - More artwork images for the Benjamin page would even out its desktop columns.
   - The Gatekeepers five-tile row on desktop hasn't been checked on a real screen.
   - The Fear tool's new closing layer and lighter shading haven't been seen on Alan's phone.
+  - The one-line examples under Good jerks, Bad jerks, and Normies on What's a Jerk? are Claude's placeholders; Alan may have real ones.
+  - Eight Ways to Look hasn't been checked on screen since the Normie lines came off.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
 - **Open list:** three optional items, a "delete my account" button, region extras, and internal cleanup. None blocks testing.
 - **Alan's own pending checks:**
