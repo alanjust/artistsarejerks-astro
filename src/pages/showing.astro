@@ -17,6 +17,7 @@ import '../styles/moderation.css';
     <section data-wall-section hidden aria-labelledby="wall-heading">
       <div class="section-heading"><h2 id="wall-heading">On the wall</h2><p data-wall-count></p></div>
       <div class="pieces" data-wall></div>
+      <p class="seven-link">Standing in front of one? <a href="/seven-minute-look/">Try the Seven-Minute Look →</a></p>
     </section>
 
     <div class="also" data-also hidden></div>
@@ -86,6 +87,8 @@ import '../styles/moderation.css';
   .info :global(.show-actions a) { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-base); font-weight: var(--font-weight-bold); text-decoration: none; }
   .info :global(.show-directions) { background: var(--color-gold); color: var(--color-black); }
   .info :global(.show-website) { box-sizing: border-box; border: var(--border-base) solid var(--color-gold); color: var(--color-gold); }
+  .seven-link { margin: var(--space-4) 0 0; font-family: var(--font-heading); font-weight: var(--font-weight-bold); }
+  .seven-link a { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-purple); }
   .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
   .section-heading h2 { margin: 0; font-size: var(--font-size-2xl); }
   .section-heading p { margin: 0; font-size: var(--font-size-sm); }

@@ -26,6 +26,8 @@ Written September 25, 2026; updated later that day after a design session on the
   - The one-line examples under Good jerks, Bad jerks, and Normies on What's a Jerk? are Claude's placeholders; Alan may have real ones.
   - Eight Ways to Look hasn't been checked on screen since the Normie lines came off.
   - The Showing Now "Here's the story" line hasn't been seen on screen.
+  - The Seven-Minute Look's dings and spoken cues haven't been heard on a real iPhone. The Hidden Grammar corpus link (hiddengrammarofart.com/corpus) couldn't be reached from here on September 25; check that it loads.
+  - If Life Drawing Timer goes public at lifedrawingtimer.com, add a small credit line on the Seven-Minute Look.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
 - **Open list:** three optional items, a "delete my account" button, region extras, and internal cleanup. None blocks testing.
 - **Alan's own pending checks:**
