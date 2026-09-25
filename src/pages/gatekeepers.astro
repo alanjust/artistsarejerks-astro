@@ -23,6 +23,7 @@ const numbers = [
   {figure: '20%', label: 'less likely to ever work as artists, for graduates with $50,000+ in loans', source: 2},
   {figure: '$77,840', label: 'a year in tuition for a Columbia MFA in visual art', source: 5},
   {figure: '39 of 50', label: 'of 2025\'s most expensive auction sales happened in New York', source: 4},
+  {figure: '78%', label: 'of the value of $10 million-plus art auction sales in 2025 happened in the US', source: 4},
 ];
 
 const sources = [
@@ -146,6 +147,7 @@ const sources = [
     .panel h4 { margin: var(--space-3) 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-wider); text-transform: uppercase; color: var(--color-gold); }
     .numbers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-6) 0 0; padding: 0; list-style: none; }
     .number { padding: var(--space-3); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-base); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+    .number:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .number strong { display: block; font-family: var(--font-heading); font-size: var(--font-size-2xl); }
     .closing { margin-top: var(--space-8); padding: var(--space-4) var(--space-5); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); }
     .closing h2:not(:first-child) { margin-top: var(--space-6); }
@@ -158,7 +160,8 @@ const sources = [
     @media (min-width: 900px) {
       .gate-header h1 { font-size: var(--font-size-5xl); }
       .pills { margin-inline: 0; padding-inline: 0; }
-      .numbers { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .numbers { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .number:last-child:nth-child(odd) { grid-column: auto; }
     }
   </style>
 </BaseLayout>
