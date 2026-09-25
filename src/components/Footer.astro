@@ -10,7 +10,7 @@ const policies = [
 ];
 ---
 
-<footer class="site-footer">
+<footer class:list={["site-footer", { "site-footer--minimal": minimal }]}>
     <div class="footer-content">
         {!minimal && <nav class="footer-links" aria-label="The fine print">
             <ul>{policies.map(([name, url]) => <li><a href={url}>{name}</a></li>)}</ul>
@@ -31,11 +31,14 @@ const policies = [
     .footer-text a { color: inherit; }
     /* On phones the site name is already in the header, so the copyright fits on one line. */
     .footer-brand { display: none; }
+    /* Safari on iPhone floats its toolbar over the bottom of the page; lift the home footer above it. */
+    .site-footer--minimal .footer-content { padding-bottom: var(--toolbar-clearance); }
     /* Wider screens: one line, links on the left and the copyright on the right. */
     @media (min-width: 900px) {
         .footer-content { flex-direction: row; justify-content: space-between; gap: var(--space-6); padding-block: var(--space-2); }
         .footer-links ul { justify-content: flex-start; }
         .footer-text { text-align: right; }
         .footer-brand { display: inline; }
+        .site-footer--minimal .footer-content { padding-bottom: var(--space-2); }
     }
 </style>
