@@ -267,8 +267,6 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     studioField('studioCity').value = show?.city ?? artist.city ?? '';
     studioField('studioAddress').value = show?.address ?? '';
     studioField('showAddress').checked = show?.showAddress === true;
-    studioField('contactPhone').value = show?.contactPhone ?? '';
-    studioField('contactEmail').value = show?.contactEmail ?? '';
     studioField('bookingUrl').value = show?.bookingUrl ?? '';
     $('[data-studio-form-title]').textContent = show ? 'Edit your studio listing' : 'List your studio';
     studioMessage.textContent = '';
@@ -285,8 +283,6 @@ export function initShowingsPanel(ctx: ShowingsContext) {
     let booking = value('bookingUrl');
     if (booking && !/^https?:\/\//i.test(booking)) booking = `https://${booking}`;
     if (!value('studioCity')) { studioMessage.textContent = 'Add the city your studio is in.'; return; }
-    if (!value('contactPhone') && !value('contactEmail') && !booking) { studioMessage.textContent = 'Add at least one way to reach you: a phone, an email, or a booking link.'; return; }
-    if (value('contactEmail') && !/^\S+@\S+\.\S+$/.test(value('contactEmail'))) { studioMessage.textContent = 'That email address doesn’t look right.'; return; }
     if (booking && !/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(booking)) { studioMessage.textContent = 'That booking link doesn’t look right. Paste the whole web address.'; return; }
     if (studioField('showAddress').checked && !value('studioAddress')) { studioMessage.textContent = 'Add your street address, or uncheck “Show my full address.”'; return; }
     if (!onView.length) { studioMessage.textContent = 'Put at least one piece on your page first, in the Artwork tab. Your studio listing shows your work.'; return; }
@@ -295,7 +291,7 @@ export function initShowingsPanel(ctx: ShowingsContext) {
       id, artistId: ctx.id, kind: 'studio', venueId: id, venue: value('studioName') || `${ctx.artist().name}’s studio`,
       address: value('studioAddress'), city: value('studioCity'), website: '', regionId: ctx.artist().regionId || 'region-rogue-valley',
       start: editingStudio?.start ?? today, end: '', ongoing: true, confirmedAt: today, showAddress: studioField('showAddress').checked,
-      contactPhone: value('contactPhone'), contactEmail: value('contactEmail'), bookingUrl: booking,
+      bookingUrl: booking,
       artworkIds: onView.map((work) => work.id), featuredArtworkId: onView[0].id, status: 'published',
     };
     try { writeShowing(studio); } catch { studioMessage.textContent = 'That didn’t save. Check your connection and try again.'; return; }

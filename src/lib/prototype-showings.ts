@@ -14,7 +14,7 @@ export interface Showing {
   regionId?: string; ongoing?: boolean; confirmedAt?: string;
   // A studio open by appointment: the whole portfolio, the artist's own contacts, and
   // a street address only if the artist chose to show it.
-  kind?: 'showing' | 'studio'; showAddress?: boolean; contactPhone?: string; contactEmail?: string; bookingUrl?: string;
+  kind?: 'showing' | 'studio'; showAddress?: boolean; bookingUrl?: string;
 }
 export const isStudio = (show: {kind?: string}) => show.kind === 'studio';
 export function readShowings(): Showing[] {

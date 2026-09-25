@@ -33,17 +33,25 @@ try{
  const save=async(payload,revision)=>call('record','PUT',{collection:'showings',id:'studio-kim',payload,revision},artistUser);
  assert.equal((await save(studio,0)).status,200);
  let shown=await listed('studio-kim');
- assert.ok(shown,'a studio with a contact is listed');
+ assert.ok(shown,'a studio is listed');
  assert.equal(shown.kind,'studio');
  assert.equal(shown.address,'','the street address stays private by default');
  assert.equal(shown.city,'Medford');
  assert.deepEqual(shown.artworkIds,['w1','w3'],'the whole public portfolio, nothing private');
  assert.equal(shown.featuredArtworkId,'w1','the first piece is the card image');
- assert.equal(shown.contactPhone,'541-555-0100');
+ assert.equal(shown.contactPhone,undefined,'no phone number is ever published');
+ assert.equal(JSON.stringify(shown).includes('541-555-0100'),false,'not anywhere in the listing');
  await save({...studio,showAddress:true},1);
  assert.equal((await listed('studio-kim')).address,'44 Oak St','shown when the artist chooses');
  await save({...studio,contactPhone:'',bookingUrl:'javascript:alert(1)'},2);
- assert.equal(await listed('studio-kim'),undefined,'no usable contact, no listing (and unsafe links are dropped)');
+ assert.equal((await listed('studio-kim')).bookingUrl,'','unsafe links are dropped');
+
+ // Visit requests come through the site's message form, even with the page's own form off.
+ const message=body=>mf.dispatchFetch('http://localhost/api/community/public/messages',{method:'POST',headers:{'x-aaj-prototype':'local','Content-Type':'application/json','x-aaj-client':'203.0.113.9'},body:JSON.stringify({artistId:id,name:'Visitor',email:'v@example.com',message:'Saturday?',website:'',elapsed:9000,...body})});
+ assert.equal((await message({})).status,404,'a plain message still needs the page’s form turned on');
+ assert.equal((await message({about:'studio'})).status,200,'a studio visit request goes through');
+ const stored=await db.prepare('SELECT body FROM artist_messages').first();
+ assert.ok(stored.body.startsWith('Studio visit request:'),'and it’s marked as a studio visit');
  await save({...studio,contactPhone:'',bookingUrl:'https://cal.example.com/kim'},3);
  assert.equal((await listed('studio-kim')).bookingUrl,'https://cal.example.com/kim','a booking link counts');
  await save({...studio,confirmedAt:ago(80),start:ago(200)},4);
@@ -55,5 +63,5 @@ try{
  const info=await (await mf.dispatchFetch('http://localhost/api/community/public/still-up',{method:'POST',headers:{'x-aaj-prototype':'local','Content-Type':'application/json'},body:JSON.stringify({token})})).json();
  assert.equal(info.kind,'studio','the answer page knows it’s a studio');
  assert.ok(await db.prepare("SELECT showing_id FROM showing_notices WHERE showing_id='studio-kim'").first(),'followers are told once when the studio is first listed');
- console.log('Studio passed: private address by default, whole portfolio, contacts required, check-ins and reminders, follower notice.');
+ console.log('Studio passed: private address by default, no phone or email published, whole portfolio, visit requests by message, check-ins and reminders, follower notice.');
 }finally{await mf.dispose()}

@@ -21,6 +21,21 @@ import '../styles/moderation.css';
 
     <div class="also" data-also hidden></div>
 
+    <section class="message-section" data-contact-form-section hidden aria-labelledby="message-heading">
+      <h2 id="message-heading" data-message-heading>Set up a visit</h2>
+      <p data-message-note>Your note goes to the artist by email. Their address stays private, and they’ll write back to you directly to find a time.</p>
+      <form class="message-form" data-contact-form novalidate>
+        <label>Your name<input name="name" required maxlength="120" autocomplete="name"/></label>
+        <label>Your email<input name="email" type="email" required maxlength="254" autocomplete="email"/></label>
+        <label class="full">Message<textarea name="message" required rows="5" maxlength="4000" placeholder="When you’d like to visit, and anything you’re hoping to see."></textarea></label>
+        <label class="trap" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"/></label>
+        <div class="full" data-turnstile></div>
+        <div class="full"><button class="send">Send message</button></div>
+        <p class="full form-fineprint">Sending this means you’re OK with our <a href="/terms/">Site Terms</a> and <a href="/privacy/">Privacy Notice</a>.</p>
+        <p class="full" data-contact-status role="status"></p>
+      </form>
+    </section>
+
     <section class="follow-section" data-follow-section hidden aria-labelledby="follow-heading">
       <h2 id="follow-heading" data-follow-heading>Get an email when this artist shows next</h2>
       <p data-follow-note></p>
@@ -88,6 +103,17 @@ import '../styles/moderation.css';
   .also :global(.also-label) { color: var(--color-gold); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
   .also :global(.also-venue) { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
   .also :global(.also-when) { color: var(--color-gray-300); font-size: var(--font-size-sm); }
+  /* Studio pages: the visit request form. Mobile first; two columns on wider screens. */
+  .message-section { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-black); color: var(--color-white); scroll-margin-top: var(--space-4); }
+  .message-section h2 { margin: 0; color: var(--color-gold); font-size: var(--font-size-xl); }
+  .message-section > p { margin: var(--space-2) 0 0; }
+  .message-form { display: grid; gap: var(--space-4); margin-top: var(--space-4); }
+  .message-form label { display: grid; gap: var(--space-2); font-weight: var(--font-weight-bold); }
+  .message-form input, .message-form textarea { width: 100%; box-sizing: border-box; min-height: 44px; padding: var(--space-3); border: var(--border-base) solid var(--color-gray-500); border-radius: var(--radius-base); background: var(--color-artwork-mat); color: var(--color-white); font: inherit; }
+  .message-form button { min-height: 44px; padding: 0 var(--space-5); border: 0; border-radius: var(--radius-base); background: var(--color-gold); color: var(--color-black); font-family: var(--font-heading); font-weight: var(--font-weight-bold); cursor: pointer; }
+  .message-form .trap { position: absolute; width: var(--border-thin); height: var(--border-thin); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .message-form p { margin: 0; }
+  @media (min-width: 700px) { .message-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .message-form .full { grid-column: 1 / -1; } }
   .follow-section { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-white); }
   .follow-section h2 { margin: 0; color: var(--color-gold); font-size: var(--font-size-xl); }
   .follow-section p { margin: var(--space-2) 0 0; }

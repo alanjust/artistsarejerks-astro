@@ -33,11 +33,11 @@ async function sendApprovalEmail(env:NotificationEnv,application:Record<string,u
 }
 // A visitor's message to an artist. The artist's address stays private: the email
 // goes to the artist with the visitor as the reply-to, so a reply goes straight back.
-async function forwardMessage(env:NotificationEnv,to:string,artistName:string,sender:{name:string;email:string;body:string}):Promise<'sent'|'failed'|'not_configured'>{
+async function forwardMessage(env:NotificationEnv,to:string,artistName:string,sender:{name:string;email:string;body:string;studio?:boolean}):Promise<'sent'|'failed'|'not_configured'>{
  if(!env.ADMIN_EMAIL||!env.ADMIN_NOTIFICATION_FROM||!/^\S+@\S+\.\S+$/.test(to))return 'not_configured';
  const text=`${sender.name} sent you a message through your page on Artists Are Jerks:\n\n${sender.body}\n\nReply to this email to answer ${sender.name} directly at ${sender.email}.\n\n—Artists Are Jerks`;
  const html=`<p>${escapeHtml(sender.name)} sent you a message through your page on Artists Are Jerks:</p><blockquote style="white-space:pre-wrap">${escapeHtml(sender.body)}</blockquote><p>Reply to this email to answer ${escapeHtml(sender.name)} directly at ${escapeHtml(sender.email)}.</p><p>—Artists Are Jerks</p>`;
- try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:sender.email,subject:`Message from ${sender.name.slice(0,80)} about your work`,text,html});return 'sent'}
+ try{await env.ADMIN_EMAIL.send({to,from:{email:env.ADMIN_NOTIFICATION_FROM,name:'Artists Are Jerks'},replyTo:sender.email,subject:sender.studio?`Studio visit request from ${sender.name.slice(0,80)}`:`Message from ${sender.name.slice(0,80)} about your work`,text,html});return 'sent'}
  catch(error){console.error(JSON.stringify({event:'artist_message_failed',artist:artistName,message:error instanceof Error?error.message:String(error)}));return 'failed'}
 }
 const siteUrl=(env:NotificationEnv)=>env.ADMIN_BASE_URL||'https://aaj-dev.alanjust.com';
@@ -233,8 +233,11 @@ export default {
         const client=request.headers.get('x-aaj-client')||'unknown';
         if(!await turnstileOk(env as NotificationEnv,body.turnstile,client))return json({error:'The spam check didn’t pass. Please try again.'},400);
         const records=await loadRecords();
-        const artist=publicRecords(records).find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
-        if(!artist||artist.publicForm!==true)return json({error:'This artist isn’t taking messages here.'},404);
+        const visible=publicRecords(records);
+        const artist=visible.find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
+        // A listed studio always takes visit requests, even when the artist's page has no message form.
+        const studio=body.about==='studio'&&visible.some(record=>record.collection==='showings'&&record.payload?.artistId===body.artistId&&record.payload?.kind==='studio');
+        if(!artist||(artist.publicForm!==true&&!studio))return json({error:'This artist isn’t taking messages here.'},404);
         // Rate limits use a salted fingerprint of the visitor's network address, never the address itself.
         const senderHash=await fingerprint(env,client);
         const recentFromSender=await env.DB.prepare("SELECT count(*) AS n FROM artist_messages WHERE sender_hash=?1 AND created_at>strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(senderHash).first<{n:number}>();
@@ -244,8 +247,9 @@ export default {
         const own=records.find(record=>record.collection==='artists'&&record.id===body.artistId)?.payload;
         const application=records.find(record=>record.collection==='applications'&&record.id===body.artistId)?.payload;
         const to=String(own?.email||application?.email||'');
-        const status=await forwardMessage(env as NotificationEnv,to,String(artist.name),{name,email,body:message});
-        await env.DB.prepare('INSERT INTO artist_messages(id,artist_id,sender_name,sender_email,body,sender_hash,delivery_status) VALUES(?1,?2,?3,?4,?5,?6,?7)').bind(crypto.randomUUID(),body.artistId,name,email,message,senderHash,status).run();
+        const text=studio?`Studio visit request:\n\n${message}`:message;
+        const status=await forwardMessage(env as NotificationEnv,to,String(artist.name),{name,email,body:text,studio});
+        await env.DB.prepare('INSERT INTO artist_messages(id,artist_id,sender_name,sender_email,body,sender_hash,delivery_status) VALUES(?1,?2,?3,?4,?5,?6,?7)').bind(crypto.randomUUID(),body.artistId,name,email,text,senderHash,status).run();
         return json({sent:true});
       }catch(error){console.error(JSON.stringify({event:'artist_message_error',message:error instanceof Error?error.message:String(error)}));return json({error:'Your message couldn’t be sent. Please try again.'},400)}
     }

@@ -107,11 +107,9 @@ const tabs = [['home', 'Home'], ['artwork', 'Artwork'], ['showing', 'Showings'],
         <label>Street address<input name="studioAddress" maxlength="200" autocomplete="street-address"/></label>
         <label class="check"><input type="checkbox" name="showAddress"/> <span>Show my full address <small>Leave this off to show only your city. You can share the address when someone gets in touch.</small></span></label>
         <fieldset class="studio-contacts">
-          <legend>How should people reach you to set up a visit? At least one.</legend>
-          <label>Phone<input name="contactPhone" type="tel" maxlength="40" autocomplete="tel"/></label>
-          <label>Email<input name="contactEmail" type="email" maxlength="254" autocomplete="email"/></label>
-          <label>Booking link <small>optional, like a Calendly page</small><input name="bookingUrl" type="url" maxlength="300" placeholder="https://"/></label>
-          <p class="hint">Whatever you fill in here shows on your studio listing for anyone to see.</p>
+          <legend>How people set up a visit</legend>
+          <p class="hint">Visitors send you a message through the site. It comes to your email, and your phone and email stay private. You write back to find a time.</p>
+          <label>Booking link <small>optional, if you use one, like a Calendly page. It shows on your listing.</small><input name="bookingUrl" type="url" maxlength="300" placeholder="https://"/></label>
         </fieldset>
         <div class="actions"><button>Publish my studio</button><button type="button" data-studio-cancel>Cancel</button></div>
         <p data-studio-message role="status"></p>

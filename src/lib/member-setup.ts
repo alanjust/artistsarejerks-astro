@@ -3,8 +3,8 @@ import pilot from '../data/community-pilot.json';
 import {readShowings,renderShowings,writeShowing} from './prototype-showings';
 import {readArtistApplications} from './artist-applications';
 import {storageReady} from './community-storage';
-import {mountTurnstile} from './turnstile';
 import {wireFollowForm} from './follow-form';
+import {wireMessageForm} from './message-form';
 import {initShowingsPanel} from './member-showings';
 import {aiLabel,reportLink} from './artwork-moderation';
 import {initWriteToUs,openWriteToUs} from './write-to-us';
@@ -255,28 +255,8 @@ export async function initMemberPublicPage(){
  const followSection=document.querySelector<HTMLElement>('[data-follow-section]');
  if(followSection&&artist.published)wireFollowForm(followSection,id,artist.name,preview);
  // A message form keeps the artist's address private; the reply goes straight back to the visitor.
- const formSection=document.querySelector<HTMLElement>('[data-contact-form-section]'),contactForm=document.querySelector<HTMLFormElement>('[data-contact-form]');
- if(formSection&&contactForm&&artist.publicForm){
-  formSection.hidden=false;document.querySelector('[data-message-heading]')!.textContent=`Send ${artist.name} a message`;
-  const shownAt=Date.now(),contactStatus=document.querySelector('[data-contact-status]')!;
-  // The spam check loads in the background so it never delays the artwork.
-  const checkLoading=preview?Promise.resolve(null):mountTurnstile(document.querySelector<HTMLElement>('[data-turnstile]')!).catch(()=>null);
-  contactForm.addEventListener('submit',async event=>{
-   event.preventDefault();
-   if(preview){contactStatus.textContent='This is a preview. Visitors can send messages once your page is public.';return}
-   const data=new FormData(contactForm),get=(name:string)=>String(data.get(name)||'').trim();
-   if(!get('name')||!/^\S+@\S+\.\S+$/.test(get('email'))||!get('message')){contactStatus.textContent='Please add your name, a working email, and a message.';return}
-   const check=await checkLoading;
-   if(check?.enabled&&!check.token()){contactStatus.textContent='One moment. The spam check is still finishing.';return}
-   const send=contactForm.querySelector<HTMLButtonElement>('button.send')!;send.disabled=true;contactStatus.textContent='Sending…';
-   try{
-    const response=await fetch('/api/community/public/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artistId:id,name:get('name'),email:get('email'),message:get('message'),website:get('website'),elapsed:Date.now()-shownAt,turnstile:check?.token()})});
-    const result=await response.json().catch(()=>({})) as {error?:string};
-    if(!response.ok)throw new Error(result.error||'Your message couldn’t be sent. Please try again.');
-    contactForm.replaceChildren(el('p',`Sent. ${artist.name} will get your message by email and can write back to you directly.`));
-   }catch(cause){contactStatus.textContent=cause instanceof Error?cause.message:'Your message couldn’t be sent.';send.disabled=false;check?.reset()}
-  });
- }
+ const formSection=document.querySelector<HTMLElement>('[data-contact-form-section]');
+ if(formSection&&artist.publicForm){document.querySelector('[data-message-heading]')!.textContent=`Send ${artist.name} a message`;wireMessageForm(formSection,{artistId:id,artistName:artist.name,preview})}
  const works=artist.works.filter(isShown),root=document.querySelector('[data-member-public-works]')!,urls:string[]=[];const dialog=document.querySelector<HTMLDialogElement>('[data-member-viewer]')!,image=document.querySelector<HTMLImageElement>('[data-viewer-image]')!;let active=0;
  function display(index:number){active=(index+works.length)%works.length;image.src=urls[active];image.alt=works[active].title;document.querySelector('[data-viewer-caption]')!.textContent=`${works[active].title} · ${active+1} of ${works.length}`;}
  for(const work of works){let url='';try{url=await imageUrl(work)}catch{}urls.push(url);const index=urls.length-1;const card=el('article');card.className='artwork-card member-artwork';card.dataset.artworkId=work.id;const button=document.createElement('button');button.type='button';button.className='artwork-image';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-label',`Enlarge ${work.title}`);const img=document.createElement('img');img.alt=work.title;img.src=url;button.append(img);button.addEventListener('click',()=>{display(index);dialog.showModal()});const copy=el('div');copy.className='artwork-copy';const details=el('p',[work.medium,work.year].filter(Boolean).join(', '));details.className='details';copy.append(el('h3',work.title),details,el('p',work.sale==='price'?`$${Number(work.price).toLocaleString('en-US')}`:work.sale==='sold'?'Sold':work.sale==='not-for-sale'?'Not for sale':work.sale==='private'?'Price private':'Contact the artist for price'));copy.lastElementChild!.className='sale-state';card.append(button,copy);if(work.madeWithAI)copy.insertBefore(aiLabel(),copy.firstChild);if(work.sampleImage)copy.append(el('p','Sample artwork—borrowed for prototype layout.'));if(!preview)copy.append(reportLink(id,work.id,work.title));root.append(card)}

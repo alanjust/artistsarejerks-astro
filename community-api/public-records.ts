@@ -29,11 +29,9 @@ export function publicRecords(rows:PublicRecord[],now=Date.now()):PublicRecord[]
   // address leaves the storage service only if the artist chose to show it.
   if(s.kind==='studio'){
    if(!works.length)continue;
-   const phone=typeof s.contactPhone==='string'?s.contactPhone.trim().slice(0,40):'';
-   const email=typeof s.contactEmail==='string'&&/^\S+@\S+\.\S+$/.test(s.contactEmail)?s.contactEmail.trim():'';
    const booking=typeof s.bookingUrl==='string'&&/^https?:\/\/[^\s]+$/i.test(s.bookingUrl)?s.bookingUrl.trim():'';
-   if(!phone&&!email&&!booking)continue;
-   emit('showings',r.id,{id:r.id,artistId:s.artistId,kind:'studio',venueId:s.venueId,venue:s.venue,address:s.showAddress===true?s.address:'',showAddress:s.showAddress===true,city:s.city,website:'',regionId:typeof s.regionId==='string'?s.regionId:'region-rogue-valley',start:s.start,end:'',ongoing:true,confirmedAt:String(s.confirmedAt||s.start),status:'published',featuredArtworkId:works[0],artworkIds:works,contactPhone:phone,contactEmail:email,bookingUrl:booking});
+   // Visitors reach the artist through the site's message form; no phone or email is published.
+   emit('showings',r.id,{id:r.id,artistId:s.artistId,kind:'studio',venueId:s.venueId,venue:s.venue,address:s.showAddress===true?s.address:'',showAddress:s.showAddress===true,city:s.city,website:'',regionId:typeof s.regionId==='string'?s.regionId:'region-rogue-valley',start:s.start,end:'',ongoing:true,confirmedAt:String(s.confirmedAt||s.start),status:'published',featuredArtworkId:works[0],artworkIds:works,bookingUrl:booking});
    continue;
   }
   // If the featured piece was hidden or made private, the next piece still on view

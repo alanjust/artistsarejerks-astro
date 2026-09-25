@@ -123,10 +123,9 @@ export async function initShowPage() {
   if (hours) info.append(make('p', hours, 'show-hours'));
   const actions = make('div', '', 'show-actions');
   if (studio) {
-    // The artist's own contacts for arranging a visit.
-    if (show.bookingUrl) { const book = link('Book a visit ↗', show.bookingUrl, 'show-directions'); book.target = '_blank'; book.rel = 'noopener'; actions.append(book); }
-    if (show.contactPhone) actions.append(link(`Call ${show.contactPhone}`, `tel:${show.contactPhone.replace(/[^0-9+]/g, '')}`, 'show-website'));
-    if (show.contactEmail) actions.append(link('Email the artist', `mailto:${show.contactEmail}?subject=${encodeURIComponent('Studio visit')}`, 'show-website'));
+    // Visitors write through the site, so the artist's phone and email stay private.
+    actions.append(link('Send a message', '#message-heading', 'show-directions'));
+    if (show.bookingUrl) { const book = link('Book a visit ↗', show.bookingUrl, 'show-website'); book.target = '_blank'; book.rel = 'noopener'; actions.append(book); }
   }
   if (!studio || show.address) actions.append(link('Directions', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([show.venue, show.address, show.city].filter(Boolean).join(', '))}`, 'show-directions'));
   if (show.website) { const site = link('Their website ↗', show.website, 'show-website'); site.target = '_blank'; site.rel = 'noopener'; actions.append(site); }
@@ -165,6 +164,10 @@ export async function initShowPage() {
   page.href = artist.href; page.textContent = `${artist.name}’s page →`;
   document.querySelector<HTMLElement>('[data-about]')!.hidden = false;
 
+  if (artist.member && studio) {
+    const {wireMessageForm} = await import('./message-form');
+    wireMessageForm(document.querySelector<HTMLElement>('[data-contact-form-section]')!, {artistId: artist.id, artistName: artist.name, about: 'studio'});
+  }
   if (artist.member) {
     const {wireFollowForm} = await import('./follow-form');
     wireFollowForm(document.querySelector<HTMLElement>('[data-follow-section]')!, artist.id, artist.name, false);
