@@ -12,6 +12,7 @@ The community system now has a deliberately separate data model and a private Cl
 
 Read:
 
+- `HANDOFF.md` and `CURRENT_STATUS.md` first: where the work stands and how Alan likes to work
 - `STYLING_GUIDE.md`
 - `COLOR_REFERENCE.md`
 - `ARTISTS_ARE_JERKS_COMMUNITY_BRIEF.md` for the product model and boundaries
