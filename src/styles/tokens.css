@@ -168,7 +168,7 @@
 
   /* Header & Footer Dimensions */
   --header-height: 50px;
-  --header-border: 18px;
+  --header-border: 6px;
   --footer-height: auto;
 
   /* ============================================
@@ -187,7 +187,7 @@
   --border-base: 2px;
   --border-thick: 4px;
   --underline-offset: 3px;
-  --border-heavy: var(--header-border);
+  --border-heavy: 18px;
 
   /* ============================================
      SHADOWS
