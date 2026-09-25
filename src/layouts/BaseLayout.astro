@@ -103,7 +103,9 @@ const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
         }
 
         /* dvh is the height Safari actually shows, so the footer clears its toolbar. */
+        /* Safari tints its toolbar area from the body color; black matches the footer. The stage paints its own orange. */
         body.homepage {
+            background: var(--color-black);
             height: 100vh;
             height: 100dvh;
         }
