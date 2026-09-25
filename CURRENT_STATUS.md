@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, and emailed "Still up?" reminders. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -80,7 +80,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - The storage service keeps each piece's "went public" date and the hidden flag and reason itself; ordinary saves can't change them.
 
 **Visitors reaching artists**
-- **Message form** on the artist page. It is emailed to the artist with the visitor as reply-to, and saved to the workspace Messages tab. The artist's address is never shown.
+- **Message form** on the artist page, and a **Set up a visit** form on studio pages (both from `src/lib/message-form.ts`). It is emailed to the artist with the visitor as reply-to, and saved to the workspace Messages tab. The artist's address is never shown.
 - **"Get an email when [artist] shows next."** Double opt-in, confirmed by a button on `/follow/confirm/`. Confirmed followers get one email when a showing is first published. Every email has an unsubscribe link (`/follow/unsubscribe/`). The artist sees the count and can download the list as CSV.
 - **Spam guards on these forms:** a hidden field, a minimum time on the page, rate limits, and Cloudflare Turnstile.
 
@@ -121,6 +121,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
   - **Leo's Brewpub and Grill** (Medford). A fictional sample made into a real venue record on September 24 (id `venue-leos-brewpub`, the id its two published showings already used). Address "101 Prototype Way" is made up; the description says it's a test venue; private contact is "Alan Just (test venue)" at info@.
   - Artist-typed places with no venue record: "Museum Test — Not Real" (Alan Just) and "Alan Russell Just Home Studio" (Alan Russell Just). These get **Invite this place** in the workspace.
 - **Accounts:** alan@alanjust.com is the administrator and owns the Alan Just artist page (id `alan-just`, 7 pieces, both showings; moved from the first prototype setup on September 22, backup at `~/aaj-backups/aaj-community-test-2026-09-22-before-alan-move.sql`). alanjust@gmail.com owns Alan Russell Just.
+- **Alan's studio listing** still holds the phone and email he typed before phones were removed. They're private (never published) and clear the next time he edits and saves the studio.
 - **Test applicants** use Gmail plus-addresses: alanjust+test1@gmail.com is AJ Test One, alanjust+test2@gmail.com is AJ Test Two. Both applied before sample photos and the agreement existed, so the join page will ask them for both. Use alanjust+test3@gmail.com (and up) for a fresh run.
 - **Tester handout** ("Come kick the tires") for Alan's artist friends, shared by link and meant to be sent by text: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ. Its source is a scratchpad file, so edit it by reading the artifact first.
   - It opens as an **invitation**: what the site is and what testing means, a big **Open the test site →** button to `https://aaj-dev.alanjust.com/showing-now/` (opens in a new tab), and three lines of what to expect.
