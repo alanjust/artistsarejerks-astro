@@ -143,7 +143,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
   - Then **the guide**: the two doors in the order people meet them. Door 1 is the Cloudflare gate code, then Showing Now with no other login. Door 2, the site account, appears only after tapping Join free, For artists, or Artist sign in.
   - Step-by-step sections: just looking, putting your art up (with the terms checkbox), coming back later, and how to report problems (Write to us or info@).
   - Three reminders to save the site password, including a tip box at the step where it's made. The gate code won't get anyone into their page.
-  - Updated September 25 (version 8): the sign-up/sign-in pages are described by their tags (green FIRST TIME HERE, purple COMING BACK · Welcome back); it mentions Studios by appointment and List your studio; and it invites testers to pass "Have a wall? Host local art" to venue owners they know.
+  - Updated September 25 (version 9): a new "While you're there: the Artist Tools" section lists all six lessons and the About page; the fine print is "at the bottom of every page except the front door." Version 8: the sign-up/sign-in pages are described by their tags (green FIRST TIME HERE, purple COMING BACK · Welcome back); it mentions Studios by appointment and List your studio; and it invites testers to pass "Have a wall? Host local art" to venue owners they know.
   - Keep it in step with the site's navigation and screens.
 - **Clutter:** two identical Alan Just showings (Sep 15–Oct 13) remain from earlier testing.
 
