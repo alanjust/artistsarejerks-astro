@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 24, 2026, after the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 25, 2026, after the header, home-footer, and Artist Tools redesign (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -35,6 +35,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
   - Kept compact at Alan's request (September 24). On phones: two tight rows of links and a one-line copyright that drops "Artists Are Jerks" (it's in the header). On wide screens (900px and up): one slim line, links left, copyright right.
   - Links keep a 44px tap area through an invisible `::after` margin, so rows can sit close together.
   - The `html` background is black, so Safari's toolbar area and overscroll past the footer match it (the body stays gold).
+  - **Home page footer is different** (September 25): only "© 2026 Alan Just Design · info@artistsarejerks.com", in white. `Footer.astro` takes a `minimal` prop, set by `BaseLayout` when `bodyClass` includes `homepage`. On phones it has `--toolbar-clearance` (2.5rem) of black below the line so Safari's floating toolbar doesn't cover it; Alan's iPhone showed 72px was too much. The home body is black and 100dvh tall, so Safari tints its toolbar area black to match.
+  - The copyright line is white on every page (it was green).
+- **Header band:** the black rule under the purple header is 6px (`--header-border`, was 18px). Other heavy borders keep 18px through `--border-heavy`.
 - **Home page** (`/`) stays the "Studio Entrance" illustration with the painted "Start Here" sign, which links to Showing Now. Alan decided to keep it (September 24); on his phone the sign is large and obvious. Shared links and the tester handout go straight to Showing Now.
 
 **Joining and onboarding**
@@ -83,6 +86,15 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - **Message form** on the artist page, and a **Set up a visit** form on studio pages (both from `src/lib/message-form.ts`). It is emailed to the artist with the visitor as reply-to, and saved to the workspace Messages tab. The artist's address is never shown.
 - **"Get an email when [artist] shows next."** Double opt-in, confirmed by a button on `/follow/confirm/`. Confirmed followers get one email when a showing is first published. Every email has an unsubscribe link (`/follow/unsubscribe/`). The artist sees the count and can download the list as CSV.
 - **Spam guards on these forms:** a hidden field, a minimum time on the page, rate limits, and Cloudflare Turnstile.
+
+**Artist Tools pages** (redesigned September 25)
+- One shared look: title, a short left- or center-aligned intro, then the content on the first screen. Cream cards (`--color-cream`) with a black border; black number badges; purple Averia labels; design tokens only; Ira Glass copy with unspaced em dashes.
+- **What's a Jerk?** (`/whats-a-jerk/`): 12 cream cards with short behavior titles, "What's underneath" and "Try saying"; "The bigger picture" at the end.
+- **How Art Works** (`/how-art-works/`): three jump chips and three cards: Gallery, Spectacle, and **Everyday art** (renamed from "General Purpose Art"; Alan hasn't objected). Traits and examples always visible.
+- **Who Is Walter Benjamin?** (`/walter-benjamin/`, replaces the Benjamin Learning Wheel; `/benjamin-wheel/` redirects). Built like the Art History Wheel on phones: five swipeable pills (Aura, Copies, The lens, History, Politics) and a black panel with the positions as text rows and thumbnails where the site has an image (six do; Rothko, Muybridge, Freud, the Futurists, and Whistler don't). Desktop shows the positions in columns. The copy lives in the page; `src/data/benjamin-wheel.json` is now unused. The menu lists it as its own Artist Tools item, not under Art History Wheel.
+- **Thinking Like an Artist** (`/thinking-like-an-artist/`): a left-aligned intro for newer artists (draft B), then three pills (Wanting to be seen, Fear, Choices). Each tool's layers step light to dark (cream, gold, orange, crimson, black). Fear still ends dark with no hopeful layer; Alan didn't answer whether to add one.
+- **Gatekeepers** (`/gatekeepers/`): an artist's path with five gates, then five gatekeeper pills with a black panel, five number tiles, and a closing card with a Sources list. **Every number is footnoted to a source; add the source before adding a number.** Unsupported claims from the old page were dropped or corrected (the old "Yale research" is Fraiberger et al., Science 2018; "90% of sales in NYC", "70% imposter syndrome", "1–2 new artists a year", and the $55M debt survey couldn't be sourced).
+- Movements, Artists in History, and the Art History Wheel weren't touched; Alan considers them already in line.
 
 ## Decisions Alan has made
 
@@ -147,6 +159,13 @@ The community part of Artists Are Jerks exists to get people in front of real ar
    - Sample (pilot) artist and venue pages still use the typed `derivedStatusAsOfPilotDate`.
    - `cssCodeSplit: false` still bundles every page's CSS into one sitewide stylesheet, so global rules must be namespaced.
    - `/prototype/workspace/` and `/prototype/onboarding/artwork/` forward to `/prototype/workspaces/` (the first-prototype Alan workspace was retired September 22).
+
+## Done September 25
+
+- Header band thinned to 6px sitewide.
+- Home footer trimmed to the copyright line, lifted above Safari's toolbar, with a black body behind it.
+- All five Artist Tools pages redesigned (details above), each mocked up first and approved by Alan. Benjamin page renamed and moved; `about.astro` link updated.
+- New tokens: `--color-cream`, `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24
 

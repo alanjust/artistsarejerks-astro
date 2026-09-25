@@ -1,6 +1,6 @@
 # Handoff: start here in a new chat
 
-Written September 25, 2026, at the end of a long working session. The site is ready for Alan's artist friends to test. The next chat most likely begins with their feedback.
+Written September 25, 2026; updated later that day after a design session on the home page and the Artist Tools pages. The site is ready for Alan's artist friends to test. The next chat most likely begins with their feedback.
 
 ## Read first
 
@@ -16,6 +16,12 @@ Written September 25, 2026, at the end of a long working session. The site is re
   - Visitor and venue paths: navigation fixes, Write to us, the For Venues page and venue paths, and "Still up?" reminder emails.
   - Studios by appointment, and the account pages.
   - Fonts served from the site, and the Figma script removed.
+- **Later on September 25:** a design-critique session. The header band is thinner, the home footer is just the copyright line and clears Safari's toolbar, and all five Artist Tools pages were rebuilt in one look (cream cards, pills and black panels, Ira Glass copy). The Benjamin Wheel became **Who Is Walter Benjamin?** at `/walter-benjamin/`. Gatekeepers now footnotes every number. Details are in `CURRENT_STATUS.md` under "Artist Tools pages".
+- **Loose ends from that session:**
+  - Whether Thinking Like an Artist's Fear tool should end on a hopeful layer (Alan didn't say).
+  - More artwork images for the Benjamin page would even out its desktop columns.
+  - The Gatekeepers five-tile row on desktop hasn't been checked on a real screen.
+  - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
 - **Open list:** three optional items, a "delete my account" button, region extras, and internal cleanup. None blocks testing.
 - **Alan's own pending checks:**
   - The venue walkthrough as AJ Test Four: apply from **Introduce your place**, approve it as alan@alanjust.com, then confirm the venue workspace appears on AJ Test Four's account page.
@@ -92,7 +98,13 @@ Read the test database directly when a report is about records: who owns what, w
 - Account links are in `community_memberships`.
 - Messages, followers, reports, notes, and reminders each have their own table.
 
+## Design pattern for lesson pages
+
+When Alan asks for a critique or redesign of a content page, follow what worked on September 25: critique from his screenshots, mock up the phone first (a before/after widget), wait for "build it," then build, check in the preview, deploy, commit, and push. Reuse the Artist Tools look: cream cards, the pills-and-black-panel pattern from `walter-benjamin.astro`, tokens only. Source any statistic before it goes on a page.
+
 ## Gotchas
+
+- **Safari's floating toolbar covers the bottom of a full-height page** even with `100dvh`. The home footer uses `--toolbar-clearance` padding on phones; tune that one number from Alan's screenshots.
 
 - **The local dev server sometimes keeps serving old component CSS** after a style edit. Restart it, or check the built CSS in `dist-test/_assets/` after `npm run build:test`.
 - **Signed-in pages** (workspaces, inbox, account) can't be opened in the automated browser.
