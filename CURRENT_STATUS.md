@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 25, 2026, after the header, home-footer, Artist Tools, About, and Eight Ways to Look work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 25, 2026, after the header, home-footer, Artist Tools, Why This Exists (formerly About), and Eight Ways to Look work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -30,7 +30,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - Every size has one header and one black menu panel, grouped into See Art and Artist Tools.
 - On a phone: title, a "Showing Now" shortcut, and ☰.
 - On desktop: See Art links plus **For artists** (to the join page) in the header, and **Artist sign in** floating under it on the right.
-- Menu utility links: Join as an artist or venue, For venues, Artist sign in, About. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, About, and lessons are prerendered and never show it.
+- The See Art links (header and menu) are Showing Now, Places to See Art, Our Artists, and **Why This Exists**. At 1100px, the narrowest desktop header, they still fit on one line.
+- Menu utility links: Join as an artist or venue, For venues, Artist sign in. **Workspaces · Prototype** shows only to signed-in testers, and only on server-rendered pages; the home page, Why This Exists, and lessons are prerendered and never show it.
 - **Footer on every page:** Artist Terms, Community Guidelines, Privacy, Site Terms, Copyright, and "© 2026 Alan Just Design · Artists Are Jerks · info@artistsarejerks.com".
   - Kept compact at Alan's request (September 24). On phones: two tight rows of links and a one-line copyright that drops "Artists Are Jerks" (it's in the header). On wide screens (900px and up): one slim line, links left, copyright right.
   - Links keep a 44px tap area through an invisible `::after` margin, so rows can sit close together.
@@ -143,7 +144,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
   - Then **the guide**: the two doors in the order people meet them. Door 1 is the Cloudflare gate code, then Showing Now with no other login. Door 2, the site account, appears only after tapping Join free, For artists, or Artist sign in.
   - Step-by-step sections: just looking, putting your art up (with the terms checkbox), coming back later, and how to report problems (Write to us or info@).
   - Three reminders to save the site password, including a tip box at the step where it's made. The gate code won't get anyone into their page.
-  - Updated September 25 (version 9): a new "While you're there: the Artist Tools" section lists all six lessons and the About page; the fine print is "at the bottom of every page except the front door." Version 8: the sign-up/sign-in pages are described by their tags (green FIRST TIME HERE, purple COMING BACK · Welcome back); it mentions Studios by appointment and List your studio; and it invites testers to pass "Have a wall? Host local art" to venue owners they know.
+  - Version 10 (September 25): About is called Why This Exists, in the top bar. Version 9: a new "While you're there: the Artist Tools" section lists all six lessons and the About page; the fine print is "at the bottom of every page except the front door." Version 8: the sign-up/sign-in pages are described by their tags (green FIRST TIME HERE, purple COMING BACK · Welcome back); it mentions Studios by appointment and List your studio; and it invites testers to pass "Have a wall? Host local art" to venue owners they know.
   - Keep it in step with the site's navigation and screens.
 - **Clutter:** two identical Alan Just showings (Sep 15–Oct 13) remain from earlier testing.
 
@@ -171,7 +172,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - Gatekeepers gained a fifth tile: 78% of the value of $10 million-plus art auction sales in 2025 was in the US (Art Basel/UBS report, confirmed in the PDF along with "39 of the top 50").
 - Thinking Like an Artist's Fear tool ends on a hopeful "What's actually true" layer; its warning note now says it "goes to some dark places before it comes back up." The earlier Fear layers moved one shade lighter so black stays the last step. Not yet seen on a phone.
 - What's a Jerk? rebuilt: the stereotype, three kinds of jerks, and eight visitor moments replacing the twelve behaviors.
-- About rewritten as Alan's story; "More about me" links to alanjust.com/about in a new tab.
+- About rewritten as Alan's story, then renamed **Why This Exists** and moved into the header after Our Artists; Showing Now ends with a link to it. "More about me" links to alanjust.com/about in a new tab.
 - New page Eight Ways to Look, added to the Artist Tools menu after Thinking Like an Artist.
 - New tokens: `--color-cream`, `--toolbar-clearance`, `--max-width-wide`.
 
