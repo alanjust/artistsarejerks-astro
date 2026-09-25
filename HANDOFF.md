@@ -20,6 +20,7 @@ Written September 25, 2026; updated later that day after a design session on the
 - **Loose ends from that session:**
   - More artwork images for the Benjamin page would even out its desktop columns.
   - The Gatekeepers five-tile row on desktop hasn't been checked on a real screen.
+  - The Fear tool's new closing layer and lighter shading haven't been seen on Alan's phone.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
 - **Open list:** three optional items, a "delete my account" button, region extras, and internal cleanup. None blocks testing.
 - **Alan's own pending checks:**

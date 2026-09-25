@@ -165,6 +165,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - Header band thinned to 6px sitewide.
 - Home footer trimmed to the copyright line, lifted above Safari's toolbar, with a black body behind it.
 - All five Artist Tools pages redesigned (details above), each mocked up first and approved by Alan. Benjamin page renamed and moved; `about.astro` link updated.
+- Gatekeepers gained a fifth tile: 78% of the value of $10 million-plus art auction sales in 2025 was in the US (Art Basel/UBS report, confirmed in the PDF along with "39 of the top 50").
+- Thinking Like an Artist's Fear tool ends on a hopeful "What's actually true" layer; its warning note now says it "goes to some dark places before it comes back up." The earlier Fear layers moved one shade lighter so black stays the last step. Not yet seen on a phone.
 - New tokens: `--color-cream`, `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24
