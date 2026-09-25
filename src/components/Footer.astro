@@ -1,5 +1,6 @@
 ---
-// Footer: the fine print, on every page.
+// Footer: the fine print, on every page. The homepage gets only the copyright line.
+const { minimal = false } = Astro.props;
 const policies = [
     ['Artist Terms', '/artist-terms/'],
     ['Community Guidelines', '/guidelines/'],
@@ -11,9 +12,9 @@ const policies = [
 
 <footer class="site-footer">
     <div class="footer-content">
-        <nav class="footer-links" aria-label="The fine print">
+        {!minimal && <nav class="footer-links" aria-label="The fine print">
             <ul>{policies.map(([name, url]) => <li><a href={url}>{name}</a></li>)}</ul>
-        </nav>
+        </nav>}
         <p class="footer-text">© 2026 Alan Just Design · <span class="footer-brand">Artists Are Jerks · </span><a href="mailto:info@artistsarejerks.com">info@artistsarejerks.com</a></p>
     </div>
 </footer>
@@ -26,7 +27,7 @@ const policies = [
     .footer-links a { position: relative; display: inline-block; color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-sm); line-height: var(--line-height-tight); text-decoration: none; }
     .footer-links a::after { content: ''; position: absolute; inset: calc((44px - 100%) / -2) calc(var(--space-2) * -1); }
     .footer-links a:hover, .footer-links a:focus-visible { color: var(--color-gold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
-    .footer-text { margin: 0; color: var(--color-green); font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight); text-align: center; }
+    .footer-text { margin: 0; color: var(--color-white); font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: var(--line-height-tight); text-align: center; }
     .footer-text a { color: inherit; }
     /* On phones the site name is already in the header, so the copyright fits on one line. */
     .footer-brand { display: none; }

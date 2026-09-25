@@ -102,8 +102,10 @@ const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
             padding: 0;
         }
 
+        /* dvh is the height Safari actually shows, so the footer clears its toolbar. */
         body.homepage {
             height: 100vh;
+            height: 100dvh;
         }
 
         .homepage .main-content {
@@ -131,6 +133,6 @@ const showAccountIdentity = import.meta.env.MODE === 'online-test' && (
         <slot />
     </main>
 
-    <Footer />
+    <Footer minimal={bodyClass.split(' ').includes('homepage')} />
 </body>
 </html>
