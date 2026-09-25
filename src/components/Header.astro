@@ -5,6 +5,7 @@ const seeArt: Link[] = [
     {name: 'Showing Now', url: '/showing-now/'},
     {name: 'Places to See Art', url: '/prototype/venues/'},
     {name: 'Our Artists', url: '/our-artists/'},
+    {name: 'Why This Exists', url: '/about/'},
 ];
 const artistTools: Link[] = [
     {name: "What's a Jerk?", url: '/whats-a-jerk/'},
@@ -27,7 +28,6 @@ const utility: Link[] = [
     ...(signedIn ? [{name: 'Workspaces · Prototype', url: '/prototype/workspaces/'}] : []),
     {name: 'For venues', url: '/for-venues/'},
     {name: 'Artist sign in', url: '/account/'},
-    {name: 'About', url: '/about/'},
 ];
 const path = Astro.url.pathname;
 const current = (url: string) => (path === url ? 'page' : undefined);

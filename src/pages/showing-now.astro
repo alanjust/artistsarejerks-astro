@@ -122,7 +122,7 @@ if (onlineTest) Astro.response.headers.set('Cache-Control', 'private, no-store')
       <a href="/our-artists/">Meet all our artists →</a>
       <a href="/join/?kind=artist">Artists: get your work listed here →</a>
     </nav>
-    <footer class="directory-footer"><p>An artist’s work appears here during the dates it’s actually on a wall somewhere you can walk up to it.</p><p>Interested in a piece? Contact the artist directly. Artists Are Jerks doesn’t handle sales.</p></footer>
+    <footer class="directory-footer"><p>An artist’s work appears here during the dates it’s actually on a wall somewhere you can walk up to it.</p><p>Interested in a piece? Contact the artist directly. Artists Are Jerks doesn’t handle sales.</p><p class="why-line">Why a site for local art? <a href="/about/">Here’s the story →</a></p></footer>
   </div>
 
   <script>
@@ -207,6 +207,8 @@ if (onlineTest) Astro.response.headers.set('Cache-Control', 'private, no-store')
 
   .directory-links { display: flex; flex-direction: column; margin-top: var(--space-8); }
   .directory-links a { display: flex; align-items: center; min-height: 44px; color: var(--color-purple-dark); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); text-decoration: underline; text-underline-offset: var(--underline-offset); }
+  .directory-footer .why-line { margin-top: var(--space-4); font-family: var(--font-heading); font-size: var(--font-size-base); font-weight: var(--font-weight-bold); }
+  .directory-footer .why-line a { color: var(--color-purple); }
   .directory-footer { max-width: var(--max-width-text); margin-top: var(--space-6); font-size: var(--font-size-sm); }
 
   @media (min-width: 700px) {
