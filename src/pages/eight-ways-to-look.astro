@@ -18,14 +18,13 @@ import {ways} from '../data/thinkers';
           <dl class="jerks">
             <dt class="tag tag--good">Good jerk</dt><dd>{way.good}</dd>
             <dt class="tag tag--bad">Bad jerk</dt><dd>{way.bad}</dd>
-            <dt class="tag tag--normie">Normie</dt><dd>{way.normie}</dd>
           </dl>
           <p class="credit">{way.credit}</p>
         </li>
       ))}
     </ol>
 
-    <p class="more">Not sure what good, bad, and normie mean here? <a href="/whats-a-jerk/">What's a Jerk? →</a></p>
+    <p class="more">Not sure what good and bad jerks mean here? <a href="/whats-a-jerk/">What's a Jerk? →</a></p>
   </div>
 
   <style>
@@ -45,7 +44,6 @@ import {ways} from '../data/thinkers';
     .tag { padding: 0 var(--space-2); border-radius: var(--radius-sm); font-family: var(--font-heading); font-weight: var(--font-weight-bold); white-space: nowrap; }
     .tag--good { background: var(--color-green); }
     .tag--bad { background: var(--color-plum-red); color: var(--color-white); }
-    .tag--normie { border: var(--border-thin) solid var(--color-black); }
     .card .credit { margin-top: var(--space-3); font-family: var(--font-heading); font-size: var(--font-size-sm); color: var(--color-purple); }
     .more { margin: var(--space-6) 0 0; text-align: center; }
     .more a { color: var(--color-purple); font-weight: var(--font-weight-bold); }

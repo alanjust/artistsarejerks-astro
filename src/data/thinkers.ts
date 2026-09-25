@@ -1,5 +1,5 @@
 // Eight ways to look, each after a thinker. Plain-English rewrite of the old About page's thinkers.
-export type Way = {title: string; idea: string; tryIt: string; good: string; bad: string; normie: string; credit: string};
+export type Way = {title: string; idea: string; tryIt: string; good: string; bad: string; credit: string};
 
 export const ways: Way[] = [
   {
@@ -8,7 +8,6 @@ export const ways: Way[] = [
     tryIt: 'Pick one piece and stay with it for three minutes. What do you notice only after minute two?',
     good: 'Makes quiet shows and long, slow works that reward staying put.',
     bad: 'Fakes rarity and VIP mystique to pump up the price.',
-    normie: 'Keeps a favorite print on the wall for years and keeps finding new things in it.',
     credit: 'After Walter Benjamin',
   },
   {
@@ -17,7 +16,6 @@ export const ways: Way[] = [
     tryIt: 'Before you read the label, name three things the piece does to you physically. Tense? Calm? Hungry?',
     good: 'Skips the explanation and lets the work hit you.',
     bad: 'Uses big words to make your gut reaction feel naive.',
-    normie: 'Likes what looks good and doesn\'t overthink it. That counts.',
     credit: 'After Susan Sontag',
   },
   {
@@ -26,7 +24,6 @@ export const ways: Way[] = [
     tryIt: 'Write one sentence about what the piece means to you. No quotes, no borrowing from the label.',
     good: 'Leaves room for lots of readings and hands the meaning back to you.',
     bad: 'Insists there\'s one right answer, and it\'s theirs.',
-    normie: 'Goes with the usual reading, which keeps a shared culture steady.',
     credit: 'After Roland Barthes',
   },
   {
@@ -35,7 +32,6 @@ export const ways: Way[] = [
     tryIt: 'Pick something ordinary around you. Imagine it on a pedestal in a gallery. What does it start to mean?',
     good: 'Puts ordinary things in new settings to show how much the setting does.',
     bad: 'Leans on the gallery walls to make thin work look important.',
-    normie: 'Trusts museums and galleries to decide what counts, which keeps art\'s public role stable.',
     credit: 'After Arthur Danto',
   },
   {
@@ -44,7 +40,6 @@ export const ways: Way[] = [
     tryIt: 'Ask three questions: who is here, who isn\'t, and why might that matter?',
     good: 'Brings people and stories into view that usually get left out.',
     bad: 'Uses someone\'s identity or pain as a way to get attention.',
-    normie: 'Enjoys the work without digging into who\'s missing, and helps the stories travel anyway.',
     credit: 'After bell hooks',
   },
   {
@@ -53,7 +48,6 @@ export const ways: Way[] = [
     tryIt: 'In a crowded show, adopt one piece. Pretend the others aren\'t there.',
     good: 'Uses tight limits, like small works or sparse shows, to focus your attention.',
     bad: 'Piles on spectacle and information to hide that there\'s not much there.',
-    normie: 'Likes things balanced and moderate, which keeps art easy to walk into.',
     credit: 'After Barry Schwartz',
   },
   {
@@ -62,7 +56,6 @@ export const ways: Way[] = [
     tryIt: 'Link the piece to a song, a memory, and something from the news. What grows out of that?',
     good: 'Invites remixing and surprising links across ideas and media.',
     bad: 'Builds a maze of theory to keep people out.',
-    normie: 'Connects art to everyday life in simple, steady ways.',
     credit: 'After Gilles Deleuze',
   },
   {
@@ -71,7 +64,6 @@ export const ways: Way[] = [
     tryIt: 'List what\'s mixed into the piece: odd materials, borrowed sources, other genres. How do they make it better?',
     good: 'Mixes materials and references to widen the experience.',
     bad: 'Polices the rules and declares whole kinds of work invalid.',
-    normie: 'Likes the familiar categories, which keeps art readable for most people.',
     credit: 'After Clement Greenberg, by arguing with him',
   },
 ];
