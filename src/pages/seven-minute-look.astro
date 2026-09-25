@@ -5,7 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 // Timer approach, dings, and spoken cues come from Alan's Life Drawing Timer web app.
 const looks = [
   {name: 'First glance', window: '0:00–0:15', prompt: 'Where does your eye go first?'},
-  {name: 'Follow your eye', window: '0:15–3:00', prompt: 'Does the picture move your eye from place to place, or does it drift on its own?'},
+  {name: 'Follow your eye', window: '0:15–3:00', prompt: 'Is there a path your eye keeps taking through the picture?'},
   {name: 'Keep finding things', window: '3:00–7:00', prompt: 'Are you still finding things? Stop whenever it stops giving.'},
 ];
 
@@ -85,7 +85,7 @@ const questions = [
     // Times against end timestamps, so it stays right if the phone dims or the tab is hidden.
     const LOOKS = [
       {end: 15, cue: 'Look. Where does your eye go first?'},
-      {end: 180, cue: 'Keep looking. Is the picture moving your eye around, or is your eye drifting on its own?'},
+      {end: 180, cue: 'Keep looking. Is there a path your eye keeps taking through the picture?'},
       {end: 420, cue: 'Now go slow. Are you still finding things? Stop whenever it stops giving.'},
     ];
     const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
