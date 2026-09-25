@@ -18,7 +18,6 @@ Written September 25, 2026; updated later that day after a design session on the
   - Fonts served from the site, and the Figma script removed.
 - **Later on September 25:** a design-critique session. The header band is thinner, the home footer is just the copyright line and clears Safari's toolbar, and all five Artist Tools pages were rebuilt in one look (cream cards, pills and black panels, Ira Glass copy). The Benjamin Wheel became **Who Is Walter Benjamin?** at `/walter-benjamin/`. Gatekeepers now footnotes every number. Details are in `CURRENT_STATUS.md` under "Artist Tools pages".
 - **Loose ends from that session:**
-  - Whether Thinking Like an Artist's Fear tool should end on a hopeful layer (Alan didn't say).
   - More artwork images for the Benjamin page would even out its desktop columns.
   - The Gatekeepers five-tile row on desktop hasn't been checked on a real screen.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
