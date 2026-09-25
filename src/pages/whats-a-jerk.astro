@@ -1,79 +1,64 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const jerkBehaviors = [
+// Each moment is told from the visitor's side. The closing line lowers the temperature; it never argues back.
+const moments = [
   {
-    id: 1,
-    behavior: '"You just don\'t get it"',
-    underneath: "Fear of being misunderstood; insecurity about clarity or exposing weakness.",
-    response: '"I\'m genuinely curious—what would make this clearer for me? What part feels most central to you?"'
+    moment: "You read the wall label three times and still don't know what it means.",
+    felt: 'Like everyone else took a class you missed.',
+    actually: "Art has its own dialect, and some people use it to sound important rather than to explain. If a sentence about a painting could just as easily describe a toaster, it isn't saying much.",
+    notYou: "Clear writing about art exists. That label just isn't it.",
+    say: "\u201cI'll be honest, the label lost me. What do you notice first when you look at it?\u201d",
   },
   {
-    id: 2,
-    behavior: 'Hiding behind jargon',
-    underneath: "Need for credibility; fear being judged superficial; discomfort with emotional aspects.",
-    response: '"I see there\'s theory behind this; could you share how you intended people to feel with this work—even a touch?"'
+    moment: 'You asked a simple question and got a sigh.',
+    felt: "Like you'd gotten something wrong.",
+    actually: "To the artist, your question meant they'd have to explain themselves. Behind the sigh is one of two thoughts: \u201cThis person doesn't get it,\u201d or \u201cDid I make this too complicated for everybody?\u201d Either way, it's about them, not you.",
+    notYou: 'Being willing to ask is the part that takes nerve.',
+    say: "\u201cNo rush. I'm just curious where you started.\u201d Or just keep looking. The work might answer for them.",
   },
   {
-    id: 3,
-    behavior: 'The cold shoulder',
-    underneath: "Past critique-wounds; protective armor; fear of exposure.",
-    response: '"I appreciate you sharing this work. I want to understand what part meant the most to you—what stakes are at work here?"'
+    moment: 'They told you that you \u201cjust don\u2019t get it.\u201d',
+    felt: 'A door closing.',
+    actually: "It's a way to end a conversation before it gets uncomfortable for them, often because they've been misunderstood before and expect it again.",
+    notYou: 'Nobody gets a piece on the first try. Sometimes not even the person who made it.',
+    say: "\u201cThat's fair. I'm going to look a little longer.\u201d Then do. No reply needed.",
   },
   {
-    id: 4,
-    behavior: 'Bragging',
-    underneath: "Masking self-doubt; trying to repel criticism before it lands.",
-    response: '"It\'s obvious you\'ve put a lot into this. What worries you most when people critique it?"'
+    moment: "At their own opening, the artist wouldn't meet your eye.",
+    felt: "Snobbery. Like you weren't worth their time.",
+    actually: 'Openings are terrifying: a room full of people deciding whether your work is any good. Aloof is often just armor.',
+    notYou: "They're probably hoping someone will say something kind.",
+    say: '\u201cThanks for putting this up. I liked the one by the door.\u201d Specific and small beats clever.',
   },
   {
-    id: 5,
-    behavior: 'Bristling at mild critique',
-    underneath: "Identity fused with work; critique feels like personal attack.",
-    response: '"I\'m trying to understand—when you hear that feedback, what feels threatening to you?"'
+    moment: 'Everyone nodded along to the artist talk, so you nodded too.',
+    felt: 'Like you were the only one faking it.',
+    actually: "You probably weren't. A lot of talk about art is a performance, and the audience performs right back. Half the room is nodding for the same reason you are.",
+    notYou: 'If you had raised your hand, three people would have been grateful.',
+    say: '\u201cCould you say a little more about how you actually made it?\u201d Questions about process are safe ground for everyone.',
   },
   {
-    id: 6,
-    behavior: "Mocking people who don't get it",
-    underneath: "Distancing/self-protection; avoiding shame by making others wrong.",
-    response: '"I might see something different; maybe you can help me see what you meant. What parts do you feel people usually miss?"'
+    moment: 'You mentioned a painting you love, and someone smirked.',
+    felt: 'Like your taste was cheap.',
+    actually: "Some art people treat pretty or comfortable art as lesser, usually because they worry about being seen as lesser themselves. It's a status game, not a judgment about you.",
+    notYou: 'Loving art you can live with is the whole point of having art at home.',
+    say: "\u201cI like having it around. What do you keep on your walls?\u201d",
   },
   {
-    id: 7,
-    behavior: 'Refusing to share',
-    underneath: "Exposure feels too risky; fear that visibility = more hurt.",
-    response: '"Even if it\'s rough, I value seeing what you\'re exploring. Would you share something small just to feel out how it lands?"'
+    moment: "You were told it's supposed to be difficult.",
+    felt: 'Like difficulty was the test, and you failed it.',
+    actually: "Some good art is hard. But \u201cit's supposed to be hard\u201d can also be a way of skipping the question of whether it's any good, or whether it's meant to make you feel anything.",
+    notYou: "Difficult and meaningful aren't the same thing. You're allowed to want both.",
+    say: "\u201cIs there a way in you'd suggest for someone seeing it cold?\u201d",
   },
   {
-    id: 8,
-    behavior: '"True art must be difficult"',
-    underneath: "Fear that emotion = being seen as unserious or sentimental; wanting legitimacy via concept/form; insecurity about emotional impact.",
-    response: '"I respect the conceptual depth here. Also, I\'m curious what feeling or mood you hoped someone might take away (if any)—what\'s emotional in this piece for you?"'
+    moment: 'You said something mild, and the artist bristled.',
+    felt: "Like you'd insulted them without meaning to.",
+    actually: 'For a lot of artists, the work and the self are the same thing. A comment about the painting lands as a comment about them.',
+    notYou: "You touched a sore spot you couldn't have seen.",
+    say: "\u201cI didn't mean that as a knock. There's a lot here I'm still taking in.\u201d Or let it go and move on. That's allowed.",
   },
-  {
-    id: 9,
-    behavior: 'Sneering at decorative art',
-    underneath: "Taste/class anxiety; fear of being judged commercial; conflict between visibility & critical legitimacy.",
-    response: '"I like spectacle/decorative art; what do you see in those works that you think others overlook? What do you value most in art?"'
-  },
-  {
-    id: 10,
-    behavior: 'Never, ever joking',
-    underneath: "Belief that humor or misstep will be used against them; fear of vulnerability via play.",
-    response: '"I love when artists joke/let looseness in their work—does this piece have parts you found playful or experiment-y?"'
-  },
-  {
-    id: 11,
-    behavior: '"It\'s just a sketch"',
-    underneath: "Trying to control criticism; avoid disappointment; protect ego.",
-    response: '"What part of this work are you most proud of, even if imperfect? I see something strong here."'
-  },
-  {
-    id: 12,
-    behavior: 'Keeping score against peers',
-    underneath: "Imposter syndrome; feeling overlooked; belief that success was never possible for them.",
-    response: '"I see you doing important work. Can we talk about what milestone matters to you, not someone else\'s yardstick?"'
-  }
 ];
 ---
 
@@ -92,15 +77,20 @@ const jerkBehaviors = [
 
     <section class="bad-section" aria-labelledby="bad-title">
       <h2 id="bad-title" class="section-title">When an artist is being a bad jerk</h2>
-      <p class="section-intro">Twelve things difficult artists do, what's usually going on underneath, and something you can say back.</p>
+      <p class="section-intro">Eight moments people run into around art, what was really going on, and a gentle way to keep talking if you want to.</p>
     <ol class="behaviors">
-      {jerkBehaviors.map((item) => (
+      {moments.map((item, index) => (
         <li class="card">
-          <h2 class="card-title"><span class="card-number" aria-hidden="true">{item.id}</span>{item.behavior}</h2>
-          <h3 class="card-label">What's underneath</h3>
-          <p>{item.underneath}</p>
-          <h3 class="card-label">Try saying</h3>
-          <p class="card-quote">{item.response}</p>
+          <h3 class="card-title"><span class="card-number" aria-hidden="true">{index + 1}</span>{item.moment}</h3>
+          <h4 class="card-label">What it felt like</h4>
+          <p>{item.felt}</p>
+          <h4 class="card-label">What was actually going on</h4>
+          <p>{item.actually}</p>
+          <p class="not-you"><strong>It's not you.</strong> {item.notYou}</p>
+          <div class="keep-talking">
+            <h4 class="card-label">If you want to keep talking</h4>
+            <p class="card-quote">{item.say}</p>
+          </div>
         </li>
       ))}
     </ol>
@@ -122,10 +112,12 @@ const jerkBehaviors = [
     .card { padding: var(--space-4) var(--space-5); background: var(--color-cream); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); color: var(--color-black); }
     .card p { margin: 0; font-size: var(--font-size-base); line-height: var(--line-height-relaxed); }
     .card p + p { margin-top: var(--space-3); }
-    .card-title { display: flex; align-items: center; gap: var(--space-3); margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-tight); }
+    .card-title { display: flex; align-items: flex-start; gap: var(--space-3); margin: 0 0 var(--space-2); font-family: var(--font-heading); font-size: var(--font-size-xl); line-height: var(--line-height-tight); }
     .card-number { display: grid; place-items: center; flex: none; width: var(--space-8); height: var(--space-8); border-radius: var(--radius-full); background: var(--color-black); color: var(--color-gold); font-size: var(--font-size-base); }
     .card-label { margin: var(--space-3) 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-purple); }
-    .card-quote { font-style: italic; }
+    .card-quote { font-style: normal; }
+    .card .not-you { margin-top: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-green); border-radius: var(--radius-base); }
+    .keep-talking { margin-top: var(--space-3); padding-top: var(--space-1); border-top: var(--border-thin) solid var(--color-black); }
     .kinds { display: grid; gap: var(--space-3); margin: 0 0 var(--space-8); padding: 0; list-style: none; }
     .kind { padding: var(--space-4) var(--space-5); border: var(--border-base) solid var(--color-black); border-radius: var(--radius-lg); color: var(--color-black); }
     .kind h2 { margin: 0 0 var(--space-1); font-family: var(--font-heading); font-size: var(--font-size-2xl); }
