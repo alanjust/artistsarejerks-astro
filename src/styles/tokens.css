@@ -170,7 +170,7 @@
   --header-height: 50px;
   --header-border: 6px;
   --footer-height: auto;
-  --toolbar-clearance: 4.5rem; /* room for Safari's floating toolbar on phones */
+  --toolbar-clearance: 2.5rem; /* room for Safari's floating toolbar on phones */
 
   /* ============================================
      BORDERS & RADIUS
