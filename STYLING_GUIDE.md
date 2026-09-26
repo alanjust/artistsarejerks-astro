@@ -841,3 +841,14 @@ Your creativity leads, the code follows. 🎨
 - **STYLING_GUIDE.md** (this file) - How to use the CSS system
 - **COLOR_REFERENCE.md** - Complete catalog of all 26 colors with hex codes, usage tips, and combinations
 - **tokens.css** - The actual CSS variables (for reference)
+
+## Two page styles (decided September 25, 2026)
+
+The menu's two sections look different on purpose.
+
+- **See Art pages** (Showing Now, Places to See Art, Our Artists, Why This Exists, and the join pages): the big purple Spicy Rice headline, a ROGUE VALLEY, OREGON label above it, and black cards. These are the "go see art" pages, and they're loud.
+- **Artist Tools pages** (the lessons): a black Averia headline and peach cards (`--color-cream`, #ffdcb8). These are the "stop and think" pages, and they're quieter.
+
+Keep new pages in the style of their section.
+
+**Color rule:** when a color stands for something, keep it. Each art movement's color ties its Art History Wheel slice, its Movements card, and its artists' cards together; Good Jerk is green and Bad Jerk is crimson everywhere. Use peach only when color is just background.

@@ -116,7 +116,7 @@ Alan asked for a whole-site critique; he's working through this list.
 1. Done: `/artists/` is titled "Artists in History."
 2. Done: the test site's roster (checked September 25) has no famous names. Frank Stella exists only in Claude's local dev data. Scott David Johnson (Jacksonville) is a new artist record since the last status check.
 3. Done: Places to See Art has a new subtitle (no "AAJ") and a matching title; Places and Join use the ROGUE VALLEY, OREGON label like Showing Now and Our Artists.
-4. **Two styles, loud See Art pages and quiet Artist Tools pages:** Alan hasn't said whether that's deliberate. If it is, write it into `STYLING_GUIDE.md` along with the color rule (keep colors that mean something; cream only for plain background).
+4. Done: Alan is keeping the two styles (loud See Art, quiet Artist Tools). Written into `STYLING_GUIDE.md` with the color rule.
 5. Movements and Artists in History: keep their movement colors. Moving their text colors onto tokens is invisible housekeeping only.
 
 Note: a "Mock up Movements next" suggestion earlier was the app's suggested-reply button, not Claude's.
