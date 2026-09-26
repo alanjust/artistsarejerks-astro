@@ -120,7 +120,7 @@ Alan asked for a whole-site critique; he's working through this list.
 4. Done: Alan is keeping the two styles (loud See Art, quiet Artist Tools). Written into `STYLING_GUIDE.md` with the color rule.
 5. Movements and Artists in History: keep their movement colors. Moving their text colors onto tokens is invisible housekeeping only.
 
-6. Done: the Art History Wheel's desktop layout fits above the fold (two-line header, wheel sized to the screen, artwork first and centered). Possible follow-up: Key Artists pills now sit below the artwork's description; Alan may want them right under the picture.
+6. Done: the Art History Wheel's desktop layout fits above the fold (two-line header, wheel sized to the screen, artwork first and centered). Key Artists pills sit right under the picture and its caption, above the artwork description.
 
 Note: a "Mock up Movements next" suggestion earlier was the app's suggested-reply button, not Claude's.
 
