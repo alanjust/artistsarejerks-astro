@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 25, 2026, after the header, home-footer, Artist Tools, Why This Exists (formerly About), Eight Ways to Look, Seven-Minute Look, card color, and Jerk capitalization work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 25, 2026, after the header, home-footer, Artist Tools, Why This Exists (formerly About), Eight Ways to Look, Seven-Minute Look, card color, Jerk capitalization, Art History Wheel, and Movements / Artists in History work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
