@@ -178,7 +178,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - The Attention Lab became The Seven-Minute Look, with a real timer and a link from every show page.
 - "Jerk" is a proper noun wherever it means the site's idea (Good Jerks, Bad Jerks, "Jerk behavior"); the Community Guidelines' "be a jerk in your art" stays lowercase.
 - Sitewide critique (late September 25): Movements and Artists in History keep their per-movement card colors; each movement's "Bkgd Color" ties its wheel slice, movement card, and artists' cards together, so never flatten them to cream. Rule: when a color stands for something, keep it; cream is only for plain background.
-- New tokens: `--color-cream` (#ffedda, the light peach from the home illustration; Alan found #fff8ec too light), `--toolbar-clearance`, `--max-width-wide`.
+- New tokens: `--color-cream` (#ffdcb8, chosen by Alan after trying #fff8ec and #ffedda, both too light), `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24
 
