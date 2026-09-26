@@ -176,7 +176,7 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - About rewritten as Alan's story, then renamed **Why This Exists** and moved into the header after Our Artists; Showing Now ends with a link to it. "More about me" links to alanjust.com/about in a new tab.
 - New page Eight Ways to Look, added to the Artist Tools menu after Thinking Like an Artist.
 - The Attention Lab became The Seven-Minute Look, with a real timer and a link from every show page.
-- New tokens: `--color-cream`, `--toolbar-clearance`, `--max-width-wide`.
+- New tokens: `--color-cream` (#ffedda, the light peach from the home illustration; Alan found #fff8ec too light), `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24
 
