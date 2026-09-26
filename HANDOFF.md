@@ -124,6 +124,17 @@ Alan asked for a whole-site critique; he's working through this list.
 
 Note: a "Mock up Movements next" suggestion earlier was the app's suggested-reply button, not Claude's.
 
+## Open items from the Showing Now critique (September 25)
+
+1. Done: the contradictory "Opens Sep 28 · Since Sep 28" date on upcoming ongoing showings.
+2. **The page jumps while it loads:** the grid first shows the 5 sample tiles, then jumps to 9 as real listings arrive, and headings flash in a fallback serif before the fonts load. Fix: hold the grid briefly, and preload the fonts.
+3. **Sample (FPO) tiles are mixed in A–Z with real test showings.** Recommended: real showings first, samples after under a small "Samples" label (or hide samples once a few real showings exist).
+4. **Two identical Alan Just showings** (Sep 15–Oct 13, at "Test Venue — Not Real." and "Museum Test — Not Real") still clutter the page. Deleting one needs Alan's okay.
+5. City and Search sit after the grid by Alan's choice; revisit when there are 20+ showings.
+6. Minor repetition: "Here's where to go see it" / "Go see it," and the bottom "Artists: get your work listed here" echoes "Join free."
+
+When checking the live site in the automated browser, reload once; it can keep an old copy of the page.
+
 ## Related projects of Alan's
 
 - **Hidden Grammar of Art** (`~/hidden-grammar-of-art`, hiddengrammarofart.com): his research site that reads paintings through perceptual principles. It's now its own site, so naming it on this one is fine (the old "say Art Lab, never Hidden Grammar" rule is retired). Link lightly, to the public corpus only.
