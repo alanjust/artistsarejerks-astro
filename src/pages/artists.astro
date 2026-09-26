@@ -108,8 +108,8 @@ const sortedArtists = [...artists].sort((a, b) => {
       display: block;
       text-decoration: none;
       color: inherit;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: var(--border-base) solid var(--color-black);
+      border-radius: var(--radius-lg);
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       overflow: hidden;
@@ -143,25 +143,29 @@ const sortedArtists = [...artists].sort((a, b) => {
     }
 
     .artist-name {
-      font-size: 1.4rem;
-      margin-bottom: 0.5rem;
-      color: #000;
-      font-weight: bold;
-      line-height: 1.3;
+      font-family: var(--font-heading);
+      font-size: var(--font-size-xl);
+      margin-bottom: var(--space-1);
+      color: var(--color-black);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-tight);
     }
 
     .artist-movement {
-      font-size: 1rem;
-      margin-bottom: 0.75rem;
-      color: #222;
-      font-weight: 600;
+      font-family: var(--font-heading);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-2);
+      color: var(--color-black);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: var(--letter-spacing-wider);
+      text-transform: uppercase;
     }
 
     .artwork-title {
-      font-size: 0.95rem;
-      color: #555;
+      font-size: var(--font-size-base);
+      color: var(--color-black);
       font-style: italic;
-      line-height: 1.4;
+      line-height: var(--line-height-normal);
     }
 
     @media (max-width: 768px) {
