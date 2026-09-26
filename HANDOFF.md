@@ -26,7 +26,6 @@ Written September 25, 2026; updated later that day after a design session on the
   - The one-line examples under Good jerks, Bad jerks, and Normies on What's a Jerk? are Claude's placeholders; Alan may have real ones.
   - Eight Ways to Look hasn't been checked on screen since the Normie lines came off.
   - The Showing Now "Here's the story" line hasn't been seen on screen.
-  - The new card color (#ffedda) and the capital-J Jerk edits haven't been seen on screen.
   - The Seven-Minute Look's dings and spoken cues haven't been heard on a real iPhone. The Hidden Grammar corpus link (hiddengrammarofart.com/corpus) couldn't be reached from here on September 25; check that it loads.
   - If Life Drawing Timer goes public at lifedrawingtimer.com, add a small credit line on the Seven-Minute Look.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
@@ -113,7 +112,7 @@ When Alan asks for a critique or redesign of a content page, follow what worked 
 ## Open items from the sitewide critique (September 25)
 
 Alan asked for a whole-site critique; he's working through this list.
-1. **Retitle `/artists/` to "Artists in History"** so it matches the menu and can't be confused with Our Artists. Suggested first; not done yet.
+1. Done: `/artists/` is titled "Artists in History."
 2. **Check the test site's Our Artists roster** for famous real names used as sample members (local data showed "Frank Stella, Ashland").
 3. **Wording on See Art pages:** "AAJ artists" on Places to See Art; two eyebrow styles ("Rogue Valley · Artists Are Jerks" vs "ROGUE VALLEY, OREGON"); Places' flat subtitle.
 4. **Two styles, loud See Art pages and quiet Artist Tools pages:** Alan hasn't said whether that's deliberate. If it is, write it into `STYLING_GUIDE.md` along with the color rule (keep colors that mean something; cream only for plain background).
