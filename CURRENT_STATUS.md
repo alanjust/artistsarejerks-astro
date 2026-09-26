@@ -1,6 +1,6 @@
 # Artists Are Jerks: current status
 
-Updated September 25, 2026, after the header, home-footer, Artist Tools, Why This Exists (formerly About), Eight Ways to Look, and Seven-Minute Look work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
+Updated September 25, 2026, after the header, home-footer, Artist Tools, Why This Exists (formerly About), Eight Ways to Look, Seven-Minute Look, card color, and Jerk capitalization work (see "Done September 25"). Before that: the gatekeeping and terms work (steps 1–3), the navigation and footer fixes, Sign up/Sign in, the showing fixes, emailed "Still up?" reminders, the For Venues page and venue paths, account pages, self-hosted fonts, and studios by appointment. `main` matches `origin/main`. Start here; `TEST_SITE_SETUP.md` is the older chronological log.
 
 ## What the site is for
 
@@ -176,6 +176,8 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - About rewritten as Alan's story, then renamed **Why This Exists** and moved into the header after Our Artists; Showing Now ends with a link to it. "More about me" links to alanjust.com/about in a new tab.
 - New page Eight Ways to Look, added to the Artist Tools menu after Thinking Like an Artist.
 - The Attention Lab became The Seven-Minute Look, with a real timer and a link from every show page.
+- "Jerk" is a proper noun wherever it means the site's idea (Good Jerks, Bad Jerks, "Jerk behavior"); the Community Guidelines' "be a jerk in your art" stays lowercase.
+- Sitewide critique (late September 25): Movements and Artists in History keep their per-movement card colors; each movement's "Bkgd Color" ties its wheel slice, movement card, and artists' cards together, so never flatten them to cream. Rule: when a color stands for something, keep it; cream is only for plain background.
 - New tokens: `--color-cream` (#ffedda, the light peach from the home illustration; Alan found #fff8ec too light), `--toolbar-clearance`, `--max-width-wide`.
 
 ## Done September 24
