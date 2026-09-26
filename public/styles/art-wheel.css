@@ -971,3 +971,38 @@
     font-size: 1rem;
   }
 }
+
+/* ========================================
+   DESKTOP: FIT ABOVE THE FOLD (September 25, 2026)
+   A two-line header, a wheel sized to the screen, and the artwork
+   first and centered in the panel, so the wheel, its buttons, and the
+   picture all show without scrolling on a laptop.
+   ======================================== */
+@media (min-width: 769px) {
+  .art-wheel-header { margin-bottom: var(--space-2); }
+  .art-wheel-header h1 { margin-bottom: var(--space-1); }
+  .art-wheel-subtitle,
+  .art-wheel-subtitle-secondary { display: none; }
+  .art-wheel-description { margin: 0; }
+  .art-wheel-main-wrapper { min-height: 0; padding-top: var(--space-4); }
+  .art-wheel-wrapper,
+  .art-wheel-section .art-wheel-wrapper {
+    width: var(--art-wheel-size);
+    height: var(--art-wheel-size);
+    max-width: var(--art-wheel-size);
+    max-height: var(--art-wheel-size);
+  }
+  .art-wheel-controls { margin-top: var(--space-3); }
+  .art-wheel-content { min-height: 0; }
+  .artwork-image-container { text-align: center; margin-bottom: var(--space-2); }
+  .art-wheel-artwork-image {
+    display: block;
+    margin-inline: auto;
+    max-width: 100%;
+    max-height: calc(var(--art-wheel-size) * 0.55);
+    object-fit: contain;
+  }
+  .artwork-details { margin-top: var(--space-2); }
+  .art-wheel-artists { margin-top: var(--space-3); }
+  .art-wheel-movement-description { margin-top: var(--space-3); }
+}

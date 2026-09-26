@@ -11,9 +11,7 @@ import artists from '../data/artists.json';
             <p class="art-wheel-subtitle">1960s to NOW</p>
             <p class="art-wheel-subtitle-secondary">Eras / Styles</p>
             <p class="art-wheel-description">
-                <span class="art-wheel-description-desktop">Explore the art that broke free from Abstract Expressionism with our Art
-                    History Wheel. Journey from the Pop Art reaction of the 1960s to today's diverse styles. Discover 19 key
-                    movements and 95 influential artists, each with a notable artwork example, tracing this exciting evolution.</span>
+                <span class="art-wheel-description-desktop">19 movements, 1960s to now. Spin the wheel, or tap Previous and Next.</span>
                 <span class="art-wheel-description-mobile">Swipe through 19 movements and meet the artists and artworks that changed contemporary culture.</span>
             </p>
         </div>
@@ -57,20 +55,9 @@ import artists from '../data/artists.json';
 
                 <!-- Right side: Content Panel -->
                 <div class="art-wheel-content">
-                    <div class="scroll-prompt">⬇ Scroll to see more</div>
-                    <div class="content-panel">
+                                        <div class="content-panel">
                         <div class="art-wheel-movement-title" id="movementTitle">Art History Wheel</div>
-                        <div class="art-wheel-movement-description" id="movementDescription">This interactive wheel explores
-                            19 major art movements that shaped contemporary culture. From Pop Art's rebellion against
-                            Abstract Expressionism to today's digital innovations, discover the artists, artworks, and ideas
-                            that transformed how we see the world. Click through each movement to explore key artists and
-                            their most significant works.</div>
-
-                        <div class="art-wheel-artists" id="artistsSection" style="display:none;">
-                            <h4>Key Artists:</h4>
-                            <ul class="art-wheel-artist-list" id="artistList"></ul>
-                        </div>
-
+                        
                         <div class="art-wheel-artwork" id="artworkSection" style="display:none;">
                             <div class="artwork-image-container">
                                 <img class="art-wheel-artwork-image" id="artworkImage" src="" alt="Featured Artwork">
@@ -81,6 +68,18 @@ import artists from '../data/artists.json';
                                 <div class="art-wheel-artwork-description" id="artworkDescription"></div>
                             </div>
                         </div>
+                        <div class="art-wheel-artists" id="artistsSection" style="display:none;">
+                            <h4>Key Artists:</h4>
+                            <ul class="art-wheel-artist-list" id="artistList"></ul>
+                        </div>
+
+                        <div class="art-wheel-movement-description" id="movementDescription">This interactive wheel explores
+                            19 major art movements that shaped contemporary culture. From Pop Art's rebellion against
+                            Abstract Expressionism to today's digital innovations, discover the artists, artworks, and ideas
+                            that transformed how we see the world. Click through each movement to explore key artists and
+                            their most significant works.</div>
+
+
                     </div>
                 </div>
             </div>
