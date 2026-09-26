@@ -115,7 +115,7 @@ When Alan asks for a critique or redesign of a content page, follow what worked 
 Alan asked for a whole-site critique; he's working through this list.
 1. Done: `/artists/` is titled "Artists in History."
 2. **Check the test site's Our Artists roster** for famous real names used as sample members (local data showed "Frank Stella, Ashland").
-3. **Wording on See Art pages:** "AAJ artists" on Places to See Art; two eyebrow styles ("Rogue Valley · Artists Are Jerks" vs "ROGUE VALLEY, OREGON"); Places' flat subtitle.
+3. Done: Places to See Art has a new subtitle (no "AAJ") and a matching title; Places and Join use the ROGUE VALLEY, OREGON label like Showing Now and Our Artists.
 4. **Two styles, loud See Art pages and quiet Artist Tools pages:** Alan hasn't said whether that's deliberate. If it is, write it into `STYLING_GUIDE.md` along with the color rule (keep colors that mean something; cream only for plain background).
 5. Movements and Artists in History: keep their movement colors. Moving their text colors onto tokens is invisible housekeeping only.
 

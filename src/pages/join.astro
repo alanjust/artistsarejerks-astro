@@ -14,7 +14,7 @@ Astro.response.headers.set('Cache-Control', 'private, no-store');
 ---
 <BaseLayout title="Join the Community | Artists Are Jerks" noindex>
 <main class="venue-workspace join-page">
-<p>Rogue Valley · Artists Are Jerks</p><h1>Join the community</h1><p>Help people find artwork they can stand in front of, and the places that show it.</p>
+<p class="eyebrow">Rogue Valley, Oregon</p><h1>Join the community</h1><p>Help people find artwork they can stand in front of, and the places that show it.</p>
 <p class="notice"><strong>{onlineTest ? 'Private online test' : 'Local prototype'}:</strong> Applications save to {onlineTest ? 'the protected test site' : 'local development storage'}. An artist can start building a private page right after applying; it goes public once an administrator approves it.</p>
 <div class="public-grid" data-join-choices>
 <section class="card"><h2>I’m an artist</h2><p>For visual artists, including those showing in restaurants, studios, and other local spaces. This is an art community, not a crafts marketplace.</p><button type="button" data-open-artist>Request consideration →</button></section>
@@ -66,6 +66,8 @@ import {initJoin} from '../lib/join-community';initJoin();
 </script>
 </BaseLayout>
 <style>
+  .eyebrow { margin: 0; color: var(--color-purple-dark); font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-wider); }
+
 .account-email { margin-top: var(--space-4); }
 .account-email a, .terms-check a { color: var(--color-gold); }
 .other-ways a { color: var(--color-purple-dark); font-weight: var(--font-weight-bold); }
