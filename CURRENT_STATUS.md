@@ -178,7 +178,9 @@ The community part of Artists Are Jerks exists to get people in front of real ar
 - The Attention Lab became The Seven-Minute Look, with a real timer and a link from every show page.
 - "Jerk" is a proper noun wherever it means the site's idea (Good Jerks, Bad Jerks, "Jerk behavior"); the Community Guidelines' "be a jerk in your art" stays lowercase.
 - Sitewide critique (late September 25): Movements and Artists in History keep their per-movement card colors; each movement's "Bkgd Color" ties its wheel slice, movement card, and artists' cards together, so never flatten them to cream. Rule: when a color stands for something, keep it; cream is only for plain background.
-- New tokens: `--color-cream` (#ffdcb8, chosen by Alan after trying #fff8ec and #ffedda, both too light), `--toolbar-clearance`, `--max-width-wide`.
+- Art History Wheel: desktop layout fits above the fold; the artwork is centered and first in the panel.
+- See Art wording: Places to See Art has a new subtitle and title case; Places and Join use the ROGUE VALLEY, OREGON label. `STYLING_GUIDE.md` records the two page styles and the color rule.
+- New tokens: `--color-cream` (#ffdcb8, chosen by Alan after trying #fff8ec and #ffedda, both too light), `--toolbar-clearance`, `--max-width-wide`, `--art-wheel-size`.
 
 ## Done September 24
 

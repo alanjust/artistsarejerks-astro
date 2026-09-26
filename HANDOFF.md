@@ -27,6 +27,7 @@ Written September 25, 2026; updated later that day after a design session on the
   - Eight Ways to Look hasn't been checked on screen since the Normie lines came off.
   - The Showing Now "Here's the story" line hasn't been seen on screen.
   - The #ffdcb8 cards haven't been checked on Thinking Like an Artist, where the first layer must still read lighter than the gold one.
+  - The Art History Wheel's new desktop layout hasn't been seen on Alan's own screen.
   - The Seven-Minute Look's dings and spoken cues haven't been heard on a real iPhone. The Hidden Grammar corpus link (hiddengrammarofart.com/corpus) couldn't be reached from here on September 25; check that it loads.
   - If Life Drawing Timer goes public at lifedrawingtimer.com, add a small credit line on the Seven-Minute Look.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
@@ -118,6 +119,8 @@ Alan asked for a whole-site critique; he's working through this list.
 3. Done: Places to See Art has a new subtitle (no "AAJ") and a matching title; Places and Join use the ROGUE VALLEY, OREGON label like Showing Now and Our Artists.
 4. Done: Alan is keeping the two styles (loud See Art, quiet Artist Tools). Written into `STYLING_GUIDE.md` with the color rule.
 5. Movements and Artists in History: keep their movement colors. Moving their text colors onto tokens is invisible housekeeping only.
+
+6. Done: the Art History Wheel's desktop layout fits above the fold (two-line header, wheel sized to the screen, artwork first and centered). Possible follow-up: Key Artists pills now sit below the artwork's description; Alan may want them right under the picture.
 
 Note: a "Mock up Movements next" suggestion earlier was the app's suggested-reply button, not Claude's.
 
