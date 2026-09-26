@@ -26,6 +26,7 @@ Written September 25, 2026; updated later that day after a design session on the
   - The one-line examples under Good jerks, Bad jerks, and Normies on What's a Jerk? are Claude's placeholders; Alan may have real ones.
   - Eight Ways to Look hasn't been checked on screen since the Normie lines came off.
   - The Showing Now "Here's the story" line hasn't been seen on screen.
+  - The #ffdcb8 cards haven't been checked on Thinking Like an Artist, where the first layer must still read lighter than the gold one.
   - The Seven-Minute Look's dings and spoken cues haven't been heard on a real iPhone. The Hidden Grammar corpus link (hiddengrammarofart.com/corpus) couldn't be reached from here on September 25; check that it loads.
   - If Life Drawing Timer goes public at lifedrawingtimer.com, add a small credit line on the Seven-Minute Look.
   - Nobody has looked at "Everyday art" (renamed from General Purpose Art) with Alan explicitly; he didn't object.
@@ -107,7 +108,7 @@ Read the test database directly when a report is about records: who owns what, w
 
 ## Design pattern for lesson pages
 
-When Alan asks for a critique or redesign of a content page, follow what worked on September 25: critique from his screenshots, mock up the phone first (a before/after widget), wait for "build it," then build, check in the preview, deploy, commit, and push. Reuse the Artist Tools look: cream cards, the pills-and-black-panel pattern from `walter-benjamin.astro`, tokens only. Source any statistic before it goes on a page.
+When Alan asks for a critique or redesign of a content page, follow what worked on September 25: critique from his screenshots, mock up the phone first (a before/after widget), wait for "build it," then build, check in the preview, deploy, commit, and push. Reuse the Artist Tools look: peach cards (`--color-cream`, #ffdcb8; Alan tried lighter shades and found them too pale), the pills-and-black-panel pattern from `walter-benjamin.astro`, tokens only. Source any statistic before it goes on a page.
 
 ## Open items from the sitewide critique (September 25)
 
