@@ -35,7 +35,7 @@ Written September 25, 2026; updated later that day after a design session on the
 - **Alan's own pending checks:**
   - The venue walkthrough as AJ Test Four: apply from **Introduce your place**, approve it as alan@alanjust.com, then confirm the venue workspace appears on AJ Test Four's account page.
   - Re-save his studio listing (Edit, then Publish) to clear the old private phone and email from the record.
-- **The tester invitation** is ready to send: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ
+- **The tester invitation** is ready to send: https://claude.ai/artifact/5NMqFvPvUn4DvWP7ik6RWJ (version 12 as of September 25; it lists every Artist Tools page, Why This Exists, and the Seven-Minute Look, and asks testers to report whether the timer's sounds play and whether the wheel fits on their screen)
 
 ## When tester feedback arrives
 
